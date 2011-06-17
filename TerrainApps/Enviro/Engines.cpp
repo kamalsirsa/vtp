@@ -17,6 +17,8 @@
 #include "Hawaii.h"
 #include "Enviro.h"	// for GetCurrentTerrain
 
+using namespace osg;
+
 //////////////////////////////////////////////////////////////
 
 float utm_points_ito[5][2] = {

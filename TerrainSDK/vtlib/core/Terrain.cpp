@@ -30,6 +30,7 @@
 #include "vtlib/vtosg/ExternalHeightField3d.h"
 // add your own terrain method header here!
 
+using namespace osg;
 
 // The Terrain uses two LOD grids (class vtLodGrid, a sparse grid of LOD cells)
 //  of size LOD_GRIDSIZE x LOD_GRIDSIZE to group structures and vegetation.

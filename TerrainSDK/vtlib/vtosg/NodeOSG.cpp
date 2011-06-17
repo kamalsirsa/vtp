@@ -30,6 +30,8 @@
 #include <osgShadow/ShadowMap>
 #include <osgShadow/ShadowTexture>
 
+using namespace osg;
+
 // We use bits 1 and 2 of the node mask as shadow flags.
 const int ReceivesShadowTraversalMask = 0x1;
 const int CastsShadowTraversalMask = 0x2;
@@ -178,7 +180,7 @@ protected:
  Calculates the bounding box of the geometry contained in and under this node
  in the scene graph.  Note that unlike the bounding sphere which is cached,
  this value is calculated every time.
- 
+
  \param node The node to visit.
  \param box Will receive the bounding box.
  */
@@ -1134,7 +1136,7 @@ bool vtShadow::GetRecalculateEveryFrame() const
 	const CSimpleInterimShadowTechnique *pTechnique = dynamic_cast<const CSimpleInterimShadowTechnique *>(getShadowTechnique());
 	if (pTechnique)
 		return pTechnique->GetRecalculateEveryFrame();
-	else 
+	else
 		return false;
 }
 

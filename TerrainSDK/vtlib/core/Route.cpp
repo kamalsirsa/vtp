@@ -18,6 +18,8 @@
 #define NUM_WIRE_SEGMENTS	160
 #define METERS_PER_FOOT		0.3048f	// meters per foot
 
+using namespace osg;
+
 vtMaterialArray *vtRoute::m_pRouteMats = NULL;
 
 ///////////////////

@@ -24,6 +24,8 @@
 #include "SpecificTerrain.h"
 #include "CarEngine.h"
 
+using namespace osg;
+
 // Although there is no string translation in the core of Enviro (because it
 //  is independent of wx or any GUI library) nonetheless we want the text
 //  messages to be found by the gettext utility, so we need to enclose

@@ -8,6 +8,10 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #ifdef _MSC_VER
 #pragma warning( disable : 4786 )
 #endif

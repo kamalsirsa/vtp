@@ -8,6 +8,8 @@
 #include "vtlib/vtlib.h"
 #include "ImageSprite.h"
 
+using namespace osg;
+
 ///////////////////////////////////////////////////////////////////////
 // vtImageSprite
 

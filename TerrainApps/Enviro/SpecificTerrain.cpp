@@ -16,6 +16,8 @@
 #include "SpecificTerrain.h"
 #include "Engines.h"
 
+using namespace osg;
+
 ///////////////////////////////
 // Romania
 

@@ -32,6 +32,7 @@
 #define ROAD_FILENAME		"GeoTypical/roadset_2k.jpg"
 #define ROAD_REZ 2048
 
+using namespace osg;
 
 ////////////////////////////////////////////////////////////////////
 

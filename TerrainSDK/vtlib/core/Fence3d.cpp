@@ -16,6 +16,7 @@
 #include "Terrain.h"
 #include "Fence3d.h"
 
+using namespace osg;
 
 vtFence3d::vtFence3d() : vtFence()
 {

@@ -14,6 +14,8 @@
 #include "Contours.h"
 #include <vtlib/core/TiledGeom.h>
 
+using namespace osg;
+
 //
 // This callback function will receive points output from QuikGrid.
 //

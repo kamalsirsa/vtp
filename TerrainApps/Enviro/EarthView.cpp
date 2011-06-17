@@ -23,6 +23,8 @@
 #define LL_COUNT	640
 #define LL_RADIUS	1.002
 
+using namespace osg;
+
 void Enviro::FlyToSpace()
 {
 	VTLOG("FlyToSpace\n");

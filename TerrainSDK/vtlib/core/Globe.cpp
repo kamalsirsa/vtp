@@ -16,6 +16,8 @@
 #include "vtdata/vtLog.h"	// for logging debug message
 #include "vtdata/DataPath.h"
 
+using namespace osg;
+
 // Helper
 vtTransform *WireAxis(RGBf color, float len);
 

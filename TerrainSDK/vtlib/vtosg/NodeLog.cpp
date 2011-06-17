@@ -23,6 +23,8 @@
 #include <osgParticle/ModularEmitter>
 #include <osgParticle/ParticleSystemUpdater>
 
+using namespace osg;
+
 /**
  Diagnostic function to help debugging: Log the scene graph from a given node downwards.
 */

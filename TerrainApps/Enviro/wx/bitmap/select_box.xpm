@@ -1,5 +1,5 @@
 /* XPM */
-static char *select_box[] = {
+static const char *select_box_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "20 20 4 1 ",
 "  c black",

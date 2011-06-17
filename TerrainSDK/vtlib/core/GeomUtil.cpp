@@ -12,6 +12,8 @@
 #include "vtdata/vtString.h"
 #include "GeomUtil.h"
 
+using namespace osg;
+
 /**
  * Create a "3d Cursor" geometry, which consists of 3 blocks (red, green, blue)
  * along the XYZ axes.

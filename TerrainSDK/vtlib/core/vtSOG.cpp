@@ -7,6 +7,7 @@
 #include "vtlib/vtlib.h"
 #include "vtSOG.h"
 
+using namespace osg;
 
 //////////////////////////////////////////////////////////
 // Local functions

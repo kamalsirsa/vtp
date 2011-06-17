@@ -8,6 +8,10 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "vtlib/vtlib.h"
 
 #ifdef _MSC_VER

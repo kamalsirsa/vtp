@@ -22,6 +22,8 @@
 #include "Light.h"
 #include "GeomUtil.h"	// for CreateBoundSphereGeom
 
+using namespace osg;
+
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters
 
 float vtPlantAppearance3d::s_fPlantScale = 1.0f;

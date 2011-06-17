@@ -17,6 +17,8 @@
 #include "Engines.h"	// for PlaneEngine
 #include "wx/EnviroGUI.h"
 
+using namespace osg;
+
 ///////////////////////////////
 bool g_bLineOfSightTest = false;
 

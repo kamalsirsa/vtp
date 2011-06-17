@@ -18,6 +18,7 @@
 #include "frame.h"
 #include "ItemGroup.h"
 
+using namespace osg;
 
 ItemGroup::ItemGroup(vtItem *pItem)
 {

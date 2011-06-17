@@ -12,6 +12,8 @@
 #include "vtdata/DataPath.h"
 #include "vtTin3d.h"
 
+using namespace osg;
+
 vtTin3d::vtTin3d()
 {
 	m_pMats = NULL;

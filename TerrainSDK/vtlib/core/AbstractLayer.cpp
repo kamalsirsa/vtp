@@ -14,6 +14,7 @@
 #include "vtdata/Features.h"	// for vtFeatureSet
 #include "vtdata/vtLog.h"
 
+using namespace osg;
 
 vtAbstractLayer::vtAbstractLayer(vtTerrain *pTerr)
 {

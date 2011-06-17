@@ -13,6 +13,8 @@
 #include "SkyDome.h"
 #include "GeomUtil.h"	// for CreateBoundSphereGeom
 
+using namespace osg;
+
 // minimum and maximum ambient light values
 const float MIN_AMB = 0.0f;
 const float MAX_AMB = 1.0f;

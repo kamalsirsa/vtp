@@ -23,6 +23,13 @@
 #include "canvas.h"
 #include "LocationDlg.h"
 
+#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
+#  include "bitmap/play_back.xpm"
+#  include "bitmap/play_stop.xpm"
+#  include "bitmap/play_record1.xpm"
+#  include "bitmap/play_play.xpm"
+#endif
+
 void BlockingMessageBox(const wxString &msg)
 {
 	EnableContinuousRendering(false);
