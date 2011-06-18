@@ -44,7 +44,7 @@
 //		http://www.perspectiveedge.com/
 //
 #ifndef SUPPORT_QUIKGRID
-#define SUPPORT_QUIKGRID	1
+#define SUPPORT_QUIKGRID	0
 #endif
 
 // Use the 'squish' texture compression library,
@@ -53,7 +53,7 @@
 // http://sjbrown.co.uk/?code=squish
 //
 #ifndef SUPPORT_SQUISH
-#define SUPPORT_SQUISH	1
+#define SUPPORT_SQUISH	0
 #endif
 
 // Set to 1 if your C++ compiler supports wide strings (std::wstring)

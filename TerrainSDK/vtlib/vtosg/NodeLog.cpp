@@ -198,13 +198,13 @@ void WriteDot(void *parent, void *node, const char *label, int color, int depth,
 		break;
 	}
 
-	fprintf(fp, "n%x [label=\"%s\", fillcolor=\"%s\"];\n", node, label, cname);
+	fprintf(fp, "n%p [label=\"%s\", fillcolor=\"%s\"];\n", node, label, cname);
 
 	if (parent != NULL)
 	{
 		for (int i = 0; i < depth; i++)
 			fprintf(fp, " ");
-		fprintf(fp, "n%x -> n%x;\n", parent, node);
+		fprintf(fp, "n%p -> n%p;\n", parent, node);
 	}
 }
 
