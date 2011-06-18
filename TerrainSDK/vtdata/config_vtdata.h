@@ -14,7 +14,7 @@
 // http://www.bzip.org/
 //
 #ifndef SUPPORT_BZIP2
-#define SUPPORT_BZIP2	1
+#define SUPPORT_BZIP2	0
 #endif
 
 // Use the Curl library, which adds cross-platform support for HTTP
@@ -24,7 +24,7 @@
 //		http://curl.haxx.se/libcurl/
 //
 #ifndef SUPPORT_CURL
-#define SUPPORT_CURL	1
+#define SUPPORT_CURL	0
 #endif
 
 // Use the NetCDF library, which adds support for the "CDF" file format,
@@ -34,7 +34,7 @@
 //		http://www.unidata.ucar.edu/packages/netcdf/
 //
 #ifndef SUPPORT_NETCDF
-#define SUPPORT_NETCDF	1
+#define SUPPORT_NETCDF	0
 #endif
 
 // Use the QuikGrid library, which adds support for operations such as

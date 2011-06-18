@@ -26,6 +26,14 @@ if(QUIKGRID_FOUND)
 	include_directories(${QUIKGRID_INCLUDE_DIR})
 endif(QUIKGRID_FOUND)
 
+if(CURL_FOUND)
+	include_directories(${CURL_INCLUDE_DIR})
+	set_property(TARGET vtlib APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_CURL)
+	if(CURL_IS_STATIC)
+		set_property(TARGET vtdata APPEND PROPERTY COMPILE_DEFINITIONS CURL_STATICLIB)
+	endif(CURL_IS_STATIC)
+endif (CURL_FOUND)
+
 if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})
 endif(ZLIB_FOUND)
@@ -52,6 +60,7 @@ endif (GLEXT_INCLUDE_DIR)
 # Windows specific stuff
 if (WIN32)
 	set_property(TARGET vtlib APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
+	set_property(TARGET vtlib APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_QUIKGRID)
 endif (WIN32)
 
 # Specify normal preprocessor definition for this target

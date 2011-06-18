@@ -32,6 +32,7 @@ endif (ZLIB_FOUND)
 
 if(QUIKGRID_FOUND)
 	include_directories(${QUIKGRID_INCLUDE_DIR})
+	set_property(TARGET vtui APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_QUIKGRID)
 endif(QUIKGRID_FOUND)
 
 # Windows specific stuff
