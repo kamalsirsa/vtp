@@ -7,12 +7,6 @@
 
 #include "vtlib/core/Terrain.h"
 
-class Romania : public vtTerrain
-{
-public:
-	void CreateCustomCulture();
-};
-
 class TransitTerrain : public vtTerrain
 {
 public:

@@ -14,8 +14,6 @@
 #include "Contours.h"
 #include <vtlib/core/TiledGeom.h>
 
-using namespace osg;
-
 //
 // This callback function will receive points output from QuikGrid.
 //
@@ -155,7 +153,7 @@ vtGeode *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fH
 	m_pGeode->setName("Contour Geometry");
 	m_pGeode->SetMaterials(pMats);
 
-	m_pMF = new vtGeomFactory(m_pGeode, PrimitiveSet::LINE_STRIP, 0, 30000, 0);
+	m_pMF = new vtGeomFactory(m_pGeode, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 0);
 
 	return m_pGeode;
 }

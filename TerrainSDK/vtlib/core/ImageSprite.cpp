@@ -8,7 +8,6 @@
 #include "vtlib/vtlib.h"
 #include "ImageSprite.h"
 
-using namespace osg;
 
 ///////////////////////////////////////////////////////////////////////
 // vtImageSprite
@@ -61,7 +60,7 @@ bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
 	m_pMats->AddTextureMaterial(pImage, false, false, bBlending);
 
 	// default position of the mesh is just 0,0-1,1
-	m_pMesh = new vtMesh(PrimitiveSet::QUADS, VT_TexCoords, 4);
+	m_pMesh = new vtMesh(osg::PrimitiveSet::QUADS, VT_TexCoords, 4);
 	m_pMesh->AddVertexUV(FPoint3(0,0,0), FPoint2(0,0));
 	m_pMesh->AddVertexUV(FPoint3(1,0,0), FPoint2(1,0));
 	m_pMesh->AddVertexUV(FPoint3(1,1,0), FPoint2(1,1));

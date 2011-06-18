@@ -26,8 +26,6 @@
 #include <iostream>			// For redirecting OSG's stdout messages
 #include "vtdata/vtLog.h"	// to the VTP log.
 
-using namespace osg;
-
 /** A way to catch OSG messages */
 class OsgMsgTrap : public std::streambuf
 {
@@ -346,7 +344,7 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	if (!m_bInitialized) return;
 
 	// window background color
-	Vec4 color2;
+	osg::Vec4 color2;
 	v2s(pWindow->GetBgColor(), color2);
 	m_pOsgViewer->getCamera()->setClearColor(color2);
 
@@ -378,7 +376,7 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 		float a = tan (fov_x/2);
 		float b = a / aspect;
 		float fov_y_div2 = atan(b);
-		float fov_y_deg = RadiansToDegrees(fov_y_div2 * 2);
+		float fov_y_deg = osg::RadiansToDegrees(fov_y_div2 * 2);
 
 		m_pOsgViewer->getCamera()->setProjectionMatrixAsPerspective(fov_y_deg,
 			aspect, m_pCamera->GetHither(), m_pCamera->GetYon());
@@ -486,7 +484,7 @@ bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow
 	if (!pWindow)
 		pWindow = GetWindow(0);
 
-	Vec3 near_point, far_point, diff;
+	osg::Vec3 near_point, far_point, diff;
 
 	// There used to be a handy function for this
 	osg::Matrix MVPW;
@@ -517,10 +515,9 @@ bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow
  */
 void vtScene::WorldToScreen(const FPoint3 &point, IPoint2 &result)
 {
-	Vec3 object;
+	osg::Vec3 object;
 	v2s(point, object);
-	Vec3 window;
-
+	osg::Vec3 window;
 
 	osg::Matrix MVPW;
 	osg::Camera *pCamera = m_pOsgViewer->getCamera();
@@ -607,21 +604,21 @@ void vtScene::CalcCullPlanes()
 	const osg::Matrixd &_projection = m_pOsgViewer->getCamera()->getProjectionMatrix();
 	const osg::Matrixd &_modelView = m_pOsgViewer->getCamera()->getViewMatrix();
 
-	Polytope tope;
+	osg::Polytope tope;
 	tope.setToUnitFrustum();
 	tope.transformProvidingInverse((_modelView)*(_projection));
 
-	const Polytope::PlaneList &planes = tope.getPlaneList();
+	const osg::Polytope::PlaneList &planes = tope.getPlaneList();
 
 	int i = 0;
-	for (Polytope::PlaneList::const_iterator itr=planes.begin();
+	for (osg::Polytope::PlaneList::const_iterator itr=planes.begin();
 		itr!=planes.end(); ++itr)
 	{
 		// make a copy of the clipping plane
-		Plane plane = *itr;
+		osg::Plane plane = *itr;
 
 		// extract the OSG plane to our own structure
-		Vec4 pvec = plane.asVec4();
+		osg::Vec4 pvec = plane.asVec4();
 		m_cullPlanes[i++].Set(-pvec.x(), -pvec.y(), -pvec.z(), -pvec.w());
 	}
 #endif
@@ -662,12 +659,12 @@ void vtScene::SetGlobalWireframe(bool bWire)
 	// Set the scene's global PolygonMode attribute, which will affect all
 	// other materials in the scene, except those which explicitly override
 	// the attribute themselves.
-	PolygonMode *npm = new PolygonMode;
+	osg::PolygonMode *npm = new osg::PolygonMode;
 	if (m_bWireframe)
-		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
+		npm->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
 	else
-		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::FILL);
-	GetRootState()->setAttributeAndModes(npm, StateAttribute::ON);
+		npm->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
+	GetRootState()->setAttributeAndModes(npm, osg::StateAttribute::ON);
 }
 
 bool vtScene::GetGlobalWireframe()

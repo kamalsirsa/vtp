@@ -19,7 +19,6 @@
 #include "Building3d.h"
 #include "FelkelStraightSkeleton.h"
 
-using namespace osg;
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -304,7 +303,7 @@ vtMesh *vtBuilding3d::FindMatMesh(const vtString &Material,
 	RGBf fcolor = color;
 
 	// wireframe is a special case, used for highlight materials
-	if (ePrimType == PrimitiveSet::LINE_STRIP)
+	if (ePrimType == osg::PrimitiveSet::LINE_STRIP)
 	{
 		mi = FindMatIndex(BMAT_NAME_HIGHLIGHT, fcolor);
 		VertType = 0;
@@ -447,7 +446,7 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
 	FPoint3 p3 = quad[2];
 	FPoint3 p2 = quad[3];
 
-	vtMesh *mesh = FindMatMesh(BMAT_NAME_PLAIN, RGBi(255,255,255), PrimitiveSet::LINE_STRIP);
+	vtMesh *mesh = FindMatMesh(BMAT_NAME_PLAIN, RGBi(255,255,255), osg::PrimitiveSet::LINE_STRIP);
 
 	// determine normal (not used for shading)
 	FPoint3 norm = Normal(p0,p1,p2);
@@ -477,7 +476,7 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
 	mesh->AddFan(start, start+1);
 
 	norm *= 0.95f;
-	mesh = FindMatMesh(BMAT_NAME_PLAIN, RGBi(255,0,0), PrimitiveSet::LINE_STRIP);
+	mesh = FindMatMesh(BMAT_NAME_PLAIN, RGBi(255,0,0), osg::PrimitiveSet::LINE_STRIP);
 	start =
 		mesh->AddVertex(p0 + norm);
 	mesh->AddVertex(p1 + norm);
@@ -504,9 +503,9 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, bool bUniform,
 
 	vtMesh *mesh;
 	if (bUniform)
-		mesh = FindMatMesh(BMAT_NAME_WINDOWWALL, pEdge->m_Color, PrimitiveSet::TRIANGLE_FAN);
+		mesh = FindMatMesh(BMAT_NAME_WINDOWWALL, pEdge->m_Color, osg::PrimitiveSet::TRIANGLE_FAN);
 	else
-		mesh = FindMatMesh(*pEdge->m_pMaterial, pEdge->m_Color, PrimitiveSet::TRIANGLE_FAN);
+		mesh = FindMatMesh(*pEdge->m_pMaterial, pEdge->m_Color, osg::PrimitiveSet::TRIANGLE_FAN);
 
 	// determine normal and primary axes of the face
 	FPoint3 norm = Normal(p0, p1, p2);
@@ -581,7 +580,7 @@ void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	FPoint3 p3 = quad[0] + (up1 * vf2);
 	FPoint3 p2 = quad[1] + (up2 * vf2);
 
-	vtMesh *mesh = FindMatMesh(BMAT_NAME_DOOR, pEdge->m_Color, PrimitiveSet::TRIANGLE_FAN);
+	vtMesh *mesh = FindMatMesh(BMAT_NAME_DOOR, pEdge->m_Color, osg::PrimitiveSet::TRIANGLE_FAN);
 
 	// determine normal (flat shading, all vertices have the same normal)
 	FPoint3 norm = Normal(p0, p1, p2);
@@ -619,7 +618,7 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	FPoint3 p3 = quad[0] + (up1 * vf2);
 	FPoint3 p2 = quad[1] + (up2 * vf2);
 
-	vtMesh *mesh = FindMatMesh(BMAT_NAME_WINDOW, pEdge->m_Color, PrimitiveSet::TRIANGLE_FAN);
+	vtMesh *mesh = FindMatMesh(BMAT_NAME_WINDOW, pEdge->m_Color, osg::PrimitiveSet::TRIANGLE_FAN);
 
 	// determine normal (flat shading, all vertices have the same normal)
 	FPoint3 norm = Normal(p0,p1,p2);
@@ -644,7 +643,7 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 
 	vtEdge *pEdge = pLev->GetEdge(0);
 	const vtString& Material = *pEdge->m_pMaterial;
-	vtMesh *mesh = FindMatMesh(Material, pEdge->m_Color, PrimitiveSet::TRIANGLES);
+	vtMesh *mesh = FindMatMesh(Material, pEdge->m_Color, osg::PrimitiveSet::TRIANGLES);
 	vtMaterialDescriptor *md = s_MaterialDescriptors.FindMaterialDescriptor(Material, pEdge->m_Color);
 
 	if (outer_corners > 4 || rings > 1)
@@ -824,7 +823,7 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 			// For each boundary edge zip round the polygon anticlockwise
 			// and build the vertex array
 			const vtString bmat = *points[pi].m_pMaterial;
-			vtMesh *pMesh = FindMatMesh(bmat, points[pi].m_Color, PrimitiveSet::TRIANGLES);
+			vtMesh *pMesh = FindMatMesh(bmat, points[pi].m_Color, osg::PrimitiveSet::TRIANGLES);
 			vtMaterialDescriptor *pMd = s_MaterialDescriptors.FindMaterialDescriptor(bmat, points[pi].m_Color);
 			FPoint2 UVScale;
 			if (NULL != pMd)
@@ -1149,7 +1148,7 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 			TERRAIN_EMISSIVE);
 
 	// Create a mesh for the new material and add this to the mesh array
-	mm.m_pMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 6);
+	mm.m_pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 6);
 	m_Mesh.Append(mm);
 
 	// Calculate the vertices and add them to the mesh

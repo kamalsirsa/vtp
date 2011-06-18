@@ -3,7 +3,7 @@
 //
 // also shorelines and rivers
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,7 +32,6 @@
 #define ROAD_FILENAME		"GeoTypical/roadset_2k.jpg"
 #define ROAD_REZ 2048
 
-using namespace osg;
 
 ////////////////////////////////////////////////////////////////////
 
@@ -300,7 +299,7 @@ vtMesh *NodeGeom::GenerateGeometry()
 	int j;
 	FPoint3 p, upvector(0.0f, 1.0f, 0.0f);
 
-	vtMesh *pMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords | VT_Normals, m_iLinks*2 + 1);
+	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords | VT_Normals, m_iLinks*2 + 1);
 	int verts = 0;
 
 	// find the approximate center of the junction
@@ -518,7 +517,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	if (do_roadside)
 		total_vertices += (GetSize() * 2 * 2);		// 2 roadside strips
 
-	vtMesh *pMesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords | VT_Normals,
+	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords | VT_Normals,
 		total_vertices);
 
 	RoadBuildInfo bi(GetSize());

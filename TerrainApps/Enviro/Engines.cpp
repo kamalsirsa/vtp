@@ -17,7 +17,6 @@
 #include "Hawaii.h"
 #include "Enviro.h"	// for GetCurrentTerrain
 
-using namespace osg;
 
 //////////////////////////////////////////////////////////////
 
@@ -791,7 +790,7 @@ void MapOverviewEngine::CreateArrow()
 	arrowGeom->SetMaterials(pMats);
 
 	int ind[7];
-	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, 7);
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 7);
 
 	ind[0] = mesh->AddVertex( 0.0, 0.0, 0.0);
 	ind[1] = mesh->AddVertex( 0.0, 5.0, 0.0);
@@ -813,7 +812,7 @@ void MapOverviewEngine::CreateArrow()
 	// the second argument is the indice of the RGB color added into the material array
 	arrowGeom->AddMesh(mesh, 1);
 
-	mesh = new vtMesh(PrimitiveSet::QUADS, 0, 4);
+	mesh = new vtMesh(osg::PrimitiveSet::QUADS, 0, 4);
 
 	ind[0] = mesh->AddVertex(-4.3, 3.8, 0.0);
 	ind[1] = mesh->AddVertex(-4.3,-3.8, 0.0);

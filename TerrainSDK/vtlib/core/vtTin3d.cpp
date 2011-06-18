@@ -3,7 +3,7 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,6 @@
 #include "vtdata/DataPath.h"
 #include "vtTin3d.h"
 
-using namespace osg;
 
 vtTin3d::vtTin3d()
 {
@@ -220,7 +219,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 		else
 		{
 			// simple case: this whole bin goes into one mesh
-			pMesh = new vtMesh(PrimitiveSet::TRIANGLES, vert_type, in_bin * 3);
+			pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLES, vert_type, in_bin * 3);
 		}
 
 		for (j = 0; j < in_bin; j++)
@@ -246,7 +245,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 				// We mush pick a mesh based on surface type
 				int surftype = m_surfidx[tri];
 				if (pTypeMeshes[surftype] == NULL)
-					pTypeMeshes[surftype] = new vtMesh(PrimitiveSet::TRIANGLES, vert_type, in_bin * 3);
+					pTypeMeshes[surftype] = new vtMesh(osg::PrimitiveSet::TRIANGLES, vert_type, in_bin * 3);
 				pMesh = pTypeMeshes[surftype];
 				bTiled = m_surftype_tiled[surftype];
 			}
@@ -362,7 +361,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 
 	if (bDropShadowMesh)
 	{
-		vtMesh *pBaseMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, 0, 4);
+		vtMesh *pBaseMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, 0, 4);
 
 		ep.Set(m_EarthExtents.left - 10, m_EarthExtents.bottom - 10, m_fMinHeight - 5);
 		m_Conversion.ConvertFromEarth(ep, wp);

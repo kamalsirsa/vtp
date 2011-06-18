@@ -8,18 +8,17 @@
 #include "vtlib/vtlib.h"
 #include <osg/PolygonMode>
 
-using namespace osg;
 
 ///////////////////////////////////
 
 bool vtMaterial::s_bTextureCompression = false;
 
-#define SA_ON	StateAttribute::ON
-#define SA_OFF	StateAttribute::OFF
+#define SA_ON	osg::StateAttribute::ON
+#define SA_OFF	osg::StateAttribute::OFF
 
 vtMaterial::vtMaterial() : osg::StateSet()
 {
-	m_pMaterial = new Material;
+	m_pMaterial = new osg::Material;
 	setAttributeAndModes(m_pMaterial.get());
 
 	// Not sure why this is required (should be the default!)
@@ -54,7 +53,7 @@ void vtMaterial::CopyFrom(vtMaterial *pFrom)
  */
 void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 {
-	m_pMaterial->setDiffuse(FAB, Vec4(r, g, b, a));
+	m_pMaterial->setDiffuse(FAB, osg::Vec4(r, g, b, a));
 
 	if (a < 1.0f)
 		setMode(GL_BLEND, SA_ON);
@@ -64,7 +63,7 @@ void vtMaterial::SetDiffuse(float r, float g, float b, float a)
  */
 RGBAf vtMaterial::GetDiffuse() const
 {
-	Vec4 col = m_pMaterial->getDiffuse(FAB);
+	osg::Vec4 col = m_pMaterial->getDiffuse(FAB);
 	return RGBAf(col[0], col[1], col[2], col[3]);
 }
 
@@ -73,14 +72,14 @@ RGBAf vtMaterial::GetDiffuse() const
  */
 void vtMaterial::SetSpecular(float r, float g, float b)
 {
-	m_pMaterial->setSpecular(FAB, Vec4(r, g, b, 1.0f));
+	m_pMaterial->setSpecular(FAB, osg::Vec4(r, g, b, 1.0f));
 }
 /**
  * Get the specular color of this material.
  */
 RGBf vtMaterial::GetSpecular() const
 {
-	Vec4 col = m_pMaterial->getSpecular(FAB);
+	osg::Vec4 col = m_pMaterial->getSpecular(FAB);
 	return RGBf(col[0], col[1], col[2]);
 }
 
@@ -89,14 +88,14 @@ RGBf vtMaterial::GetSpecular() const
  */
 void vtMaterial::SetAmbient(float r, float g, float b)
 {
-	m_pMaterial->setAmbient(FAB, Vec4(r, g, b, 1.0f));
+	m_pMaterial->setAmbient(FAB, osg::Vec4(r, g, b, 1.0f));
 }
 /**
  * Get the ambient color of this material.
  */
 RGBf vtMaterial::GetAmbient() const
 {
-	Vec4 col = m_pMaterial->getAmbient(FAB);
+	osg::Vec4 col = m_pMaterial->getAmbient(FAB);
 	return RGBf(col[0], col[1], col[2]);
 }
 
@@ -105,14 +104,14 @@ RGBf vtMaterial::GetAmbient() const
  */
 void vtMaterial::SetEmission(float r, float g, float b)
 {
-	m_pMaterial->setEmission(FAB, Vec4(r, g, b, 1.0f));
+	m_pMaterial->setEmission(FAB, osg::Vec4(r, g, b, 1.0f));
 }
 /**
  * Get the emissive color of this material.
  */
 RGBf vtMaterial::GetEmission() const
 {
-	Vec4 col = m_pMaterial->getEmission(FAB);
+	osg::Vec4 col = m_pMaterial->getEmission(FAB);
 	return RGBf(col[0], col[1], col[2]);
 }
 
@@ -128,7 +127,7 @@ void vtMaterial::SetCulling(bool bCulling)
  */
 bool vtMaterial::GetCulling() const
 {
-	StateAttribute::GLModeValue m;
+	osg::StateAttribute::GLModeValue m;
 	m = getMode(GL_CULL_FACE);
 	return (m == SA_ON);
 }
@@ -145,7 +144,7 @@ void vtMaterial::SetLighting(bool bLighting)
  */
 bool vtMaterial::GetLighting() const
 {
-	StateAttribute::GLModeValue m;
+	osg::StateAttribute::GLModeValue m;
 	m = getMode(GL_LIGHTING);
 	return (m == SA_ON);
 }
@@ -162,13 +161,13 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 	if (bOn)
 	{
 		if (!m_pBlendFunc.valid())
-			m_pBlendFunc = new BlendFunc;
+			m_pBlendFunc = new osg::BlendFunc;
 		setAttributeAndModes(m_pBlendFunc.get(), SA_ON);
 		if (!m_pAlphaFunc.valid())
-			m_pAlphaFunc = new AlphaFunc;
-		m_pAlphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
+			m_pAlphaFunc = new osg::AlphaFunc;
+		m_pAlphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
 		setAttributeAndModes(m_pAlphaFunc.get(), SA_ON );
-		setRenderingHint(StateSet::TRANSPARENT_BIN);
+		setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
 #if MAYBE_SOMEDAY
 		// RJ says he needed this to make multiple transparent surfaces work
@@ -189,7 +188,7 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 	if (bAdd)
 	{
 		if (!m_pBlendFunc.valid())
-			m_pBlendFunc = new BlendFunc;
+			m_pBlendFunc = new osg::BlendFunc;
 //		m_pBlendFunc->setFunction(GL_ONE, GL_ONE);
 //		m_pBlendFunc->setFunction(GL_SRC_COLOR, GL_DST_COLOR);
 		m_pBlendFunc->setFunction(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -202,9 +201,9 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 bool vtMaterial::GetTransparent() const
 {
 	// OSG 0.8.45 and before
-//	StateAttribute::GLModeValue m = getMode(StateAttribute::TRANSPARENCY);
+//	osg::StateAttribute::GLModeValue m = getMode(osg::StateAttribute::TRANSPARENCY);
 	// OSG 0.9.0 onwards
-	StateAttribute::GLModeValue m;
+	osg::StateAttribute::GLModeValue m;
 	m = getMode(GL_BLEND);
 	return (m == SA_ON);
 }
@@ -219,14 +218,14 @@ void vtMaterial::SetWireframe(bool bOn)
 {
 	if (bOn)
 	{
-		PolygonMode *pm = new PolygonMode();
-		pm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
-		setAttributeAndModes(pm, StateAttribute::OVERRIDE | SA_ON);
+		osg::PolygonMode *pm = new osg::PolygonMode;
+		pm->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
+		setAttributeAndModes(pm, osg::StateAttribute::OVERRIDE | SA_ON);
 	}
 	else
 	{
 		// turn wireframe off
-		setMode(GL_POLYGON_MODE, StateAttribute::OFF);
+		setMode(GL_POLYGON_MODE, osg::StateAttribute::OFF);
 	}
 }
 /**
@@ -235,8 +234,8 @@ void vtMaterial::SetWireframe(bool bOn)
 bool vtMaterial::GetWireframe() const
 {
 	// OSG 0.9.0
-	StateAttribute::GLModeValue m;
-	m = getMode(StateAttribute::POLYGONMODE);
+	osg::StateAttribute::GLModeValue m;
+	m = getMode(osg::StateAttribute::POLYGONMODE);
 	return (m == SA_ON);
 }
 
@@ -246,7 +245,7 @@ bool vtMaterial::GetWireframe() const
 void vtMaterial::SetTexture(vtImage *pImage)
 {
 	if (!m_pTexture)
-		m_pTexture = new Texture2D;
+		m_pTexture = new osg::Texture2D;
 
 	// this stores a reference so that it won't get deleted without this material's permission
 	m_pTexture->setImage(pImage);
@@ -314,13 +313,13 @@ void vtMaterial::SetClamp(bool bClamp)
 	if (bClamp)
 	{
 		// TODO: try   texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
-		m_pTexture->setWrap(Texture::WRAP_S, Texture::CLAMP);
-		m_pTexture->setWrap(Texture::WRAP_T, Texture::CLAMP);
+		m_pTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP);
+		m_pTexture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP);
 	}
 	else
 	{
-		m_pTexture->setWrap(Texture::WRAP_S, Texture::REPEAT);
-		m_pTexture->setWrap(Texture::WRAP_T, Texture::REPEAT);
+		m_pTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
+		m_pTexture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
 	}
 }
 
@@ -331,8 +330,8 @@ bool vtMaterial::GetClamp() const
 {
 	if (!m_pTexture)
 		return false;
-	Texture::WrapMode w = m_pTexture->getWrap(Texture::WRAP_S);
-	return (w == Texture::CLAMP);
+	osg::Texture::WrapMode w = m_pTexture->getWrap(osg::Texture::WRAP_S);
+	return (w == osg::Texture::CLAMP);
 }
 
 /**
@@ -343,9 +342,9 @@ void vtMaterial::SetMipMap(bool bMipMap)
 	if (!m_pTexture)
 		return;
 	if (bMipMap)
-		m_pTexture->setFilter(Texture::MIN_FILTER, Texture::LINEAR_MIPMAP_LINEAR);
+		m_pTexture->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
 	else
-		m_pTexture->setFilter(Texture::MIN_FILTER, Texture::LINEAR);
+		m_pTexture->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
 }
 
 /**
@@ -355,8 +354,8 @@ bool vtMaterial::GetMipMap() const
 {
 	if (!m_pTexture)
 		return false;
-	Texture::FilterMode m = m_pTexture->getFilter(Texture::MIN_FILTER);
-	return (m == Texture::LINEAR_MIPMAP_LINEAR);
+	osg::Texture::FilterMode m = m_pTexture->getFilter(osg::Texture::MIN_FILTER);
+	return (m == osg::Texture::LINEAR_MIPMAP_LINEAR);
 }
 
 

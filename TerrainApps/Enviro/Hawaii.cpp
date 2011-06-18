@@ -17,7 +17,6 @@
 #include "Engines.h"	// for PlaneEngine
 #include "wx/EnviroGUI.h"
 
-using namespace osg;
 
 ///////////////////////////////
 bool g_bLineOfSightTest = false;
@@ -319,7 +318,7 @@ vtGeode *IslandTerrain::make_test_cone()
 
 	////////////
 	int res = 40;
-	vtMesh *pMesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res);
+	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res);
 
 	FPoint3 tip(0, 150, 0);
 	double cone_radius = PId/4;
@@ -343,7 +342,7 @@ vtGeode *IslandTerrain::make_red_cube()
 	float ws = 100.0f;	// meters
 
 	//code to make it a Shape
-	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_Normals, 24);
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_Normals, 24);
 	FPoint3 size(ws, ws, ws);
 	FPoint3 half = size / 2;	// Block() will double the size
 	mesh->CreateBlock(half);

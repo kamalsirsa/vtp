@@ -27,7 +27,7 @@
 	\code
 	{
 		vtGeode *pLineGeom = new vtGeode;
-		vtGeomFactory mf(pLineGeom, PrimitiveSet::LINE_STRIP, 0, 3000, 1);
+		vtGeomFactory mf(pLineGeom, osg::PrimitiveSet::LINE_STRIP, 0, 3000, 1);
 		mf.PrimStart();
 		for (int i = 0; i < 10000; i++)
 			mf.AddVertex(FPoint3(i,i,i));

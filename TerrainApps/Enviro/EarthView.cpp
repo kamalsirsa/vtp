@@ -23,7 +23,6 @@
 #define LL_COUNT	640
 #define LL_RADIUS	1.002
 
-using namespace osg;
 
 void Enviro::FlyToSpace()
 {
@@ -135,7 +134,7 @@ void Enviro::SetupGlobe()
 // Helper
 void GeomAddRectMesh(vtGeode *pGeode, const FRECT &rect, float z, int matidx)
 {
-	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
 	mesh->AddVertexUV(FPoint3(rect.left, rect.bottom, z), 0, 0);
 	mesh->AddVertexUV(FPoint3(rect.right, rect.bottom, z), 1, 0);
 	mesh->AddVertexUV(FPoint3(rect.right, rect.top, z), 1, 1);
@@ -229,19 +228,19 @@ void Enviro::MakeGlobe()
 	m_pSpaceAxes->setName("Earth Axes");
 	m_pSpaceAxes->SetMaterials(pMats);
 
-	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, 6);
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 6);
 	mesh->AddLine(FPoint3(0,0,200), FPoint3(0,0,0));
 	mesh->AddLine(FPoint3(0,0,1),   FPoint3(-.07f,0,1.1f));
 	mesh->AddLine(FPoint3(0,0,1),   FPoint3( .07f,0,1.1f));
 	m_pSpaceAxes->AddMesh(mesh, yellow);
 
-	mesh = new vtMesh(PrimitiveSet::LINES, 0, 6);
+	mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 6);
 	mesh->AddLine(FPoint3(1.5f,0,0), FPoint3(-1.5f,0,0));
 	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f, 0.07f,0));
 	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f,-0.07f,0));
 	m_pSpaceAxes->AddMesh(mesh, green);
 
-	mesh = new vtMesh(PrimitiveSet::LINES, 0, 6);
+	mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 6);
 	mesh->AddLine(FPoint3(0,2,0), FPoint3(0,-2,0));
 	m_pSpaceAxes->AddMesh(mesh, red);
 
@@ -254,7 +253,7 @@ void Enviro::MakeGlobe()
 	int orange = pMats->AddRGBMaterial1(RGBf(1,.7,1), false, false, true, 0.6);
 	m_pEarthLines->SetMaterials(pMats);
 
-	m_pLineMesh = new vtMesh(PrimitiveSet::LINE_STRIP, 0, 6);
+	m_pLineMesh = new vtMesh(osg::PrimitiveSet::LINE_STRIP, 0, 6);
 	for (int i = 0; i < LL_COUNT*3; i++)
 		m_pLineMesh->AddVertex(FPoint3(0,0,0));
 	m_pLineMesh->AddStrip2(LL_COUNT*2, 0);
@@ -348,7 +347,7 @@ void Enviro::MakeDemoGlobe()
 			if (p1.y < 0 && p2.y < 0)
 				continue;
 
-			vtGeomFactory mf(m_pDemoTrails, PrimitiveSet::LINE_STRIP, 0, 7000, i%6);
+			vtGeomFactory mf(m_pDemoTrails, osg::PrimitiveSet::LINE_STRIP, 0, 7000, i%6);
 			Globe2->AddSurfaceLineToMesh(&mf, p1, p2);
 		}
 		delete feat1;
@@ -821,7 +820,7 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 {
 	SetupArcMesh();
 
-	vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 0);
+	vtGeomFactory mf(m_pArc, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 0);
 	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(&mf, g1, g2);
 
 	// estimate horizontal distance (angle * radius)
@@ -832,7 +831,7 @@ void Enviro::SetDisplayedArc(const DLine2 &path)
 {
 	SetupArcMesh();
 
-	vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 0);
+	vtGeomFactory mf(m_pArc, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 0);
 	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(&mf, path);
 
 	// estimate horizontal distance (angle * radius)

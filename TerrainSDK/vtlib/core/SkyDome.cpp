@@ -13,8 +13,6 @@
 #include "SkyDome.h"
 #include "GeomUtil.h"	// for CreateBoundSphereGeom
 
-using namespace osg;
-
 // minimum and maximum ambient light values
 const float MIN_AMB = 0.0f;
 const float MAX_AMB = 1.0f;
@@ -70,7 +68,7 @@ vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color)
 	// Now make a green marker, directly north
 	int matidx = pMats->AddRGBMaterial1(color, false, false, true);
 	FPoint3 p;
-	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, 500);
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 500);
 	mesh->AddVertex(FPoint3(-0.07, 0, -0.94));
 	mesh->AddVertex(FPoint3( 0.07, 0, -0.94));
 	mesh->AddVertex(FPoint3(0, -0.07, -0.94));
@@ -157,7 +155,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	int res = SKYDOME_SMOOTHNESS;
 	int vertices = (res*2+1)*(res/2+1);
 
-	m_pDomeMesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Colors | VT_TexCoords, vertices);
+	m_pDomeMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Colors | VT_TexCoords, vertices);
 
 	// Face normals point in, not out
 	bool bNormalsIn = false;
@@ -210,7 +208,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		m_pSunGeom->setName("Sun xform");
 
 		VTLOG("   Creating Sun Mesh\n");
-		vtMesh *SunMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
+		vtMesh *SunMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
 
 		SunMesh->AddRectangleXZ(0.50f, 0.50f);
 		pGeode->SetMaterials(m_pMats);
@@ -249,7 +247,7 @@ void vtSkyDome::CreateMarkers()
 	// First create some 5-degree tic marks.
 	int yellow = m_pMats->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
 	FPoint3 p;
-	vtMesh *tics = new vtMesh(PrimitiveSet::LINES, 0, (36+1)*2*2);
+	vtMesh *tics = new vtMesh(osg::PrimitiveSet::LINES, 0, (36+1)*2*2);
 	for (float t = 0; t < PId; t += (PId / 36))	// 5 degree increment
 	{
 		float sint = sinf(t) * 0.95f;
@@ -695,7 +693,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	// Need a material?
 	m_pStarGeom->SetMaterials(m_pMats);
 
-	m_pStarMesh = new vtMesh(PrimitiveSet::POINTS, VT_Colors, NumStars);
+	m_pStarMesh = new vtMesh(osg::PrimitiveSet::POINTS, VT_Colors, NumStars);
 	AddStars(m_pStarMesh);
 	m_pStarGeom->AddMesh(m_pStarMesh, star_mat);
 	addChild(m_pStarGeom);
@@ -721,7 +719,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 		m_pMoonGeom = new vtMovGeode(pGeode);
 		m_pMoonGeom->setName("Moon xform");
 
-		vtMesh *MoonMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
+		vtMesh *MoonMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
 
 		MoonMesh->AddRectangleXZ(0.1f, 0.1f);
 		pGeode->SetMaterials(m_pMats);

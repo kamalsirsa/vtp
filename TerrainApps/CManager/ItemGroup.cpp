@@ -18,7 +18,6 @@
 #include "frame.h"
 #include "ItemGroup.h"
 
-using namespace osg;
 
 ItemGroup::ItemGroup(vtItem *pItem)
 {
@@ -221,7 +220,7 @@ vtGeode *CreateRulers(osgText::Font *font, float fSize)
 	{
 		p.Set(0,0,0);
 
-		vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, 24);
+		vtMesh *mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 24);
 
 		if (i == 0) { wide = &p.x; thin = &p.z; }
 		if (i == 1) { wide = &p.y; thin = &p.x; }

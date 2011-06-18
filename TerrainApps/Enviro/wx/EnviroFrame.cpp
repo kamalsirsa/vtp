@@ -1203,7 +1203,7 @@ void EnviroFrame::DoTestCode()
 			pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
 			pGeode->SetMaterials(pMats);
 
-			vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLES, VT_Normals | VT_Colors, 4000);
+			vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLES, VT_Normals | VT_Colors, 4000);
 
 			int line = 0;
 			fgets(buf, 80, fp);	// skip first

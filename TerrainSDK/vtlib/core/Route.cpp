@@ -18,8 +18,6 @@
 #define NUM_WIRE_SEGMENTS	160
 #define METERS_PER_FOOT		0.3048f	// meters per foot
 
-using namespace osg;
-
 vtMaterialArray *vtRoute::m_pRouteMats = NULL;
 
 ///////////////////
@@ -250,7 +248,7 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 	vtMesh *pWireMesh;
 	for (int j = 0; j < st1->m_iNumWires; j++)
 	{
-		pWireMesh = new vtMesh(PrimitiveSet::LINE_STRIP, 0, numiterations+1);
+		pWireMesh = new vtMesh(osg::PrimitiveSet::LINE_STRIP, 0, numiterations+1);
 
 		offset = st0->m_fpWireAtt1[j];
 		rot.AxisAngle(axisY, n0->dRadAzimuth);

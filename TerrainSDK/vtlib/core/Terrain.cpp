@@ -30,8 +30,6 @@
 #include "vtlib/vtosg/ExternalHeightField3d.h"
 // add your own terrain method header here!
 
-using namespace osg;
-
 // The Terrain uses two LOD grids (class vtLodGrid, a sparse grid of LOD cells)
 //  of size LOD_GRIDSIZE x LOD_GRIDSIZE to group structures and vegetation.
 //  This allows them to be culled more efficiently.
@@ -992,7 +990,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 				base.x = world_extents.left + (i * tile_size.x);
 				base.y = world_extents.top - ((j+1) * tile_size.y);
 
-				vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, 4);
+				vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, 4);
 				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
 					0, 5.0f);
 
@@ -1023,7 +1021,7 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 				base.x = world_extents.left + (i * tile_size.x);
 				base.y = world_extents.top - ((j+1) * tile_size.y);
 
-				vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Normals, 4);
+				vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Normals, 4);
 				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
 					fAltitude, 5.0f);
 
@@ -3045,7 +3043,7 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
 	vtTerrain *pTerr = ...;
 	vtGeode *pLineGeom = new vtGeode;
 	pTerr->AddNode(pLineGeom);
-	vtGeomFactory mf(pLineGeom, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+	vtGeomFactory mf(pLineGeom, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	float length = pTerr->AddSurfaceLineToMesh(&mf, dline, 10, true);
 	\endcode
  */

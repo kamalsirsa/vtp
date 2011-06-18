@@ -36,8 +36,6 @@
 #  include "icon14.xpm"
 #endif
 
-using namespace osg;
-
 /////////////////////////////
 
 class MyTreeItemData : public wxTreeItemData
@@ -280,15 +278,15 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				const char *mtype="";
 				switch (ptype)
 				{
-				case PrimitiveSet::POINTS: mtype = "Points"; break;
-				case PrimitiveSet::LINES: mtype = "Lines"; break;
-				case PrimitiveSet::LINE_STRIP: mtype = "LineStrip"; break;
-				case PrimitiveSet::TRIANGLES: mtype = "Triangles"; break;
-				case PrimitiveSet::TRIANGLE_STRIP: mtype = "TriStrip"; break;
-				case PrimitiveSet::TRIANGLE_FAN: mtype = "TriFan"; break;
-				case PrimitiveSet::QUADS: mtype = "Quads"; break;
-				case PrimitiveSet::QUAD_STRIP: mtype = "QuadStrip"; break;
-				case PrimitiveSet::POLYGON: mtype = "Polygon"; break;
+				case osg::PrimitiveSet::POINTS: mtype = "Points"; break;
+				case osg::PrimitiveSet::LINES: mtype = "Lines"; break;
+				case osg::PrimitiveSet::LINE_STRIP: mtype = "LineStrip"; break;
+				case osg::PrimitiveSet::TRIANGLES: mtype = "Triangles"; break;
+				case osg::PrimitiveSet::TRIANGLE_STRIP: mtype = "TriStrip"; break;
+				case osg::PrimitiveSet::TRIANGLE_FAN: mtype = "TriFan"; break;
+				case osg::PrimitiveSet::QUADS: mtype = "Quads"; break;
+				case osg::PrimitiveSet::QUAD_STRIP: mtype = "QuadStrip"; break;
+				case osg::PrimitiveSet::POLYGON: mtype = "Polygon"; break;
 				}
 				str.Printf(_("%d: Mesh, %hs, %d verts, %d prims"), i, mtype, iNumVert, iNumPrim);
 				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);

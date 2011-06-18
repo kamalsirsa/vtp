@@ -24,8 +24,6 @@
 #include "SpecificTerrain.h"
 #include "CarEngine.h"
 
-using namespace osg;
-
 // Although there is no string translation in the core of Enviro (because it
 //  is independent of wx or any GUI library) nonetheless we want the text
 //  messages to be found by the gettext utility, so we need to enclose
@@ -228,8 +226,6 @@ void Enviro::LoadTerrainDescriptions(const vtString &path)
 			pTerr = new NevadaTerrain;
 		else if (before_dot == "TransitTerrain")
 			pTerr = new TransitTerrain;
-		else if (before_dot == "Romania")
-			pTerr = new Romania;
 		else
 			pTerr = new vtTerrain;
 
@@ -2227,7 +2223,7 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 	dline.Append(g2);
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+	vtGeomFactory mf(m_pArc, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	mf.SetLineWidth(2);
 	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, dline, m_fDistToolHeight, true);
 }
@@ -2238,7 +2234,7 @@ void Enviro::SetTerrainMeasure(const DLine2 &path)
 	SetupArcMesh();
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+	vtGeomFactory mf(m_pArc, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	mf.SetLineWidth(2);
 	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, path, m_fDistToolHeight, true);
 }
@@ -2324,7 +2320,7 @@ void Enviro::PolygonSelectionAddPoint()
 		m_NewLine.Append(g1);
 
 		vtTerrain *pTerr = GetCurrentTerrain();
-		vtGeomFactory mf(m_pArc, PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+		vtGeomFactory mf(m_pArc, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 		pTerr->AddSurfaceLineToMesh(&mf, m_NewLine, m_fDistToolHeight, true);
 	}
 	else
@@ -2811,7 +2807,7 @@ void Enviro::CreateElevationLegend()
 	m_pLegendGeom->SetMaterials(m_pHUDMaterials);
 
 	// Solid rectangle behind it
-	vtMesh *mesh4 = new vtMesh(PrimitiveSet::QUADS, 0, 4);
+	vtMesh *mesh4 = new vtMesh(osg::PrimitiveSet::QUADS, 0, 4);
 	mesh4->AddRectangleXY((float) base.x, (float) base.y, (float) size.x, (float) size.y, -1.0f);
 	m_pLegendGeom->AddMesh(mesh4, grey);
 
@@ -2821,7 +2817,7 @@ void Enviro::CreateElevationLegend()
 	// Big band of color
 	std::vector<RGBi> table;
 	cmap->GenerateColors(table, in_size.y, fMin, fMax);
-	vtMesh *mesh1 = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
+	vtMesh *mesh1 = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
 	for (i = 0; i < in_size.y + 1; i++)
 	{
 		FPoint3 p1((float) cbar_left,  (float) in_base.y + i, 0.0f);
@@ -2834,7 +2830,7 @@ void Enviro::CreateElevationLegend()
 	m_pLegendGeom->AddMesh(mesh1, white);
 
 	// Small white tick marks
-	vtMesh *mesh2 = new vtMesh(PrimitiveSet::LINES, 0, ticks*2);
+	vtMesh *mesh2 = new vtMesh(osg::PrimitiveSet::LINES, 0, ticks*2);
 	for (i = 0; i < ticks; i++)
 	{
 		FPoint3 p1((float) cbar_left-border.x*2, (float) in_base.y + i*vert_space, 0.0f);
@@ -2898,7 +2894,7 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 		vtGeode *geode = new vtGeode;
 		geode->setName("Selection Box");
 		geode->SetMaterials(m_pHUDMaterials);
-		m_pWindowBoxMesh = new vtMesh(PrimitiveSet::POLYGON, 0, 4);
+		m_pWindowBoxMesh = new vtMesh(osg::PrimitiveSet::POLYGON, 0, 4);
 		m_pWindowBoxMesh->AddVertex(0,0,0);
 		m_pWindowBoxMesh->AddVertex(1,0,0);
 		m_pWindowBoxMesh->AddVertex(1,1,0);

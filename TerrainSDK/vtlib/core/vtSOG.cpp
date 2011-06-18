@@ -7,7 +7,6 @@
 #include "vtlib/vtlib.h"
 #include "vtSOG.h"
 
-using namespace osg;
 
 //////////////////////////////////////////////////////////
 // Local functions
@@ -229,18 +228,18 @@ void OutputSOG::WriteMesh(FILE *fp, const vtMesh *pMesh)
 	bool need_prim_lengths = false;
 	switch (pMesh->getPrimType())
 	{
-	case PrimitiveSet::POINTS:
-	case PrimitiveSet::LINES:
-	case PrimitiveSet::TRIANGLES:
-	case PrimitiveSet::QUADS:
+	case osg::PrimitiveSet::POINTS:
+	case osg::PrimitiveSet::LINES:
+	case osg::PrimitiveSet::TRIANGLES:
+	case osg::PrimitiveSet::QUADS:
 		need_prim_lengths = false;
 		break;
 
-	case PrimitiveSet::LINE_STRIP:
-	case PrimitiveSet::TRIANGLE_STRIP:
-	case PrimitiveSet::TRIANGLE_FAN:
-	case PrimitiveSet::QUAD_STRIP:
-	case PrimitiveSet::POLYGON:
+	case osg::PrimitiveSet::LINE_STRIP:
+	case osg::PrimitiveSet::TRIANGLE_STRIP:
+	case osg::PrimitiveSet::TRIANGLE_FAN:
+	case osg::PrimitiveSet::QUAD_STRIP:
+	case osg::PrimitiveSet::POLYGON:
 		need_prim_lengths = true;
 		break;
 	}

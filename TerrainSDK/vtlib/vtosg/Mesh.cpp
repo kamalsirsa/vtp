@@ -10,7 +10,6 @@
 
 #include <osg/LineWidth>
 
-using namespace osg;
 
 /////////////////////////////////////////////////////////////////////////////
 // vtMesh
@@ -73,14 +72,14 @@ static FPoint2 t[4] =
  *
  * \param ePrimType The type of primitive this mesh will contain.  Allowed
  *		values are:
- *		- PrimitiveSet::POINTS
- *		- PrimitiveSet::LINES
- *		- PrimitiveSet::LINE_STRIP
- *		- PrimitiveSet::TRIANGLES
- *		- PrimitiveSet::TRIANGLE_STRIP
- *		- PrimitiveSet::TRIANGLE_FAN
- *		- PrimitiveSet::QUADS
- *		- PrimitiveSet::POLYGON
+ *		- osg::PrimitiveSet::POINTS
+ *		- osg::PrimitiveSet::LINES
+ *		- osg::PrimitiveSet::LINE_STRIP
+ *		- osg::PrimitiveSet::TRIANGLES
+ *		- osg::PrimitiveSet::TRIANGLE_STRIP
+ *		- osg::PrimitiveSet::TRIANGLE_FAN
+ *		- osg::PrimitiveSet::QUADS
+ *		- osg::PrimitiveSet::POLYGON
  *
  * \param VertType Flags which indicate what type of information is stored
  *		with each vertex.  This can be any combination of the following bit
@@ -99,33 +98,33 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 {
 	m_iMatIdx = -1;
 
-	osg::Vec3Array *pVert = new Vec3Array;
+	osg::Vec3Array *pVert = new osg::Vec3Array;
 	pVert->reserve(NumVertices);
 	setVertexArray(pVert);
 
-	UIntArray *pIndex = new UIntArray;
+	osg::UIntArray *pIndex = new osg::UIntArray;
 	pIndex->reserve(NumVertices);
 	setVertexIndices(pIndex);
 
 	if (VertType & VT_Normals)
 	{
-		osg::Vec3Array *pNorm = new Vec3Array;
+		osg::Vec3Array *pNorm = new osg::Vec3Array;
 		pNorm->reserve(NumVertices);
 		setNormalArray(pNorm);
 		setNormalIndices(pIndex);
-		setNormalBinding(Geometry::BIND_PER_VERTEX);
+		setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
 	}
 	if (VertType & VT_Colors)
 	{
-		osg::Vec4Array *pColor = new Vec4Array;
+		osg::Vec4Array *pColor = new osg::Vec4Array;
 		pColor->reserve(NumVertices);
 		setColorArray(pColor);
 		setColorIndices(pIndex);
-		setColorBinding(Geometry::BIND_PER_VERTEX);
+		setColorBinding(osg::Geometry::BIND_PER_VERTEX);
 	}
 	if (VertType & VT_TexCoords)
 	{
-		osg::Vec2Array *pTex = new Vec2Array;
+		osg::Vec2Array *pTex = new osg::Vec2Array;
 		pTex->reserve(NumVertices);
 		setTexCoordArray(0, pTex);
 		setTexCoordIndices(0, pIndex);
@@ -134,29 +133,29 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 	osg::PrimitiveSet *pPrimSet;
 	switch (ePrimType)
 	{
-	case PrimitiveSet::POINTS:
-		pPrimSet = new DrawArrays(PrimitiveSet::POINTS, 0, NumVertices);
+	case osg::PrimitiveSet::POINTS:
+		pPrimSet = new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, NumVertices);
 		break;
-	case PrimitiveSet::LINES:
-		pPrimSet = new DrawArrays(PrimitiveSet::LINES, 0, NumVertices);
+	case osg::PrimitiveSet::LINES:
+		pPrimSet = new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, NumVertices);
 		break;
-	case PrimitiveSet::TRIANGLES:
-		pPrimSet = new DrawArrays(PrimitiveSet::TRIANGLES, 0, NumVertices);
+	case osg::PrimitiveSet::TRIANGLES:
+		pPrimSet = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, NumVertices);
 		break;
-	case PrimitiveSet::QUADS:
-		pPrimSet = new DrawArrays(PrimitiveSet::QUADS, 0, NumVertices);
+	case osg::PrimitiveSet::QUADS:
+		pPrimSet = new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, NumVertices);
 		break;
-	case PrimitiveSet::LINE_STRIP:
-		pPrimSet = new DrawArrayLengths(PrimitiveSet::LINE_STRIP);
+	case osg::PrimitiveSet::LINE_STRIP:
+		pPrimSet = new osg::DrawArrayLengths(osg::PrimitiveSet::LINE_STRIP);
 		break;
-	case PrimitiveSet::TRIANGLE_STRIP:
-		pPrimSet = new DrawArrayLengths(PrimitiveSet::TRIANGLE_STRIP);
+	case osg::PrimitiveSet::TRIANGLE_STRIP:
+		pPrimSet = new osg::DrawArrayLengths(osg::PrimitiveSet::TRIANGLE_STRIP);
 		break;
-	case PrimitiveSet::TRIANGLE_FAN:
-		pPrimSet = new DrawArrayLengths(PrimitiveSet::TRIANGLE_FAN);
+	case osg::PrimitiveSet::TRIANGLE_FAN:
+		pPrimSet = new osg::DrawArrayLengths(osg::PrimitiveSet::TRIANGLE_FAN);
 		break;
-	case PrimitiveSet::POLYGON:
-		pPrimSet = new DrawArrayLengths(PrimitiveSet::POLYGON);
+	case osg::PrimitiveSet::POLYGON:
+		pPrimSet = new osg::DrawArrayLengths(osg::PrimitiveSet::POLYGON);
 		break;
 	}
 	addPrimitiveSet(pPrimSet);
@@ -704,9 +703,9 @@ void vtMesh::AddRectangleXY(float x, float y, float xsize, float ysize,
 		AddVertexUV(x+xsize, y+ysize,	z, 1.0f, 1.0f);
 		AddVertexUV(x,		 y+ysize,	z, 0.0f, 1.0f);
 	}
-	if (getPrimType() == PrimitiveSet::TRIANGLE_FAN)
+	if (getPrimType() == osg::PrimitiveSet::TRIANGLE_FAN)
 		AddFan(vidx, vidx+1, vidx+2, vidx+3);
-	else if (getPrimType() == PrimitiveSet::QUADS)
+	else if (getPrimType() == osg::PrimitiveSet::QUADS)
 		AddQuad(vidx, vidx+1, vidx+2, vidx+3);
 }
 
@@ -850,7 +849,7 @@ void vtMesh::TransformVertices(const FMatrix4 &mat)
 // Override with ability to get OSG bounding box
 void vtMesh::GetBoundBox(FBox3 &box) const
 {
-	const BoundingBox &osg_box = getBound();
+	const osg::BoundingBox &osg_box = getBound();
 	s2v(osg_box, box);
 }
 
@@ -891,17 +890,17 @@ void vtMesh::GetBoundBox(FBox3 &box) const
  */
 void vtMesh::AddTri(int p0, int p1, int p2)
 {
-	UIntArray *uia = getIndices();
+	osg::UIntArray *uia = getIndices();
 	uia->push_back(p0);
 	uia->push_back(p1);
 	uia->push_back(p2);
 
-	if (getPrimType() == PrimitiveSet::TRIANGLES)
+	if (getPrimType() == osg::PrimitiveSet::TRIANGLES)
 	{
 		// OSG's "count" is the number of indices, not the number of primitives
 		getDrawArrays()->setCount(uia->size());
 	}
-	else if (getPrimType() == PrimitiveSet::TRIANGLE_STRIP || getPrimType() == PrimitiveSet::TRIANGLE_FAN)
+	else if (getPrimType() == osg::PrimitiveSet::TRIANGLE_STRIP || getPrimType() == osg::PrimitiveSet::TRIANGLE_FAN)
 	{
 		getDrawArrayLengths()->push_back(3);
 	}
@@ -916,7 +915,7 @@ void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 {
 	int len = 2;
 
-	UIntArray *uia = (UIntArray*) getVertexIndices();
+	osg::UIntArray *uia = (osg::UIntArray*) getVertexIndices();
 	uia->push_back(p0);
 	uia->push_back(p1);
 
@@ -970,11 +969,11 @@ void vtMesh::AddLine(int p0, int p1)
 	uia->push_back(p0);
 	uia->push_back(p1);
 
-	if (getPrimType() == PrimitiveSet::LINES)
+	if (getPrimType() == osg::PrimitiveSet::LINES)
 	{
 		getDrawArrays()->setCount(uia->size());
 	}
-	else if (getPrimType() == PrimitiveSet::LINE_STRIP)
+	else if (getPrimType() == osg::PrimitiveSet::LINE_STRIP)
 	{
 		getDrawArrayLengths()->push_back(2);
 	}
@@ -1020,7 +1019,7 @@ unsigned int vtMesh::GetNumVertices() const
  */
 void vtMesh::SetVtxPos(unsigned int i, const FPoint3 &p)
 {
-	Vec3 s;
+	osg::Vec3 s;
 	v2s(p, s);
 
 	if (i >= (int)getVerts()->size())
@@ -1060,7 +1059,7 @@ FPoint3 vtMesh::GetVtxPos(unsigned int i) const
  */
 void vtMesh::SetVtxNormal(unsigned int i, const FPoint3 &norm)
 {
-	Vec3 s;
+	osg::Vec3 s;
 	v2s(norm, s);
 
 	if (i >= (int) getNormals()->size())
@@ -1092,7 +1091,7 @@ void vtMesh::SetVtxColor(unsigned int i, const RGBAf &color)
 	if (!hasVertexColors())
 		return;
 
-	Vec4 s;
+	osg::Vec4 s;
 	v2s(color, s);
 
 	if (i >= (int) getColors()->size())
@@ -1129,7 +1128,7 @@ void vtMesh::SetVtxTexCoord(unsigned int i, const FPoint2 &uv)
 	if (!hasVertexTexCoords())
 		return;
 
-	Vec2 s;
+	osg::Vec2 s;
 	v2s(uv, s);
 
 	// Not sure whether I need this
@@ -1206,28 +1205,28 @@ void vtMesh::SetLineWidth(float fWidth)
  */
 void vtMesh::SetNormalsFromPrimitives()
 {
-	if (getPrimType() != PrimitiveSet::TRIANGLES &&
-		getPrimType() != PrimitiveSet::QUADS &&
-		getPrimType() != PrimitiveSet::TRIANGLE_STRIP &&
-		getPrimType() != PrimitiveSet::POLYGON)
+	if (getPrimType() != osg::PrimitiveSet::TRIANGLES &&
+		getPrimType() != osg::PrimitiveSet::QUADS &&
+		getPrimType() != osg::PrimitiveSet::TRIANGLE_STRIP &&
+		getPrimType() != osg::PrimitiveSet::POLYGON)
 		return;
 
 	osg::Vec3Array *norms = getNormals();
 	norms->resize(getVerts()->size());
-	Vec3Array::iterator itr;
+	osg::Vec3Array::iterator itr;
 	for (itr = norms->begin(); itr != norms->end(); itr++)
 		itr->set(0, 0, 0);
 
 	switch (getPrimType())
 	{
-	case PrimitiveSet::POINTS:		 break;
-	case PrimitiveSet::LINES:		 break;
-	case PrimitiveSet::LINE_STRIP:	 break;
-	case PrimitiveSet::TRIANGLES:	 _AddTriangleNormals(); break;
-	case PrimitiveSet::TRIANGLE_STRIP: _AddStripNormals(); break;
-	case PrimitiveSet::TRIANGLE_FAN: break;
-	case PrimitiveSet::QUADS:		 _AddQuadNormals(); break;
-	case PrimitiveSet::POLYGON:		 _AddPolyNormals(); break;
+	case osg::PrimitiveSet::POINTS:		 break;
+	case osg::PrimitiveSet::LINES:		 break;
+	case osg::PrimitiveSet::LINE_STRIP:	 break;
+	case osg::PrimitiveSet::TRIANGLES:	 _AddTriangleNormals(); break;
+	case osg::PrimitiveSet::TRIANGLE_STRIP: _AddStripNormals(); break;
+	case osg::PrimitiveSet::TRIANGLE_FAN: break;
+	case osg::PrimitiveSet::QUADS:		 _AddQuadNormals(); break;
+	case osg::PrimitiveSet::POLYGON:		 _AddPolyNormals(); break;
 	}
 
 	for (itr = norms->begin(); itr != norms->end(); itr++)
@@ -1236,7 +1235,7 @@ void vtMesh::SetNormalsFromPrimitives()
 
 void vtMesh::_AddStripNormals()
 {
-	DrawArrayLengths *dal = getDrawArrayLengths();
+	osg::DrawArrayLengths *dal = getDrawArrayLengths();
 	int prims = GetNumPrims();
 	int i, j, len, idx;
 	unsigned short v0 = 0, v1 = 0, v2 = 0;
@@ -1275,7 +1274,7 @@ void vtMesh::_AddStripNormals()
 
 void vtMesh::_AddPolyNormals()
 {
-	DrawArrayLengths *dal = getDrawArrayLengths();
+	osg::DrawArrayLengths *dal = getDrawArrayLengths();
 	if (!dal)
 		return;
 
@@ -1412,7 +1411,7 @@ vtTextMesh::vtTextMesh(osgText::Font *font, float fSize, bool bCenter)
 // Override with ability to get OSG bounding box
 void vtTextMesh::GetBoundBox(FBox3 &box) const
 {
-	const BoundingBox &osg_box = getBound();
+	const osg::BoundingBox &osg_box = getBound();
 	s2v(osg_box, box);
 }
 
@@ -1435,14 +1434,14 @@ void vtTextMesh::SetText(const std::wstring &text)
 
 void vtTextMesh::SetPosition(const FPoint3 &pos)
 {
-	Vec3 s;
+	osg::Vec3 s;
 	v2s(pos, s);
 	setPosition(s);
 }
 
 void vtTextMesh::SetRotation(const FQuat &rot)
 {
-	Quat q(rot.x, rot.y, rot.z, rot.w);
+	osg::Quat q(rot.x, rot.y, rot.z, rot.w);
 	setRotation(q);
 }
 

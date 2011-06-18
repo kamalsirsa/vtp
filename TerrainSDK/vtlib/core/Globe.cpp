@@ -16,8 +16,6 @@
 #include "vtdata/vtLog.h"	// for logging debug message
 #include "vtdata/DataPath.h"
 
-using namespace osg;
-
 // Helper
 vtTransform *WireAxis(RGBf color, float len);
 
@@ -103,7 +101,7 @@ void vtIcoGlobe::CreateMeshMat(int iTriangleCount)
 	vtMesh::PrimType prim_type;
 	if (m_style == GEODESIC)
 	{
-		prim_type = PrimitiveSet::TRIANGLE_STRIP;
+		prim_type = osg::PrimitiveSet::TRIANGLE_STRIP;
 		m_meshes = 20;
 		numvtx_per_mesh = (m_freq + 1) * (m_freq + 2) / 2;
 
@@ -112,7 +110,7 @@ void vtIcoGlobe::CreateMeshMat(int iTriangleCount)
 	}
 	else if (m_style == INDEPENDENT_GEODESIC)
 	{
-		prim_type = PrimitiveSet::TRIANGLES;
+		prim_type = osg::PrimitiveSet::TRIANGLES;
 
 		m_meshes = 20 * m_freq * m_freq;
 		m_subfreq = 1;	// 1 for now
@@ -123,7 +121,7 @@ void vtIcoGlobe::CreateMeshMat(int iTriangleCount)
 	}
 	else if (m_style == RIGHT_TRIANGLE || m_style == DYMAX_UNFOLD)
 	{
-		prim_type = PrimitiveSet::TRIANGLE_STRIP;
+		prim_type = osg::PrimitiveSet::TRIANGLE_STRIP;
 
 		m_meshes = (m_style == RIGHT_TRIANGLE) ? 20 : 22;
 		numvtx_per_mesh = 1 + 2 * ((int) pow((double)3, m_depth+1));
@@ -535,14 +533,14 @@ void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
 #if 0
 	// create simple hemisphere mesh
 	int res = 6;
-	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, 0, res*res*2);
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, 0, res*res*2);
 	FPoint3 scale(1.0f, 1.0f, 1.0f);
 	mesh->CreateEllipsoid(scale, res, true);
 #else
 	// create cylinder mesh instead
 	int res = 14;
 	int verts = res * 2;
-	vtMesh *mesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, 0, verts);
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, 0, verts);
 	mesh->CreateCylinder(1.0f, 1.0f, res, true, false, false);
 #endif
 
@@ -598,7 +596,7 @@ void vtIcoGlobe::BuildSphericalLines(GlobeLayer *glay, float fSize)
 	m_SurfaceGroup->addChild(geode);
 	glay->addChild(geode);
 
-	vtGeomFactory mf(geode, PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
+	vtGeomFactory mf(geode, osg::PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
 	{
 		const DLine2 &line = pSetLS->GetPolyLine(i);
@@ -622,7 +620,7 @@ void vtIcoGlobe::BuildSphericalPolygons(GlobeLayer *glay, float fSize)
 	m_SurfaceGroup->addChild(geode);
 	glay->addChild(geode);
 
-	vtGeomFactory mf(geode, PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
+	vtGeomFactory mf(geode, osg::PrimitiveSet::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
 	{
 		const DPolygon2 &poly = pSetPoly->GetPolygon(i);
@@ -644,7 +642,7 @@ void vtIcoGlobe::BuildFlatFeatures(GlobeLayer *glay, float fSize)
 			// create cylinder mesh
 			int res = 14;
 			int verts = res * 2;
-			m_cylinder = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, 0, verts);
+			m_cylinder = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, 0, verts);
 			m_cylinder->CreateCylinder(1.0f, 1.0f, res, true, false, false);
 		}
 
@@ -714,7 +712,7 @@ void vtIcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 	m_pRectangles->SetMaterials(m_coremats);
 	m_SurfaceGroup->addChild(m_pRectangles);
 
-	vtGeomFactory mf(m_pRectangles, PrimitiveSet::LINE_STRIP, 0, 30000, m_red);
+	vtGeomFactory mf(m_pRectangles, osg::PrimitiveSet::LINE_STRIP, 0, 30000, m_red);
 	for (unsigned int a = 0; a < pTerrainScene->NumTerrains(); a++)
 	{
 		vtTerrain *pTerr = pTerrainScene->GetTerrain(a);
@@ -1382,7 +1380,7 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 	m_pAxisGeom->SetMaterials(pMats);
 	m_pAxisGeom->SetEnabled(false);
 
-	vtMesh *pMesh = new vtMesh(PrimitiveSet::LINES, 0, 6);
+	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 6);
 	pMesh->AddVertex(FPoint3(0,2,0));
 	pMesh->AddVertex(FPoint3(0,-2,0));
 	pMesh->AddLine(0,1);
@@ -1663,7 +1661,7 @@ vtTransform *WireAxis(RGBf color, float len)
 	int index = pMats->AddRGBMaterial1(color, false, false);
 	geode->SetMaterials(pMats);
 
-	vtMesh *mesh = new vtMesh(PrimitiveSet::LINES, 0, 6);
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 6);
 	mesh->AddVertex(FPoint3(-len,0,0));
 	mesh->AddVertex(FPoint3( len,0,0));
 	mesh->AddVertex(FPoint3(0,-len,0));
@@ -1682,7 +1680,7 @@ vtTransform *WireAxis(RGBf color, float len)
 vtMovGeode *CreateSimpleEarth(const vtString &strDataPath)
 {
 	// create simple texture-mapped sphere
-	vtMesh *mesh = new vtMesh(PrimitiveSet::QUADS, VT_Normals | VT_TexCoords, 20*20*2);
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::QUADS, VT_Normals | VT_TexCoords, 20*20*2);
 	int res = 20;
 	FPoint3 size(1.0f, 1.0f, 1.0f);
 	mesh->CreateEllipsoid(FPoint3(0,0,0), size, res);

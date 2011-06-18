@@ -16,7 +16,6 @@
 #include "Terrain.h"
 #include "Fence3d.h"
 
-using namespace osg;
 
 vtFence3d::vtFence3d() : vtFence()
 {
@@ -34,7 +33,7 @@ void vtFence3d::Init()
 void vtFence3d::AddFencepost(const FPoint3 &p1, int iMatIdx)
 {
 	// create fencepost block
-	vtMesh *pPostMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 20);
+	vtMesh *pPostMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 20);
 
 	FPoint3 PostSize(m_Params.m_fPostWidth, m_Params.m_fPostHeight, m_Params.m_fPostDepth);
 	pPostMesh->CreateOptimizedBlock(PostSize);
@@ -94,7 +93,7 @@ void vtFence3d::AddWireMeshes(const FLine3 &p3)
 	{
 		float wire_height[3] = { 0.42f, 0.66f, 0.91f };
 
-		vtMesh *pWireMesh = new vtMesh(PrimitiveSet::LINE_STRIP, 0, npoints);
+		vtMesh *pWireMesh = new vtMesh(osg::PrimitiveSet::LINE_STRIP, 0, npoints);
 		int vidx = 0;
 		for (j = 0; j < 3; j++)
 		{
@@ -116,7 +115,7 @@ void vtFence3d::AddWireMeshes(const FLine3 &p3)
 //
 void vtFence3d::AddFlatConnectionMesh(const FLine3 &p3)
 {
-	vtMesh *pMesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords, 100);
+	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords, 100);
 
 	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
 	if (!desc)
@@ -158,7 +157,7 @@ void vtFence3d::AddFlatConnectionMesh(const FLine3 &p3)
 
 void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 {
-	vtMesh *pMesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords | VT_Normals, 100);
+	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords | VT_Normals, 100);
 
 	// a solid block, with top/left/right sides, made of 3 strips
 	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
@@ -333,7 +332,7 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 	//   N*2, for the end caps (or more if we have to tessellate)
 	//
 	int iEstimateVerts = npoints * (prof_points-1) * 2 + (prof_points * 2);
-	vtMesh *pMesh = new vtMesh(PrimitiveSet::TRIANGLE_STRIP,
+	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP,
 		VT_TexCoords | VT_Normals, iEstimateVerts);
 
 	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
@@ -515,7 +514,7 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 		bLeft = bRight = true;
 
 	// create extension prism(s)
-	vtMesh *pMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_Normals, 20);
+	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_Normals, 20);
 
 	FPoint2 size(m_Params.m_fPostWidth, m_Params.m_fPostWidth);
 	FPoint2 size1 = size * 0.9f;
@@ -526,9 +525,9 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 
 	vtMesh *pWiresLeft, *pWiresRight;
 	if (bLeft && bWires)
-		pWiresLeft = new vtMesh(PrimitiveSet::LINE_STRIP, 0, npoints*3);
+		pWiresLeft = new vtMesh(osg::PrimitiveSet::LINE_STRIP, 0, npoints*3);
 	if (bRight && bWires)
-		pWiresRight = new vtMesh(PrimitiveSet::LINE_STRIP, 0, npoints*3);
+		pWiresRight = new vtMesh(osg::PrimitiveSet::LINE_STRIP, 0, npoints*3);
 
 	for (i = 0; i < npoints; i++)
 	{
@@ -783,7 +782,7 @@ void vtFence3d::ShowBounds(bool bShow)
 		width += 1.0f;
 
 		// border around the feature
-		m_pHighlightMesh = new vtMesh(PrimitiveSet::LINE_STRIP, 0, npoints*2);
+		m_pHighlightMesh = new vtMesh(osg::PrimitiveSet::LINE_STRIP, 0, npoints*2);
 		FPoint3 sideways, up(0,1,0);
 		for (i = 0; i < npoints; i++)
 		{

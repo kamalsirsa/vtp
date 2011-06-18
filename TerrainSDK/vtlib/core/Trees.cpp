@@ -22,8 +22,6 @@
 #include "Light.h"
 #include "GeomUtil.h"	// for CreateBoundSphereGeom
 
-using namespace osg;
-
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters
 
 float vtPlantAppearance3d::s_fPlantScale = 1.0f;
@@ -180,7 +178,7 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows)
 	vtx_count += 8;
 
 	// make a mesh
-	vtMesh *pTreeMesh = new vtMesh(PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, vtx_count);
+	vtMesh *pTreeMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, vtx_count);
 
 	// size of textured, upright portion
 	float w2 = (m_width * fTreeScale) / 2.0f;

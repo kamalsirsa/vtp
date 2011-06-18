@@ -30,8 +30,6 @@
 #include <osgShadow/ShadowMap>
 #include <osgShadow/ShadowTexture>
 
-using namespace osg;
-
 // We use bits 1 and 2 of the node mask as shadow flags.
 const int ReceivesShadowTraversalMask = 0x1;
 const int CastsShadowTraversalMask = 0x2;
@@ -96,7 +94,7 @@ bool ContainsParticleSystem(osg::Node *node)
 void GetBoundSphere(osg::Node *node, FSphere &sphere, bool bGlobal)
 {
 	// Try to just get the bounds normally
-	BoundingSphere bs = node->getBound();
+	osg::BoundingSphere bs = node->getBound();
 
 	// Hack to support particle systems, which do not return a reliably
 	//  correct bounding sphere, because of the extra transform inside which
@@ -397,7 +395,7 @@ bool NodeExtension::GetCastShadow()
 void NodeExtension::GetBoundSphere(FSphere &sphere, bool bGlobal)
 {
 	// Try to just get the bounds normally
-	BoundingSphere bs = m_pNode->getBound();
+	osg::BoundingSphere bs = m_pNode->getBound();
 
 	// Hack to support particle systems, which do not return a reliably
 	//  correct bounding sphere, because of the extra transform inside which
@@ -429,12 +427,12 @@ void NodeExtension::GetBoundSphere(FSphere &sphere, bool bGlobal)
 
 void TransformExtension::Identity()
 {
-	m_pTransform->setMatrix(Matrix::identity());
+	m_pTransform->setMatrix(osg::Matrix::identity());
 }
 
 FPoint3 TransformExtension::GetTrans() const
 {
-	Vec3 v = m_pTransform->getMatrix().getTrans();
+	osg::Vec3 v = m_pTransform->getMatrix().getTrans();
 	return FPoint3(v[0], v[1], v[2]);
 }
 
@@ -450,47 +448,47 @@ void TransformExtension::SetTrans(const FPoint3 &pos)
 void TransformExtension::Translate1(const FPoint3 &pos)
 {
 	// OSG 0.8.43 and later
-	m_pTransform->postMult(Matrix::translate(pos.x, pos.y, pos.z));
+	m_pTransform->postMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void TransformExtension::TranslateLocal(const FPoint3 &pos)
 {
 	// OSG 0.8.43 and later
-	m_pTransform->preMult(Matrix::translate(pos.x, pos.y, pos.z));
+	m_pTransform->preMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void TransformExtension::Rotate2(const FPoint3 &axis, double angle)
 {
 	// OSG 0.8.43 and later
-	m_pTransform->postMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
+	m_pTransform->postMult(osg::Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void TransformExtension::RotateLocal(const FPoint3 &axis, double angle)
 {
 	// OSG 0.8.43 and later
-	m_pTransform->preMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
+	m_pTransform->preMult(osg::Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void TransformExtension::RotateParent(const FPoint3 &axis, double angle)
 {
 	// OSG 0.8.43 and later
-	Vec3 trans = m_pTransform->getMatrix().getTrans();
-	m_pTransform->postMult(Matrix::translate(-trans)*
-			  Matrix::rotate(angle, axis.x, axis.y, axis.z)*
-			  Matrix::translate(trans));
+	osg::Vec3 trans = m_pTransform->getMatrix().getTrans();
+	m_pTransform->postMult(osg::Matrix::translate(-trans)*
+			  osg::Matrix::rotate(angle, axis.x, axis.y, axis.z)*
+			  osg::Matrix::translate(trans));
 }
 
 FQuat TransformExtension::GetOrient() const
 {
-	const Matrix &xform = m_pTransform->getMatrix();
-	Quat q;
+	const osg::Matrix &xform = m_pTransform->getMatrix();
+	osg::Quat q;
 	xform.get(q);
 	return FQuat(q.x(), q.y(), q.z(), q.w());
 }
 
 FPoint3 TransformExtension::GetDirection() const
 {
-	const Matrix &xform = m_pTransform->getMatrix();
+	const osg::Matrix &xform = m_pTransform->getMatrix();
 	const osg_matrix_value *ptr = xform.ptr();
 	return FPoint3(-ptr[8], -ptr[9], -ptr[10]);
 }
@@ -519,12 +517,12 @@ void TransformExtension::SetDirection(const FPoint3 &point, bool bPitch)
 void TransformExtension::Scale3(float x, float y, float z)
 {
 	// OSG 0.8.43 and later
-	m_pTransform->preMult(Matrix::scale(x, y, z));
+	m_pTransform->preMult(osg::Matrix::scale(x, y, z));
 }
 
 void TransformExtension::SetTransform1(const FMatrix4 &mat)
 {
-	Matrix mat_osg;
+	osg::Matrix mat_osg;
 
 	ConvertMatrix4(&mat, &mat_osg);
 
@@ -534,7 +532,7 @@ void TransformExtension::SetTransform1(const FMatrix4 &mat)
 
 void TransformExtension::GetTransform1(FMatrix4 &mat) const
 {
-	const Matrix &xform = m_pTransform->getMatrix();
+	const osg::Matrix &xform = m_pTransform->getMatrix();
 	ConvertMatrix4(&xform, &mat);
 }
 
@@ -693,7 +691,7 @@ bool MultiTextureIsEnabled(osg::Node *onode, vtMultiTexture *mt)
 FSphere GetGlobalBoundSphere(osg::Node *node)
 {
 	// Try to just get the bounds normally
-	BoundingSphere bs = node->getBound();
+	osg::BoundingSphere bs = node->getBound();
 
 	// Hack to support particle systems, which do not return a reliably
 	//  correct bounding sphere, because of the extra transform inside which
@@ -739,7 +737,7 @@ bool NodeIsEnabled(osg::Node *node)
 }
 
 // Walk an OSG scenegraph looking for Texture states, and disable mipmap.
-class MipmapVisitor : public NodeVisitor
+class MipmapVisitor : public osg::NodeVisitor
 {
 public:
 	MipmapVisitor() : NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
@@ -750,15 +748,15 @@ public:
 			osg::Geometry *geo = dynamic_cast<osg::Geometry *>(geode.getDrawable(i));
 			if (!geo) continue;
 
-			StateSet *stateset = geo->getStateSet();
+			osg::StateSet *stateset = geo->getStateSet();
 			if (!stateset) continue;
 
-			StateAttribute *state = stateset->getTextureAttribute(0, StateAttribute::TEXTURE);
+			osg::StateAttribute *state = stateset->getTextureAttribute(0, osg::StateAttribute::TEXTURE);
 			if (!state) continue;
 
-			Texture2D *texture = dynamic_cast<Texture2D *>(state);
+			osg::Texture2D *texture = dynamic_cast<osg::Texture2D *>(state);
 			if (texture)
-				texture->setFilter(Texture::MIN_FILTER, Texture::LINEAR);
+				texture->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
 		}
 		NodeVisitor::apply(geode);
 	}
@@ -767,7 +765,7 @@ public:
 // Walk an OSG scenegraph looking for geodes with textures that have an alpha
 //	map, and enable alpha blending for them.  I cannot imagine why this is not
 //  the default OSG behavior, but since it isn't, we have this visitor.
-class AlphaVisitor : public NodeVisitor
+class AlphaVisitor : public osg::NodeVisitor
 {
 public:
 	AlphaVisitor() : NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
@@ -778,22 +776,22 @@ public:
 			osg::Geometry *geo = dynamic_cast<osg::Geometry *>(geode.getDrawable(i));
 			if (!geo) continue;
 
-			StateSet *stateset = geo->getStateSet();
+			osg::StateSet *stateset = geo->getStateSet();
 			if (!stateset) continue;
 
-			StateAttribute *state = stateset->getTextureAttribute(0, StateAttribute::TEXTURE);
+			osg::StateAttribute *state = stateset->getTextureAttribute(0, osg::StateAttribute::TEXTURE);
 			if (!state) continue;
 
-			Texture2D *texture = dynamic_cast<Texture2D *>(state);
+			osg::Texture2D *texture = dynamic_cast<osg::Texture2D *>(state);
 			if (!texture) continue;
 
-			Image *image = texture->getImage();
+			osg::Image *image = texture->getImage();
 			if (!image) continue;
 
 			if (image->isImageTranslucent())
 			{
-				stateset->setAttributeAndModes(new BlendFunc, StateAttribute::ON);
-				stateset->setRenderingHint(StateSet::TRANSPARENT_BIN);
+				stateset->setAttributeAndModes(new osg::BlendFunc, osg::StateAttribute::ON);
+				stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 			}
 		}
 		NodeVisitor::apply(geode);
@@ -869,7 +867,7 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 #if VTDEBUG
 	VTLOG("[");
 #endif
-	Node *node = osgDB::readNodeFile((const char *)fname_local);
+	osg::Node *node = osgDB::readNodeFile((const char *)fname_local);
 #if VTDEBUG
 	VTLOG("]");
 #endif
@@ -881,8 +879,8 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 	// that we load, otherwise when they are scaled, the vertex normals
 	// will cause strange lighting.  Fortunately, we only need to create
 	// a single State object which is shared by all loaded models.
-	StateSet *stateset = node->getOrCreateStateSet();
-	stateset->setMode(GL_NORMALIZE, StateAttribute::ON);
+	osg::StateSet *stateset = node->getOrCreateStateSet();
+	stateset->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
 
 	// For some reason, some file readers (at least .obj) will load models with
 	//  alpha textures, but _not_ enable blending for them or put them in the
@@ -911,7 +909,7 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 
 	osg::MatrixTransform *transform = new osg::MatrixTransform;
 	transform->setName("corrective 90 degrees");
-	transform->setMatrix(osg::Matrix::rotate(fRotation, Vec3(1,0,0)));
+	transform->setMatrix(osg::Matrix::rotate(fRotation, osg::Vec3(1,0,0)));
 	transform->addChild(node);
 	// it's not going to change, so tell OSG that it can be optimized
 	transform->setDataVariance(osg::Object::STATIC);
@@ -1008,19 +1006,19 @@ void vtFog::SetFog(bool bOn, float start, float end, const RGBf &color, osg::Fog
 	osg::StateSet *set = getOrCreateStateSet();
 	if (bOn)
 	{
-		m_pFog = new Fog;
+		m_pFog = new osg::Fog;
 		m_pFog->setMode(eType);
 		m_pFog->setDensity(0.25f);	// not used for linear
 		m_pFog->setStart(start);
 		m_pFog->setEnd(end);
 		m_pFog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
 
-		set->setAttributeAndModes(m_pFog.get(), StateAttribute::OVERRIDE | StateAttribute::ON);
+		set->setAttributeAndModes(m_pFog.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
 	}
 	else
 	{
 		// turn fog off
-		set->setMode(GL_FOG, StateAttribute::OFF);
+		set->setMode(GL_FOG, osg::StateAttribute::OFF);
 	}
 }
 
@@ -1440,10 +1438,10 @@ void vtGeode::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 
 	// In fact, we need to avoid lighting the text, yet text messes with
 	//  own StateSet, so we can't set it there.  We set it here.
-	StateSet *sset = getOrCreateStateSet();
-	sset->setMode(GL_LIGHTING, StateAttribute::OFF);
+	osg::StateSet *sset = getOrCreateStateSet();
+	sset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	// also not useful to see the back of text (mirror writing)
-	sset->setMode(GL_CULL_FACE, StateAttribute::ON);
+	sset->setMode(GL_CULL_FACE, osg::StateAttribute::ON);
 }
 
 void vtGeode::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
@@ -1468,18 +1466,18 @@ void vtGeode::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 		if (!pMat->GetLighting())
 		{
 			// unless it's using vertex colors...
-			Geometry::AttributeBinding bd = pMesh->getColorBinding();
-			if (bd != Geometry::BIND_PER_VERTEX)
+			osg::Geometry::AttributeBinding bd = pMesh->getColorBinding();
+			if (bd != osg::Geometry::BIND_PER_VERTEX)
 			{
 				// not lit, not vertex colors
 				// here is a sneaky way of forcing OSG to use the diffuse
 				// color for the unlit color
 
 				// This will leave the original color array alllocated in the vtMesh
-				Vec4Array *pColors = new Vec4Array;
+				osg::Vec4Array *pColors = new osg::Vec4Array;
 				pColors->push_back(pMat->m_pMaterial->getDiffuse(FAB));
 				pMesh->setColorArray(pColors);
-				pMesh->setColorBinding(Geometry::BIND_OVERALL);
+				pMesh->setColorBinding(osg::Geometry::BIND_OVERALL);
 			}
 		}
 	}
@@ -1501,7 +1499,7 @@ vtMesh *vtGeode::GetMesh(int i) const
 {
 	// It is valid to return a non-const pointer to the mesh, since the mesh
 	//  can be modified entirely independently of the geometry.
-	Drawable *draw = const_cast<Drawable *>( getDrawable(i) );
+	osg::Drawable *draw = const_cast<osg::Drawable *>( getDrawable(i) );
 	vtMesh *mesh = dynamic_cast<vtMesh*>(draw);
 	return mesh;
 }
@@ -1510,7 +1508,7 @@ vtTextMesh *vtGeode::GetTextMesh(int i) const
 {
 	// It is valid to return a non-const pointer to the mesh, since the mesh
 	//  can be modified entirely independently of the geometry.
-	Drawable *draw = const_cast<Drawable *>( getDrawable(i) );
+	osg::Drawable *draw = const_cast<osg::Drawable *>( getDrawable(i) );
 	vtTextMesh *mesh = dynamic_cast<vtTextMesh*>(draw);
 	return mesh;
 }
@@ -1571,7 +1569,7 @@ OsgDynMesh::OsgDynMesh()
 	// The following line code is a workaround provided by Robert Osfield himself
 	// create an empty stateset, to force the traversers
 	// to nest any state above it in the inheritance path.
-	setStateSet(new StateSet);
+	setStateSet(new osg::StateSet);
 	// Stop osgViewer::Frame from returning before this node
 	// was been fully rendered
 	setDataVariance(osg::Object::DYNAMIC);
