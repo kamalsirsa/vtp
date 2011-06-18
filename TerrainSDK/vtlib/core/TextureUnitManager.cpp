@@ -38,6 +38,8 @@ void vtTextureUnitManager::Initialise()
 	// The ref_ptrs will ensure all these things will be destroyed when this routine returns
 	// although OSG may spit out a warning about destroying a valid window!
 	osg::ref_ptr<osg::GraphicsContext::Traits> pTraits = new osg::GraphicsContext::Traits;
+	pTraits->width = 1;
+	pTraits->height = 1;
 	osg::ref_ptr<osg::GraphicsContext> pGraphicsContext = osg::GraphicsContext::createGraphicsContext(pTraits.get());
 	pGraphicsContext->realize();
 	pGraphicsContext->makeCurrent();
