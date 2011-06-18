@@ -34,6 +34,11 @@
 #include "ScenarioParamsDialog.h"
 #define NTILES 4
 
+#if defined(__WXGTK__) || defined(__WXMAC__)
+#  include "dummy_32x18.xpm"
+#endif
+
+
 //---------------------------------------------------------------------------
 
 /**

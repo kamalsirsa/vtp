@@ -36,7 +36,7 @@
 
 // WDR: event table for LODDlg
 
-BEGIN_EVENT_TABLE(LODDlg,PagingDlgBase)
+BEGIN_EVENT_TABLE(LODDlg, PagingDlgBase)
 	EVT_INIT_DIALOG (LODDlg::OnInitDialog)
 	EVT_SPIN_UP( ID_TARGET, LODDlg::OnSpinTargetUp )
 	EVT_SPIN_DOWN( ID_TARGET, LODDlg::OnSpinTargetDown )

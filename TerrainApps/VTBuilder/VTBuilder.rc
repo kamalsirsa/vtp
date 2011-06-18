@@ -53,6 +53,9 @@ image_resample	BITMAP "bitmaps/image_resample.bmp"
 
 twr_edit		BITMAP "bitmaps/twr_edit.bmp"
 
+// Placeholder for dynamic color buttons
+dummy_32x18	 BITMAP "bitmaps/dummy_32x18.bmp"
+
 vtbuilder ICON "icons/VTBuilder.ico"
 
 file1	  ICON "icons/file1.ico"

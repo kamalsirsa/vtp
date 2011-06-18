@@ -112,8 +112,6 @@ BuilderView::BuilderView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 	// Cursors are a little messy, since support is not even across platforms
 #if defined(__WXMSW__)
 	m_pCursorPan = new wxCursor(_T("cursors/panhand.cur"), wxBITMAP_TYPE_CUR);
-//#elif __WXMOTIF__
-//	m_pCursorPan = new wxCursor("cursors/panhand.xbm", wxBITMAP_TYPE_XBM);
 #else
 	// the predefined "hand" cursor isn't quite correct, since it is a image
 	// of a hand with a pointing finger, not a closed, grasping hand.

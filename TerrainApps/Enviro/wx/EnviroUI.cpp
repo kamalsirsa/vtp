@@ -364,19 +364,19 @@ LocationDlgBase::LocationDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer99->Add( 7, 14, 0, wxALIGN_CENTER, 5 );
 	
-	m_reset = new wxBitmapButton( this, ID_RESET, wxBitmap( wxT("bitmap/dummy_16x15.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_reset = new wxBitmapButton( this, ID_RESET, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_reset->SetDefault(); 
 	bSizer99->Add( m_reset, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_stop = new wxBitmapButton( this, ID_STOP, wxBitmap( wxT("bitmap/dummy_16x15.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_stop = new wxBitmapButton( this, ID_STOP, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_stop->SetDefault(); 
 	bSizer99->Add( m_stop, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_record1 = new wxBitmapButton( this, ID_RECORD1, wxBitmap( wxT("bitmap/dummy_16x15.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_record1 = new wxBitmapButton( this, ID_RECORD1, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_record1->SetDefault(); 
 	bSizer99->Add( m_record1, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_play = new wxBitmapButton( this, ID_PLAY, wxBitmap( wxT("bitmap/dummy_16x15.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_play = new wxBitmapButton( this, ID_PLAY, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_play->SetDefault(); 
 	bSizer99->Add( m_play, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
@@ -1544,7 +1544,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_text27->Wrap( -1 );
 	bSizer62->Add( m_text27, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( TParamsPanel4, ID_COLOR3, wxBitmap( wxT("bitmap/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color3 = new wxStaticBitmap( TParamsPanel4, ID_COLOR3, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer62->Add( m_color3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_bgcolor = new wxButton( TParamsPanel4, ID_BGCOLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -2742,7 +2742,7 @@ VehicleDlgBase::VehicleDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_text165->Wrap( -1 );
 	bSizer256->Add( m_text165, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( wxT("bitmap/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer256->Add( m_color3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_vehicle_color = new wxButton( this, ID_SET_VEHICLE_COLOR, wxT("Set"), wxDefaultPosition, wxSize( 40,-1 ), 0 );
@@ -2809,7 +2809,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_radio1->SetValue( true ); 
 	bSizer201->Add( m_radio1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_object_geom_color = new wxBitmapButton( StylePanel1, ID_OBJECT_GEOM_COLOR, wxBitmap( wxT("bitmap/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_object_geom_color = new wxBitmapButton( StylePanel1, ID_OBJECT_GEOM_COLOR, wxNullBitmap, wxDefaultPosition, wxSize( 40,26 ), wxBU_AUTODRAW );
 	m_object_geom_color->SetDefault(); 
 	bSizer201->Add( m_object_geom_color, 0, wxALIGN_CENTER, 5 );
 	
@@ -2900,7 +2900,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_radio2->SetValue( true ); 
 	bSizer208->Add( m_radio2, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_line_geom_color = new wxBitmapButton( StylePanel2, ID_LINE_GEOM_COLOR, wxBitmap( wxT("bitmap/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_line_geom_color = new wxBitmapButton( StylePanel2, ID_LINE_GEOM_COLOR, wxNullBitmap, wxDefaultPosition, wxSize( 40,26 ), wxBU_AUTODRAW );
 	m_line_geom_color->SetDefault(); 
 	bSizer208->Add( m_line_geom_color, 0, wxALIGN_CENTER, 5 );
 	
@@ -3000,7 +3000,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_radio3->SetValue( true ); 
 	bSizer216->Add( m_radio3, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text_color = new wxBitmapButton( StylePanel3, ID_TEXT_COLOR, wxBitmap( wxT("bitmap/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_text_color = new wxBitmapButton( StylePanel3, ID_TEXT_COLOR, wxNullBitmap, wxDefaultPosition, wxSize( 40,26 ), wxBU_AUTODRAW );
 	m_text_color->SetDefault(); 
 	bSizer216->Add( m_text_color, 0, wxALIGN_CENTER, 5 );
 	
@@ -3217,56 +3217,56 @@ PagingDlgBase::PagingDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	wxBoxSizer* bSizer290;
 	bSizer290 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_staticbitmap1 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( wxT("bitmap/dummy14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap1 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap1, 0, wxALIGN_CENTER, 0 );
 	
 	m_text190 = new wxStaticText( SurfaceLODPanel, ID_TEXT, wxT("16"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text190->Wrap( 0 );
 	bSizer290->Add( m_text190, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap2 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( wxT("bitmap/dummy14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap2 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap2, 0, wxALIGN_CENTER, 5 );
 	
 	m_text191 = new wxStaticText( SurfaceLODPanel, ID_TEXT, wxT("32"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text191->Wrap( 0 );
 	bSizer290->Add( m_text191, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap3 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( wxT("bitmap/dummy14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap3 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap3, 0, wxALIGN_CENTER, 5 );
 	
 	m_text192 = new wxStaticText( SurfaceLODPanel, ID_TEXT, wxT("64"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text192->Wrap( 0 );
 	bSizer290->Add( m_text192, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap4 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( wxT("bitmap/dummy14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap4 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap4, 0, wxALIGN_CENTER, 5 );
 	
 	m_text193 = new wxStaticText( SurfaceLODPanel, ID_TEXT, wxT("128"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text193->Wrap( 0 );
 	bSizer290->Add( m_text193, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap5 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( wxT("bitmap/dummy14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap5 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap5, 0, wxALIGN_CENTER, 5 );
 	
 	m_text194 = new wxStaticText( SurfaceLODPanel, ID_TEXT, wxT("256"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text194->Wrap( 0 );
 	bSizer290->Add( m_text194, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap6 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( wxT("bitmap/dummy14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap6 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap6, 0, wxALIGN_CENTER, 5 );
 	
 	m_text195 = new wxStaticText( SurfaceLODPanel, ID_TEXT, wxT("512"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text195->Wrap( 0 );
 	bSizer290->Add( m_text195, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap7 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( wxT("bitmap/dummy14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap7 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap7, 0, wxALIGN_CENTER, 5 );
 	
 	m_text196 = new wxStaticText( SurfaceLODPanel, ID_TEXT, wxT("1k"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text196->Wrap( 0 );
 	bSizer290->Add( m_text196, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap8 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( wxT("bitmap/dummy14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap8 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap8, 0, wxALIGN_CENTER, 5 );
 	
 	m_text197 = new wxStaticText( SurfaceLODPanel, ID_TEXT, wxT("2k"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -3473,7 +3473,7 @@ EphemDlgBase::EphemDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_text207->Wrap( -1 );
 	bSizer306->Add( m_text207, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( wxT("bitmap/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer306->Add( m_color3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_bgcolor = new wxButton( this, ID_BGCOLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );

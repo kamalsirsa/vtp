@@ -23,6 +23,10 @@
 #include "vtdata/FilePath.h"
 #include "vtui/Helper.h"
 
+#if defined(__WXGTK__) || defined(__WXMAC__)
+#  include "dummy_32x18.xpm"
+#endif
+
 // WDR: class implementations
 
 //----------------------------------------------------------------------------

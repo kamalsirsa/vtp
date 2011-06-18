@@ -102,10 +102,10 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	// Work around the limitation of wxFormDesigner which can only load bitmaps
 	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
 	//  want them in the resources (on Windows) or as xpm (on Linux)
-	m_reset->SetBitmapLabel(wxBITMAP(play_back));
-	m_stop->SetBitmapLabel(wxBITMAP(play_stop));
-	m_record1->SetBitmapLabel(wxBITMAP(play_record1));
-	m_play->SetBitmapLabel(wxBITMAP(play_play));
+	m_reset->SetBitmapLabel(	wxBITMAP(play_back));
+	m_stop->SetBitmapLabel(		wxBITMAP(play_stop));
+	m_record1->SetBitmapLabel(	wxBITMAP(play_record1));
+	m_play->SetBitmapLabel(		wxBITMAP(play_play));
 
 	// Work around wxFormDesigner's lack of support for limiting to smallest size
 	GetSizer()->SetSizeHints(this);

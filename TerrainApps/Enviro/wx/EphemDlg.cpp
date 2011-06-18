@@ -23,6 +23,10 @@
 #include "EnviroGUI.h"    // for g_App
 #include "vtui/Helper.h"    // for FillWithColor
 
+#if defined(__WXGTK__) || defined(__WXMAC__)
+#  include "dummy_32x18.xpm"
+#endif
+
 // WDR: class implementations
 
 //----------------------------------------------------------------------------

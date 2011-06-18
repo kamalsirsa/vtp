@@ -52,7 +52,9 @@ treeview	 BITMAP "bitmap/treeview.bmp"
 grid		 BITMAP "bitmap/grid.bmp"
 refresh		 BITMAP "bitmap/refresh.bmp"
 
-// Bitmap used in Style dialog
+// Placeholders for dynamic color buttons
+dummy14		 BITMAP "bitmap/dummy14.bmp"
+dummy_16x15	 BITMAP "bitmap/dummy_16x15.bmp"
 dummy_32x18	 BITMAP "bitmap/dummy_32x18.bmp"
 
 // Bitmaps used in Locations dialog

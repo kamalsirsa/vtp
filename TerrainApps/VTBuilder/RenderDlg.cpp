@@ -23,6 +23,10 @@
 #include "vtui/ColorMapDlg.h"
 #include "vtui/Helper.h"		// for AddFilenamesToChoice
 
+#if defined(__WXGTK__) || defined(__WXMAC__)
+#  include "dummy_32x18.xpm"
+#endif
+
 // WDR: class implementations
 
 //----------------------------------------------------------------------------

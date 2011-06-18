@@ -132,7 +132,7 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_text6->Wrap( 0 );
 	bSizer315->Add( m_text6, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color1 = new wxStaticBitmap( m_panel1, ID_COLOR1, wxBitmap( wxT("../../TerrainApps/VTBuilder/bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color1 = new wxStaticBitmap( m_panel1, ID_COLOR1, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer315->Add( m_color1, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_color = new wxButton( m_panel1, ID_SET_COLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -218,7 +218,7 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_text151->Wrap( 0 );
 	bSizer3261->Add( m_text151, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color21 = new wxStaticBitmap( m_panel3, ID_COLOR2, wxBitmap( wxT("../../TerrainApps/VTBuilder/bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color21 = new wxStaticBitmap( m_panel3, ID_COLOR2, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer3261->Add( m_color21, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_color11 = new wxButton( m_panel3, ID_SET_COLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
