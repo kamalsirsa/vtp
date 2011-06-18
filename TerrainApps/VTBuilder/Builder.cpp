@@ -1607,6 +1607,7 @@ void Builder::ReadDataPath()
 	{
 		VTLOG1("  Not found, using default of '../Data/'.\n");
 		vtGetDataPath().push_back(vtString("../Data/"));
+		vtGetDataPath().push_back(vtString("../../../Data/"));
 	}
 }
 
