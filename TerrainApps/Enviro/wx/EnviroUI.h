@@ -8,6 +8,8 @@
 #ifndef __EnviroUI__
 #define __EnviroUI__
 
+#include <wx/intl.h>
+
 #include <wx/string.h>
 #include <wx/stattext.h>
 #include <wx/gdicmn.h>
@@ -1231,7 +1233,7 @@ class PerformanceMonitorDlgBase : public wxDialog
 	
 	public:
 		
-		PerformanceMonitorDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Performance Monitor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
+		PerformanceMonitorDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Performance Monitor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
 		~PerformanceMonitorDlgBase();
 	
 };

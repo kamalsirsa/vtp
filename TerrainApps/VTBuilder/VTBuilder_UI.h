@@ -8,6 +8,8 @@
 #ifndef __VTBuilder_UI__
 #define __VTBuilder_UI__
 
+#include <wx/intl.h>
+
 class NodeDlgView;
 
 #include <wx/string.h>

@@ -24,19 +24,19 @@ SceneGraphDlgBase::SceneGraphDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer79;
 	bSizer79 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_enabled = new wxCheckBox( this, ID_ENABLED, wxT("Enabled"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_enabled = new wxCheckBox( this, ID_ENABLED, _("Enabled"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_enabled->SetValue(true); 
 	bSizer79->Add( m_enabled, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_zoomto = new wxButton( this, ID_ZOOMTO, wxT("Zoom To"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	m_zoomto = new wxButton( this, ID_ZOOMTO, _("Zoom To"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	m_zoomto->SetDefault(); 
 	bSizer79->Add( m_zoomto, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_refresh = new wxButton( this, ID_REFRESH, wxT("Refresh"), wxDefaultPosition, wxSize( 55,-1 ), 0 );
+	m_refresh = new wxButton( this, ID_REFRESH, _("Refresh"), wxDefaultPosition, wxSize( 55,-1 ), 0 );
 	m_refresh->SetDefault(); 
 	bSizer79->Add( m_refresh, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_log = new wxButton( this, ID_LOG, wxT("Log"), wxDefaultPosition, wxSize( 55,-1 ), 0 );
+	m_log = new wxButton( this, ID_LOG, _("Log"), wxDefaultPosition, wxSize( 55,-1 ), 0 );
 	m_log->SetDefault(); 
 	bSizer79->Add( m_log, 0, wxALL, 5 );
 	
@@ -59,12 +59,12 @@ PropPanelBase::PropPanelBase( wxWindow* parent, wxWindowID id, const wxPoint& po
 	bSizer80 = new wxBoxSizer( wxVERTICAL );
 	
 	wxStaticBoxSizer* sbSizer8;
-	sbSizer8 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Item") ), wxVERTICAL );
+	sbSizer8 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Item") ), wxVERTICAL );
 	
 	wxBoxSizer* bSizer81;
 	bSizer81 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text1 = new wxStaticText( this, ID_TEXT, wxT("Item Name:"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	m_text1 = new wxStaticText( this, ID_TEXT, _("Item Name:"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	m_text1->Wrap( -1 );
 	bSizer81->Add( m_text1, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -76,7 +76,7 @@ PropPanelBase::PropPanelBase( wxWindow* parent, wxWindowID id, const wxPoint& po
 	wxBoxSizer* bSizer82;
 	bSizer82 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text2 = new wxStaticText( this, ID_TEXT, wxT("Type:"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	m_text2 = new wxStaticText( this, ID_TEXT, _("Type:"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	m_text2->Wrap( 0 );
 	bSizer82->Add( m_text2, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -90,7 +90,7 @@ PropPanelBase::PropPanelBase( wxWindow* parent, wxWindowID id, const wxPoint& po
 	wxBoxSizer* bSizer83;
 	bSizer83 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text3 = new wxStaticText( this, ID_TEXT, wxT("Subtype:"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	m_text3 = new wxStaticText( this, ID_TEXT, _("Subtype:"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	m_text3->Wrap( 0 );
 	bSizer83->Add( m_text3, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -104,19 +104,19 @@ PropPanelBase::PropPanelBase( wxWindow* parent, wxWindowID id, const wxPoint& po
 	wxBoxSizer* bSizer84;
 	bSizer84 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text4 = new wxStaticText( this, ID_TEXT, wxT("Tags:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text4 = new wxStaticText( this, ID_TEXT, _("Tags:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text4->Wrap( 0 );
 	bSizer84->Add( m_text4, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_addtag = new wxButton( this, ID_ADDTAG, wxT("&Add"), wxDefaultPosition, wxSize( 38,-1 ), 0 );
+	m_addtag = new wxButton( this, ID_ADDTAG, _("&Add"), wxDefaultPosition, wxSize( 38,-1 ), 0 );
 	m_addtag->SetDefault(); 
 	bSizer84->Add( m_addtag, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_removetag = new wxButton( this, ID_REMOVETAG, wxT("&Remove"), wxDefaultPosition, wxSize( 62,-1 ), 0 );
+	m_removetag = new wxButton( this, ID_REMOVETAG, _("&Remove"), wxDefaultPosition, wxSize( 62,-1 ), 0 );
 	m_removetag->SetDefault(); 
 	bSizer84->Add( m_removetag, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_edittag = new wxButton( this, ID_EDITTAG, wxT("&Edit"), wxDefaultPosition, wxSize( 42,-1 ), 0 );
+	m_edittag = new wxButton( this, ID_EDITTAG, _("&Edit"), wxDefaultPosition, wxSize( 42,-1 ), 0 );
 	m_edittag->SetDefault(); 
 	bSizer84->Add( m_edittag, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -142,12 +142,12 @@ ModelPanelBase::ModelPanelBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	bSizer85 = new wxBoxSizer( wxVERTICAL );
 	
 	wxStaticBoxSizer* sbSizer9;
-	sbSizer9 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Model") ), wxVERTICAL );
+	sbSizer9 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Model") ), wxVERTICAL );
 	
 	wxBoxSizer* bSizer86;
 	bSizer86 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text5 = new wxStaticText( this, ID_TEXT, wxT("Filename:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text5 = new wxStaticText( this, ID_TEXT, _("Filename:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text5->Wrap( 0 );
 	bSizer86->Add( m_text5, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -159,7 +159,7 @@ ModelPanelBase::ModelPanelBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	wxBoxSizer* bSizer87;
 	bSizer87 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text6 = new wxStaticText( this, ID_TEXT, wxT("Visible at distance:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text6 = new wxStaticText( this, ID_TEXT, _("Visible at distance:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text6->Wrap( -1 );
 	bSizer87->Add( m_text6, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -171,14 +171,14 @@ ModelPanelBase::ModelPanelBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	wxBoxSizer* bSizer88;
 	bSizer88 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text7 = new wxStaticText( this, ID_TEXT, wxT("Scale:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text7 = new wxStaticText( this, ID_TEXT, _("Scale:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text7->Wrap( 0 );
 	bSizer88->Add( m_text7, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_scale = new wxTextCtrl( this, ID_SCALE, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_PROCESS_ENTER );
 	bSizer88->Add( m_scale, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text8 = new wxStaticText( this, ID_TEXT, wxT("(meters/unit)"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text8 = new wxStaticText( this, ID_TEXT, _("(meters/unit)"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text8->Wrap( 0 );
 	bSizer88->Add( m_text8, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -187,7 +187,7 @@ ModelPanelBase::ModelPanelBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 	wxBoxSizer* bSizer89;
 	bSizer89 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text9 = new wxStaticText( this, ID_TEXT, wxT("Status:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text9 = new wxStaticText( this, ID_TEXT, _("Status:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text9->Wrap( 0 );
 	bSizer89->Add( m_text9, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 	
@@ -217,7 +217,7 @@ TagDlgBase::TagDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, 
 	wxBoxSizer* bSizer91;
 	bSizer91 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text10 = new wxStaticText( this, ID_TEXT, wxT("Tag Name"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text10 = new wxStaticText( this, ID_TEXT, _("Tag Name"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text10->Wrap( -1 );
 	bSizer91->Add( m_text10, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -231,7 +231,7 @@ TagDlgBase::TagDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, 
 	wxBoxSizer* bSizer92;
 	bSizer92 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text11 = new wxStaticText( this, ID_TEXT, wxT("Tag Value"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text11 = new wxStaticText( this, ID_TEXT, _("Tag Value"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text11->Wrap( -1 );
 	bSizer92->Add( m_text11, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -243,11 +243,11 @@ TagDlgBase::TagDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, 
 	wxBoxSizer* bSizer93;
 	bSizer93 = new wxBoxSizer( wxHORIZONTAL );
 	
-	wxID_OK = new wxButton( this, wxID_ANY, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	wxID_OK = new wxButton( this, wxID_ANY, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
 	wxID_OK->SetDefault(); 
 	bSizer93->Add( wxID_OK, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxID_CANCEL = new wxButton( this, wxID_ANY, wxT("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+	wxID_CANCEL = new wxButton( this, wxID_ANY, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
 	wxID_CANCEL->SetDefault(); 
 	bSizer93->Add( wxID_CANCEL, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -274,11 +274,11 @@ LightDlgBase::LightDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	wxBoxSizer* bSizer95;
 	bSizer95 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text12 = new wxStaticText( this, ID_TEXT, wxT("Light:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text12 = new wxStaticText( this, ID_TEXT, _("Light:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text12->Wrap( 0 );
 	bSizer95->Add( m_text12, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_lightChoices[] = { wxT("Default") };
+	wxString m_lightChoices[] = { _("Default") };
 	int m_lightNChoices = sizeof( m_lightChoices ) / sizeof( wxString );
 	m_light = new wxChoice( this, ID_LIGHT, wxDefaultPosition, wxSize( 100,-1 ), m_lightNChoices, m_lightChoices, 0 );
 	m_light->SetSelection( 0 );
@@ -291,7 +291,7 @@ LightDlgBase::LightDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	fgSizer5->SetFlexibleDirection( wxBOTH );
 	fgSizer5->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_text13 = new wxStaticText( this, ID_TEXT, wxT("Ambient"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text13 = new wxStaticText( this, ID_TEXT, _("Ambient"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text13->Wrap( 0 );
 	fgSizer5->Add( m_text13, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -299,7 +299,7 @@ LightDlgBase::LightDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_ambient->SetDefault(); 
 	fgSizer5->Add( m_ambient, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text14 = new wxStaticText( this, ID_TEXT, wxT("Diffuse"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text14 = new wxStaticText( this, ID_TEXT, _("Diffuse"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text14->Wrap( 0 );
 	fgSizer5->Add( m_text14, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -312,7 +312,7 @@ LightDlgBase::LightDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	wxBoxSizer* bSizer96;
 	bSizer96 = new wxBoxSizer( wxVERTICAL );
 	
-	m_text15 = new wxStaticText( this, ID_TEXT, wxT("Direction"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text15 = new wxStaticText( this, ID_TEXT, _("Direction"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text15->Wrap( 0 );
 	bSizer96->Add( m_text15, 0, wxALIGN_CENTER|wxALL, 5 );
 	

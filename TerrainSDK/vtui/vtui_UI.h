@@ -8,6 +8,8 @@
 #ifndef __vtui_UI__
 #define __vtui_UI__
 
+#include <wx/intl.h>
+
 #include <wx/string.h>
 #include <wx/stattext.h>
 #include <wx/gdicmn.h>

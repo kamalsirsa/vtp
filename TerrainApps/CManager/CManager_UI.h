@@ -8,6 +8,8 @@
 #ifndef __CManager_UI__
 #define __CManager_UI__
 
+#include <wx/intl.h>
+
 #include <wx/treectrl.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>

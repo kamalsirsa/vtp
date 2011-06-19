@@ -24,7 +24,7 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer310;
 	bSizer310 = new wxBoxSizer( wxVERTICAL );
 	
-	m_text1 = new wxStaticText( this, ID_TEXT, wxT("Building Levels"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text1 = new wxStaticText( this, ID_TEXT, _("Building Levels"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text1->Wrap( -1 );
 	bSizer310->Add( m_text1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -36,23 +36,23 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	fgSizer9->SetFlexibleDirection( wxBOTH );
 	fgSizer9->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_level_copy = new wxButton( this, ID_LEVEL_COPY, wxT("Copy"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_level_copy = new wxButton( this, ID_LEVEL_COPY, _("Copy"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_level_copy->SetDefault(); 
 	m_level_copy->Enable( false );
 	
 	fgSizer9->Add( m_level_copy, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
-	m_level_del = new wxButton( this, ID_LEVEL_DEL, wxT("Del"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_level_del = new wxButton( this, ID_LEVEL_DEL, _("Del"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_level_del->SetDefault(); 
 	m_level_del->Enable( false );
 	
 	fgSizer9->Add( m_level_del, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
-	m_level_up = new wxButton( this, ID_LEVEL_UP, wxT("Up"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_level_up = new wxButton( this, ID_LEVEL_UP, _("Up"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_level_up->SetDefault(); 
 	fgSizer9->Add( m_level_up, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_level_down = new wxButton( this, ID_LEVEL_DOWN, wxT("Down"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_level_down = new wxButton( this, ID_LEVEL_DOWN, _("Down"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_level_down->SetDefault(); 
 	fgSizer9->Add( m_level_down, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -64,13 +64,13 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer311;
 	bSizer311 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_editheights = new wxButton( this, ID_EDITHEIGHTS, wxT("Baseline Editor"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_editheights = new wxButton( this, ID_EDITHEIGHTS, _("Baseline Editor"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_editheights->SetDefault(); 
 	m_editheights->Enable( false );
 	
 	bSizer311->Add( m_editheights, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_set_roof_type = new wxButton( this, ID_SET_ROOF_TYPE, wxT("Set Roof Type"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_roof_type = new wxButton( this, ID_SET_ROOF_TYPE, _("Set Roof Type"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_set_roof_type->SetDefault(); 
 	bSizer311->Add( m_set_roof_type, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -79,12 +79,12 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	bSizer309->Add( bSizer310, 0, wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 	
 	m_panel1 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	sbSizer57 = new wxStaticBoxSizer( new wxStaticBox( m_panel1, wxID_ANY, wxT("Level Properties") ), wxVERTICAL );
+	sbSizer57 = new wxStaticBoxSizer( new wxStaticBox( m_panel1, wxID_ANY, _("Level Properties") ), wxVERTICAL );
 	
 	wxBoxSizer* bSizer312;
 	bSizer312 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text2 = new wxStaticText( m_panel1, ID_TEXT, wxT("Stories:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text2 = new wxStaticText( m_panel1, ID_TEXT, _("Stories:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text2->Wrap( 0 );
 	bSizer312->Add( m_text2, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -96,14 +96,14 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer313;
 	bSizer313 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text3 = new wxStaticText( m_panel1, ID_TEXT, wxT("Story Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text3 = new wxStaticText( m_panel1, ID_TEXT, _("Story Height:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text3->Wrap( -1 );
 	bSizer313->Add( m_text3, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_story_height = new wxTextCtrl( m_panel1, ID_STORY_HEIGHT, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	bSizer313->Add( m_story_height, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_text4 = new wxStaticText( m_panel1, ID_TEXT, wxT("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text4 = new wxStaticText( m_panel1, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text4->Wrap( 0 );
 	bSizer313->Add( m_text4, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
@@ -112,14 +112,14 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer314;
 	bSizer314 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text5 = new wxStaticText( m_panel1, ID_TEXT, wxT("Material:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text5 = new wxStaticText( m_panel1, ID_TEXT, _("Material:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text5->Wrap( 0 );
 	bSizer314->Add( m_text5, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_material1 = new wxTextCtrl( m_panel1, ID_MATERIAL1, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), wxTE_READONLY );
 	bSizer314->Add( m_material1, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_set_material = new wxButton( m_panel1, ID_SET_MATERIAL, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_material = new wxButton( m_panel1, ID_SET_MATERIAL, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_set_material->SetDefault(); 
 	bSizer314->Add( m_set_material, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -128,14 +128,14 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer315;
 	bSizer315 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text6 = new wxStaticText( m_panel1, ID_TEXT, wxT("Color:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text6 = new wxStaticText( m_panel1, ID_TEXT, _("Color:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text6->Wrap( 0 );
 	bSizer315->Add( m_text6, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_color1 = new wxStaticBitmap( m_panel1, ID_COLOR1, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer315->Add( m_color1, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_set_color = new wxButton( m_panel1, ID_SET_COLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_color = new wxButton( m_panel1, ID_SET_COLOR, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_set_color->SetDefault(); 
 	bSizer315->Add( m_set_color, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -144,14 +144,14 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer316;
 	bSizer316 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text7 = new wxStaticText( m_panel1, ID_TEXT, wxT("Edge Slopes:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text7 = new wxStaticText( m_panel1, ID_TEXT, _("Edge Slopes:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text7->Wrap( -1 );
 	bSizer316->Add( m_text7, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_edge_slopes = new wxTextCtrl( m_panel1, ID_EDGE_SLOPES, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), wxTE_READONLY );
 	bSizer316->Add( m_edge_slopes, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_set_edge_slopes = new wxButton( m_panel1, ID_SET_EDGE_SLOPES, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_edge_slopes = new wxButton( m_panel1, ID_SET_EDGE_SLOPES, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_set_edge_slopes->SetDefault(); 
 	bSizer316->Add( m_set_edge_slopes, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -164,7 +164,7 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	m_panel2 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxStaticBoxSizer* sbSizer8;
-	sbSizer8 = new wxStaticBoxSizer( new wxStaticBox( m_panel2, wxID_ANY, wxT("Edges") ), wxVERTICAL );
+	sbSizer8 = new wxStaticBoxSizer( new wxStaticBox( m_panel2, wxID_ANY, _("Edges") ), wxVERTICAL );
 	
 	m_edge1 = new wxListBox( m_panel2, ID_EDGE, wxDefaultPosition, wxSize( 60,60 ), 0, NULL, wxLB_SINGLE ); 
 	m_edge1->SetMinSize( wxSize( 80,-1 ) );
@@ -178,19 +178,19 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	m_panel3 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxStaticBoxSizer* g_pEdgeGroup1;
-	g_pEdgeGroup1 = new wxStaticBoxSizer( new wxStaticBox( m_panel3, wxID_ANY, wxT("Edge Properties") ), wxVERTICAL );
+	g_pEdgeGroup1 = new wxStaticBoxSizer( new wxStaticBox( m_panel3, wxID_ANY, _("Edge Properties") ), wxVERTICAL );
 	
 	wxBoxSizer* bSizer3241;
 	bSizer3241 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text131 = new wxStaticText( m_panel3, ID_TEXT, wxT("Material:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text131 = new wxStaticText( m_panel3, ID_TEXT, _("Material:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text131->Wrap( 0 );
 	bSizer3241->Add( m_text131, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_material21 = new wxTextCtrl( m_panel3, ID_MATERIAL2, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), wxTE_READONLY );
 	bSizer3241->Add( m_material21, 1, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_set_material11 = new wxButton( m_panel3, ID_SET_MATERIAL, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_material11 = new wxButton( m_panel3, ID_SET_MATERIAL, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_set_material11->SetDefault(); 
 	bSizer3241->Add( m_set_material11, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
@@ -199,11 +199,11 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer3251;
 	bSizer3251 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text141 = new wxStaticText( m_panel3, ID_TEXT, wxT("Facade:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text141 = new wxStaticText( m_panel3, ID_TEXT, _("Facade:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text141->Wrap( 0 );
 	bSizer3251->Add( m_text141, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_facade1Choices[] = { wxT("ChoiceItem") };
+	wxString m_facade1Choices[] = { _("ChoiceItem") };
 	int m_facade1NChoices = sizeof( m_facade1Choices ) / sizeof( wxString );
 	m_facade1 = new wxChoice( m_panel3, ID_FACADE, wxDefaultPosition, wxSize( 100,-1 ), m_facade1NChoices, m_facade1Choices, 0 );
 	m_facade1->SetSelection( 0 );
@@ -214,14 +214,14 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer3261;
 	bSizer3261 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text151 = new wxStaticText( m_panel3, ID_TEXT, wxT("Color:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text151 = new wxStaticText( m_panel3, ID_TEXT, _("Color:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text151->Wrap( 0 );
 	bSizer3261->Add( m_text151, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_color21 = new wxStaticBitmap( m_panel3, ID_COLOR2, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer3261->Add( m_color21, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_set_color11 = new wxButton( m_panel3, ID_SET_COLOR, wxT("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_color11 = new wxButton( m_panel3, ID_SET_COLOR, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_set_color11->SetDefault(); 
 	bSizer3261->Add( m_set_color11, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -230,7 +230,7 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer3271;
 	bSizer3271 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text161 = new wxStaticText( m_panel3, ID_TEXT, wxT("Slope:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text161 = new wxStaticText( m_panel3, ID_TEXT, _("Slope:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text161->Wrap( 0 );
 	bSizer3271->Add( m_text161, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -245,19 +245,19 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer3281;
 	bSizer3281 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_feat_clear1 = new wxButton( m_panel3, ID_FEAT_CLEAR, wxT("Clear"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_feat_clear1 = new wxButton( m_panel3, ID_FEAT_CLEAR, _("Clear"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
 	m_feat_clear1->SetDefault(); 
 	bSizer3281->Add( m_feat_clear1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_feat_wall1 = new wxButton( m_panel3, ID_FEAT_WALL, wxT("Wall"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_feat_wall1 = new wxButton( m_panel3, ID_FEAT_WALL, _("Wall"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
 	m_feat_wall1->SetDefault(); 
 	bSizer3281->Add( m_feat_wall1, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_feat_window1 = new wxButton( m_panel3, ID_FEAT_WINDOW, wxT("Window"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_feat_window1 = new wxButton( m_panel3, ID_FEAT_WINDOW, _("Window"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
 	m_feat_window1->SetDefault(); 
 	bSizer3281->Add( m_feat_window1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_feat_door1 = new wxButton( m_panel3, ID_FEAT_DOOR, wxT("Door"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_feat_door1 = new wxButton( m_panel3, ID_FEAT_DOOR, _("Door"), wxDefaultPosition, wxSize( 70,-1 ), 0 );
 	m_feat_door1->SetDefault(); 
 	bSizer3281->Add( m_feat_door1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -276,14 +276,14 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer317->Add( 80, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_ok1 = new wxButton( this, wxID_OK, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ok1 = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ok1->SetDefault(); 
 	bSizer317->Add( m_ok1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	
 	bSizer317->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_edges = new wxButton( this, ID_EDGES, wxT("Edges >>"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_edges = new wxButton( this, ID_EDGES, _("Edges >>"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_edges->SetDefault(); 
 	bSizer317->Add( m_edges, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -310,11 +310,11 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer331;
 	bSizer331 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text17 = new wxStaticText( this, ID_TEXT, wxT("Defined Style:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text17 = new wxStaticText( this, ID_TEXT, _("Defined Style:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text17->Wrap( -1 );
 	bSizer331->Add( m_text17, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_linear_structure_styleChoices[] = { wxT("Item") };
+	wxString m_linear_structure_styleChoices[] = { _("Item") };
 	int m_linear_structure_styleNChoices = sizeof( m_linear_structure_styleChoices ) / sizeof( wxString );
 	m_linear_structure_style = new wxChoice( this, ID_LINEAR_STRUCTURE_STYLE, wxDefaultPosition, wxSize( 160,-1 ), m_linear_structure_styleNChoices, m_linear_structure_styleChoices, 0 );
 	m_linear_structure_style->SetSelection( 0 );
@@ -323,16 +323,16 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	bSizer330->Add( bSizer331, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 	
 	wxStaticBoxSizer* sbSizer60;
-	sbSizer60 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Posts") ), wxVERTICAL );
+	sbSizer60 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Posts") ), wxVERTICAL );
 	
 	wxBoxSizer* bSizer332;
 	bSizer332 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text18 = new wxStaticText( this, ID_TEXT, wxT("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text18 = new wxStaticText( this, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text18->Wrap( -1 );
 	bSizer332->Add( m_text18, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_post_typeChoices[] = { wxT("Item") };
+	wxString m_post_typeChoices[] = { _("Item") };
 	int m_post_typeNChoices = sizeof( m_post_typeChoices ) / sizeof( wxString );
 	m_post_type = new wxChoice( this, ID_POST_TYPE, wxDefaultPosition, wxSize( 100,-1 ), m_post_typeNChoices, m_post_typeChoices, 0 );
 	m_post_type->SetSelection( 0 );
@@ -343,7 +343,7 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer333;
 	bSizer333 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text19 = new wxStaticText( this, ID_TEXT, wxT("Spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text19 = new wxStaticText( this, ID_TEXT, _("Spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text19->Wrap( 0 );
 	bSizer333->Add( m_text19, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -358,7 +358,7 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer334;
 	bSizer334 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text20 = new wxStaticText( this, ID_TEXT, wxT("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text20 = new wxStaticText( this, ID_TEXT, _("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text20->Wrap( 0 );
 	bSizer334->Add( m_text20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -373,7 +373,7 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer335;
 	bSizer335 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text21 = new wxStaticText( this, ID_TEXT, wxT("Size:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text21 = new wxStaticText( this, ID_TEXT, _("Size:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text21->Wrap( -1 );
 	bSizer335->Add( m_text21, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -388,11 +388,11 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer336;
 	bSizer336 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text22 = new wxStaticText( this, ID_TEXT, wxT("Extension:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text22 = new wxStaticText( this, ID_TEXT, _("Extension:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text22->Wrap( -1 );
 	bSizer336->Add( m_text22, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_choice_extensionChoices[] = { wxT("None"), wxT("Left"), wxT("Right"), wxT("Double") };
+	wxString m_choice_extensionChoices[] = { _("None"), _("Left"), _("Right"), _("Double") };
 	int m_choice_extensionNChoices = sizeof( m_choice_extensionChoices ) / sizeof( wxString );
 	m_choice_extension = new wxChoice( this, ID_CHOICE_EXTENSION, wxDefaultPosition, wxSize( 100,-1 ), m_choice_extensionNChoices, m_choice_extensionChoices, 0 );
 	m_choice_extension->SetSelection( 0 );
@@ -403,16 +403,16 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	bSizer330->Add( sbSizer60, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxStaticBoxSizer* sbSizer61;
-	sbSizer61 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Connection") ), wxVERTICAL );
+	sbSizer61 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Connection") ), wxVERTICAL );
 	
 	wxBoxSizer* bSizer337;
 	bSizer337 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text23 = new wxStaticText( this, ID_TEXT, wxT("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text23 = new wxStaticText( this, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text23->Wrap( -1 );
 	bSizer337->Add( m_text23, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_conn_typeChoices[] = { wxT("Item") };
+	wxString m_conn_typeChoices[] = { _("Item") };
 	int m_conn_typeNChoices = sizeof( m_conn_typeChoices ) / sizeof( wxString );
 	m_conn_type = new wxChoice( this, ID_CONN_TYPE, wxDefaultPosition, wxSize( 100,-1 ), m_conn_typeNChoices, m_conn_typeChoices, 0 );
 	m_conn_type->SetSelection( 0 );
@@ -423,11 +423,11 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer338;
 	bSizer338 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text24 = new wxStaticText( this, ID_TEXT, wxT("Material:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text24 = new wxStaticText( this, ID_TEXT, _("Material:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text24->Wrap( -1 );
 	bSizer338->Add( m_text24, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_conn_materialChoices[] = { wxT("Item") };
+	wxString m_conn_materialChoices[] = { _("Item") };
 	int m_conn_materialNChoices = sizeof( m_conn_materialChoices ) / sizeof( wxString );
 	m_conn_material = new wxChoice( this, ID_CONN_MATERIAL, wxDefaultPosition, wxSize( 100,-1 ), m_conn_materialNChoices, m_conn_materialChoices, 0 );
 	m_conn_material->SetSelection( 0 );
@@ -438,7 +438,7 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer339;
 	bSizer339 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text25 = new wxStaticText( this, ID_TEXT, wxT("Top Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text25 = new wxStaticText( this, ID_TEXT, _("Top Height:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text25->Wrap( -1 );
 	bSizer339->Add( m_text25, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -453,7 +453,7 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer340;
 	bSizer340 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text26 = new wxStaticText( this, ID_TEXT, wxT("Bottom Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text26 = new wxStaticText( this, ID_TEXT, _("Bottom Height:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text26->Wrap( -1 );
 	bSizer340->Add( m_text26, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -468,7 +468,7 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer341;
 	bSizer341 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text27 = new wxStaticText( this, ID_TEXT, wxT("Width:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text27 = new wxStaticText( this, ID_TEXT, _("Width:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text27->Wrap( -1 );
 	bSizer341->Add( m_text27, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -483,7 +483,7 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer342;
 	bSizer342 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text28 = new wxStaticText( this, ID_TEXT, wxT("Side Slope:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text28 = new wxStaticText( this, ID_TEXT, _("Side Slope:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text28->Wrap( -1 );
 	bSizer342->Add( m_text28, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -498,23 +498,23 @@ LinearStructDlgBase::LinearStructDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer343;
 	bSizer343 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text29 = new wxStaticText( this, ID_TEXT, wxT("Profile:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text29 = new wxStaticText( this, ID_TEXT, _("Profile:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text29->Wrap( -1 );
 	bSizer343->Add( m_text29, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_choice_profileChoices[] = { wxT("ChoiceItem") };
+	wxString m_choice_profileChoices[] = { _("ChoiceItem") };
 	int m_choice_profileNChoices = sizeof( m_choice_profileChoices ) / sizeof( wxString );
 	m_choice_profile = new wxChoice( this, ID_CHOICE_PROFILE, wxDefaultPosition, wxSize( 130,-1 ), m_choice_profileNChoices, m_choice_profileChoices, 0 );
 	m_choice_profile->SetSelection( 0 );
 	bSizer343->Add( m_choice_profile, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_profile_edit = new wxButton( this, ID_PROFILE_EDIT, wxT("Edit"), wxDefaultPosition, wxSize( 50,-1 ), 0 );
+	m_profile_edit = new wxButton( this, ID_PROFILE_EDIT, _("Edit"), wxDefaultPosition, wxSize( 50,-1 ), 0 );
 	m_profile_edit->SetDefault(); 
 	bSizer343->Add( m_profile_edit, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	sbSizer61->Add( bSizer343, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 	
-	m_constant_top = new wxCheckBox( this, ID_CONSTANT_TOP, wxT("Constant Top Height"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_constant_top = new wxCheckBox( this, ID_CONSTANT_TOP, _("Constant Top Height"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_constant_top->SetValue(true); 
 	sbSizer61->Add( m_constant_top, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -538,7 +538,7 @@ InstanceDlgBase::InstanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer344;
 	bSizer344 = new wxBoxSizer( wxVERTICAL );
 	
-	m_radio_content = new wxRadioButton( this, ID_RADIO_CONTENT, wxT("Instance from Content File"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	m_radio_content = new wxRadioButton( this, ID_RADIO_CONTENT, _("Instance from Content File"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
 	m_radio_content->SetValue( true ); 
 	bSizer344->Add( m_radio_content, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
@@ -548,11 +548,11 @@ InstanceDlgBase::InstanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer345->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text30 = new wxStaticText( this, ID_TEXT, wxT("File:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text30 = new wxStaticText( this, ID_TEXT, _("File:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text30->Wrap( -1 );
 	bSizer345->Add( m_text30, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_choice_fileChoices[] = { wxT("Item") };
+	wxString m_choice_fileChoices[] = { _("Item") };
 	int m_choice_fileNChoices = sizeof( m_choice_fileChoices ) / sizeof( wxString );
 	m_choice_file = new wxChoice( this, ID_CHOICE_FILE, wxDefaultPosition, wxSize( 200,-1 ), m_choice_fileNChoices, m_choice_fileChoices, 0 );
 	m_choice_file->SetSelection( 0 );
@@ -566,11 +566,11 @@ InstanceDlgBase::InstanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer346->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text31 = new wxStaticText( this, ID_TEXT, wxT("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text31 = new wxStaticText( this, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text31->Wrap( -1 );
 	bSizer346->Add( m_text31, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_choice_typeChoices[] = { wxT("Item") };
+	wxString m_choice_typeChoices[] = { _("Item") };
 	int m_choice_typeNChoices = sizeof( m_choice_typeChoices ) / sizeof( wxString );
 	m_choice_type = new wxChoice( this, ID_CHOICE_TYPE, wxDefaultPosition, wxSize( 200,-1 ), m_choice_typeNChoices, m_choice_typeChoices, 0 );
 	m_choice_type->SetSelection( 0 );
@@ -584,11 +584,11 @@ InstanceDlgBase::InstanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer347->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text32 = new wxStaticText( this, ID_TEXT, wxT("Item:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text32 = new wxStaticText( this, ID_TEXT, _("Item:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text32->Wrap( -1 );
 	bSizer347->Add( m_text32, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_choice_itemChoices[] = { wxT("Item") };
+	wxString m_choice_itemChoices[] = { _("Item") };
 	int m_choice_itemNChoices = sizeof( m_choice_itemChoices ) / sizeof( wxString );
 	m_choice_item = new wxChoice( this, ID_CHOICE_ITEM, wxDefaultPosition, wxSize( 220,-1 ), m_choice_itemNChoices, m_choice_itemChoices, 0 );
 	m_choice_item->SetSelection( 0 );
@@ -596,7 +596,7 @@ InstanceDlgBase::InstanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer344->Add( bSizer347, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	m_radio_model = new wxRadioButton( this, ID_RADIO_MODEL, wxT("Instance from 3D Model File"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_radio_model = new wxRadioButton( this, ID_RADIO_MODEL, _("Instance from 3D Model File"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_radio_model->SetValue( true ); 
 	bSizer344->Add( m_radio_model, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
@@ -609,7 +609,7 @@ InstanceDlgBase::InstanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_model_file = new wxTextCtrl( this, ID_MODEL_FILE, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), wxTE_READONLY );
 	bSizer348->Add( m_model_file, 1, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_browse_model_file = new wxButton( this, ID_BROWSE_MODEL_FILE, wxT("..."), wxDefaultPosition, wxSize( 30,-1 ), 0 );
+	m_browse_model_file = new wxButton( this, ID_BROWSE_MODEL_FILE, _("..."), wxDefaultPosition, wxSize( 30,-1 ), 0 );
 	m_browse_model_file->SetDefault(); 
 	m_browse_model_file->SetFont( wxFont( 12, 72, 90, 90, false, wxEmptyString ) );
 	
@@ -620,7 +620,7 @@ InstanceDlgBase::InstanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer349;
 	bSizer349 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text33 = new wxStaticText( this, ID_TEXT, wxT("Location:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text33 = new wxStaticText( this, ID_TEXT, _("Location:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text33->Wrap( -1 );
 	bSizer349->Add( m_text33, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -653,22 +653,22 @@ DistanceDlgBase::DistanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer351->Add( 10, 10, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_radio_line = new wxRadioButton( this, ID_RADIO_LINE, wxT("Line"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	m_radio_line = new wxRadioButton( this, ID_RADIO_LINE, _("Line"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
 	m_radio_line->SetValue( true ); 
 	bSizer351->Add( m_radio_line, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_radio_path = new wxRadioButton( this, ID_RADIO_PATH, wxT("Path"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_radio_path = new wxRadioButton( this, ID_RADIO_PATH, _("Path"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_radio_path->SetValue( true ); 
 	bSizer351->Add( m_radio_path, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	
 	bSizer351->Add( 20, 10, 1, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_dist_load_path = new wxButton( this, ID_DIST_LOAD_PATH, wxT("Load Path..."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_dist_load_path = new wxButton( this, ID_DIST_LOAD_PATH, _("Load Path..."), wxDefaultPosition, wxDefaultSize, 0 );
 	m_dist_load_path->SetDefault(); 
 	bSizer351->Add( m_dist_load_path, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_dist_tool_clear = new wxButton( this, ID_DIST_TOOL_CLEAR, wxT("Clear"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_dist_tool_clear = new wxButton( this, ID_DIST_TOOL_CLEAR, _("Clear"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_dist_tool_clear->SetDefault(); 
 	bSizer351->Add( m_dist_tool_clear, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -679,7 +679,7 @@ DistanceDlgBase::DistanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	fgSizer11->SetFlexibleDirection( wxBOTH );
 	fgSizer11->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_text34 = new wxStaticText( this, ID_TEXT, wxT("Map Offset"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text34 = new wxStaticText( this, ID_TEXT, _("Map Offset"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text34->Wrap( -1 );
 	fgSizer11->Add( m_text34, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -691,7 +691,7 @@ DistanceDlgBase::DistanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_units1->SetSelection( 0 );
 	fgSizer11->Add( m_units1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	id_text = new wxStaticText( this, ID_TEXT, wxT("Map Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+	id_text = new wxStaticText( this, ID_TEXT, _("Map Distance"), wxDefaultPosition, wxDefaultSize, 0 );
 	id_text->Wrap( -1 );
 	fgSizer11->Add( id_text, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -703,7 +703,7 @@ DistanceDlgBase::DistanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_units2->SetSelection( 0 );
 	fgSizer11->Add( m_units2, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text35 = new wxStaticText( this, ID_TEXT, wxT("Geodesic Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text35 = new wxStaticText( this, ID_TEXT, _("Geodesic Distance"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text35->Wrap( -1 );
 	fgSizer11->Add( m_text35, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -715,7 +715,7 @@ DistanceDlgBase::DistanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_units3->SetSelection( 0 );
 	fgSizer11->Add( m_units3, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text36 = new wxStaticText( this, ID_TEXT, wxT("Approximate Ground"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text36 = new wxStaticText( this, ID_TEXT, _("Approximate Ground"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text36->Wrap( -1 );
 	fgSizer11->Add( m_text36, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -727,7 +727,7 @@ DistanceDlgBase::DistanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_units4->SetSelection( 0 );
 	fgSizer11->Add( m_units4, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text37 = new wxStaticText( this, ID_TEXT, wxT("Vertical Difference"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text37 = new wxStaticText( this, ID_TEXT, _("Vertical Difference"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text37->Wrap( -1 );
 	fgSizer11->Add( m_text37, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -762,7 +762,7 @@ ColorMapDlgBase::ColorMapDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer353;
 	bSizer353 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text38 = new wxStaticText( this, ID_TEXT, wxT("File:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text38 = new wxStaticText( this, ID_TEXT, _("File:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text38->Wrap( 0 );
 	bSizer353->Add( m_text38, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -774,11 +774,11 @@ ColorMapDlgBase::ColorMapDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer354;
 	bSizer354 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_relative = new wxCheckBox( this, ID_RELATIVE, wxT("Scale relative to elevation range"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_relative = new wxCheckBox( this, ID_RELATIVE, _("Scale relative to elevation range"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_relative->SetValue(true); 
 	bSizer354->Add( m_relative, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	mmlend = new wxCheckBox( this, ID_BLEND, wxT("Blend colors smoothly"), wxDefaultPosition, wxDefaultSize, 0 );
+	mmlend = new wxCheckBox( this, ID_BLEND, _("Blend colors smoothly"), wxDefaultPosition, wxDefaultSize, 0 );
 	mmlend->SetValue(true); 
 	bSizer354->Add( mmlend, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -788,7 +788,7 @@ ColorMapDlgBase::ColorMapDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	bSizer355 = new wxBoxSizer( wxHORIZONTAL );
 	
 	wxStaticBoxSizer* sbSizer62;
-	sbSizer62 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Colors") ), wxVERTICAL );
+	sbSizer62 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Colors") ), wxVERTICAL );
 	
 	id_colorlist = new wxListCtrl( this, ID_COLORLIST, wxDefaultPosition, wxSize( -1,120 ), wxLC_REPORT|wxLC_NO_HEADER|wxSUNKEN_BORDER );
 	sbSizer62->Add( id_colorlist, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -796,27 +796,27 @@ ColorMapDlgBase::ColorMapDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer356;
 	bSizer356 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_change_color = new wxButton( this, ID_CHANGE_COLOR, wxT("Change Color..."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_change_color = new wxButton( this, ID_CHANGE_COLOR, _("Change Color..."), wxDefaultPosition, wxDefaultSize, 0 );
 	m_change_color->SetDefault(); 
 	bSizer356->Add( m_change_color, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_delete_elevation = new wxButton( this, ID_DELETE_ELEVATION, wxT("Delete Color"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_delete_elevation = new wxButton( this, ID_DELETE_ELEVATION, _("Delete Color"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_delete_elevation->SetDefault(); 
 	bSizer356->Add( m_delete_elevation, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	sbSizer62->Add( bSizer356, 0, wxALIGN_CENTER, 5 );
 	
 	wxStaticBoxSizer* sbSizer63;
-	sbSizer63 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("New Color") ), wxHORIZONTAL );
+	sbSizer63 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("New Color") ), wxHORIZONTAL );
 	
-	m_text39 = new wxStaticText( this, ID_TEXT, wxT("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text39 = new wxStaticText( this, ID_TEXT, _("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text39->Wrap( 0 );
 	sbSizer63->Add( m_text39, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	mmeight_to_add = new wxTextCtrl( this, ID_HEIGHT_TO_ADD, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
 	sbSizer63->Add( mmeight_to_add, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_add = new wxButton( this, ID_ADD, wxT("Add"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_add = new wxButton( this, ID_ADD, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_add->SetDefault(); 
 	sbSizer63->Add( m_add, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -827,22 +827,22 @@ ColorMapDlgBase::ColorMapDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	wxBoxSizer* bSizer357;
 	bSizer357 = new wxBoxSizer( wxVERTICAL );
 	
-	m_save_cmap = new wxButton( this, ID_SAVE_CMAP, wxT("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_save_cmap = new wxButton( this, ID_SAVE_CMAP, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_save_cmap->SetDefault(); 
 	bSizer357->Add( m_save_cmap, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	id_save_as_cmap = new wxButton( this, ID_SAVE_AS_CMAP, wxT("Save As..."), wxDefaultPosition, wxDefaultSize, 0 );
+	id_save_as_cmap = new wxButton( this, ID_SAVE_AS_CMAP, _("Save As..."), wxDefaultPosition, wxDefaultSize, 0 );
 	id_save_as_cmap->SetDefault(); 
 	bSizer357->Add( id_save_as_cmap, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_load_cmap = new wxButton( this, ID_LOAD_CMAP, wxT("Load"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_load_cmap = new wxButton( this, ID_LOAD_CMAP, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_load_cmap->SetDefault(); 
 	bSizer357->Add( m_load_cmap, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_line1 = new wxStaticLine( this, ID_LINE1, wxDefaultPosition, wxSize( 20,-1 ), wxLI_HORIZONTAL );
 	bSizer357->Add( m_line1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_close = new wxButton( this, wxID_OK, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_close = new wxButton( this, wxID_OK, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_close->SetDefault(); 
 	bSizer357->Add( m_close, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -877,23 +877,23 @@ ProfileDlgBase::ProfileDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer360;
 	bSizer360 = new wxBoxSizer( wxVERTICAL );
 	
-	m_line_of_sight = new wxCheckBox( this, ID_LINE_OF_SIGHT, wxT("Line of Sight"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_line_of_sight = new wxCheckBox( this, ID_LINE_OF_SIGHT, _("Line of Sight"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_line_of_sight->SetValue(true); 
 	bSizer360->Add( m_line_of_sight, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_visibility = new wxCheckBox( this, ID_VISIBILITY, wxT("Visibility"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_visibility = new wxCheckBox( this, ID_VISIBILITY, _("Visibility"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_visibility->SetValue(true); 
 	bSizer360->Add( m_visibility, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_fresnel = new wxCheckBox( this, ID_FRESNEL, wxT("Show Fresnel zones"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fresnel = new wxCheckBox( this, ID_FRESNEL, _("Show Fresnel zones"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fresnel->SetValue(true); 
 	bSizer360->Add( m_fresnel, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_use_effective = new wxCheckBox( this, ID_USE_EFFECTIVE, wxT("Use effective radius of earth"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_use_effective = new wxCheckBox( this, ID_USE_EFFECTIVE, _("Use effective radius of earth"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_use_effective->SetValue(true); 
 	bSizer360->Add( m_use_effective, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_show_culture = new wxButton( this, ID_SHOW_CULTURE, wxT("Show Culture Objects"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_show_culture = new wxButton( this, ID_SHOW_CULTURE, _("Show Culture Objects"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_show_culture->SetDefault(); 
 	bSizer360->Add( m_show_culture, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -907,21 +907,21 @@ ProfileDlgBase::ProfileDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	fgSizer12->SetFlexibleDirection( wxBOTH );
 	fgSizer12->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_text40 = new wxStaticText( this, ID_TEXT, wxT("Start height:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text40 = new wxStaticText( this, ID_TEXT, _("Start height:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text40->Wrap( -1 );
 	fgSizer12->Add( m_text40, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	m_height1 = new wxTextCtrl( this, ID_HEIGHT1, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	fgSizer12->Add( m_height1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	id_text = new wxStaticText( this, ID_TEXT, wxT("End height:"), wxDefaultPosition, wxDefaultSize, 0 );
+	id_text = new wxStaticText( this, ID_TEXT, _("End height:"), wxDefaultPosition, wxDefaultSize, 0 );
 	id_text->Wrap( -1 );
 	fgSizer12->Add( id_text, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	m_height2 = new wxTextCtrl( this, ID_HEIGHT2, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	fgSizer12->Add( m_height2, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
-	m_text41 = new wxStaticText( this, ID_TEXT, wxT("Radio Frequency:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text41 = new wxStaticText( this, ID_TEXT, _("Radio Frequency:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text41->Wrap( -1 );
 	fgSizer12->Add( m_text41, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -931,17 +931,17 @@ ProfileDlgBase::ProfileDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_rf = new wxTextCtrl( this, ID_RF, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	bSizer361->Add( m_rf, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
-	m_text42 = new wxStaticText( this, ID_TEXT, wxT("MHz"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text42 = new wxStaticText( this, ID_TEXT, _("MHz"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text42->Wrap( 0 );
 	bSizer361->Add( m_text42, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	fgSizer12->Add( bSizer361, 0, wxALIGN_CENTER_VERTICAL, 5 );
 	
-	m_text43 = new wxStaticText( this, ID_TEXT, wxT("Apply curvature to:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text43 = new wxStaticText( this, ID_TEXT, _("Apply curvature to:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text43->Wrap( -1 );
 	fgSizer12->Add( m_text43, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxString m_curvatureChoices[] = { wxT("None"), wxT("Terrain"), wxT("Line of Sight") };
+	wxString m_curvatureChoices[] = { _("None"), _("Terrain"), _("Line of Sight") };
 	int m_curvatureNChoices = sizeof( m_curvatureChoices ) / sizeof( wxString );
 	m_curvature = new wxChoice( this, ID_CURVATURE, wxDefaultPosition, wxDefaultSize, m_curvatureNChoices, m_curvatureChoices, 0 );
 	m_curvature->SetSelection( 0 );
@@ -961,19 +961,19 @@ ProfileDlgBase::ProfileDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer363;
 	bSizer363 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text44 = new wxStaticText( this, ID_TEXT, wxT("Export:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text44 = new wxStaticText( this, ID_TEXT, _("Export:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text44->Wrap( 0 );
 	bSizer363->Add( m_text44, 0, wxALIGN_CENTER|wxLEFT|wxTOP|wxBOTTOM, 5 );
 	
-	m_export_dxf = new wxButton( this, ID_EXPORT_DXF, wxT("Profile"), wxDefaultPosition, wxSize( 50,-1 ), 0 );
+	m_export_dxf = new wxButton( this, ID_EXPORT_DXF, _("Profile"), wxDefaultPosition, wxSize( 50,-1 ), 0 );
 	m_export_dxf->SetDefault(); 
 	bSizer363->Add( m_export_dxf, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_export_trace = new wxButton( this, ID_EXPORT_TRACE, wxT("Trace"), wxDefaultPosition, wxSize( 50,-1 ), 0 );
+	m_export_trace = new wxButton( this, ID_EXPORT_TRACE, _("Trace"), wxDefaultPosition, wxSize( 50,-1 ), 0 );
 	m_export_trace->SetDefault(); 
 	bSizer363->Add( m_export_trace, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_export_csv = new wxButton( this, ID_EXPORT_CSV, wxT("CSV"), wxDefaultPosition, wxSize( 50,-1 ), 0 );
+	m_export_csv = new wxButton( this, ID_EXPORT_CSV, _("CSV"), wxDefaultPosition, wxSize( 50,-1 ), 0 );
 	m_export_csv->SetDefault(); 
 	bSizer363->Add( m_export_csv, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -1001,7 +1001,7 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer364;
 	bSizer364 = new wxBoxSizer( wxVERTICAL );
 	
-	m_text45 = new wxStaticText( this, ID_TEXT, wxT("Projection:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text45 = new wxStaticText( this, ID_TEXT, _("Projection:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text45->Wrap( -1 );
 	bSizer364->Add( m_text45, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -1013,11 +1013,11 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer365;
 	bSizer365 = new wxBoxSizer( wxHORIZONTAL );
 	
-	mmext = new wxStaticText( this, ID_TEXT, wxT("Datum:"), wxDefaultPosition, wxDefaultSize, 0 );
+	mmext = new wxStaticText( this, ID_TEXT, _("Datum:"), wxDefaultPosition, wxDefaultSize, 0 );
 	mmext->Wrap( 0 );
 	bSizer365->Add( mmext, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_show_all_datums = new wxCheckBox( this, ID_SHOW_ALL_DATUMS, wxT("Show All Datums"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_show_all_datums = new wxCheckBox( this, ID_SHOW_ALL_DATUMS, _("Show All Datums"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_show_all_datums->SetValue(true); 
 	bSizer365->Add( m_show_all_datums, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1031,7 +1031,7 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer366;
 	bSizer366 = new wxBoxSizer( wxHORIZONTAL );
 	
-	id_text = new wxStaticText( this, ID_TEXT, wxT("Ellipsoid:"), wxDefaultPosition, wxDefaultSize, 0 );
+	id_text = new wxStaticText( this, ID_TEXT, _("Ellipsoid:"), wxDefaultPosition, wxDefaultSize, 0 );
 	id_text->Wrap( 0 );
 	bSizer366->Add( id_text, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -1040,7 +1040,7 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	
 	bSizer364->Add( bSizer366, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	m_text46 = new wxStaticText( this, ID_TEXT, wxT("Horizontal Units:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text46 = new wxStaticText( this, ID_TEXT, _("Horizontal Units:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text46->Wrap( -1 );
 	bSizer364->Add( m_text46, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -1049,7 +1049,7 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	m_horunits->SetSelection( 0 );
 	bSizer364->Add( m_horunits, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
-	m_text47 = new wxStaticText( this, ID_TEXT, wxT("Zone:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text47 = new wxStaticText( this, ID_TEXT, _("Zone:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text47->Wrap( -1 );
 	bSizer364->Add( m_text47, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -1058,7 +1058,7 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	m_zone->SetSelection( 0 );
 	bSizer364->Add( m_zone, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
-	m_text48 = new wxStaticText( this, ID_TEXT, wxT("Parameters:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text48 = new wxStaticText( this, ID_TEXT, _("Parameters:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text48->Wrap( 0 );
 	bSizer364->Add( m_text48, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -1068,11 +1068,11 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer367;
 	bSizer367 = new wxBoxSizer( wxHORIZONTAL );
 	
-	mmtateplane = new wxButton( this, ID_STATEPLANE, wxT("Set State Plane Projection"), wxDefaultPosition, wxDefaultSize, 0 );
+	mmtateplane = new wxButton( this, ID_STATEPLANE, _("Set State Plane Projection"), wxDefaultPosition, wxDefaultSize, 0 );
 	mmtateplane->SetDefault(); 
 	bSizer367->Add( mmtateplane, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_set_epsg = new wxButton( this, ID_SET_EPSG, wxT("Set EPSG"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_set_epsg = new wxButton( this, ID_SET_EPSG, _("Set EPSG"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_set_epsg->SetDefault(); 
 	bSizer367->Add( m_set_epsg, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1081,11 +1081,11 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer368;
 	bSizer368 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_proj_load = new wxButton( this, ID_PROJ_LOAD, wxT("Load from File"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_proj_load = new wxButton( this, ID_PROJ_LOAD, _("Load from File"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_proj_load->SetDefault(); 
 	bSizer368->Add( m_proj_load, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_proj_save = new wxButton( this, ID_PROJ_SAVE, wxT("Save to File"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_proj_save = new wxButton( this, ID_PROJ_SAVE, _("Save to File"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_proj_save->SetDefault(); 
 	bSizer368->Add( m_proj_save, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1097,11 +1097,11 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer369;
 	bSizer369 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_ok = new wxButton( this, wxID_OK, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ok = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ok->SetDefault(); 
 	bSizer369->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_cancel = new wxButton( this, wxID_CANCEL, wxT("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cancel->SetDefault(); 
 	bSizer369->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1136,11 +1136,11 @@ StatePlaneDlgBase::StatePlaneDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer372;
 	bSizer372 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_nad27 = new wxRadioButton( this, ID_NAD27, wxT("NAD27"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	m_nad27 = new wxRadioButton( this, ID_NAD27, _("NAD27"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
 	m_nad27->SetValue( true ); 
 	bSizer372->Add( m_nad27, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_nad83 = new wxRadioButton( this, ID_NAD83, wxT("NAD83"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_nad83 = new wxRadioButton( this, ID_NAD83, _("NAD83"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_nad83->SetValue( true ); 
 	bSizer372->Add( m_nad83, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1149,15 +1149,15 @@ StatePlaneDlgBase::StatePlaneDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer373;
 	bSizer373 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_radio_meters = new wxRadioButton( this, ID_RADIO_METERS, wxT("Meters"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	m_radio_meters = new wxRadioButton( this, ID_RADIO_METERS, _("Meters"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
 	m_radio_meters->SetValue( true ); 
 	bSizer373->Add( m_radio_meters, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_radio_feet = new wxRadioButton( this, ID_RADIO_FEET, wxT("Feet"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_radio_feet = new wxRadioButton( this, ID_RADIO_FEET, _("Feet"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_radio_feet->SetValue( true ); 
 	bSizer373->Add( m_radio_feet, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_radio_feet_us = new wxRadioButton( this, ID_RADIO_FEET_US, wxT("U.S. Feet"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_radio_feet_us = new wxRadioButton( this, ID_RADIO_FEET_US, _("U.S. Feet"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_radio_feet_us->SetValue( true ); 
 	bSizer373->Add( m_radio_feet_us, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1166,11 +1166,11 @@ StatePlaneDlgBase::StatePlaneDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer374;
 	bSizer374 = new wxBoxSizer( wxHORIZONTAL );
 	
-	wxID_OK = new wxButton( this, wxID_ANY, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	wxID_OK = new wxButton( this, wxID_ANY, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
 	wxID_OK->SetDefault(); 
 	bSizer374->Add( wxID_OK, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxID_CANCEL = new wxButton( this, wxID_ANY, wxT("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+	wxID_CANCEL = new wxButton( this, wxID_ANY, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
 	wxID_CANCEL->SetDefault(); 
 	bSizer374->Add( wxID_CANCEL, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1205,15 +1205,15 @@ ProfileEditDlgBase::ProfileEditDlgBase( wxWindow* parent, wxWindowID id, const w
 	wxBoxSizer* bSizer377;
 	bSizer377 = new wxBoxSizer( wxVERTICAL );
 	
-	m_add_point = new wxRadioButton( this, ID_ADD_POINT, wxT("Add"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	m_add_point = new wxRadioButton( this, ID_ADD_POINT, _("Add"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
 	m_add_point->SetValue( true ); 
 	bSizer377->Add( m_add_point, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_move_point = new wxRadioButton( this, ID_MOVE_POINT, wxT("Move"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_move_point = new wxRadioButton( this, ID_MOVE_POINT, _("Move"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_move_point->SetValue( true ); 
 	bSizer377->Add( m_move_point, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_remove_point = new wxRadioButton( this, ID_REMOVE_POINT, wxT("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_remove_point = new wxRadioButton( this, ID_REMOVE_POINT, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_remove_point->SetValue( true ); 
 	bSizer377->Add( m_remove_point, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -1225,19 +1225,19 @@ ProfileEditDlgBase::ProfileEditDlgBase( wxWindow* parent, wxWindowID id, const w
 	wxGridSizer* gSizer1;
 	gSizer1 = new wxGridSizer( 0, 2, 0, 0 );
 	
-	m_save_prof = new wxButton( this, ID_SAVE_PROF, wxT("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_save_prof = new wxButton( this, ID_SAVE_PROF, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_save_prof->SetDefault(); 
 	gSizer1->Add( m_save_prof, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_save_as_prof = new wxButton( this, ID_SAVE_AS_PROF, wxT("Save As..."), wxDefaultPosition, wxDefaultSize, 0 );
+	m_save_as_prof = new wxButton( this, ID_SAVE_AS_PROF, _("Save As..."), wxDefaultPosition, wxDefaultSize, 0 );
 	m_save_as_prof->SetDefault(); 
 	gSizer1->Add( m_save_as_prof, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_load_prof = new wxButton( this, ID_LOAD_PROF, wxT("Load"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_load_prof = new wxButton( this, ID_LOAD_PROF, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_load_prof->SetDefault(); 
 	gSizer1->Add( m_load_prof, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_close = new wxButton( this, wxID_OK, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_close = new wxButton( this, wxID_OK, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_close->SetDefault(); 
 	gSizer1->Add( m_close, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1286,7 +1286,7 @@ FeatureTableDlgBase::FeatureTableDlgBase( wxWindow* parent, wxWindowID id, const
 	wxBoxSizer* bSizer380;
 	bSizer380 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text49_show = new wxStaticText( this, ID_TEXT_SHOW, wxT("Show features:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text49_show = new wxStaticText( this, ID_TEXT_SHOW, _("Show features:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text49_show->Wrap( -1 );
 	bSizer380->Add( m_text49_show, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1295,7 +1295,7 @@ FeatureTableDlgBase::FeatureTableDlgBase( wxWindow* parent, wxWindowID id, const
 	m_choice_show->SetSelection( 0 );
 	bSizer380->Add( m_choice_show, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	mmext_vertical = new wxStaticText( this, ID_TEXT_VERTICAL, wxT("Vertical units:"), wxDefaultPosition, wxDefaultSize, 0 );
+	mmext_vertical = new wxStaticText( this, ID_TEXT_VERTICAL, _("Vertical units:"), wxDefaultPosition, wxDefaultSize, 0 );
 	mmext_vertical->Wrap( -1 );
 	bSizer380->Add( mmext_vertical, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1304,7 +1304,7 @@ FeatureTableDlgBase::FeatureTableDlgBase( wxWindow* parent, wxWindowID id, const
 	m_choice_vertical->SetSelection( 0 );
 	bSizer380->Add( m_choice_vertical, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_del_high = new wxButton( this, ID_DEL_HIGH, wxT("Delete Highlighted"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_del_high = new wxButton( this, ID_DEL_HIGH, _("Delete Highlighted"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_del_high->SetDefault(); 
 	bSizer380->Add( m_del_high, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1349,11 +1349,11 @@ SizeDlgBase::SizeDlgBase( wxWindow* parent, wxWindowID id, const wxString& title
 	
 	bSizer382->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_ok = new wxButton( this, wxID_OK, wxT("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ok = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ok->SetDefault(); 
 	bSizer382->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_cancel = new wxButton( this, wxID_CANCEL, wxT("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cancel->SetDefault(); 
 	bSizer382->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
