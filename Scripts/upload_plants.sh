@@ -9,7 +9,6 @@ DATE=$1
 PLANTZIP=/cygdrive/c/Distrib/vtp-plantlib-${DATE}.zip
 PLANTXML=/cygdrive/c/VTP/Scripts/plant_list.html
 
-lftp -c "open vterrain.org; \
-		 user vterrain; \
+lftp -c "open sftp://vterrain@vterrain.org; \
 		 put -O public_html/Implementation/Plants ${PLANTXML}; \
 		 put -O public_html/dist ${PLANTZIP}"
