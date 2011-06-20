@@ -246,37 +246,8 @@ void vtGLCanvas::OnIdle(wxIdleEvent &event)
 	if (m_bRunning)
 #ifdef __WXMAC__
 	{
-		// Make sure the Graphics context of this thread is this window
-		SetCurrent();
-
 		// Render the Scene Graph
 		vtGetScene()->DoUpdate();
-
-		if (m_bShowFrameRateChart)
-			vtGetScene()->DrawFrameRateChart();
-
-		SwapBuffers();
-
-		EnviroFrame *frame = (EnviroFrame*) GetParent();
-
-		// update the status bar every 1/10 of a second
-		static float last_stat = 0.0f;
-		static vtString last_msg;
-		float cur = vtGetTime();
-		if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
-		{
-			last_msg = g_App.GetMessage();
-			last_stat = cur;
-			frame->UpdateStatus();
-		}
-
-		frame->UpdateLODInfo();
-
-		g_App.UpdateCompass();
-
-
-		// Reset the number of mousemoves we've gotten since last redraw
-		m_iConsecutiveMousemoves = 0;
 
 		event.RequestMore();
 	}
