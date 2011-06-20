@@ -368,7 +368,11 @@ public:
 	vtLOD();
 
 	void SetRanges(float *ranges, int nranges);
+
+	/// Set the location of the LOD's center.  Distance from this center determined detail.
 	void SetCenter(const FPoint3 &center) { setCenter(v2s(center)); }
+
+	/// Get the location of the LOD's center
 	void GetCenter(FPoint3 &center) { s2v(getCenter(), center); }
 
 protected:
@@ -457,11 +461,7 @@ public:
 
 	// As of OSG 0.9.9, computeBound returns a BoundingBox
 	virtual osg::BoundingBox computeBound() const;
-#if OSG_VERSION_MAJOR == 2
 	virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
-#else
-	virtual void drawImplementation(osg::State& state) const;
-#endif
 
 	class vtDynGeom		*m_pDynGeom;
 	osg::State			*m_pDrawState;

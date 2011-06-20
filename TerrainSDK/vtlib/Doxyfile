@@ -42,3 +42,8 @@ TAGFILES          = ../vtdata/vtdata.tag=../vtdata
 
 # GENERATE_HTMLHELP = YES
 # CHM_FILE           = ../vtlib.chm
+
+# Temporarily leave the .dot files around:
+# DOT_CLEANUP = NO
+
+DOTFILE_DIRS	= .
