@@ -842,7 +842,6 @@ double vtIcoGlobe::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line)
 // Internal methods
 //
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 // This array describes the configuration and topology of the subfaces in
 // the flattened dymaxion map.
 struct dymax_info
@@ -853,7 +852,6 @@ struct dymax_info
 	int parent_mface;
 	int parentedge;
 };
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 dymax_info dymax_subfaces[22] =
 {

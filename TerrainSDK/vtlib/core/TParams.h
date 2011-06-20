@@ -3,7 +3,7 @@
 //
 // defines all the construction parameters for a terrain
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -384,7 +384,6 @@ private:
 ////////////////////////////////////////////////////////////////////////
 // Visitor class for XML parsing of TParams files.
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class TParamsVisitor : public TagVisitor
 {
 public:
@@ -400,8 +399,6 @@ protected:
 	bool m_bInLayer;
 	bool m_bInScenario;
 };
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-
 
 #define STR_TPARAMS_FORMAT_NAME "Terrain_Parameters"
 

@@ -21,8 +21,6 @@
 #include <osg/FragmentProgram>
 #include <osg/Version>
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 #define USE_SHADOW_HUD		0
 #define USE_FRAGMENT_SHADER	0
 
@@ -618,7 +616,5 @@ bool CStructureShadowsOSG::IsExcludedFromShadower(osg::Node *pNode)
 			return true;
 	return false;
 }
-
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 #endif // OLD_OSG_SHADOWS

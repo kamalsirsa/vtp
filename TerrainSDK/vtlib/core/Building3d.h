@@ -1,7 +1,7 @@
 //
 // Building3d.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,8 +21,6 @@
 
 class vtHeightField;
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 struct MatMesh
 {
 	int		m_iMatIdx;
@@ -30,7 +28,6 @@ struct MatMesh
 	vtMesh::PrimType m_ePrimType;
 };
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /**
  * This class extends vtBuilding with the abiliity to construct and

@@ -1,7 +1,7 @@
 //
 // StructureShadowsOSG.h
 //
-// Copyright (c) 2005-2007 Virtual Terrain Project
+// Copyright (c) 2005-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,6 @@
 #include <osg/PolygonOffset>
 #include <osg/CameraNode>
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 class CStructureShadowsOSG : public osg::Referenced
 {
@@ -75,7 +74,5 @@ protected:
 	float m_fPolygonOffsetUnits;
 	FSphere m_ShadowSphere;
 };
-
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 #endif // STRUCTURESHADOWSOSG_H

@@ -3,7 +3,7 @@
 //
 // Implementation animation path capabilities.
 //
-// Copyright (c) 2004-2007 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -233,8 +233,6 @@ public:
 	float	m_fSpeed;
 };
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 /* Convenience classes for organizing a set of animation paths with their engines. */
 struct vtAnimEntry
 {
@@ -255,8 +253,6 @@ public:
 protected:
 	vtEnginePtr m_pParentEngine;
 };
-
-#endif	// DOXYGEN_SHOULD_SKIP_THIS
 
 /*@}*/  // nav
 

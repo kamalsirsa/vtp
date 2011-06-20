@@ -3,7 +3,7 @@
 //
 // Original authors: Will Evans and Gregg Townsend of the University of Arizona
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,8 +12,6 @@
 
 /** \addtogroup dynterr */
 /*@{*/
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #include <limits.h>
 #include "DynTerrain.h"
@@ -93,7 +91,6 @@ typedef struct {	/* triangle index */
 #define IVEXAGGER		1.0
 #define IVEXAGGERINC	0.1
 
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /*!
 	\par

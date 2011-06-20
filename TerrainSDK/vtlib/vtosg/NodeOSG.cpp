@@ -1543,22 +1543,6 @@ vtLOD::vtLOD()
 	SetOsgNode(this);
 }
 
-void vtLOD::SetRanges(float *ranges, int nranges)
-{
-	int i;
-	float next;
-	for (i = 0; i < nranges; i++)
-	{
-		if (i < nranges - 1)
-			next = ranges[i+1];
-		else
-			next = 1E10;
-		setRange(i, ranges[i], next);
-	}
-}
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 
 ///////////////////////////////////////////////////////////////////////
 // OsgDynMesh
@@ -1589,18 +1573,10 @@ osg::BoundingBox OsgDynMesh::computeBound() const
 }
 
 
-#if OSG_VERSION_MAJOR >= 2
 void OsgDynMesh::drawImplementation(osg::RenderInfo& renderInfo) const
-#else
-void OsgDynMesh::drawImplementation(State& state) const
-#endif
 {
 	OsgDynMesh *cthis = const_cast<OsgDynMesh*>(this);
-#if OSG_VERSION_MAJOR >= 2
 	cthis->m_pDrawState = renderInfo.getState();
-#else
-	cthis->m_pDrawState = (&state);
-#endif
 
 	// Our dyamic mesh might use Vertex Arrays, and this can conflict with
 	//  other objects in the OSG scene graph which are also using Vertex
@@ -1621,7 +1597,10 @@ void OsgDynMesh::drawImplementation(State& state) const
 	m_pDynGeom->DoRender();
 }
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+///////////////////////////////////////////////////////////////////////
+// vtDynGeom
+//
 
 vtDynGeom::vtDynGeom() : vtGeode()
 {

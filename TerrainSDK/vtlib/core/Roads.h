@@ -49,7 +49,6 @@ public:
 	FPoint3 m_p3;
 };
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 //
 // Holds information about a roadway, used internally by vtRoadMap3d during
 // road construction.
@@ -65,7 +64,6 @@ public:
 	int verts;
 	int vert_index;
 };
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 enum normal_direction {
 	ND_UP,

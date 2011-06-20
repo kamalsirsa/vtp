@@ -31,26 +31,36 @@ class vtCamera;
 // vtlib's Extension class provide some additional functionality to OSG's
 //  Node, Group, and MatrixTransform classes.
 //
+
+/**
+ Extends osg::Node with methods to easily enable/disable the node, and control
+ whether it casts a shadow.
+ */
 struct NodeExtension
 {
 	NodeExtension();
-	void SetOsgNode(osg::Node *n);
 
 	void SetEnabled(bool bOn);
 	bool GetEnabled() const;
 
 	/// Set this node to cast a shadow, if it is under a vtShadow node.  Default is false.
 	void SetCastShadow(bool b);
+
 	/// Get whether this node casts a shadow.
 	bool GetCastShadow();
 
-	/** Get the Bounding Sphere of the node */
+	/// Get the Bounding Sphere of the node
 	void GetBoundSphere(FSphere &sphere, bool bGlobal = false);
 
+	// Implementation
+	void SetOsgNode(osg::Node *n);
 	osg::Node *m_pNode;
 	bool m_bCastShadow;
 };
 
+/**
+ Extends OSG's MatrixTransform with methods to easily operate on its matrix.
+ */
 struct TransformExtension: public NodeExtension
 {
 	void SetOsgTransform(osg::MatrixTransform *xform) { m_pNode = m_pTransform = xform; }
@@ -359,17 +369,15 @@ typedef osg::ref_ptr<vtMovGeode> vtMovGeodePtr;
 /**
  * An LOD node controls the visibility of its child nodes.
  *
- * You should set a distance value (range) for each child, which determines
- * at what distance from the camera a node should be rendered.
+ * You should set a distance range for each child, which determines
+ * at what distance from the camera the node should be rendered.
  */
 class vtLOD : public osg::LOD, public NodeExtension
 {
 public:
 	vtLOD();
 
-	void SetRanges(float *ranges, int nranges);
-
-	/// Set the location of the LOD's center.  Distance from this center determined detail.
+	/// Set the location of the LOD's center.  Distance from this center determines detail.
 	void SetCenter(const FPoint3 &center) { setCenter(v2s(center)); }
 
 	/// Get the location of the LOD's center
@@ -380,9 +388,9 @@ protected:
 };
 
 /**
- * A Camera is analogous to a physical camera: it description the location
- * of a point from which the scene is rendered.  It can either be a
- * perspective or orthographic camera, and it very easy to control
+ * A Camera is analogous to a physical camera: it describes the location
+ * and direction from which the scene is rendered.  It can either be a
+ * perspective or orthographic camera, and it is very easy to control
  * since it inherits all the methods of a transform (vtTransform).
  *
  * Although the camera is a node, this is purely for convenience.  You
@@ -443,9 +451,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 // Dynamic geometry
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-/**
+/*
  * We create our own OSG drawable in order to override the draw method.
  */
 class OsgDynMesh : public osg::Drawable
@@ -469,8 +475,6 @@ public:
 protected:
 	virtual ~OsgDynMesh() {}
 };
-
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 
 // Visibility return codes from vtDynGeom::IsVisible

@@ -280,7 +280,8 @@ bool TParams::LoadFromXML(const char *fname)
 	return true;
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
+//////////////////////////////
 
 void TParamsVisitor::startElement(const char *name, const XMLAttributes &atts)
 {
@@ -355,7 +356,9 @@ void TParamsVisitor::endElement(const char *name)
 	else
 		TagVisitor::endElement(name);
 }
-#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+
+//////////////////////////////
 
 void TParams::SetLodMethod(LodMethodEnum method)
 {

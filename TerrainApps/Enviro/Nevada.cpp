@@ -335,18 +335,13 @@ void NevadaTerrain::CreatePresent()
 	vtLOD *pLampLod = new vtLOD();
 	pLampLod->addChild(lamppost);
 	pLampLod->addChild(lamppost2);
-	float ranges[3];
-	ranges[0] = 1.0f;
-	ranges[1] = 40.0f;
-	ranges[2] = 300.0f;
-	pLampLod->SetRanges(ranges, 3);
+	pLampLod->setRanges(0, 0.0f, 40.0f);
+	pLampLod->setRanges(1, 40.0f, 300.0f);
 
 	vtTransform *copy;
-	int i;
-
 	if (lamppost)
 	{
-		for (i = 0; i < 17; i++)
+		for (int i = 0; i < 17; i++)
 		{
 			copy = (vtTransform *)pLampLod->Clone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
@@ -360,7 +355,7 @@ void NevadaTerrain::CreatePresent()
 			copy->Translate2(FPoint3(x, 0.0f, -y));
 			PlantModel(copy);
 		}
-		for (i = 0; i < 17; i++)
+		for (int i = 0; i < 17; i++)
 		{
 			copy = (vtTransform *)pLampLod->Clone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);

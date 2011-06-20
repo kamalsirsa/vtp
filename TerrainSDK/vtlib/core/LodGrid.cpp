@@ -120,10 +120,8 @@ void vtSimpleLodGrid::AllocateCell(int a, int b)
 	name.Format("LOD cell %d %d", a, b);
 	m_pCells[i]->setName(name);
 
-	float ranges[2];
-	ranges[0] = 0.0f;
-	ranges[1] = m_fLODDistance;
-	m_pCells[i]->SetRanges(ranges, 2);
+	// The child of this LOD is only visible up to LODDistance away
+	m_pCells[i]->setRange(0, 0.0f, m_fLODDistance);
 
 	// determine LOD center
 	FPoint3 lod_center;
@@ -170,21 +168,14 @@ void vtSimpleLodGrid::SetDistance(float fLODDistance)
 {
 	m_fLODDistance = fLODDistance;
 
-	float ranges[2];
-	ranges[0] = 0.0f;
-	ranges[1] = m_fLODDistance;
-
-	vtLOD *lod;
-	int a, b;
-	for (a = 0; a < m_dim; a++)
+	for (int a = 0; a < m_dim; a++)
 	{
-		for (b = 0; b < m_dim; b++)
+		for (int b = 0; b < m_dim; b++)
 		{
-			lod = m_pCells[CellIndex(a,b)];
+			vtLOD *lod = m_pCells[CellIndex(a,b)];
 			if (lod)
-				lod->SetRanges(ranges, 2);
+				lod->setRange(0, 0.0f, m_fLODDistance);
 		}
 	}
 }
-
 

@@ -1,7 +1,7 @@
 //
 // FelkelComponents.h
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -12,8 +12,6 @@
 
 #ifndef FELKELCOMPONENTSH
 #define FELKELCOMPONENTSH
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #include <math.h>
 #include <assert.h>
@@ -326,5 +324,4 @@ public:
 	}
 };
 
-#endif	// DOXYGEN_SHOULD_SKIP_THIS
 #endif	// FELKELCOMPONENTSH

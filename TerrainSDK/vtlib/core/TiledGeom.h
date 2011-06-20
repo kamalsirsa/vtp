@@ -19,7 +19,6 @@
 /** \addtogroup dynterr */
 /*@{*/
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class TiledDatasetDescription
 {
 public:
@@ -35,7 +34,6 @@ public:
 	LODMap lodmap;
 	bool bJPEG;
 };
-#endif
 
 // Simple cache of tiles loaded from disk
 typedef unsigned char *ucharptr;

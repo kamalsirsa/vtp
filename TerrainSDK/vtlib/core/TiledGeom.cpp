@@ -155,7 +155,7 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 	{iomutex.unlock();}
 #endif
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 ///////////////////////////////////////////////////////////////////////
 // class TiledDatasetDescription implementation
 
@@ -269,7 +269,6 @@ bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
 	return true;
 }
 
-#endif	// DOXYGEN_SHOULD_SKIP_THIS
 
 // check a file
 int file_exists(const char *filename)

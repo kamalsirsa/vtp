@@ -1,7 +1,7 @@
 //
 // FelkelIntersection.cpp: implementation of the CIntersection class.
 //
-// Copyright (c) 2003-2009 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -13,7 +13,6 @@
 
 #include "FelkelIntersection.h"
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -466,4 +465,3 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 	v3.m_advancingSkeletonLine = line3Ptr;
 }
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS

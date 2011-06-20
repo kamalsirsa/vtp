@@ -336,8 +336,6 @@ vtMesh *NodeGeom::GenerateGeometry()
 
 ////////////////////////////////////////////////////////////////////////
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 RoadBuildInfo::RoadBuildInfo(int iCoords)
 {
 	center.SetSize(iCoords);
@@ -346,7 +344,6 @@ RoadBuildInfo::RoadBuildInfo(int iCoords)
 	verts = vert_index = 0;
 }
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -793,12 +790,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 	}
 	else
 	{
-		float fDist[2];
-		fDist[0] = 0.0f;
-		fDist[1] = m_fLodDistance;
-
 		m_pRoads[a][b] = new vtLOD;
-		m_pRoads[a][b]->SetRanges(fDist, 2);
 		m_pGroup->addChild(m_pRoads[a][b]);
 
 		FPoint3 lod_center;
@@ -816,8 +808,10 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 
 		pGeode = new vtGeode;
 		pGeode->setName("road");
-		m_pRoads[a][b]->addChild(pGeode);
 		pGeode->SetMaterials(m_pMats);
+
+		// Visible from 0 to the desired distance
+		m_pRoads[a][b]->addChild(pGeode, 0.0f, m_fLodDistance);
 
 		clusters_used++;
 	}
@@ -1089,16 +1083,11 @@ void vtRoadMap3d::SetLodDistance(float fDistance)
 
 	if (m_pGroup)
 	{
-		float fDist[2];
-		fDist[0] = 0.0f;
-		fDist[1] = m_fLodDistance;
-
-		int a, b;
-		for (a = 0; a < ROAD_CLUSTER; a++)
-			for (b = 0; b < ROAD_CLUSTER; b++)
+		for (int a = 0; a < ROAD_CLUSTER; a++)
+			for (int b = 0; b < ROAD_CLUSTER; b++)
 			{
 				if (m_pRoads[a][b])
-					m_pRoads[a][b]->SetRanges(fDist, 2);
+					m_pRoads[a][b]->setRange(0, 0.0f, m_fLodDistance);
 			}
 	}
 }

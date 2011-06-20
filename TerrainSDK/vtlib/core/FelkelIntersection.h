@@ -1,7 +1,7 @@
 //
 // FelkelIntersection.h: interface for the CIntersection class.
 //
-// Copyright (c) 2003-2009 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -12,8 +12,6 @@
 
 #ifndef FELKELINTERSECTIONH
 #define FELKELINTERSECTIONH
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #include <queue>
 
@@ -51,5 +49,4 @@ public:
 	}
 };
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // FELKELINTERSECTIONH

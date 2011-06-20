@@ -12,8 +12,7 @@ INPUT              = . ./core ./vtosg
 FILE_PATTERNS      = *.h *.cpp
 
 EXCLUDE = core/FrameTimer.cpp core/FrameTimer.h \
-		  core/AttribMap.cpp core/AttribMap.h \
-		  vtosg/ProjectedShadows.cpp vtosg/ProjectedShadows.h
+		  core/AttribMap.cpp core/AttribMap.h
 
 QUIET              = YES
 JAVADOC_AUTOBRIEF  = NO
@@ -32,7 +31,7 @@ HAVE_DOT           = YES
 DOT_IMAGE_FORMAT   = png
 
 HIDE_UNDOC_MEMBERS = YES
-HIDE_UNDOC_CLASSES = NO
+HIDE_UNDOC_CLASSES = YES
 
 PREDEFINED = DOXYGEN_SHOULD_SKIP_THIS SUPPORT_QUIKGRID SUPPORT_NETCDF SUPPORT_HTTP SUPPORT_UNZIP SUPPORT_BZIP2 SUPPORT_WSTRING
 

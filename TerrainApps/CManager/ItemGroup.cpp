@@ -130,28 +130,16 @@ void ItemGroup::ShowRulers(bool bShow)
 
 void ItemGroup::SetRanges()
 {
-	// Now set the LOD ranges for each model
-	int i, num_models = m_pItem->NumModels();
-	if (!num_models)
-		return;
+	// Set the LOD ranges for each model
+	int num_models = m_pItem->NumModels();
 
-	// LOD documentation: For N children, you must have N+1 range values.
-	// "Note that the last child (n) does not implicitly have a maximum
-	//  distance value of infinity.  You must add a n+1'st range value to
-	//  specify its maximum distance.  Otherwise, "bad things" will happen."
-
-	m_ranges[0] = 0.0f;
-	if (num_models == 1)
-		m_ranges[1] = 10000000.0f;
-	else
+	float start = 0.0f, end;
+	for (int i = 0; i < num_models; i++)
 	{
-		for (i = 0; i < num_models; i++)
-		{
-			vtModel *mod = m_pItem->GetModel(i);
-			m_ranges[i+1] = mod->m_distance;
-		}
+		end = m_pItem->GetModel(i)->m_distance;
+		m_pLOD->setRange(i, start, end);
+		start = end;
 	}
-	m_pLOD->SetRanges(m_ranges, num_models+1);
 }
 
 void ItemGroup::ShowLOD(bool bTrue)

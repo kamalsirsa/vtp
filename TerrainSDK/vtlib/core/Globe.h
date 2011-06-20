@@ -79,7 +79,6 @@ public:
 	vtMaterialArray *GetEarthMaterials();
 
 protected:
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	struct IcoVert
 	{
 		DPoint3 p;
@@ -96,7 +95,6 @@ protected:
 		FPoint3 local_origin;
 		FPoint3 axis;		// axis of rotation ("hinge") for each face
 	};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 	void CreateMeshMat(int iTriangleCount);
 	vtMaterialArray *CreateMaterialsFromFiles(const vtString &strImagePrefix);

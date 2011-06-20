@@ -1,7 +1,7 @@
 //
 // FelkelComponents.cpp
 //
-// Copyright (c) 2003-2006 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Straight skeleton algorithm and original implementation
@@ -14,7 +14,6 @@
 #include "FelkelIntersection.h"
 #include "vtdata/vtLog.h"
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 //
 // Implementation of the CRidgeLine class.
@@ -626,5 +625,3 @@ bool CVertex::VertexInCurrentContour(CVertex& Vertex)
 	return false;
 }
 
-
-#endif	// DOXYGEN_SHOULD_SKIP_THIS

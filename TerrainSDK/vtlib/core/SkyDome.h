@@ -32,7 +32,6 @@ public:
 	void	SetTime(const vtTime &time);
 	void	SetStarFile(char *starpath);
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 	struct Star
 	{
 		float	ra;		// Right Ascension
@@ -41,7 +40,6 @@ public:
 		float	relmag;
 		FPoint3 cartpt;	// Cartesian coordinate
 	};
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 private:
 	vtGeode		*m_pStarGeom;

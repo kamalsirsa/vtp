@@ -39,15 +39,14 @@ bool vtItem3d::LoadModels()
 	int i, models = NumModels();
 
 	// attempt to instantiate the item
-	vtLOD *pLod=NULL;
+	vtLOD *pLod = NULL;
 
 	if (models > 1)
 	{
 		pLod = new vtLOD;
 		m_pNode = pLod;
 	}
-	float ranges[20];
-	ranges[0] = 0.0f;
+	float start = 0.0f;
 
 	for (i = 0; i < models; i++)
 	{
@@ -86,16 +85,14 @@ bool vtItem3d::LoadModels()
 		}
 
 		if (models > 1)
-			pLod->addChild(pNode);
+		{
+			float end = model->m_distance;
+			pLod->addChild(pNode, start, end);
+			start = end;
+		}
 		else
 			m_pNode = pNode;
-
-		if (models > 1)
-			ranges[i+1] = model->m_distance;
 	}
-	if (models > 1)
-		pLod->SetRanges(ranges, models+1);
-
 	return true;
 }
 

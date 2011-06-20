@@ -1,7 +1,7 @@
 //
 // SMTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -71,8 +71,6 @@ Seumas says:
 #define FRUST_PARTIN	1
 #define FRUST_ALLIN		2
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 class BinTri
 {
 public:
@@ -99,7 +97,6 @@ public:
 };
 typedef Block *BlockPtr;
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /*!
 	\par
