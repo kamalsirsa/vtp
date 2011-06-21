@@ -46,6 +46,7 @@
 #include "CameraDlg.h"
 #include "ContourDlg.h"
 #include "DistanceDlg3d.h"
+#include "DriveDlg.h"
 #include "EphemDlg.h"
 #include "FeatureTableDlg3d.h"
 #include "LayerDlg.h"
@@ -177,6 +178,8 @@ EVT_MENU(ID_VIEW_COMPASS,			EnviroFrame::OnViewCompass)
 EVT_UPDATE_UI(ID_VIEW_COMPASS,		EnviroFrame::OnUpdateViewCompass)
 EVT_MENU(ID_VIEW_MAP_OVERVIEW,		EnviroFrame::OnViewMapOverView)
 EVT_UPDATE_UI(ID_VIEW_MAP_OVERVIEW,	EnviroFrame::OnUpdateViewMapOverView)
+EVT_MENU(ID_VIEW_DRIVE,				EnviroFrame::OnViewDrive)
+EVT_UPDATE_UI(ID_VIEW_DRIVE,		EnviroFrame::OnUpdateViewDrive)
 EVT_MENU(ID_VIEW_SETTINGS,			EnviroFrame::OnViewSettings)
 EVT_MENU(ID_VIEW_LOCATIONS,			EnviroFrame::OnViewLocations)
 EVT_UPDATE_UI(ID_VIEW_LOCATIONS,	EnviroFrame::OnUpdateViewLocations)
@@ -470,6 +473,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pUtilDlg = new UtilDlg(this, -1, _("Routes"));
 	m_pScenarioSelectDialog = new ScenarioSelectDialog(this, -1, _("Scenarios"));
 	m_pVehicleDlg = new VehicleDlg(this, -1, _("Vehicles"));
+	m_pDriveDlg = new DriveDlg(this);
 	m_pProfileDlg = NULL;
 	#ifdef NVIDIA_PERFORMANCE_MONITORING
     m_pPerformanceMonitorDlg = new CPerformanceMonitorDialog(this, wxID_ANY, _("Performance Monitor"));
@@ -607,6 +611,7 @@ void EnviroFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_ELEV_LEGEND, _("Elevation Legend"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_COMPASS, _("Compass"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_MAP_OVERVIEW, _("Overview"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_DRIVE, _("Drive Vehicle"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
 	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _("Store/Recall Locations\tCtrl+L"));
@@ -1690,6 +1695,19 @@ void EnviroFrame::OnUpdateViewMapOverView(wxUpdateUIEvent& event)
 	event.Check(g_App.GetShowMapOverview());
 }
 
+void EnviroFrame::OnViewDrive(wxCommandEvent& event)
+{
+	m_pDriveDlg->Show(!m_pDriveDlg->IsShown());
+}
+
+void EnviroFrame::OnUpdateViewDrive(wxUpdateUIEvent& event)
+{
+	// Only supported in Terrain View for certain texture types
+	bool bEnable = (g_App.m_Vehicles.GetSelectedCarEngine() != NULL);
+	event.Enable(bEnable);
+	event.Check(m_pDriveDlg->IsShown());
+}
+
 void EnviroFrame::OnViewSlower(wxCommandEvent& event)
 {
 	ChangeFlightSpeed(1.0f / 1.8f);
@@ -2643,7 +2661,7 @@ void EnviroFrame::OnTerrainDistribVehicles(wxCommandEvent& event)
 	if (num == -1)
 		return;
 
-	g_App.CreateSomeTestVehicles(pTerr, num, 1.0f);
+	g_App.CreateSomeTestVehicles(pTerr);
 }
 
 void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)

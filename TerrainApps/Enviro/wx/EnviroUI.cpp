@@ -3624,3 +3624,52 @@ PerformanceMonitorDlgBase::~PerformanceMonitorDlgBase()
 	m_pm_listctrl->Disconnect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK, wxListEventHandler( PerformanceMonitorDlgBase::OnListItemRightClick ), NULL, this );
 	
 }
+
+DriveDlgBase::DriveDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxBoxSizer* bSizer210;
+	bSizer210 = new wxBoxSizer( wxVERTICAL );
+	
+	wxBoxSizer* bSizer211;
+	bSizer211 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_staticText149 = new wxStaticText( this, wxID_ANY, _("Speed"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText149->Wrap( -1 );
+	bSizer211->Add( m_staticText149, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_speed = new wxTextCtrl( this, ID_SPEED, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer211->Add( m_speed, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_staticText150 = new wxStaticText( this, wxID_ANY, _("Rate of turn"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText150->Wrap( -1 );
+	bSizer211->Add( m_staticText150, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_turn = new wxTextCtrl( this, ID_TURN, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer211->Add( m_turn, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	bSizer210->Add( bSizer211, 0, wxEXPAND, 5 );
+	
+	m_area = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	bSizer210->Add( m_area, 1, wxEXPAND | wxALL, 5 );
+	
+	this->SetSizer( bSizer210 );
+	this->Layout();
+	
+	this->Centre( wxBOTH );
+	
+	// Connect Events
+	m_area->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( DriveDlgBase::m_areaOnLeftDown ), NULL, this );
+	m_area->Connect( wxEVT_LEFT_UP, wxMouseEventHandler( DriveDlgBase::m_areaOnLeftUp ), NULL, this );
+	m_area->Connect( wxEVT_MOTION, wxMouseEventHandler( DriveDlgBase::m_areaOnMotion ), NULL, this );
+}
+
+DriveDlgBase::~DriveDlgBase()
+{
+	// Disconnect Events
+	m_area->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler( DriveDlgBase::m_areaOnLeftDown ), NULL, this );
+	m_area->Disconnect( wxEVT_LEFT_UP, wxMouseEventHandler( DriveDlgBase::m_areaOnLeftUp ), NULL, this );
+	m_area->Disconnect( wxEVT_MOTION, wxMouseEventHandler( DriveDlgBase::m_areaOnMotion ), NULL, this );
+	
+}

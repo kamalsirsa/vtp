@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2011.06.18
+AppVerName=VTP Software 2011.06.21
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -101,6 +101,9 @@ Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxmsw28u_gl_vc_custom.dll"; DestDir: "{a
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxbase28u_net_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxmsw28u_aui_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\expat-2.0.1\win32\bin\release\libexpat-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+; DAE plugin might want this:
+Source: "C:\APIs\Collada_DOM_2.2\dom\external-libs\libxml2\win32\lib\libxml2.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+
 
 ; Microsoft DLLs (not useful, since vc8 they don't work if installed this way)
 ;Source: "C:\Program Files\VisStudio8\VC\REDIST\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls

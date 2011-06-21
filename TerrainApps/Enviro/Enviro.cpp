@@ -2918,38 +2918,43 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 ////////////////////////////////////////////////////////////////////////
 // Vehicles
 
-void Enviro::CreateGroundVehicle(const VehicleOptions &opt)
+CarEngine *Enviro::CreateGroundVehicle(const VehicleOptions &opt)
 {
 	// Create test vehicle
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr)
-		return;
+		return NULL;
 
 	DPoint3 epos;
 	bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
 	if (!bOn)
-		return;
+		return NULL;
 
 	Vehicle *car = m_VehicleManager.CreateVehicle(opt.m_Itemname, opt.m_Color);
 	if (!car)
-		return;
+		return NULL;
 	pTerr->addNode(car);
 
 	pTerr->PlantModelAtPoint(car, DPoint2(epos.x, epos.y));
 
-	float speed = 0.0f;		// kmph
-	float wheel_radius = 0.25f;
-	CarEngine *pE1 = new CarEngine(car, pTerr->GetHeightField(), speed, wheel_radius, car->GetTrans());
-	pE1->setName("drive");
-	pE1->SetTarget(car);
-	if (pE1->FindWheelTransforms())
-	{
-		pTerr->AddEngine(pE1);
-		m_Vehicles.AddEngine(pE1);
-	}
+	CarEnginePtr pEng = new CarEngine(car, pTerr->GetHeightField());
+	if (!pEng->Valid())
+		return NULL;
+
+	// add the engine to the terrain's engines
+	pTerr->AddEngine(pEng);
+
+	// add the vehicle to the terrain's vehicles
+	m_Vehicles.AddEngine(pEng);
+
+	// notify framework
+	AddVehicle(pEng);
+
+	pEng->setName("drive");
+	return pEng.get();
 }
 
-void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, float fSpeed)
+void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain)
 {
 	vtRoadMap3d *pRoadMap = pTerrain->GetRoadMap();
 
@@ -2968,56 +2973,36 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, floa
 	}
 	unsigned int numv = vnames.size();
 
-	// add some test vehicles
-	NodeGeom *road_node = NULL;
-	for (unsigned int i = 0; i < iNum; i++)
-	{
-		if (road_node == NULL)
-			road_node = pRoadMap->GetFirstNode();
+	// put one of each at the center of the terrain
+	DPoint2 center = pTerrain->GetHeightField()->GetEarthExtents().GetCenter();
 
-		RGBf color;
-		switch (i % 8)
-		{
-		case 0: color.Set(1.0f, 1.0f, 1.0f); break;	// white
-		case 1: color.Set(1.0f, 1.0f, 0.0f); break; // yellow
-		case 2: color.Set(0.3f, 0.6f, 1.0f); break; // medium blue
-		case 3: color.Set(1.0f, 0.3f, 0.3f); break; // red
-		case 4: color.Set(0.5f, 1.0f, 0.5f); break; // medium green
-		case 5: color.Set(0.2f, 0.2f, 0.2f); break; // black/dk.grey
-		case 6: color.Set(0.1f, 0.6f, 0.1f); break; // dk.green
-		case 7: color.Set(1.0f, 0.8f, 0.6f); break; // tan
-		}
+	// add some test vehicles
+	for (unsigned int i = 0; i < numv; i++)
+	{
+		RGBf color(1.0f, 1.0f, 1.0f);	// white
 
 		// Create some of each land vehicle type
-		int vnum = i % numv;
-		Vehicle *car = m_VehicleManager.CreateVehicle(vnames[vnum], color);
+		Vehicle *car = m_VehicleManager.CreateVehicle(vnames[i], color);
 		if (car)
 		{
 			pTerrain->addNode(car);
-			pTerrain->PlantModelAtPoint(car, road_node->m_p);
+			pTerrain->PlantModelAtPoint(car, center + DPoint2(i*10, 0));
 
-			float fSpeed = 60.0f;	// kmph
+			CarEnginePtr pEng = new CarEngine(car, pTerrain->GetHeightField());
+			if (!pEng->Valid())
+				continue;
 
-			CarEngine *pE1;
-			if (road_node == NULL)
-			{
-				pE1 = new CarEngine(car, pTerrain->GetHeightField(), fSpeed, .25f,
-					car->GetTrans());
-			}
-			else
-			{
-				pE1 = new CarEngine(car, pTerrain->GetHeightField(), fSpeed, .25f,
-					road_node, 1);
-			}
-			pE1->setName("drive");
-			pE1->SetTarget(car);
-			if (pE1->FindWheelTransforms())
-				pTerrain->AddEngine(pE1);
-			else
-				delete pE1;
-			m_Vehicles.AddEngine(pE1);
+			pEng->setName(vtString("drive") + vnames[i]);
+
+			// add the engine to the terrain's engines
+			pTerrain->AddEngine(pEng);
+
+			// add the vehicle to the terrain's vehicles
+			m_Vehicles.AddEngine(pEng);
+
+			// notify framework
+			AddVehicle(pEng);
 		}
-		road_node = (NodeGeom*) road_node->m_pNext;
 	}
 }
 

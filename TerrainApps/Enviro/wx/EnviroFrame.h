@@ -17,6 +17,7 @@
 class BuildingDlg3d;
 class CameraDlg;
 class DistanceDlg3d;
+class DriveDlg;
 class EphemDlg;
 class FeatureTableDlg3d;
 class InstanceDlg;
@@ -117,6 +118,7 @@ protected:
 	void OnViewElevLegend(wxCommandEvent& event);
 	void OnViewCompass(wxCommandEvent& event);
 	void OnViewMapOverView(wxCommandEvent& event);
+	void OnViewDrive(wxCommandEvent& event);
 	void OnViewSettings(wxCommandEvent& event);
 	void OnViewLocations(wxCommandEvent& event);
 	void OnViewReset(wxCommandEvent& event);
@@ -138,6 +140,7 @@ protected:
 	void OnUpdateViewElevLegend(wxUpdateUIEvent& event);
 	void OnUpdateViewCompass(wxUpdateUIEvent& event);
 	void OnUpdateViewMapOverView(wxUpdateUIEvent& event);
+	void OnUpdateViewDrive(wxUpdateUIEvent& event);
 	void OnUpdateViewLocations(wxUpdateUIEvent& event);
 	void OnUpdateViewStatusBar(wxUpdateUIEvent& event);
 	void OnUpdateViewProfile(wxUpdateUIEvent& event);
@@ -304,6 +307,7 @@ public:
 	LODDlg				*m_pLODDlg;
 	ProfileDlg			*m_pProfileDlg;
 	VehicleDlg			*m_pVehicleDlg;
+	DriveDlg			*m_pDriveDlg;
 	#ifdef NVIDIA_PERFORMANCE_MONITORING
     CPerformanceMonitorDialog *m_pPerformanceMonitorDlg;
     #endif

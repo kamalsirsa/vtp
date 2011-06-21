@@ -251,7 +251,7 @@ void VehicleSet::VisualDeselectAll()
 void VehicleSet::SetVehicleSpeed(int vehicle, float fMetersPerSec)
 {
 	CarEngine *eng = m_Engines[vehicle];
-	eng->SetTargetSpeed(fMetersPerSec);
+	eng->SetSpeed(fMetersPerSec);
 }
 
 CarEngine *VehicleSet::GetSelectedCarEngine()

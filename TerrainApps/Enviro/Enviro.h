@@ -188,7 +188,7 @@ public:
 
 	// vehicles
 	void SetVehicleOptions(const VehicleOptions &opt);
-	void CreateGroundVehicle(const VehicleOptions &opt);
+	CarEngine *CreateGroundVehicle(const VehicleOptions &opt);
 	VehicleManager m_VehicleManager;
 	VehicleSet m_Vehicles;
 
@@ -264,13 +264,15 @@ public:
 	virtual void SetProgressTerrain(vtTerrain *pTerr) {}
 	virtual void UpdateProgress(const char *msg, int amount1, int amount2) {}
 	virtual void ExtendStructure(vtStructInstance *si) {}
+	virtual void AddVehicle(CarEngine *eng) {}
+	virtual void RemoveVehicle(CarEngine *eng) {}
 
 	// temporary for demo use
 	void MakeDemoGlobe();
 	void ToggleDemo();
 	vtGroup *m_pDemoGroup;
 	vtGeode *m_pDemoTrails;
-	void CreateSomeTestVehicles(vtTerrain *pTerrain, unsigned int iNum, float fSpeed);
+	void CreateSomeTestVehicles(vtTerrain *pTerrain);
 	void MakeOverlayGlobe(vtImage *image, bool progress_callback(int) = NULL);
 
 protected:

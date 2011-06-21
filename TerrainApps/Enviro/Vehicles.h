@@ -26,6 +26,8 @@ public:
 	vtTransform *m_pFrontRight;
 	vtTransform *m_pRearLeft;
 	vtTransform *m_pRearRight;
+
+	float GetWheelRadius() { return 0.25f; }	// TODO: get real value
 };
 
 class VehicleManager

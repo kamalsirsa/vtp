@@ -318,6 +318,7 @@
 #define ID_RADIO_ADD 1274
 #define ID_CHOICE_LAYER 1275
 #define ID_PM_LISTCTRL 1276
+#define ID_TURN 1277
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class StartupDlgBase
@@ -1235,6 +1236,33 @@ class PerformanceMonitorDlgBase : public wxDialog
 		
 		PerformanceMonitorDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Performance Monitor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
 		~PerformanceMonitorDlgBase();
+	
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class DriveDlgBase
+///////////////////////////////////////////////////////////////////////////////
+class DriveDlgBase : public wxDialog 
+{
+	private:
+	
+	protected:
+		wxStaticText* m_staticText149;
+		wxTextCtrl* m_speed;
+		wxStaticText* m_staticText150;
+		wxTextCtrl* m_turn;
+		wxPanel* m_area;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void m_areaOnLeftDown( wxMouseEvent& event ) { event.Skip(); }
+		virtual void m_areaOnLeftUp( wxMouseEvent& event ) { event.Skip(); }
+		virtual void m_areaOnMotion( wxMouseEvent& event ) { event.Skip(); }
+		
+	
+	public:
+		
+		DriveDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Drive"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 341,191 ), long style = wxDEFAULT_DIALOG_STYLE );
+		~DriveDlgBase();
 	
 };
 
