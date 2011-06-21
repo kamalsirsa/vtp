@@ -9,6 +9,11 @@
 
 #include "EnviroUI.h"
 
+#include "bitmap/play_back.xpm"
+#include "bitmap/play_play.xpm"
+#include "bitmap/play_record1.xpm"
+#include "bitmap/play_stop.xpm"
+
 ///////////////////////////////////////////////////////////////////////////
 
 StartupDlgBase::StartupDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
@@ -364,19 +369,19 @@ LocationDlgBase::LocationDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer99->Add( 7, 14, 0, wxALIGN_CENTER, 5 );
 	
-	m_reset = new wxBitmapButton( this, ID_RESET, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_reset = new wxBitmapButton( this, ID_RESET, wxBitmap( play_back_xpm ), wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_reset->SetDefault(); 
 	bSizer99->Add( m_reset, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_stop = new wxBitmapButton( this, ID_STOP, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_stop = new wxBitmapButton( this, ID_STOP, wxBitmap( play_stop_xpm ), wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_stop->SetDefault(); 
 	bSizer99->Add( m_stop, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_record1 = new wxBitmapButton( this, ID_RECORD1, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_record1 = new wxBitmapButton( this, ID_RECORD1, wxBitmap( play_record1_xpm ), wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_record1->SetDefault(); 
 	bSizer99->Add( m_record1, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_play = new wxBitmapButton( this, ID_PLAY, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_play = new wxBitmapButton( this, ID_PLAY, wxBitmap( play_play_xpm ), wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_play->SetDefault(); 
 	bSizer99->Add( m_play, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	

@@ -3342,7 +3342,7 @@
                                             <property name="proportion">0</property>
                                             <object class="wxBitmapButton" expanded="0">
                                                 <property name="bg"></property>
-                                                <property name="bitmap">; Load From File</property>
+                                                <property name="bitmap">bitmap/play_back.xpm; Load From File</property>
                                                 <property name="context_help"></property>
                                                 <property name="context_menu">1</property>
                                                 <property name="default"></property>
@@ -3404,7 +3404,7 @@
                                             <property name="proportion">0</property>
                                             <object class="wxBitmapButton" expanded="0">
                                                 <property name="bg"></property>
-                                                <property name="bitmap">; Load From File</property>
+                                                <property name="bitmap">bitmap/play_stop.xpm; Load From File</property>
                                                 <property name="context_help"></property>
                                                 <property name="context_menu">1</property>
                                                 <property name="default"></property>
@@ -3466,7 +3466,7 @@
                                             <property name="proportion">0</property>
                                             <object class="wxBitmapButton" expanded="0">
                                                 <property name="bg"></property>
-                                                <property name="bitmap">; Load From File</property>
+                                                <property name="bitmap">bitmap/play_record1.xpm; Load From File</property>
                                                 <property name="context_help"></property>
                                                 <property name="context_menu">1</property>
                                                 <property name="default"></property>
@@ -3528,7 +3528,7 @@
                                             <property name="proportion">0</property>
                                             <object class="wxBitmapButton" expanded="0">
                                                 <property name="bg"></property>
-                                                <property name="bitmap">; Load From File</property>
+                                                <property name="bitmap">bitmap/play_play.xpm; Load From File</property>
                                                 <property name="context_help"></property>
                                                 <property name="context_menu">1</property>
                                                 <property name="default"></property>
