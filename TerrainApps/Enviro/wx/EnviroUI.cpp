@@ -9,11 +9,6 @@
 
 #include "EnviroUI.h"
 
-#include "bitmap/play_back.xpm"
-#include "bitmap/play_play.xpm"
-#include "bitmap/play_record1.xpm"
-#include "bitmap/play_stop.xpm"
-
 ///////////////////////////////////////////////////////////////////////////
 
 StartupDlgBase::StartupDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
@@ -369,19 +364,19 @@ LocationDlgBase::LocationDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer99->Add( 7, 14, 0, wxALIGN_CENTER, 5 );
 	
-	m_reset = new wxBitmapButton( this, ID_RESET, wxBitmap( play_back_xpm ), wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_reset = new wxBitmapButton( this, ID_RESET, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_reset->SetDefault(); 
 	bSizer99->Add( m_reset, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_stop = new wxBitmapButton( this, ID_STOP, wxBitmap( play_stop_xpm ), wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_stop = new wxBitmapButton( this, ID_STOP, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_stop->SetDefault(); 
 	bSizer99->Add( m_stop, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_record1 = new wxBitmapButton( this, ID_RECORD1, wxBitmap( play_record1_xpm ), wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_record1 = new wxBitmapButton( this, ID_RECORD1, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_record1->SetDefault(); 
 	bSizer99->Add( m_record1, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_play = new wxBitmapButton( this, ID_PLAY, wxBitmap( play_play_xpm ), wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_play = new wxBitmapButton( this, ID_PLAY, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_play->SetDefault(); 
 	bSizer99->Add( m_play, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
@@ -3632,44 +3627,93 @@ DriveDlgBase::DriveDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	wxBoxSizer* bSizer210;
 	bSizer210 = new wxBoxSizer( wxVERTICAL );
 	
-	wxBoxSizer* bSizer211;
-	bSizer211 = new wxBoxSizer( wxHORIZONTAL );
+	wxFlexGridSizer* fgSizer7;
+	fgSizer7 = new wxFlexGridSizer( 3, 4, 0, 0 );
+	fgSizer7->SetFlexibleDirection( wxBOTH );
+	fgSizer7->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	m_staticText149 = new wxStaticText( this, wxID_ANY, _("Speed"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText149->Wrap( -1 );
-	bSizer211->Add( m_staticText149, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	fgSizer7->Add( m_staticText149, 0, wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT, 5 );
 	
-	m_speed = new wxTextCtrl( this, ID_SPEED, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer211->Add( m_speed, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	m_speed = new wxTextCtrl( this, ID_SPEED, wxEmptyString, wxDefaultPosition, wxSize( 50,-1 ), 0 );
+	m_speed->SetMaxLength( 5 ); 
+	m_speed->SetMaxSize( wxSize( 100,-1 ) );
 	
-	m_staticText150 = new wxStaticText( this, wxID_ANY, _("Rate of turn"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer7->Add( m_speed, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_staticText150 = new wxStaticText( this, wxID_ANY, _("kmph"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText150->Wrap( -1 );
-	bSizer211->Add( m_staticText150, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	fgSizer7->Add( m_staticText150, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	m_turn = new wxTextCtrl( this, ID_TURN, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer211->Add( m_turn, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	m_follow = new wxCheckBox( this, wxID_ANY, _("Follow with camera"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer7->Add( m_follow, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	bSizer210->Add( bSizer211, 0, wxEXPAND, 5 );
+	m_staticText1501 = new wxStaticText( this, wxID_ANY, _("Rate of turn"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText1501->Wrap( -1 );
+	fgSizer7->Add( m_staticText1501, 0, wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT, 5 );
 	
-	m_area = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_turn = new wxTextCtrl( this, ID_TURN, wxEmptyString, wxDefaultPosition, wxSize( 50,-1 ), 0 );
+	m_turn->SetMaxLength( 5 ); 
+	fgSizer7->Add( m_turn, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	m_staticText1502 = new wxStaticText( this, wxID_ANY, _("radians"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText1502->Wrap( -1 );
+	fgSizer7->Add( m_staticText1502, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_slider = new wxSlider( this, ID_DISTANCE, 15, 0, 100, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
+	fgSizer7->Add( m_slider, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxLEFT|wxEXPAND, 5 );
+	
+	bSizer210->Add( fgSizer7, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+	
+	m_area = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+	m_area->SetScrollRate( 5, 5 );
+	m_area->SetMinSize( wxSize( 320,140 ) );
+	m_area->SetMaxSize( wxSize( 320,140 ) );
+	
 	bSizer210->Add( m_area, 1, wxEXPAND | wxALL, 5 );
 	
 	this->SetSizer( bSizer210 );
 	this->Layout();
+	bSizer210->Fit( this );
 	
 	this->Centre( wxBOTH );
 	
 	// Connect Events
-	m_area->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( DriveDlgBase::m_areaOnLeftDown ), NULL, this );
-	m_area->Connect( wxEVT_LEFT_UP, wxMouseEventHandler( DriveDlgBase::m_areaOnLeftUp ), NULL, this );
-	m_area->Connect( wxEVT_MOTION, wxMouseEventHandler( DriveDlgBase::m_areaOnMotion ), NULL, this );
+	m_follow->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( DriveDlgBase::OnFollow ), NULL, this );
+	m_slider->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Connect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Connect( wxEVT_SCROLL_LINEDOWN, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Connect( wxEVT_SCROLL_PAGEUP, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Connect( wxEVT_SCROLL_PAGEDOWN, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Connect( wxEVT_SCROLL_THUMBTRACK, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Connect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Connect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_area->Connect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( DriveDlgBase::OnLeftDClick ), NULL, this );
+	m_area->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( DriveDlgBase::OnLeftDown ), NULL, this );
+	m_area->Connect( wxEVT_LEFT_UP, wxMouseEventHandler( DriveDlgBase::OnLeftUp ), NULL, this );
+	m_area->Connect( wxEVT_MOTION, wxMouseEventHandler( DriveDlgBase::OnMotion ), NULL, this );
+	m_area->Connect( wxEVT_PAINT, wxPaintEventHandler( DriveDlgBase::OnAreaPaint ), NULL, this );
 }
 
 DriveDlgBase::~DriveDlgBase()
 {
 	// Disconnect Events
-	m_area->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler( DriveDlgBase::m_areaOnLeftDown ), NULL, this );
-	m_area->Disconnect( wxEVT_LEFT_UP, wxMouseEventHandler( DriveDlgBase::m_areaOnLeftUp ), NULL, this );
-	m_area->Disconnect( wxEVT_MOTION, wxMouseEventHandler( DriveDlgBase::m_areaOnMotion ), NULL, this );
+	m_follow->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( DriveDlgBase::OnFollow ), NULL, this );
+	m_slider->Disconnect( wxEVT_SCROLL_TOP, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Disconnect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Disconnect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Disconnect( wxEVT_SCROLL_LINEDOWN, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Disconnect( wxEVT_SCROLL_PAGEUP, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Disconnect( wxEVT_SCROLL_PAGEDOWN, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Disconnect( wxEVT_SCROLL_THUMBTRACK, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Disconnect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_slider->Disconnect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( DriveDlgBase::OnScroll ), NULL, this );
+	m_area->Disconnect( wxEVT_LEFT_DCLICK, wxMouseEventHandler( DriveDlgBase::OnLeftDClick ), NULL, this );
+	m_area->Disconnect( wxEVT_LEFT_DOWN, wxMouseEventHandler( DriveDlgBase::OnLeftDown ), NULL, this );
+	m_area->Disconnect( wxEVT_LEFT_UP, wxMouseEventHandler( DriveDlgBase::OnLeftUp ), NULL, this );
+	m_area->Disconnect( wxEVT_MOTION, wxMouseEventHandler( DriveDlgBase::OnMotion ), NULL, this );
+	m_area->Disconnect( wxEVT_PAINT, wxPaintEventHandler( DriveDlgBase::OnAreaPaint ), NULL, this );
 	
 }

@@ -69,6 +69,7 @@ public:
 	void SetTimeEngine(vtTimeEngine *pEngine);
 	void Snapshot(bool bNumbered);
 	void CameraChanged();
+
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
 	virtual void EarthPosUpdated(const DPoint3 &pos);
 	virtual void UpdateStatus();
@@ -86,6 +87,8 @@ public:
 	void ShowTable(vtAbstractLayer *alay);
 	void OnSetDelete(vtFeatureSet *set);
 	void DeleteAllSelected();
+
+	DriveDlg *GetDriveDlg() { return m_pDriveDlg; }
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);

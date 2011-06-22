@@ -1,3 +1,10 @@
+//
+// Name:		DriveDlg.h
+//
+// Copyright (c) 2011 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
+
 #ifndef __DriveDlg__
 #define __DriveDlg__
 
@@ -16,9 +23,13 @@ class DriveDlg : public DriveDlgBase
 {
 protected:
 	// Handlers for DriveDlgBase events.
-	void m_areaOnLeftDown( wxMouseEvent& event );
-	void m_areaOnLeftUp( wxMouseEvent& event );
-	void m_areaOnMotion( wxMouseEvent& event );
+	void OnLeftDown( wxMouseEvent& event );
+	void OnLeftUp( wxMouseEvent& event );
+	void OnMotion( wxMouseEvent& event );
+	void OnLeftDClick( wxMouseEvent& event );
+	void OnAreaPaint( wxPaintEvent& event );
+	void OnFollow( wxCommandEvent& event );
+	void OnScroll( wxScrollEvent& event );
 
 public:
 	/** Constructor */
@@ -29,7 +40,14 @@ public:
 	CarEngine *GetCarEngine() { return m_Engine.get(); }
 
 protected:
+	void MouseToMotion(int mx, int my);
+
+	float m_fSpeed;
+	float m_fTurn;
+	bool m_bFollow;
+
 	CarEnginePtr m_Engine;
+	bool m_bMouseDown;
 };
 
 #endif // __DriveDlg__

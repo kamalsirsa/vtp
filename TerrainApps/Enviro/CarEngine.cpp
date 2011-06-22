@@ -22,17 +22,6 @@ static FPoint3 YAXIS = FPoint3(0, 1, 0);
 ///////////////////////////////////////////////////////////////////////
 // Helpers
 
-// Difference of 2 angles in radians.  value will be between PI and -PI.
-float angleDifference(float a, float b)
-{
-	float val = a - b;
-	while (val > PIf)
-		val -= PI2f;
-	while (val < -PIf)
-		val += PI2f;
-	return val;
-}
-
 // Adjust angle (in radians) so that return value will be between PI and -PI.
 float angleNormal(float val)
 {
@@ -41,23 +30,6 @@ float angleNormal(float val)
 	while (val < -PIf)
 		val += PI2f;
 	return val;
-}
-
-// Simple 2D world distance (XZ plane)
-float Distance2D(const FPoint3 &p, const FPoint3 &q)
-{
-	return sqrt((q.z - p.z)*(q.z - p.z) + (q.x - p.x)*(q.x - p.x));
-}
-
-// Calculate angle between two 3D vectors, in XZ plane.
-float Angle(const FPoint3 &center, const FPoint3 &p1, const FPoint3 &p2)
-{
-	FPoint3 v1 = p1-center, v2 = p2-center;
-	if (v1 == v2)
-		return 0.0f;
-
-	//dot product:  a.b = |a||b|cos(THETA)
-	return acosf(v1.Dot(v2)/(v1.Length()*v2.Length()));
 }
 
 
@@ -80,12 +52,15 @@ CarEngine::CarEngine(Vehicle *vehicle, vtHeightField3d *hf)
 
 	m_fSpeed = 0;
 
-	m_fWheelSteerRotation = 0;
+	m_fSteeringAngle = 0.0f;
+	m_fFriction = 1.0f;
 	m_fCurRotation = PID2f;
 	m_fCurPitch = 0;
 	m_vAxis = XAXIS;
 
 	m_bFirstTime = true;
+	m_bCameraFollow = false;
+	m_bCameraDistance = 20.0f;
 
 	m_fPrevTime = 0.0f;		// we will use engine time (t) from now on
 
@@ -103,10 +78,6 @@ void CarEngine::Eval()
 	if (fDeltaTime > 1.0f)
 		fDeltaTime = 1.0f;
 
-	vtTransform *pTarget = dynamic_cast<vtTransform*> (GetTarget());
-	if (!pTarget)
-		return;
-
 	//find Next location
 	FPoint3 vNext;
 	switch (m_eMode)
@@ -116,8 +87,12 @@ void CarEngine::Eval()
 		MoveCarTo(vNext);
 		break;
 	case JUST_DRIVE:
-		//go straight.  try to match speed.
+		// apply friction
+		m_fSpeed *= m_fFriction;
+
+		// move in the direction we're facing
 		vNext.x = m_vCurPos.x + fDeltaTime*m_fSpeed*cosf(m_fCurRotation);
+		vNext.y = m_vCurPos.y;
 		vNext.z = m_vCurPos.z - fDeltaTime*m_fSpeed*sinf(m_fCurRotation);
 		MoveCarTo(vNext);
 		break;
@@ -260,30 +235,29 @@ void CarEngine::MoveCarTo(const FPoint3 &next_pos)
 	carxform->Identity();
 	carxform->SetTrans(next_pos);
 
-	FPoint3 tempVec;
-	float deltax,deltaz;
+	FPoint3 delta = next_pos - m_vCurPos;
 
-	deltax = next_pos.x - m_vCurPos.x;
-	deltaz = next_pos.z - m_vCurPos.z;
-	if (deltax != 0.0f || deltaz != 0.0f)
+	if (delta.x != 0.0f || delta.z != 0.0f)
 	{
+		float distance_traveled = delta.Length();
+
 		// Turn car based on how the steering wheel is turned
-		m_fCurRotation += m_fWheelSteerRotation;
+		m_fCurRotation += (m_fSteeringAngle * distance_traveled);
 		m_fCurRotation = angleNormal(m_fCurRotation);
 
-		//VTLOG("Wheel: %-f\t m_CurRot: %f \n", m_fWheelSteerRotation, m_fCurRotation);
+		//VTLOG("Wheel: %-f\t m_CurRot: %f \n", m_fSteeringAngle, m_fCurRotation);
 #if 0
 		// Yaw the wheel objects to show wheel angle?  Don't bother for now,
 		//  it's too subtle an effect.
 		FPoint3 trans;
 		trans = m_pFrontLeft->GetTrans();
 		m_pFrontLeft->Identity();
-		m_pFrontLeft->Rotate2(YAXIS, m_fWheelSteerRotation);
+		m_pFrontLeft->Rotate2(YAXIS, m_fSteeringAngle);
 		m_pFrontLeft->Translate1(trans);
 
 		trans = m_pFrontRight->GetTrans();
 		m_pFrontRight->Identity();
-		m_pFrontRight->Rotate2(YAXIS, m_fWheelSteerRotation);
+		m_pFrontRight->Rotate2(YAXIS, m_fSteeringAngle);
 		m_pFrontRight->Translate1(trans);
 #endif
 	}
@@ -306,6 +280,19 @@ void CarEngine::MoveCarTo(const FPoint3 &next_pos)
 	m_vCurPos = next_pos;
 	m_vCurPos.y = elev;
 	carxform->SetTrans(m_vCurPos);
+
+	// If desired, we can put the camera in a position to observe the car;
+	//  this should be a separate engine, but it was quick and easy to add this:
+	if (m_bCameraFollow)
+	{
+		FPoint3 direction = carxform->GetDirection();
+		FPoint3 offset = direction * -1.0f * m_bCameraDistance;
+		offset.y += (m_bCameraDistance / 2.0f);
+		FPoint3 from = m_vCurPos + offset;
+
+		vtGetScene()->GetCamera()->SetTrans(from);
+		vtGetScene()->GetCamera()->PointTowards(m_vCurPos);
+	}
 }
 
 //spin the wheels base on how much we've driven

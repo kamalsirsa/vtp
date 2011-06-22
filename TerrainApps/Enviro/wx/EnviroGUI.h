@@ -2,7 +2,7 @@
 // EnviroGUI.h
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003-2007 Virtual Terrain Project
+// Copyright (c) 2003-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -54,7 +54,10 @@ public:
 	virtual void SetProgressTerrain(vtTerrain *pTerr);
 	virtual void UpdateProgress(const char *msg, int amount1, int amount2);
 	virtual void ExtendStructure(vtStructInstance *si);
-	virtual void SetScenario(int num);
+	virtual void AddVehicle(CarEngine *eng);
+	virtual void RemoveVehicle(CarEngine *eng);
+
+	void SetScenario(int num);
 
 	// The following are useful methods
 	bool SaveVegetation(bool bAskFilename);

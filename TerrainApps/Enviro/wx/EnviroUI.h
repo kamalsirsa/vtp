@@ -38,6 +38,7 @@
 #include <wx/notebook.h>
 #include <wx/spinctrl.h>
 #include <wx/listctrl.h>
+#include <wx/scrolwin.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -319,6 +320,7 @@
 #define ID_CHOICE_LAYER 1275
 #define ID_PM_LISTCTRL 1276
 #define ID_TURN 1277
+#define ID_DISTANCE 1278
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class StartupDlgBase
@@ -1250,18 +1252,26 @@ class DriveDlgBase : public wxDialog
 		wxStaticText* m_staticText149;
 		wxTextCtrl* m_speed;
 		wxStaticText* m_staticText150;
+		wxCheckBox* m_follow;
+		wxStaticText* m_staticText1501;
 		wxTextCtrl* m_turn;
-		wxPanel* m_area;
+		wxStaticText* m_staticText1502;
+		wxSlider* m_slider;
+		wxScrolledWindow* m_area;
 		
 		// Virtual event handlers, overide them in your derived class
-		virtual void m_areaOnLeftDown( wxMouseEvent& event ) { event.Skip(); }
-		virtual void m_areaOnLeftUp( wxMouseEvent& event ) { event.Skip(); }
-		virtual void m_areaOnMotion( wxMouseEvent& event ) { event.Skip(); }
+		virtual void OnFollow( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnScroll( wxScrollEvent& event ) { event.Skip(); }
+		virtual void OnLeftDClick( wxMouseEvent& event ) { event.Skip(); }
+		virtual void OnLeftDown( wxMouseEvent& event ) { event.Skip(); }
+		virtual void OnLeftUp( wxMouseEvent& event ) { event.Skip(); }
+		virtual void OnMotion( wxMouseEvent& event ) { event.Skip(); }
+		virtual void OnAreaPaint( wxPaintEvent& event ) { event.Skip(); }
 		
 	
 	public:
 		
-		DriveDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Drive"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 341,191 ), long style = wxDEFAULT_DIALOG_STYLE );
+		DriveDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Drive"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~DriveDlgBase();
 	
 };

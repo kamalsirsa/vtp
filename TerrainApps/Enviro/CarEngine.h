@@ -24,16 +24,23 @@ public:
 	void IgnoreElapsedTime();
 
 	FPoint3 GetCurPos() { return m_vCurPos; }
-	DPoint2 GetEarthPos();
 	void SetEarthPos(const DPoint2 &pos);
+	DPoint2 GetEarthPos();
+
 	void SetSpeed(float fMeterPerSec);
-	float GetRotation() { return m_fCurRotation; }
+
 	void SetRotation(float fRot);
-	void ApplyCurrentLocation(bool bAlignOnGround);
+	float GetRotation() { return m_fCurRotation; }
+
+	void SetSteeringAngle(float fRadians) { m_fSteeringAngle = fRadians; }
+	void SetFriction(float factor) { m_fFriction = factor; }
+
+	void SetCameraFollow(bool bOn) { m_bCameraFollow = bOn; }
+	void SetCameraDistance(float fMeters) { m_bCameraDistance = fMeters; }
 
 protected:
-	//undo orientation of the car (make it level to horizontal plane.)
-	void UndoOrientation();
+	void ApplyCurrentLocation(bool bAlignOnGround);
+
 	float SetPitch();  //returns new height for car.
 
 	//move car to the given vector
@@ -64,13 +71,18 @@ protected:
 	vtTransform *RearLeft() { return m_pVehicle->m_pRearLeft; }
 	vtTransform *RearRight() { return m_pVehicle->m_pRearRight; }
 
-	float m_fWheelSteerRotation;
+	float m_fSteeringAngle;
+	float m_fFriction;
 
 	//a setup flag - first eval doesn't run right...
 	bool m_bFirstTime;
 
+	bool m_bCameraFollow;
+	float m_bCameraDistance;
+
 	Vehicle *m_pVehicle;
 };
 typedef osg::ref_ptr<CarEngine> CarEnginePtr;
+
 
 #endif // CARENGINEH

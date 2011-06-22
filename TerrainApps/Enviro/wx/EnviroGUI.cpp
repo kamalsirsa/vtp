@@ -24,8 +24,11 @@
 #include "EnviroApp.h"
 #include "EnviroFrame.h"
 #include "canvas.h"
+
+// dialogs
 #include "DistanceDlg3d.h"
 #include "FeatureTableDlg3d.h"
+#include "DriveDlg.h"
 #include "LayerDlg.h"
 #include "StyleDlg.h"
 
@@ -167,6 +170,16 @@ void EnviroGUI::UpdateProgress(const char *msg, int amount1, int amount2)
 void EnviroGUI::ExtendStructure(vtStructInstance *si)
 {
 	GetFrame()->ExtendStructure(si);
+}
+
+void EnviroGUI::AddVehicle(CarEngine *eng)
+{
+	GetFrame()->GetDriveDlg()->SetCarEngine(eng);
+}
+
+void EnviroGUI::RemoveVehicle(CarEngine *eng)
+{
+	GetFrame()->GetDriveDlg()->SetCarEngine(NULL);
 }
 
 void EnviroGUI::SetScenario(int num)
