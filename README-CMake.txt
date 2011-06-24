@@ -5,12 +5,12 @@ N.B. These instructions are for the windows GUI. On Linux you should follow a si
 
 1. You need at least CMake vesion 2.8. (Preferably 2.8.4)
 
-2. Launch the cmake-gui program and set the "Where to build the binaries" directory to the root of your VTP source tree. This should
-automatically set the "Where is the source code" directory. If it does not you might not be pointing at the right place. Once you have run
-cmake at least once you should be able to drag the CMakeCache.txt file from the root of your VTP source tree and drop it on the cmake program
-and it will start with the correct directories. Drag and drop of the top level CMakeLists.txt DOES NOT WORK! Also drag and drop is broken
-in a number of versions before 2.8.4. You can fix this on Linux desktops by editing the CMake.desktop file and changing the %f in the Exec
-key to %d, but beware the %d key is deprecated and will not work forever.
+2. Launch the cmake-gui program and set the "Where to build the binaries" directory to the root of your VTP source tree. If the "Where is the
+source code" directory is not automatically set to the same directory then set it manually. Once you have run cmake at least once you should
+be able to drag the CMakeCache.txt file from the root of your VTP source tree and drop it on the cmake program and it will start with the
+correct directories. Drag and drop of the top level CMakeLists.txt DOES NOT WORK! Also drag and drop is broken in a number of versions before
+2.8.4. You can fix this on Linux desktops by editing the CMake.desktop file and changing the %f in the Exec key to %d, but beware the %d key
+is deprecated and will not work forever.
 
 3. The CMake process is interative. You need to keep pressing configure until all the displayed cache values go grey. Each time you press
 configure you may be presented with dialog boxes asking for some input, when you have finished giving input the list of cache values will be
