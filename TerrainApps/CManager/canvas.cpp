@@ -41,12 +41,23 @@ BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
 	EVT_IDLE(vtGLCanvas::OnIdle)
 END_EVENT_TABLE()
 
+static vtGLCanvas *s_canvas = NULL;
+
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 	const wxSize& size, long style, const wxString& name, int* gl_attrib) :
   wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
 	VTLOG(" constructing Canvas\n");
+	m_bFirstPaint = true;
+	m_bPainting = false;
+	m_bRunning = true;
+
+	VTLOG1("vtGLCanvas: calling Show on parent\n");
 	parent->Show(true);
+
+	s_canvas = this;
+
+#if 0
 	SetCurrent();
 
 	wxGLContext *context = GetContext();
@@ -58,11 +69,9 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 		return;
 	}
 	VTLOG("OpenGL version: %s\n", (const char *) glGetString(GL_VERSION));
-
-	m_bPainting = false;
-	m_bRunning = true;
+#endif
+	VTLOG1("vtGLCanvas, leaving constructor\n");
 }
-
 
 vtGLCanvas::~vtGLCanvas(void)
 {
@@ -94,52 +103,63 @@ void vtGLCanvas::UpdateStatusText()
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
-	static bool bFirst = true;
+	static bool bFirstPaint = true;
 
-	if (bFirst)
+	if (bFirstPaint)
 	{
 		VTLOG("first OnPaint\n");
-		bFirst = false;
+		bFirstPaint = false;
 	}
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
 		// This is a dummy, to avoid an endless succession of paint messages.
 		// OnPaint handlers must always create a wxPaintDC.
+		if (m_bFirstPaint) VTLOG1("vtGLCanvas: creating a wxPaintDC on the stack\n");
 		wxPaintDC dc(this);
+	}
+
+	// Safety checks
+	if (!s_canvas)
+	{
+		VTLOG1("OnPaint: Canvas not yet constructed, returning\n");
+		return;
+	}
+
 #ifndef __WXMOTIF__
-		if (!GetContext()) return;
+	if (!GetContext()) return;
 #endif
 
-		if (m_bPainting) return;
+	if (m_bPainting) return;
 
-		m_bPainting = true;
+	m_bPainting = true;
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Render the scene
+	if (m_bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
+	vtGetScene()->DoUpdate();
 
-		// Render the scene
-		vtGetScene()->DoUpdate();
+	SwapBuffers();
 
-		SwapBuffers();
+	// Limit framerate (rough, but sufficient)
+	float curr = vtGetFrameTime();
+	float max = 1.0f / 60.0f;
+	float diff = max - curr;
+	if (diff > 0)
+		Sleep((int)(diff * 1000));
 
-		// Limit framerate (rough, but sufficient)
-		float curr = vtGetFrameTime();
-		float max = 1.0f / 60.0f;
-		float diff = max - curr;
-		if (diff > 0)
-			Sleep((int)(diff * 1000));
-
-		// update the status bar every 1/10 of a second
-		static float last_stat = 0.0f;
-		float cur = vtGetTime();
-		if (cur - last_stat > 0.1f)
-		{
-			last_stat = cur;
-			UpdateStatusText();
-		}
-
-		m_bPainting = false;
+	// update the status bar every 1/10 of a second
+	static float last_stat = 0.0f;
+	float cur = vtGetTime();
+	if (cur - last_stat > 0.1f)
+	{
+		last_stat = cur;
+		UpdateStatusText();
 	}
+
+	m_bPainting = false;
+
+	if (m_bFirstPaint)
+		m_bFirstPaint = false;
 
 	// Must allow some idle processing to occur - or the toolbars will not
 	// update, and the close box will not respond!

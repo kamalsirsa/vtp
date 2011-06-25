@@ -38,6 +38,7 @@ public:
 	void OnClose(wxCloseEvent& event);
 	void OnIdle(wxIdleEvent& event);
 
+	bool m_bFirstPaint;
 	bool m_bPainting;
 	bool m_bRunning;
 

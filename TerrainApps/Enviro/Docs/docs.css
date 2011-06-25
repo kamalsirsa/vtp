@@ -19,7 +19,11 @@ a.bt:link {
  font-weight:bold; font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10pt;
  text-decoration: none;}
 
-body { background-color:#DFDDD9; }
+body {
+	background-color:#EFEEEB;
+	font-family: Arial, Helvetica, sans-serif;
+	margin-left: 4%;
+}
 
 h1 {
 	font-family: Verdana;
