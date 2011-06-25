@@ -66,7 +66,12 @@ bool vtApp::OnInit(void)
 	VTLOG("Creating frame\n");
 	vtFrame *frame = new vtFrame(NULL, _T("Content Manager"), wxPoint(50, 50), wxSize(800, 600));
 
-	VTLOG(" creating camera\n");
+	// Make sure the scene knows the size of the canvas
+	//  (on wxGTK, the first size events arrive too early before the Scene exists)
+	wxSize canvas_size = frame->m_canvas->GetClientSize();
+	pScene->SetWindowSize(canvas_size.x, canvas_size.y);
+
+	VTLOG(" getting camera\n");
 	vtCamera *pCamera = pScene->GetCamera();
 	pCamera->setName("Default Camera");
 

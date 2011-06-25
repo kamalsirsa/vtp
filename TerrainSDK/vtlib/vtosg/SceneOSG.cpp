@@ -351,7 +351,10 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	// window size
 	IPoint2 winsize = pWindow->GetSize();
 	if (winsize.x == 0 || winsize.y == 0)
+	{
 		VTLOG("Warning: winsize %d %d\n", winsize.x, winsize.y);
+		return;
+	}
 	m_pOsgViewer->getCamera()->setViewport(0, 0, winsize.x, winsize.y);
 
 	// As of OSG 0.9.5, we need to store our own camera params and recreate
