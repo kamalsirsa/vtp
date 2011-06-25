@@ -14,9 +14,9 @@
 #include "vtdata/Projections.h"
 #include "vtlib/core/AnimPath.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtlib/core/Vehicles.h"
 #include "EnviroEnum.h"
 #include "PlantingOptions.h"
-#include "Vehicles.h"
 
 #define INITIAL_SPACE_DIST	3.1f
 

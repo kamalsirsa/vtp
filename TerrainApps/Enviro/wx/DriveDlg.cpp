@@ -14,7 +14,7 @@
 
 #include "vtlib/vtlib.h"
 #include "DriveDlg.h"
-#include "../CarEngine.h"
+#include "vtlib/core/CarEngine.h"
 #include "vtdata/vtLog.h"
 #include "vtui/AutoDialog.h"
 

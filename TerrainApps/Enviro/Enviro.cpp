@@ -6,6 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtlib/core/CarEngine.h"
 #include "vtlib/core/Fence3d.h"
 #include "vtlib/core/Globe.h"
 #include "vtlib/core/SkyDome.h"
@@ -22,7 +23,6 @@
 #include "Hawaii.h"
 #include "Nevada.h"
 #include "SpecificTerrain.h"
-#include "CarEngine.h"
 
 // Although there is no string translation in the core of Enviro (because it
 //  is independent of wx or any GUI library) nonetheless we want the text
