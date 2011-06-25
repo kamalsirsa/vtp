@@ -69,7 +69,7 @@ EnviroOptions::EnviroOptions()
 	m_bDirectPicking = false;
 	m_fSelectionCutoff = 10.0f;
 	m_fMaxPickableInstanceRadius = 200.0f;
-	m_fCursorThickness = 0.025f;
+	m_fCursorThickness = 0.012f;
 
 	m_fPlantScale = 1.0f;
 	m_bShadows = false;

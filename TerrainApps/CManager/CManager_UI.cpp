@@ -9,6 +9,8 @@
 
 #include "CManager_UI.h"
 
+#include "../../TerrainSDK/vtui/bitmaps/dummy_32x18.xpm"
+
 ///////////////////////////////////////////////////////////////////////////
 
 SceneGraphDlgBase::SceneGraphDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
@@ -295,7 +297,7 @@ LightDlgBase::LightDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_text13->Wrap( 0 );
 	fgSizer5->Add( m_text13, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_ambient = new wxBitmapButton( this, ID_AMBIENT, wxBitmap( wxT("bitmaps/dummy_26x14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_ambient = new wxBitmapButton( this, ID_AMBIENT, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_ambient->SetDefault(); 
 	fgSizer5->Add( m_ambient, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -303,7 +305,7 @@ LightDlgBase::LightDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_text14->Wrap( 0 );
 	fgSizer5->Add( m_text14, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_diffuse = new wxBitmapButton( this, ID_DIFFUSE, wxBitmap( wxT("bitmaps/dummy_26x14.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_diffuse = new wxBitmapButton( this, ID_DIFFUSE, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_diffuse->SetDefault(); 
 	fgSizer5->Add( m_diffuse, 0, wxALIGN_CENTER|wxALL, 5 );
 	

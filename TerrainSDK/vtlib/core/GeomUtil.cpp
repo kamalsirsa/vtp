@@ -44,9 +44,9 @@ vtGeode *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	vtGeode *pGeode = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
 
-	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, true, false, fAlpha);
-	pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, true, false, fAlpha);
-	pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), true, true, false, fAlpha);
+	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, false, false, fAlpha);
+	pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, false, false, fAlpha);
+	pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), true, false, false, fAlpha);
 
 	pGeode->SetMaterials(pMats);
 	pGeode->setName("3D Crosshair");

@@ -21,7 +21,7 @@
         <property name="skip_python_events">1</property>
         <property name="use_enum">0</property>
         <property name="use_microsoft_bom">0</property>
-        <object class="Dialog" expanded="1">
+        <object class="Dialog" expanded="0">
             <property name="bg"></property>
             <property name="center">wxBOTH</property>
             <property name="context_help"></property>
@@ -339,11 +339,11 @@
                                 <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="sizeritem" expanded="1">
+                        <object class="sizeritem" expanded="0">
                             <property name="border">5</property>
                             <property name="flag">wxALL</property>
                             <property name="proportion">0</property>
-                            <object class="wxButton" expanded="1">
+                            <object class="wxButton" expanded="0">
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
@@ -400,7 +400,7 @@
                 </object>
             </object>
         </object>
-        <object class="Panel" expanded="1">
+        <object class="Panel" expanded="0">
             <property name="bg"></property>
             <property name="context_help"></property>
             <property name="context_menu">1</property>
@@ -1154,7 +1154,7 @@
                 </object>
             </object>
         </object>
-        <object class="Panel" expanded="1">
+        <object class="Panel" expanded="0">
             <property name="bg"></property>
             <property name="context_help"></property>
             <property name="context_menu">1</property>
@@ -1787,7 +1787,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="1">
+        <object class="Dialog" expanded="0">
             <property name="bg"></property>
             <property name="center">wxBOTH</property>
             <property name="context_help"></property>
@@ -2227,7 +2227,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="0">
+        <object class="Dialog" expanded="1">
             <property name="bg"></property>
             <property name="center">wxBOTH</property>
             <property name="context_help"></property>
@@ -2491,7 +2491,7 @@
                             <property name="proportion">0</property>
                             <object class="wxBitmapButton" expanded="0">
                                 <property name="bg"></property>
-                                <property name="bitmap">C:\vtp\TerrainApps\CManager\bitmaps\dummy_26x14.bmp; Load From File</property>
+                                <property name="bitmap">../../TerrainSDK/vtui/bitmaps/dummy_32x18.xpm; Load From File</property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
                                 <property name="default"></property>
@@ -2609,7 +2609,7 @@
                             <property name="proportion">0</property>
                             <object class="wxBitmapButton" expanded="0">
                                 <property name="bg"></property>
-                                <property name="bitmap">C:\vtp\TerrainApps\CManager\bitmaps\dummy_26x14.bmp; Load From File</property>
+                                <property name="bitmap">../../TerrainSDK/vtui/bitmaps/dummy_32x18.xpm; Load From File</property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
                                 <property name="default"></property>

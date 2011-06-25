@@ -9,6 +9,12 @@
 
 #include "EnviroUI.h"
 
+#include "../../../TerrainSDK/vtui/bitmaps/dummy_32x18.xpm"
+#include "bitmap/play_back.xpm"
+#include "bitmap/play_play.xpm"
+#include "bitmap/play_record1.xpm"
+#include "bitmap/play_stop.xpm"
+
 ///////////////////////////////////////////////////////////////////////////
 
 StartupDlgBase::StartupDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
@@ -364,19 +370,19 @@ LocationDlgBase::LocationDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	bSizer99->Add( 7, 14, 0, wxALIGN_CENTER, 5 );
 	
-	m_reset = new wxBitmapButton( this, ID_RESET, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_reset = new wxBitmapButton( this, ID_RESET, wxBitmap( play_back_xpm ), wxDefaultPosition, wxSize( -1,-1 ), wxBU_AUTODRAW );
 	m_reset->SetDefault(); 
 	bSizer99->Add( m_reset, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_stop = new wxBitmapButton( this, ID_STOP, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_stop = new wxBitmapButton( this, ID_STOP, wxBitmap( play_stop_xpm ), wxDefaultPosition, wxSize( -1,-1 ), wxBU_AUTODRAW );
 	m_stop->SetDefault(); 
 	bSizer99->Add( m_stop, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_record1 = new wxBitmapButton( this, ID_RECORD1, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_record1 = new wxBitmapButton( this, ID_RECORD1, wxBitmap( play_record1_xpm ), wxDefaultPosition, wxSize( -1,-1 ), wxBU_AUTODRAW );
 	m_record1->SetDefault(); 
 	bSizer99->Add( m_record1, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
-	m_play = new wxBitmapButton( this, ID_PLAY, wxNullBitmap, wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
+	m_play = new wxBitmapButton( this, ID_PLAY, wxBitmap( play_play_xpm ), wxDefaultPosition, wxSize( 25,23 ), wxBU_AUTODRAW );
 	m_play->SetDefault(); 
 	bSizer99->Add( m_play, 0, wxALIGN_CENTER|wxALL|wxALIGN_BOTTOM, 5 );
 	
@@ -927,7 +933,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	TParamsPanel1->SetSizer( bSizer15 );
 	TParamsPanel1->Layout();
 	bSizer15->Fit( TParamsPanel1 );
-	m_notebook->AddPage( TParamsPanel1, _("Elevation"), true );
+	m_notebook->AddPage( TParamsPanel1, _("Elevation"), false );
 	TParamsPanel2 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer24;
 	bSizer24 = new wxBoxSizer( wxHORIZONTAL );
@@ -1544,7 +1550,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_text27->Wrap( -1 );
 	bSizer62->Add( m_text27, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( TParamsPanel4, ID_COLOR3, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color3 = new wxStaticBitmap( TParamsPanel4, ID_COLOR3, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxSize( -1,-1 ), 0 );
 	bSizer62->Add( m_color3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_bgcolor = new wxButton( TParamsPanel4, ID_BGCOLOR, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -1892,7 +1898,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	ScenariosPanel->SetSizer( bSizer80 );
 	ScenariosPanel->Layout();
 	bSizer80->Fit( ScenariosPanel );
-	m_notebook->AddPage( ScenariosPanel, _("Scenarios"), false );
+	m_notebook->AddPage( ScenariosPanel, _("Scenarios"), true );
 	
 	bSizer13->Add( m_notebook, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -2341,58 +2347,6 @@ ScenariosPaneBase::~ScenariosPaneBase()
 {
 }
 
-ScenarioVisibleLayersPane::ScenarioVisibleLayersPane( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxBoxSizer* bSizer229;
-	bSizer229 = new wxBoxSizer( wxVERTICAL );
-	
-	wxBoxSizer* bSizer230;
-	bSizer230 = new wxBoxSizer( wxHORIZONTAL );
-	
-	wxStaticBoxSizer* sbSizer43;
-	sbSizer43 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Visible Layers") ), wxVERTICAL );
-	
-	m_scenario_visible_layers = new wxListBox( this, ID_SCENARIO_VISIBLE_LAYERS, wxDefaultPosition, wxSize( 150,200 ), 0, NULL, wxLB_SINGLE ); 
-	sbSizer43->Add( m_scenario_visible_layers, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer230->Add( sbSizer43, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	wxBoxSizer* bSizer231;
-	bSizer231 = new wxBoxSizer( wxVERTICAL );
-	
-	m_scenario_add_visible_layer = new wxButton( this, ID_SCENARIO_ADD_VISIBLE_LAYER, _("<<"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_scenario_add_visible_layer->SetDefault(); 
-	bSizer231->Add( m_scenario_add_visible_layer, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_scenario_remove_visible_layer = new wxButton( this, ID_SCENARIO_REMOVE_VISIBLE_LAYER, _(">>"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_scenario_remove_visible_layer->SetDefault(); 
-	bSizer231->Add( m_scenario_remove_visible_layer, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer230->Add( bSizer231, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	wxStaticBoxSizer* sbSizer44;
-	sbSizer44 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Available Layers") ), wxVERTICAL );
-	
-	m_scenario_available_layers = new wxListBox( this, ID_SCENARIO_AVAILABLE_LAYERS, wxDefaultPosition, wxSize( 150,200 ), 0, NULL, wxLB_SINGLE ); 
-	sbSizer44->Add( m_scenario_available_layers, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer230->Add( sbSizer44, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer229->Add( bSizer230, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	this->SetSizer( bSizer229 );
-	this->Layout();
-	bSizer229->Fit( this );
-	
-	this->Centre( wxBOTH );
-}
-
-ScenarioVisibleLayersPane::~ScenarioVisibleLayersPane()
-{
-}
-
 ScenarioParamsDlgBase::ScenarioParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -2682,15 +2636,15 @@ LayerAnimDlgBase::LayerAnimDlgBase( wxWindow* parent, wxWindowID id, const wxStr
 	wxBoxSizer* bSizer254;
 	bSizer254 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_reset = new wxBitmapButton( this, ID_RESET, wxBitmap( wxT("bitmap/play_back.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_reset = new wxBitmapButton( this, ID_RESET, wxBitmap( play_back_xpm ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_reset->SetDefault(); 
 	bSizer254->Add( m_reset, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_stop = new wxBitmapButton( this, ID_STOP, wxBitmap( wxT("bitmap/play_stop.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_stop = new wxBitmapButton( this, ID_STOP, wxBitmap( play_stop_xpm ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_stop->SetDefault(); 
 	bSizer254->Add( m_stop, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_play = new wxBitmapButton( this, ID_PLAY, wxBitmap( wxT("bitmap/play_play.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_play = new wxBitmapButton( this, ID_PLAY, wxBitmap( play_play_xpm ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_play->SetDefault(); 
 	bSizer254->Add( m_play, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -2742,7 +2696,7 @@ VehicleDlgBase::VehicleDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_text165->Wrap( -1 );
 	bSizer256->Add( m_text165, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxSize( 32,18 ), 0 );
 	bSizer256->Add( m_color3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_vehicle_color = new wxButton( this, ID_SET_VEHICLE_COLOR, _("Set"), wxDefaultPosition, wxSize( 40,-1 ), 0 );
@@ -2809,7 +2763,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_radio1->SetValue( true ); 
 	bSizer201->Add( m_radio1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_object_geom_color = new wxBitmapButton( StylePanel1, ID_OBJECT_GEOM_COLOR, wxNullBitmap, wxDefaultPosition, wxSize( 40,26 ), wxBU_AUTODRAW );
+	m_object_geom_color = new wxBitmapButton( StylePanel1, ID_OBJECT_GEOM_COLOR, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxSize( 40,26 ), wxBU_AUTODRAW );
 	m_object_geom_color->SetDefault(); 
 	bSizer201->Add( m_object_geom_color, 0, wxALIGN_CENTER, 5 );
 	
@@ -2900,7 +2854,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_radio2->SetValue( true ); 
 	bSizer208->Add( m_radio2, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_line_geom_color = new wxBitmapButton( StylePanel2, ID_LINE_GEOM_COLOR, wxNullBitmap, wxDefaultPosition, wxSize( 40,26 ), wxBU_AUTODRAW );
+	m_line_geom_color = new wxBitmapButton( StylePanel2, ID_LINE_GEOM_COLOR, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxSize( 40,26 ), wxBU_AUTODRAW );
 	m_line_geom_color->SetDefault(); 
 	bSizer208->Add( m_line_geom_color, 0, wxALIGN_CENTER, 5 );
 	
@@ -2971,7 +2925,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel2->SetSizer( bSizer205 );
 	StylePanel2->Layout();
 	bSizer205->Fit( StylePanel2 );
-	m_notebook->AddPage( StylePanel2, _("Line Geometry"), true );
+	m_notebook->AddPage( StylePanel2, _("Line Geometry"), false );
 	StylePanel3 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer213;
 	bSizer213 = new wxBoxSizer( wxVERTICAL );
@@ -3000,7 +2954,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_radio3->SetValue( true ); 
 	bSizer216->Add( m_radio3, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text_color = new wxBitmapButton( StylePanel3, ID_TEXT_COLOR, wxNullBitmap, wxDefaultPosition, wxSize( 40,26 ), wxBU_AUTODRAW );
+	m_text_color = new wxBitmapButton( StylePanel3, ID_TEXT_COLOR, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxSize( 40,26 ), wxBU_AUTODRAW );
 	m_text_color->SetDefault(); 
 	bSizer216->Add( m_text_color, 0, wxALIGN_CENTER, 5 );
 	
@@ -3089,7 +3043,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel3->SetSizer( bSizer213 );
 	StylePanel3->Layout();
 	bSizer213->Fit( StylePanel3 );
-	m_notebook->AddPage( StylePanel3, _("Text Labels"), false );
+	m_notebook->AddPage( StylePanel3, _("Text Labels"), true );
 	StylePanel4 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer222;
 	bSizer222 = new wxBoxSizer( wxVERTICAL );
@@ -3473,7 +3427,7 @@ EphemDlgBase::EphemDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_text207->Wrap( -1 );
 	bSizer306->Add( m_text207, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxNullBitmap, wxDefaultPosition, wxSize( 32,18 ), 0 );
+	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxSize( -1,-1 ), 0 );
 	bSizer306->Add( m_color3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
 	m_bgcolor = new wxButton( this, ID_BGCOLOR, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );

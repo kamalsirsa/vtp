@@ -258,11 +258,11 @@
 #define ID_CHOICE_CONTENT 1213
 #define ID_TERRAIN_PROGRESS 1214
 #define ID_FLY_IN 1215
-#define ID_SCENARIO_VISIBLE_LAYERS 1216
-#define ID_SCENARIO_ADD_VISIBLE_LAYER 1217
-#define ID_SCENARIO_REMOVE_VISIBLE_LAYER 1218
-#define ID_SCENARIO_AVAILABLE_LAYERS 1219
-#define ID_SCENARIO_NAME 1220
+#define ID_SCENARIO_NAME 1216
+#define ID_SCENARIO_VISIBLE_LAYERS 1217
+#define ID_SCENARIO_ADD_VISIBLE_LAYER 1218
+#define ID_SCENARIO_REMOVE_VISIBLE_LAYER 1219
+#define ID_SCENARIO_AVAILABLE_LAYERS 1220
 #define ID_SCENARIO_PREVIOUS 1221
 #define ID_SCENARIO_NEXT 1222
 #define ID_CHOICE_VEHICLES 1223
@@ -876,26 +876,6 @@ class ScenariosPaneBase : public wxDialog
 		
 		ScenariosPaneBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~ScenariosPaneBase();
-	
-};
-
-///////////////////////////////////////////////////////////////////////////////
-/// Class ScenarioVisibleLayersPane
-///////////////////////////////////////////////////////////////////////////////
-class ScenarioVisibleLayersPane : public wxDialog 
-{
-	private:
-	
-	protected:
-		wxListBox* m_scenario_visible_layers;
-		wxButton* m_scenario_add_visible_layer;
-		wxButton* m_scenario_remove_visible_layer;
-		wxListBox* m_scenario_available_layers;
-	
-	public:
-		
-		ScenarioVisibleLayersPane( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
-		~ScenarioVisibleLayersPane();
 	
 };
 

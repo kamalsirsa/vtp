@@ -56,7 +56,7 @@ void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 	m_pMaterial->setDiffuse(FAB, osg::Vec4(r, g, b, a));
 
 	if (a < 1.0f)
-		setMode(GL_BLEND, SA_ON);
+		SetTransparent(true);
 }
 /**
  * Get the diffuse color of this material.

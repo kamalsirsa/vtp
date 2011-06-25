@@ -13570,7 +13570,7 @@
                                     <property name="proportion">0</property>
                                     <object class="wxStaticBitmap" expanded="0">
                                         <property name="bg"></property>
-                                        <property name="bitmap">bitmaps/dummy_32x18.bmp; Load From File</property>
+                                        <property name="bitmap">../../TerrainSDK/vtui/bitmaps/dummy_32x18.xpm; Load From File</property>
                                         <property name="context_help"></property>
                                         <property name="context_menu">1</property>
                                         <property name="enabled">1</property>
@@ -13737,7 +13737,7 @@
                                     <property name="proportion">0</property>
                                     <object class="wxStaticBitmap" expanded="0">
                                         <property name="bg"></property>
-                                        <property name="bitmap">bitmaps/dummy_32x18.bmp; Load From File</property>
+                                        <property name="bitmap">../../TerrainSDK/vtui/bitmaps/dummy_32x18.xpm; Load From File</property>
                                         <property name="context_help"></property>
                                         <property name="context_menu">1</property>
                                         <property name="enabled">1</property>
@@ -21414,7 +21414,7 @@
                                     <property name="proportion">0</property>
                                     <object class="wxBitmapButton" expanded="0">
                                         <property name="bg"></property>
-                                        <property name="bitmap">bitmaps/dummy_32x18.bmp; Load From File</property>
+                                        <property name="bitmap">../../TerrainSDK/vtui/bitmaps/dummy_32x18.xpm; Load From File</property>
                                         <property name="context_help"></property>
                                         <property name="context_menu">1</property>
                                         <property name="default"></property>
