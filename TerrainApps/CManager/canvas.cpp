@@ -198,6 +198,11 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 
 void vtGLCanvas::OnChar(wxKeyEvent& event)
 {
+#ifdef USE_OSG_STATS
+	GraphicsWindowWX* pGW = (GraphicsWindowWX*)vtGetScene()->GetGraphicsContext();
+	if ((NULL != pGW) && pGW->valid())
+		pGW->getEventQueue()->keyPress(event.GetKeyCode());
+#endif
 	long key = event.GetKeyCode();
 
 	// pass the char to the frame for it to do "accelerator" shortcuts
