@@ -41,11 +41,12 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0	};
 
 	// Make a vtGLCanvas
+	VTLOG1(" creating canvas\n");
 	m_canvas = new vtGLCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
 		_T("vtGLCanvas"), gl_attrib);
 
 	// Show the frame
-	Show(TRUE);
+	Show(true);
 }
 
 vtFrame::~vtFrame()

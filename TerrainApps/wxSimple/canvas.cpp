@@ -22,7 +22,7 @@
 
 #include "app.h"
 
-DECLARE_APP(vtApp);
+DECLARE_APP(vtApp)
 
 // Support for the SpaceNavigator
 #include "vtlib/core/SpaceNav.h"
@@ -39,24 +39,24 @@ vtSpaceNav g_SpaceNav;
  * vtGLCanvas implementation
  */
 BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
-EVT_CLOSE(vtGLCanvas::OnClose)
-EVT_SIZE(vtGLCanvas::OnSize)
+	EVT_CLOSE(vtGLCanvas::OnClose)
+	EVT_SIZE(vtGLCanvas::OnSize)
 #ifndef __WXMAC__
-EVT_PAINT(vtGLCanvas::OnPaint)
+	EVT_PAINT(vtGLCanvas::OnPaint)
 #endif
-EVT_CHAR(vtGLCanvas::OnChar)
-EVT_KEY_DOWN(vtGLCanvas::OnKeyDown)
-EVT_KEY_UP(vtGLCanvas::OnKeyUp)
-EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
-EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
-EVT_MOUSE_CAPTURE_LOST(vtGLCanvas::OnMouseCaptureLost)
-EVT_IDLE(vtGLCanvas::OnIdle)
+	EVT_CHAR(vtGLCanvas::OnChar)
+	EVT_KEY_DOWN(vtGLCanvas::OnKeyDown)
+	EVT_KEY_UP(vtGLCanvas::OnKeyUp)
+	EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
+	EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
+	EVT_MOUSE_CAPTURE_LOST(vtGLCanvas::OnMouseCaptureLost)
+	EVT_IDLE(vtGLCanvas::OnIdle)
 END_EVENT_TABLE()
 
 static vtGLCanvas *s_canvas = NULL;
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
-					   const wxSize& size, long style, const wxString& name, int* gl_attrib):
+	const wxSize& size, long style, const wxString& name, int* gl_attrib):
 #ifdef __WXMAC__
 		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 #else
@@ -170,11 +170,12 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		bInside = false;
 		return;
 	}
-
 	m_bPainting = true;
 
 	// Update and render the scene
-	if (m_bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
+	if (m_bFirstPaint)
+		VTLOG1("vtGLCanvas: DoUpdate\n");
+
 	vtGetScene()->DoUpdate();
 
 	m_bPainting = false;
@@ -199,6 +200,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 void vtGLCanvas::OnClose(wxCloseEvent& event)
 {
+	VTLOG("Canvas OnClose\n");
 	m_bRunning = false;
 }
 
@@ -413,7 +415,7 @@ void vtGLCanvas::OnIdle(wxIdleEvent &event)
 		event.RequestMore();
 	}
 #else
-		Refresh(FALSE);
+		Refresh(false);
 #endif
 }
 

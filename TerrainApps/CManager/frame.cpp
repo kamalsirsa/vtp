@@ -135,9 +135,9 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style) :
 	wxFrame(parent, wxID_ANY, title, pos, size, style)
 {
+	VTLOG(" constructing Frame (%x, title, pos, size, %x)\n", parent, style);
 	m_bCloseOnIdle = false;
 
-	VTLOG(" constructing Frame (%x, title, pos, size, %x)\n", parent, style);
 #if WIN32
 	// Give it an icon
 	SetIcon(wxIcon(_T("cmanager")));
@@ -188,7 +188,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0, 0 };
 
 	// Make a vtGLCanvas
-	VTLOG(" creating canvas\n");
+	VTLOG1(" creating canvas\n");
 	m_canvas = new vtGLCanvas(m_splitter, wxID_ANY, wxPoint(0, 0), wxSize(-1, -1),
 		0, _T("vtGLCanvas"), gl_attrib);
 
@@ -251,6 +251,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 vtFrame::~vtFrame()
 {
 	VTLOG(" destructing Frame\n");
+	FreeContents();
 	delete m_canvas;
 	delete m_pSceneGraphDlg;
 	delete m_pLightDlg;
@@ -378,17 +379,11 @@ void vtFrame::OnClose(wxCloseEvent &event)
 {
 	VTLOG("Frame OnClose\n");
 
-	// Turn on lots of debugging info in case of problems on exit
-//	wxLog::SetVerbose(true);
-//	wxLog::SetTraceMask(0xf);
-
 	if (m_canvas)
 	{
 		m_canvas->m_bRunning = false;
-		delete m_canvas;
-		m_canvas = NULL;
+		m_bCloseOnIdle = true;
 	}
-	FreeContents();
 	event.Skip();
 }
 
@@ -1306,3 +1301,25 @@ void vtFrame::RenderingResume()
 	m_canvas->m_bRunning = true;
 }
 
+void vtFrame::UpdateStatusText()
+{
+	if (!GetStatusBar())
+		return;
+
+	vtScene *scene = vtGetScene();
+	if (!scene)
+		return;
+
+	// get framerate
+	float fps = scene->GetFrameRate();
+
+	// get camera distance
+	float dist = 0;
+	if (NULL != wxGetApp().m_pTrackball)
+		dist = wxGetApp().m_pTrackball->GetRadius();
+
+	wxString str;
+	str.Printf(_T("fps %.3g, camera distance %.2f meters"), fps, dist);
+
+	SetStatusText(str);
+}

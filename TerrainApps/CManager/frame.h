@@ -14,7 +14,6 @@
 #include "vtdata/FilePath.h"
 #include <map>
 
-class vtGLCanvas;
 class MyTreeCtrl;
 class vtTransform;
 class SceneGraphDlg;
@@ -100,7 +99,7 @@ protected:
 	void DisplayMessageBox(const wxString &str);
 
 public:
-	vtGLCanvas		*m_canvas;
+	class vtGLCanvas *m_canvas;
 	wxToolBar		*m_pToolbar;
 
 	wxSplitterWindow *m_splitter;
@@ -123,6 +122,7 @@ public:
 	void OnChar(wxKeyEvent& event);
 	void UseLight(vtTransform *pLight);
 	void LoadContentsFile(const wxString &fname);
+	void UpdateStatusText();
 
 public:
 	void		UpdateCurrentModelLOD();
