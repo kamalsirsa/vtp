@@ -2,7 +2,7 @@
 // Name:	 canvas.cpp
 // Purpose: Implements the canvas class for the Enviro wxWidgets application.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,15 +15,17 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Event.h"
+#include "vtui/GraphicsWindowWX.h"
 #include "vtdata/vtLog.h"
-#include "EnviroGUI.h"			// for g_App
+
 #include "canvas.h"
+
+#include "EnviroGUI.h"			// for g_App
 #include "EnviroFrame.h"		// for UpdateStatus and OnChar
 #include "EnviroApp.h"
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 #include "PerformanceMonitor.h"
 #endif
-#include "vtui/GraphicsWindowWX.h"
 
 DECLARE_APP(EnviroApp)
 
@@ -59,7 +61,7 @@ END_EVENT_TABLE()
 static vtGLCanvas *s_canvas = NULL;
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
-	const wxSize &size, long style, const wxString &name, int *gl_attrib):
+					   const wxSize &size, long style, const wxString &name, int *gl_attrib):
 #ifdef __WXMAC__
 		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 #else
@@ -76,7 +78,6 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	m_bPainting = false;
 #endif
 	m_bRunning = true;
-	m_bShowFrameRateChart = false;
 	m_bCapture = false;
 
 	VTLOG1("vtGLCanvas: calling Show on parent\n");
@@ -92,6 +93,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 
 	// Initialize spacenavigator, if there is one present
 	g_SpaceNav.Init();
+	g_SpaceNav.SetTarget(vtGetScene()->GetCamera());
 
 	s_canvas = this;
 #ifdef NVIDIA_PERFORMANCE_MONITORING
@@ -102,16 +104,11 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 
 vtGLCanvas::~vtGLCanvas(void)
 {
+	VTLOG1("Deleting Canvas\n");
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 	CPerformanceMonitorDialog::NVPM_shutdown();
 #endif
 	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->CloseOsgContext();
-	VTLOG1("Deleting Canvas\n");
-}
-
-void vtGLCanvas::SetSpaceNavTarget(vtTransform *t)
-{
-	g_SpaceNav.SetTarget(t);
 }
 
 void vtGLCanvas::SetSpaceNavSpeed(float f)
@@ -157,6 +154,12 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
 	if (m_bFirstPaint) VTLOG1("vtGLCanvas: first OnPaint\n");
 
+	// Prevent this function from ever being called nested, it is not re-entrant
+	static bool bInside = false;
+	if (bInside)
+		return;
+	bInside = true;
+
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
@@ -166,15 +169,12 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		wxPaintDC dc(this);
 	}
 
-	// Safety checks
-	if (!s_canvas)
+	// Avoid reentrance
+	if (m_bPainting || !m_bRunning)
 	{
-		VTLOG1("OnPaint: Canvas not yet constructed, returning\n");
+		bInside = false;
 		return;
 	}
-
-	// Avoid reentrance
-	if (m_bPainting) return;
 
 	m_bPainting = true;
 
@@ -182,26 +182,26 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	if (m_bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
 	vtGetScene()->DoUpdate();
 
-	if (m_bShowFrameRateChart)
-		vtGetScene()->DrawFrameRateChart();
-
-	if (m_bFirstPaint) VTLOG1("vtGLCanvas: update status bar\n");
-	EnviroFrame *frame = (EnviroFrame*) GetParent();
-
-	// update the status bar every 1/10 of a second
-	static float last_stat = 0.0f;
-	static vtString last_msg;
-	float cur = vtGetTime();
-	if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
+	if (1)
 	{
-		last_msg = g_App.GetMessage();
-		last_stat = cur;
-		frame->UpdateStatus();
+		if (m_bFirstPaint) VTLOG1("vtGLCanvas: update status bar\n");
+		EnviroFrame *frame = (EnviroFrame*) GetParent();
+
+		// update the status bar every 1/10 of a second
+		static float last_stat = 0.0f;
+		static vtString last_msg;
+		float cur = vtGetTime();
+		if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
+		{
+			last_msg = g_App.GetMessage();
+			last_stat = cur;
+			frame->UpdateStatus();
+		}
+
+		frame->UpdateLODInfo();
+
+		g_App.UpdateCompass();
 	}
-
-	frame->UpdateLODInfo();
-
-	g_App.UpdateCompass();
 
 	m_bPainting = false;
 
@@ -210,9 +210,12 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 	if (m_bFirstPaint)
 		m_bFirstPaint = false;
+
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 	CPerformanceMonitorDialog::NVPM_frame();
 #endif
+
+	bInside = false;
 }
 #endif	// not __WXMAC__
 
@@ -230,9 +233,8 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 		count++;
 	}
 	SetCurrent();
-	int width, height;
-	GetClientSize(& width, & height);
-	vtGetScene()->SetWindowSize(width, height);
+	wxSize size = GetClientSize();
+	vtGetScene()->SetWindowSize(size.x, size.y);
 	wxGLCanvas::OnSize(event);
 }
 
@@ -245,9 +247,13 @@ void vtGLCanvas::OnChar(wxKeyEvent& event)
 #endif
 	long key = event.GetKeyCode();
 
-	// pass the char to the frame for it to do "accelerator" shortcuts
-	EnviroFrame *frame = (EnviroFrame*) GetParent();
-	frame->OnChar(event);
+	if (1)
+	{
+		// pass the char to the frame for it to do "accelerator" shortcuts
+		//  IS ThiS Needed if we are calling event.Skip() ???
+		//EnviroFrame *frame = (EnviroFrame*) GetParent();
+		//frame->OnChar(event);
+	}
 
 	int flags = 0;
 
@@ -281,46 +287,68 @@ void vtGLCanvas::OnKeyUp(wxKeyEvent& event)
 
 void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 {
-    event1.Skip(); // Ensure that the default handler is called - this improves focus handling
+	// Ensure that the default handler is called - this improves focus handling
+    event1.Skip();
+
 	// turn WX mouse event into a VT mouse event
-	vtMouseEvent event;
-	wxEventType  ev = event1.GetEventType();
-	if (ev == wxEVT_LEFT_DOWN) {
-		event.type = VT_DOWN;
-		event.button = VT_LEFT;
-	} else if (ev == wxEVT_LEFT_UP) {
-		event.type = VT_UP;
-		event.button = VT_LEFT;
-	} else if (ev == wxEVT_MIDDLE_DOWN) {
-		event.type = VT_DOWN;
-		event.button = VT_MIDDLE;
-	} else if (ev == wxEVT_MIDDLE_UP) {
-		event.type = VT_UP;
-		event.button = VT_MIDDLE;
-	} else if (ev == wxEVT_RIGHT_DOWN) {
-		event.type = VT_DOWN;
-		event.button = VT_RIGHT;
-	} else if (ev == wxEVT_RIGHT_UP) {
-		event.type = VT_UP;
-		event.button = VT_RIGHT;
-	} else if (ev == wxEVT_MOTION) {
-		event.type = VT_MOVE;
-		event.button = VT_NONE;
+	vtMouseEvent mevent;
+	wxEventType type = event1.GetEventType();
+
+	if ( type == wxEVT_LEFT_DOWN )
+	{
+		mevent.type = VT_DOWN;
+		mevent.button = VT_LEFT;
+	}
+	else if ( type == wxEVT_LEFT_UP )
+	{
+		mevent.type = VT_UP;
+		mevent.button = VT_LEFT;
+	}
+	else if ( type == wxEVT_MIDDLE_DOWN )
+	{
+		mevent.type = VT_DOWN;
+		mevent.button = VT_MIDDLE;
+	}
+	else if ( type == wxEVT_MIDDLE_UP )
+	{
+		mevent.type = VT_UP;
+		mevent.button = VT_MIDDLE;
+	}
+	else if ( type == wxEVT_RIGHT_DOWN )
+	{
+		mevent.type = VT_DOWN;
+		mevent.button = VT_RIGHT;
+	}
+	else if ( type == wxEVT_RIGHT_UP )
+	{
+		mevent.type = VT_UP;
+		mevent.button = VT_RIGHT;
+	}
+	else if ( type == wxEVT_MOTION )
+	{
+		mevent.type = VT_MOVE;
+		mevent.button = VT_NONE;
 		m_iConsecutiveMousemoves++;		// Increment
-	} else if (ev == wxEVT_MOUSEWHEEL) {
-		event.type = VT_WHEEL;
-		event.button = event1.GetWheelRotation() / event1.GetWheelDelta();
+	}
+	else if ( type == wxEVT_MOUSEWHEEL )
+	{
+		mevent.type = VT_WHEEL;
+		mevent.button = event1.GetWheelRotation() / event1.GetWheelDelta();
+	}
 #ifdef __WXGTK__
     // wxGTK does not automatically set keyboard focus on to an OpenGL canvas window
-	} else if (ev == wxEVT_ENTER_WINDOW) {
+	else if (type == wxEVT_ENTER_WINDOW)
+	{
 	    SetFocus();
+	}
 #endif
-	} else {
-		// ignored mouse events, such as wxEVT_LEAVE_WINDOW
+	else
+	{
+		// ignore other mouse events, such as wxEVT_LEAVE_WINDOW
 		return;
 	}
 
-	if (ev == wxEVT_LEFT_DOWN || ev == wxEVT_MIDDLE_DOWN || ev == wxEVT_RIGHT_DOWN)
+	if (type == wxEVT_LEFT_DOWN || type == wxEVT_MIDDLE_DOWN || type == wxEVT_RIGHT_DOWN)
 	{
 		VTLOGCAP("DOWN: capture %d", m_bCapture);
 		if (!m_bCapture)
@@ -331,7 +359,7 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 		}
 		VTLOGCAP("\n");
 	}
-	if (ev == wxEVT_LEFT_UP || ev == wxEVT_MIDDLE_UP || ev == wxEVT_RIGHT_UP)
+	if (type == wxEVT_LEFT_UP || type == wxEVT_MIDDLE_UP || type == wxEVT_RIGHT_UP)
 	{
 		VTLOGCAP("  UP: capture %d, isdown %d %d %d", m_bCapture,
 			event1.LeftIsDown(), event1.MiddleIsDown(), event1.RightIsDown());
@@ -349,31 +377,27 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	//  handle a MouseMove event, then we might get the next MouseMove
 	//  event without ever seeing a Redraw or Idle.  That's because the
 	//  MouseMove events are considered higher priority in the queue.
-	// So, to keep Enviro response smooth, we effectively ignore all but
-	//  one MouseMove event per Draw event.
-	if (ev == wxEVT_MOTION && m_iConsecutiveMousemoves > 1)
+	// So, to keep response smooth, we effectively ignore all but one
+	//  MouseMove event per Draw event.
+	if (type == wxEVT_MOTION && m_iConsecutiveMousemoves > 1)
 		return;
 
-	event.flags = 0;
+	mevent.flags = 0;
 	wxCoord xpos, ypos;
 	event1.GetPosition(&xpos, &ypos);
-	event.pos.Set(xpos, ypos);
+	mevent.pos.Set(xpos, ypos);
 
 	if (event1.ControlDown())
-		event.flags |= VT_CONTROL;
+		mevent.flags |= VT_CONTROL;
 
 	if (event1.ShiftDown())
-		event.flags |= VT_SHIFT;
+		mevent.flags |= VT_SHIFT;
 
 	if (event1.AltDown())
-		event.flags |= VT_ALT;
-
-	// inform Enviro app, it will return false if it takes over the event
-	if (g_App.OnMouse(event) == false)
-		return;
+		mevent.flags |= VT_ALT;
 
 	// inform vtlib scene, which informs the engines
-	vtGetScene()->OnMouse(event);
+	vtGetScene()->OnMouse(mevent);
 }
 
 void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
@@ -407,28 +431,25 @@ void vtGLCanvas::OnIdle(wxIdleEvent &event)
 		// Render the Scene Graph
 		vtGetScene()->DoUpdate();
 
-		if (m_bShowFrameRateChart)
-			vtGetScene()->DrawFrameRateChart();
-
-		SwapBuffers();
-
-		EnviroFrame *frame = (EnviroFrame*) GetParent();
-
-		// update the status bar every 1/10 of a second
-		static float last_stat = 0.0f;
-		static vtString last_msg;
-		float cur = vtGetTime();
-		if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
+		if (1)
 		{
-			last_msg = g_App.GetMessage();
-			last_stat = cur;
-			frame->UpdateStatus();
+			EnviroFrame *frame = (EnviroFrame*) GetParent();
+
+			// update the status bar every 1/10 of a second
+			static float last_stat = 0.0f;
+			static vtString last_msg;
+			float cur = vtGetTime();
+			if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
+			{
+				last_msg = g_App.GetMessage();
+				last_stat = cur;
+				frame->UpdateStatus();
+			}
+
+			frame->UpdateLODInfo();
+
+			g_App.UpdateCompass();
 		}
-
-		frame->UpdateLODInfo();
-
-		g_App.UpdateCompass();
-
 
 		// Reset the number of mousemoves we've gotten since last redraw
 		m_iConsecutiveMousemoves = 0;

@@ -1,7 +1,7 @@
 //
-// Name:		frame.h
+// Name:	frame.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,11 +17,13 @@ public:
 
 	// command handlers
 	void OnClose(wxCloseEvent &event);
+	void OnIdle(wxIdleEvent& event);
 
 public:
 	class vtGLCanvas	*m_canvas;
 
 protected:
+	bool	m_bCloseOnIdle;
 
 DECLARE_EVENT_TABLE()
 };

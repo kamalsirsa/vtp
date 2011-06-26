@@ -1,7 +1,7 @@
 //
 // Name: canvas.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,8 +12,6 @@
 #error Please set wxUSE_GLCANVAS to 1 in setup.h.
 #endif
 #include "wx/glcanvas.h"
-
-class vtGLCanvas;
 
 //
 // A Canvas for the main view area.
@@ -27,7 +25,6 @@ public:
 	~vtGLCanvas(void);
 
 	// SpaceNavigator methods
-	void SetSpaceNavTarget(vtTransform *t);
 	void SetSpaceNavSpeed(float f);
 	void SetSpaceNavAllowRoll(bool b);
 
@@ -49,7 +46,6 @@ public:
 	bool m_bFirstPaint;
 #endif
 	bool m_bRunning;
-	bool m_bShowFrameRateChart;
 	bool m_bCapture;
 
 #if WIN32

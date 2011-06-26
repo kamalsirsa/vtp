@@ -1,8 +1,8 @@
 //
-// Name:	 frame.cpp
-// Purpose:  The frame class for a wxWindows application.
+// Name:	frame.cpp
+// Purpose: The frame class for a wxWindows application.
 //
-// Copyright (c) 2001-2005 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,6 +25,7 @@ DECLARE_APP(vtApp)
 
 BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_CLOSE(vtFrame::OnClose)
+	EVT_IDLE(vtFrame::OnIdle)
 END_EVENT_TABLE()
 
 // Frame constructor
@@ -33,6 +34,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	wxFrame(parent, -1, title, pos, size, style)
 {
 	VTLOG(" constructing Frame (%x, title, pos, size, %x)\n", parent, style);
+	m_bCloseOnIdle = false;
 
 	// We definitely want full color and a 24-bit Z-buffer!
 	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
@@ -49,6 +51,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 vtFrame::~vtFrame()
 {
 	delete m_canvas;
+	m_canvas = NULL;
 }
 
 //
@@ -59,9 +62,16 @@ void vtFrame::OnClose(wxCloseEvent &event)
 	if (m_canvas)
 	{
 		m_canvas->m_bRunning = false;
-		delete m_canvas;
-		m_canvas = NULL;
+		m_bCloseOnIdle = true;
 	}
 	event.Skip();
 }
 
+void vtFrame::OnIdle(wxIdleEvent& event)
+{
+	// Check if we were requested to close on the next Idle event.
+	if (m_bCloseOnIdle)
+		Close();
+	else
+		event.Skip();
+}

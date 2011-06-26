@@ -36,6 +36,7 @@
 #include "vtlib/core/TiledGeom.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/TripDub.h"
+#include "vtui/GraphicsWindowWX.h"
 #include "vtui/Helper.h"	// for progress dialog
 
 #include "EnviroFrame.h"
@@ -170,8 +171,7 @@ EVT_MENU(ID_VIEW_FULLSCREEN,		EnviroFrame::OnViewFullscreen)
 EVT_UPDATE_UI(ID_VIEW_FULLSCREEN,	EnviroFrame::OnUpdateViewFullscreen)
 EVT_MENU(ID_VIEW_TOPDOWN,			EnviroFrame::OnViewTopDown)
 EVT_UPDATE_UI(ID_VIEW_TOPDOWN,		EnviroFrame::OnUpdateViewTopDown)
-EVT_MENU(ID_VIEW_FRAMERATE,			EnviroFrame::OnViewFramerate)
-EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	EnviroFrame::OnUpdateViewFramerate)
+EVT_MENU(ID_VIEW_STATS,				EnviroFrame::OnViewStats)
 EVT_MENU(ID_VIEW_ELEV_LEGEND,		EnviroFrame::OnViewElevLegend)
 EVT_UPDATE_UI(ID_VIEW_ELEV_LEGEND,	EnviroFrame::OnUpdateViewElevLegend)
 EVT_MENU(ID_VIEW_COMPASS,			EnviroFrame::OnViewCompass)
@@ -607,7 +607,7 @@ void EnviroFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _("Wireframe\tCtrl+W"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _("Fullscreen\tCtrl+F"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _("Top-Down Camera\tCtrl+T"));
-	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _("Framerate Chart\tCtrl+Z"));
+	m_pViewMenu->Append(ID_VIEW_STATS, _("Rendering Statistics\tx"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_ELEV_LEGEND, _("Elevation Legend"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_COMPASS, _("Compass"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_MAP_OVERVIEW, _("Overview"));
@@ -862,11 +862,6 @@ void EnviroFrame::RefreshToolbar()
 		api.MinSize(best);
 		m_mgr.Update();
 	}
-}
-
-void EnviroFrame::Setup3DScene()
-{
-	m_canvas->SetSpaceNavTarget(vtGetScene()->GetCamera());
 }
 
 void EnviroFrame::AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog)
@@ -1638,14 +1633,15 @@ void EnviroFrame::OnUpdateViewTopDown(wxUpdateUIEvent& event)
 	event.Check(m_bTopDown);
 }
 
-void EnviroFrame::OnViewFramerate(wxCommandEvent& event)
+void EnviroFrame::OnViewStats(wxCommandEvent& event)
 {
-	m_canvas->m_bShowFrameRateChart = !m_canvas->m_bShowFrameRateChart;
-}
-
-void EnviroFrame::OnUpdateViewFramerate(wxUpdateUIEvent& event)
-{
-	event.Check(m_canvas && m_canvas->m_bShowFrameRateChart);
+#ifdef USE_OSG_STATS
+	// Yes, this is a hack, but it doesn't seem that StatsHandler can be cycled
+	//  any other way than by key event.
+	GraphicsWindowWX* pGW = (GraphicsWindowWX*)vtGetScene()->GetGraphicsContext();
+	if ((NULL != pGW) && pGW->valid())
+		pGW->getEventQueue()->keyPress('x');
+#endif
 }
 
 void EnviroFrame::OnViewElevLegend(wxCommandEvent& event)
