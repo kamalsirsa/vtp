@@ -103,12 +103,16 @@ void vtGLCanvas::UpdateStatusText()
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
-	static bool bFirstPaint = true;
+	// Prevent this function from ever being called nested, it is not re-entrant
+	static bool bInside = false;
+	if (bInside)
+		return;
+	bInside = true;
 
-	if (bFirstPaint)
+	if (m_bFirstPaint)
 	{
-		VTLOG("first OnPaint\n");
-		bFirstPaint = false;
+	    wxSize cs = GetClientSize();
+		VTLOG("first OnPaint, client size is %d %d\n", cs.x, cs.y);
 	}
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
@@ -118,7 +122,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		if (m_bFirstPaint) VTLOG1("vtGLCanvas: creating a wxPaintDC on the stack\n");
 		wxPaintDC dc(this);
 	}
-
+#if 1
 	// Safety checks
 	if (!s_canvas)
 	{
@@ -127,26 +131,33 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	}
 
 #ifndef __WXMOTIF__
-	if (!GetContext()) return;
+	if (!GetContext())
+	{
+	    VTLOG1("GetContext returns NULL, returning.\n");
+	    return;
+	}
 #endif
 
-	if (m_bPainting) return;
-
+	if (m_bPainting || !m_bRunning)
+	{
+		bInside = false;
+		return;
+	}
 	m_bPainting = true;
 
 	// Render the scene
-	if (m_bFirstPaint) VTLOG1("vtGLCanvas: DoUpdate\n");
+	if (m_bFirstPaint)
+		VTLOG1("vtGLCanvas: DoUpdate\n");
+
 	vtGetScene()->DoUpdate();
 
-	SwapBuffers();
-
-	// Limit framerate (rough, but sufficient)
-	float curr = vtGetFrameTime();
-	float max = 1.0f / 60.0f;
-	float diff = max - curr;
-	if (diff > 0)
-		Sleep((int)(diff * 1000));
-
+//	// Limit framerate (rough, but sufficient)
+//	float curr = vtGetFrameTime();
+//	float max = 1.0f / 60.0f;
+//	float diff = max - curr;
+//	if (diff > 0)
+//		Sleep((int)(diff * 1000));
+//
 	// update the status bar every 1/10 of a second
 	static float last_stat = 0.0f;
 	float cur = vtGetTime();
@@ -158,19 +169,16 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 	m_bPainting = false;
 
-	if (m_bFirstPaint)
-		m_bFirstPaint = false;
-
 	// Must allow some idle processing to occur - or the toolbars will not
 	// update, and the close box will not respond!
 	wxGetApp().ProcessIdle();
-}
 
-static void Reshape(int width, int height)
-{
-	glViewport(0, 0, (GLint)width, (GLint)height);
-}
+	bInside = false;
 
+	if (m_bFirstPaint)
+		m_bFirstPaint = false;
+#endif
+}
 
 void vtGLCanvas::OnClose(wxCloseEvent& event)
 {
@@ -180,15 +188,11 @@ void vtGLCanvas::OnClose(wxCloseEvent& event)
 
 void vtGLCanvas::OnSize(wxSizeEvent& event)
 {
-#ifndef __WXMOTIF__
-	if (!GetContext()) return;
-#endif
-
-	SetCurrent();
 	int width, height;
 	GetClientSize(& width, & height);
-	Reshape(width, height);
+	VTLOG("OnSize, clientsize is (%d, %d)\n", width, height);
 
+	SetCurrent();
 	vtGetScene()->SetWindowSize(width, height);
 }
 
@@ -300,18 +304,27 @@ void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
 
 void vtGLCanvas::OnIdle(wxIdleEvent &event)
 {
+#if 1
+	// standard continuous rendering
+	if (m_bRunning)
+		Refresh(false);
+#else
 	// Don't use the "Refresh on Idle" approach to continuous rendering.
-	//if (m_bRunning)
-		//Refresh(false);
-
 	// Instead, each Idle, let the engines handle events.
 	//  Only redraw when the camera has changed.
 	vtScene *sc = vtGetScene();
+	vtCamera *cam = sc->GetCamera();
+	if (!cam)
+	{
+		VTLOG1("No camera in OnIdle.\n");
+		return;
+	}
 	FMatrix4 m1, m2;
-	sc->GetCamera()->GetTransform1(m1);
-	vtGetScene()->UpdateEngines();
-	sc->GetCamera()->GetTransform1(m2);
+	cam->GetTransform1(m1);
+	sc->UpdateEngines();
+	cam->GetTransform1(m2);
 	if (m1 != m2)
 		Refresh(false);
+#endif
 }
 

@@ -184,8 +184,8 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_pTree->SetBackgroundColour(*wxLIGHT_GREY);
 
 	// We definitely want full color and a 24-bit Z-buffer!
-	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
-		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0	};
+	int gl_attrib[8] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
+		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0, 0 };
 
 	// Make a vtGLCanvas
 	VTLOG(" creating canvas\n");
@@ -957,6 +957,9 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	VTLOG("AttemptLoad '%s'\n", (const char *) model->m_filename);
 	model->m_attempted_load = true;
 
+	// stop rendering while progress dialog is open
+	m_canvas->m_bRunning = false;
+
 	OpenProgressDialog(_T("Reading file"), false, this);
 
 	wxString str(model->m_filename, wxConvUTF8);
@@ -970,6 +973,10 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 		pNode = vtLoadModel(fullpath);
 	}
 	CloseProgressDialog();
+
+	// resume rendering after progress dialog is closed
+	m_canvas->m_bRunning = true;
+
 	if (!pNode)
 	{
 		str.Printf(_T("Sorry, couldn't load model from %hs"), (const char *) model->m_filename);

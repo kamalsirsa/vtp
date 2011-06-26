@@ -43,6 +43,8 @@ class LogCatcher : public wxLog
 //
 bool vtApp::OnInit(void)
 {
+    m_pTrackball = NULL;
+
 	// Redirect the wxWindows log messages to our own logging stream
 	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);
@@ -53,18 +55,20 @@ bool vtApp::OnInit(void)
 	VTLOG("Setup scene\n");
 	vtScene *pScene = vtGetScene();
 
-	int MyArgc;
-	char** MyArgv;
-	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
-
-	pScene->Init(MyArgc, MyArgv);
-	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));		// grey
-
 	//
 	// Create the main frame window
 	//
 	VTLOG("Creating frame\n");
 	vtFrame *frame = new vtFrame(NULL, _T("Content Manager"), wxPoint(50, 50), wxSize(800, 600));
+
+	int MyArgc;
+	char** MyArgv;
+	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
+	pScene->Init(MyArgc, MyArgv);
+
+	pScene->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
+
+	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));		// grey
 
 	// Make sure the scene knows the size of the canvas
 	//  (on wxGTK, the first size events arrive too early before the Scene exists)
@@ -78,8 +82,6 @@ bool vtApp::OnInit(void)
 	m_pRoot = new vtGroup;
 	m_pRoot->setName("Root");
 	pScene->SetRoot(m_pRoot);
-
-	pScene->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
 
 	// make a simple directional light
 	VTLOG(" creating light\n");

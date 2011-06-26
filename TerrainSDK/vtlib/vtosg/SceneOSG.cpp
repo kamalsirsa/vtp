@@ -840,6 +840,7 @@ vtWindow::vtWindow()
 
 void vtWindow::SetSize(int w, int h)
 {
+    VTLOG("vtWindow::SetSize(%d, %d)\n", w, h);
 	m_Size.Set(w,h);
 }
 
