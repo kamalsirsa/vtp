@@ -137,6 +137,11 @@ void ItemGroup::SetRanges()
 	for (int i = 0; i < num_models; i++)
 	{
 		end = m_pItem->GetModel(i)->m_distance;
+
+		// if we don't have a valid range for a model, just make it visible
+		if (end == 0)	
+			end = 1e9;
+
 		m_pLOD->setRange(i, start, end);
 		start = end;
 	}
