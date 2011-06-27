@@ -29,10 +29,8 @@
 #  include "building.xpm"
 #  include "road.xpm"
 #  include "veg1.xpm"
-#  include "raw.xpm"
 #  include "fence.xpm"
 #  include "instance.xpm"
-#  include "icon8.xpm"
 #  include "image.xpm"
 
 #  include "layer_create.xpm"
@@ -108,7 +106,7 @@ END_EVENT_TABLE()
 void LayerToolBarFunc(wxToolBar *bar)
 {
     bar->SetMargins( 1, 1 );
-    
+
     bar->AddTool( ID_LAYER_CREATE, _("Create"),	  wxBITMAP(layer_create), wxNullBitmap, wxITEM_NORMAL, _("Create New Layer") );
     bar->AddTool( ID_LAYER_LOAD, _("Load"),		  wxBITMAP(layer_open),	  wxNullBitmap, wxITEM_NORMAL, _("Load Layer") );
     bar->AddTool( ID_LAYER_SAVE, _("Save"),		  wxBITMAP(save),		  wxNullBitmap, wxITEM_NORMAL, _("Save Layer") );
@@ -122,7 +120,7 @@ void LayerToolBarFunc(wxToolBar *bar)
     bar->AddTool( ID_LAYER_REFRESH, _("Refresh"), wxBITMAP(refresh),	  wxNullBitmap, wxITEM_NORMAL, _("Refresh") );
     bar->AddSeparator();
     bar->AddTool( ID_SHOW_ALL, _("All"),		  wxBITMAP(treeview),	  wxNullBitmap, wxITEM_CHECK, _("Show all elements of every layer") );
-    
+
     bar->Realize();
 }
 
@@ -814,7 +812,7 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 			else
 				// shadows are on by default, so don't store shadow=true
 				str->RemoveTag("shadow");
-				
+
 			return;
 		}
 		else
