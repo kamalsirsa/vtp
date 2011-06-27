@@ -280,6 +280,7 @@ EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
 EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
 EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
+EVT_MENU(ID_RAW_ADDFEATURE_WKT,		MainFrame::OnRawAddFeatureWKT)
 EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
 EVT_MENU(ID_RAW_CONVERT_TOTIN,		MainFrame::OnRawConvertToTIN)
 EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
@@ -294,6 +295,7 @@ EVT_UPDATE_UI(ID_RAW_SETTYPE,			MainFrame::OnUpdateRawSetType)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS,			MainFrame::OnUpdateRawAddPoints)
 EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnUpdateRawAddPointText)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
+EVT_UPDATE_UI(ID_RAW_ADDFEATURE_WKT,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_CONVERT_TOTIN,		MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsActive)
@@ -582,6 +584,7 @@ void MainFrame::CreateMenus()
 	rawMenu->AppendCheckItem(ID_RAW_ADDPOINTS, _("Add Points with Mouse"));
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, _("Add Point with Text\tCtrl+T"), _("Add point"));
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, _("Add Points with GPS"), _("Add points with GPS"));
+	rawMenu->Append(ID_RAW_ADDFEATURE_WKT, _("Add Feature from WKT"), _("Add Feature from WKT"));
 	rawMenu->Append(ID_RAW_STYLE, _("Style..."));
 	rawMenu->Append(ID_RAW_SCALE_H, _("Scale horizontally"));
 	rawMenu->Append(ID_RAW_SCALE_V, _("Scale vertically"));
@@ -3450,6 +3453,44 @@ void MainFrame::OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event)
 //	vtRawLayer *pRL = GetActiveRawLayer();
 //	event.Enable(pRL != NULL && pRL->GetEntityType() == SHPT_POINT);
 	event.Enable(false);	// not implemented yet
+}
+
+void MainFrame::OnRawAddFeatureWKT(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	if (pRL == NULL || pRL->GetGeomType() != wkbLineString)
+		return;
+	vtFeatureSetLineString *fsls = (vtFeatureSetLineString*) pRL->GetFeatureSet();
+
+	wxString str = wxGetTextFromUser(_("Enter well-known-text (WKT) of a feature (in current CRS)"));
+	if (str == _T(""))
+		return;
+	vtString vs = (const char *) str.ToAscii();
+
+	OGRLineString ols;
+
+	//  Convert from OGC WKT to an OGR feature
+	int len = vs.GetLength();
+	char *buffer = (char *) CPLMalloc(len+1);
+	strcpy(buffer, (const char *) vs);
+	char *buffer2 = buffer;
+	OGRErr oe = ols.importFromWkt(&buffer2);
+	CPLFree(buffer);
+
+	if (oe != OGRERR_NONE)
+	{
+		DisplayAndLog("Sorry, couldn't parse that text.");
+		return;
+	}
+
+	// Convert OGR feature to polyline (DLine2)
+	DLine2 pline;
+	int num_points = ols.getNumPoints();
+	for (int j = 0; j < num_points; j++)
+		pline.Append(DPoint2(ols.getX(j), ols.getY(j)));
+
+	fsls->AddPolyLine(pline);
+	m_pView->Refresh();
 }
 
 void MainFrame::OnRawSelectCondition(wxCommandEvent& event)

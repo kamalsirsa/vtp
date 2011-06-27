@@ -262,6 +262,7 @@ protected:
 	void OnRawAddPoints(wxCommandEvent& event);
 	void OnRawAddPointText(wxCommandEvent& event);
 	void OnRawAddPointsGPS(wxCommandEvent& event);
+	void OnRawAddFeatureWKT(wxCommandEvent& event);
 	void OnRawSelectCondition(wxCommandEvent& event);
 	void OnRawConvertToTIN(wxCommandEvent& event);
 	void OnRawExportImageMap(wxCommandEvent& event);
