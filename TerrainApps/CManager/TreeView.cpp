@@ -70,11 +70,11 @@ void MyTreeCtrl::CreateImageList(int size)
 
 	// should correspond to TreeCtrlIcon_xxx enum
 	wxIcon icons[5];
-	icons[0] = LocalIcon(icon8);
-	icons[1] = LocalIcon(group);
-	icons[2] = LocalIcon(group2);
-	icons[3] = LocalIcon(geode);
-	icons[4] = LocalIcon(geom2);
+	icons[0] = LocalIcon(top);		// Content
+	icons[1] = LocalIcon(group);	// Item
+	icons[2] = LocalIcon(group2);	// ItemSelected
+	icons[3] = LocalIcon(geode);	// Model
+	icons[4] = LocalIcon(geom2);	// ModelSelected
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
