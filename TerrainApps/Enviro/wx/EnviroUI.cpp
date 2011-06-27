@@ -10,6 +10,14 @@
 #include "EnviroUI.h"
 
 #include "../../../TerrainSDK/vtui/bitmaps/dummy_32x18.xpm"
+#include "bitmap/LOD128.xpm"
+#include "bitmap/LOD16.xpm"
+#include "bitmap/LOD1k.xpm"
+#include "bitmap/LOD256.xpm"
+#include "bitmap/LOD2k.xpm"
+#include "bitmap/LOD32.xpm"
+#include "bitmap/LOD512.xpm"
+#include "bitmap/LOD64.xpm"
 #include "bitmap/play_back.xpm"
 #include "bitmap/play_play.xpm"
 #include "bitmap/play_record1.xpm"
@@ -3129,56 +3137,56 @@ PagingDlgBase::PagingDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	wxBoxSizer* bSizer290;
 	bSizer290 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_staticbitmap1 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap1 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( LOD16_xpm ), wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap1, 0, wxALIGN_CENTER, 0 );
 	
 	m_text190 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("16"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text190->Wrap( 0 );
 	bSizer290->Add( m_text190, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap2 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap2 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( LOD32_xpm ), wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap2, 0, wxALIGN_CENTER, 5 );
 	
 	m_text191 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("32"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text191->Wrap( 0 );
 	bSizer290->Add( m_text191, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap3 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap3 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( LOD64_xpm ), wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap3, 0, wxALIGN_CENTER, 5 );
 	
 	m_text192 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("64"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text192->Wrap( 0 );
 	bSizer290->Add( m_text192, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap4 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap4 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( LOD128_xpm ), wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap4, 0, wxALIGN_CENTER, 5 );
 	
 	m_text193 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("128"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text193->Wrap( 0 );
 	bSizer290->Add( m_text193, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap5 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap5 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( LOD256_xpm ), wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap5, 0, wxALIGN_CENTER, 5 );
 	
 	m_text194 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("256"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text194->Wrap( 0 );
 	bSizer290->Add( m_text194, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap6 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap6 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( LOD512_xpm ), wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap6, 0, wxALIGN_CENTER, 5 );
 	
 	m_text195 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("512"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text195->Wrap( 0 );
 	bSizer290->Add( m_text195, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap7 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap7 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( LOD1k_xpm ), wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap7, 0, wxALIGN_CENTER, 5 );
 	
 	m_text196 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("1k"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text196->Wrap( 0 );
 	bSizer290->Add( m_text196, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 	
-	m_staticbitmap8 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize( 20,20 ), 0 );
+	m_staticbitmap8 = new wxStaticBitmap( SurfaceLODPanel, wxID_ANY, wxBitmap( LOD2k_xpm ), wxDefaultPosition, wxSize( 20,20 ), 0 );
 	bSizer290->Add( m_staticbitmap8, 0, wxALIGN_CENTER, 5 );
 	
 	m_text197 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("2k"), wxDefaultPosition, wxDefaultSize, 0 );

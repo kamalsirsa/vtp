@@ -34,11 +34,6 @@
 #include "ScenarioParamsDialog.h"
 #define NTILES 4
 
-#if defined(__WXGTK__) || defined(__WXMAC__)
-#  include "dummy_32x18.xpm"
-#endif
-
-
 //---------------------------------------------------------------------------
 
 /**
@@ -162,11 +157,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	VTLOG("TParamsDlg: Constructing.\n");
 
 	m_bSetting = false;
-
-	// Work around the limitation of wxFormDesigner which can only load bitmaps
-	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
-	//  want them in the resources (on Windows) or as xpm (on Linux)
-	m_color3->SetBitmap(wxBITMAP(dummy_32x18));
 
 	// Work around wxFormDesigner's lack of support for limiting to smallest size
 	GetSizer()->SetSizeHints(this);

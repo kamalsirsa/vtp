@@ -23,10 +23,6 @@
 #include "vtui/ColorMapDlg.h"
 #include "vtui/Helper.h"		// for AddFilenamesToChoice
 
-#if defined(__WXGTK__) || defined(__WXMAC__)
-#  include "dummy_32x18.xpm"
-#endif
-
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -55,11 +51,6 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	RenderDlgBase( parent, id, title, position, size, style )
 {
-	// Work around the limitation of wxFormDesigner which can only load bitmaps
-	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
-	//  want them in the resources (on Windows) or as xpm (on Linux)
-	m_color_nodata->SetBitmapLabel(wxBITMAP(dummy_32x18));
-
 	m_power = 8;
 	m_bConstraint = false;
 	m_bTiling = false;

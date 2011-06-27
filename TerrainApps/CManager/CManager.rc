@@ -22,7 +22,6 @@ geom2   ICON "icons/geom2.ico"
 
 axes			BITMAP	"bitmaps/axes.bmp"
 contents_open	BITMAP	"bitmaps/contents_open.bmp"
-dummy_26x14		BITMAP	"bitmaps/dummy_26x14.bmp"
 item_new		BITMAP	"bitmaps/item_new.bmp"
 item_remove		BITMAP	"bitmaps/item_remove.bmp"
 model_add		BITMAP	"bitmaps/model_add.bmp"

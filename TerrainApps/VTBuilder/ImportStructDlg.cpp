@@ -19,10 +19,6 @@
 #include "ImportStructDlg.h"
 #include "StructLayer.h"
 
-#if defined(__WXGTK__) || defined(__WXMAC__)
-#  include "dummy_32x18.xpm"
-#endif
-
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -62,12 +58,6 @@ ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxStrin
 	const wxPoint &position, const wxSize& size, long style ) :
 	ImportStructDlgBase( parent, id, title, position, size, style )
 {
-	// Work around the limitation of wxFormDesigner which can only load bitmaps
-	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
-	//  want them in the resources (on Windows) or as xpm (on Linux)
-	m_color3->SetBitmap(wxBITMAP(dummy_32x18));
-	m_color4->SetBitmap(wxBITMAP(dummy_32x18));
-
 	m_iType = 0;
 	m_iHeightType = 0;
 	m_iRoofType = 0;

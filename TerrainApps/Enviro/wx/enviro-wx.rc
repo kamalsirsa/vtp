@@ -52,17 +52,6 @@ treeview	 BITMAP "bitmap/treeview.bmp"
 grid		 BITMAP "bitmap/grid.bmp"
 refresh		 BITMAP "bitmap/refresh.bmp"
 
-// Placeholders for dynamic color buttons
-dummy14		 BITMAP "bitmap/dummy14.bmp"
-dummy_16x15	 BITMAP "bitmap/dummy_16x15.bmp"
-dummy_32x18	 BITMAP "bitmap/dummy_32x18.bmp"
-
-// Bitmaps used in Locations dialog
-play_back	 BITMAP "bitmap/play_back.bmp"
-play_stop	 BITMAP "bitmap/play_stop.bmp"
-play_record1 BITMAP "bitmap/play_record1.bmp"
-play_play	 BITMAP "bitmap/play_play.bmp"
-
 // Icons for layer treeview
 building  ICON "icons/building.ico"
 road	  ICON "icons/road.ico"

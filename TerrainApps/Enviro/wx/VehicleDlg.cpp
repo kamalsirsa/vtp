@@ -23,11 +23,6 @@
 
 extern void EnableContinuousRendering(bool bTrue);
 
-#if defined(__WXGTK__) || defined(__WXMAC__)
-#  include "dummy_32x18.xpm"
-#endif
-
-
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -50,10 +45,6 @@ VehicleDlg::VehicleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	wxColour rgb(255, 255, 0);
 	m_ColorData.SetChooseFull(true);
 	m_ColorData.SetColour(rgb);
-
-	// Work around the limitation of wxFormDesigner which can only load bitmaps
-	//  at runtime.
-	m_color3->SetBitmap(wxBITMAP(dummy_32x18));
 
 	// Work around wxFormDesigner's lack of support for limiting to smallest size
 	GetSizer()->SetSizeHints(this);

@@ -59,18 +59,6 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_fPageout = 0.0f;
 	m_fRange = 0.0f;
 
-	// Work around the limitation of wxFormDesigner which can only load bitmaps
-	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
-	//  want them in the resources (on Windows) or as xpm (on Linux)
-	FillWithColorSize(m_staticbitmap1, 14, 14, wxColour(180,180,180));
-	FillWithColorSize(m_staticbitmap2, 14, 14, wxColour(255,100,255));
-	FillWithColorSize(m_staticbitmap3, 14, 14, wxColour(255,0,0));
-	FillWithColorSize(m_staticbitmap4, 14, 14, wxColour(255,128,0));
-	FillWithColorSize(m_staticbitmap5, 14, 14, wxColour(255,255,0));
-	FillWithColorSize(m_staticbitmap6, 14, 14, wxColour(0,255,0));
-	FillWithColorSize(m_staticbitmap7, 14, 14, wxColour(0,255,255));
-	FillWithColorSize(m_staticbitmap8, 14, 14, wxColour(255,255,255));
-
 	// Work around wxFormDesigner's lack of support for limiting to smallest size
 	GetSizer()->SetSizeHints(this);
 

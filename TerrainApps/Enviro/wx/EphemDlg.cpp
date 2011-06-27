@@ -23,10 +23,6 @@
 #include "EnviroGUI.h"    // for g_App
 #include "vtui/Helper.h"    // for FillWithColor
 
-#if defined(__WXGTK__) || defined(__WXMAC__)
-#  include "dummy_32x18.xpm"
-#endif
-
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -69,9 +65,6 @@ EphemDlg::EphemDlg(wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iWindSpeedSlider = 0;
 	m_iWindDir = 0;
 	m_fWindSpeed = 0;
-
-	// Work around the limitation of wxFormDesigner
-	m_color3->SetBitmap(wxBITMAP(dummy_32x18));
 
 	AddValidator(this, ID_SKY, &m_bSky);
 	AddValidator(this, ID_SKYTEXTURE, &m_strSkyTexture);

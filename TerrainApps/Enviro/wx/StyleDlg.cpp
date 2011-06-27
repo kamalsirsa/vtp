@@ -23,10 +23,6 @@
 #include "vtdata/FilePath.h"
 #include "vtui/Helper.h"
 
-#if defined(__WXGTK__) || defined(__WXMAC__)
-#  include "dummy_32x18.xpm"
-#endif
-
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -73,13 +69,6 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	m_pFeatureSet = NULL;
 	AddValidator(this, ID_FEATURE_TYPE, &m_strFeatureType);
-
-	// Work around the limitation of wxFormDesigner which can only load bitmaps
-	//  at runtime.  We don't want to distribute bitmaps for runtime loading, we
-	//  want them in the resources (on Windows) or as xpm (on Linux)
-	m_line_geom_color->SetBitmapLabel(wxBITMAP(dummy_32x18));
-	m_object_geom_color->SetBitmapLabel(wxBITMAP(dummy_32x18));
-	m_text_color->SetBitmapLabel(wxBITMAP(dummy_32x18));
 
 	// Work around wxFormDesigner's lack of support for limiting to smallest size
 	GetSizer()->SetSizeHints(this);
