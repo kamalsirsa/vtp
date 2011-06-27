@@ -2,20 +2,20 @@ add_subdirectory(wx)
 
 set(ENVIRO_SOURCE_FILES
 	EarthView.cpp Engines.cpp Enviro.cpp Hawaii.cpp Nevada.cpp Options.cpp SpecificTerrain.cpp)
-	
+
 set(ENVIRO_SOURCE_FILES_WX
 	wx/canvas.cpp wx/EnviroApp.cpp wx/EnviroFrame.cpp wx/EnviroGUI.cpp wx/StatusBar.cpp)
-	
+
 set(ENVIRO_HEADER_FILES
 	Engines.h Enviro.h EnviroEnum.h Hawaii.h Nevada.h Options.h PlantingOptions.h SpecificTerrain.h)
-	
+
 set(ENVIRO_HEADER_FILES_WX
 	wx/canvas.h wx/EnviroApp.h wx/EnviroFrame.h wx/EnviroGUI.h wx/menu_id.h wx/StatusBar.h wx/TextureDlg.h
 	wx/TimeDlg.h wx/VehicleDlg.h)
-	
+
 set(ENVIRO_RC_FILES
 	wx/enviro-wx.rc)
-	
+
 if(MSVC)
 	add_executable(Enviro WIN32 ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
 		${ENVIRO_HEADER_FILES_WX} ${ENVIRO_RC_FILES} vtlib_headers.cpp wx/wx_headers.cpp)
@@ -32,7 +32,7 @@ else(MSVC)
 endif(MSVC)
 
 # Internal dependencies for this target
-target_link_libraries(Enviro envdlg vtlib vtui minidata vtdata xmlhelper wxosg)
+target_link_libraries(Enviro envdlg wxosg vtlib vtui minidata vtdata xmlhelper)
 
 # Performance monitoring
 if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)

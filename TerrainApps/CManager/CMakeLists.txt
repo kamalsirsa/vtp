@@ -1,14 +1,14 @@
 set(CMANAGER_SOURCE_FILES
 	app.cpp canvas.cpp CManager_UI.cpp frame.cpp ItemGroup.cpp LightDlg.cpp
 	ModelDlg.cpp PropDlg.cpp TagDlg.cpp TreeView.cpp)
-	
+
 set(CMANAGER_HEADER_FILES
 	app.h canvas.h CManager_UI.h frame.h ItemGroup.h LightDlg.h menu_id.h
 	ModelDlg.h PropDlg.h TagDlg.h TreeView.h)
-	
+
 set(CMANAGER_RC_FILES
 	CManager.rc)
-	
+
 if(MSVC)
 	add_executable(CManager WIN32 ${CMANAGER_SOURCE_FILES} ${CMANAGER_HEADER_FILES} ${CMANAGER_RC_FILES} pre.cpp)
 	set_source_files_properties(${CMANAGER_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
@@ -19,7 +19,7 @@ else(MSVC)
 endif(MSVC)
 
 # Internal library dependencies for this target
-target_link_libraries(CManager vtlib vtdata vtui xmlhelper minidata wxosg)
+target_link_libraries(CManager wxosg vtlib vtdata vtui xmlhelper minidata)
 
 # Windows specific stuff
 if (WIN32)
@@ -42,11 +42,11 @@ endif (GDAL_FOUND)
 if(OSG_FOUND)
 	target_link_libraries(CManager ${OSG_ALL_LIBRARIES})
 endif (OSG_FOUND)
-	
+
 if (OSGEARTH_FOUND)
 	target_link_libraries(CManager ${OSGEARTH_ALL_LIBRARIES})
 endif(OSGEARTH_FOUND)
-	
+
 if(BZIP2_FOUND)
 	target_link_libraries(CManager ${BZIP2_LIBRARIES})
 endif(BZIP2_FOUND)
@@ -62,7 +62,7 @@ endif(JPEG_FOUND)
 if(PNG_FOUND)
 	target_link_libraries(CManager ${PNG_LIBRARIES})
 endif(PNG_FOUND)
-	
+
 if(MINI_FOUND)
 	target_link_libraries(CManager ${MINI_LIBRARIES})
 endif(MINI_FOUND)

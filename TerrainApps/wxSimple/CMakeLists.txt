@@ -1,4 +1,4 @@
-set(WXSIMPLE_SOURCE_FILES app.cpp canvas.cpp frame.cpp) 
+set(WXSIMPLE_SOURCE_FILES app.cpp canvas.cpp frame.cpp)
 set(WXSIMPLE_HEADER_FILES app.h canvas.h frame.h)
 
 if(MSVC)
@@ -10,7 +10,7 @@ else(MSVC)
 endif(MSVC)
 
 # Internal library dependencies for this target
-target_link_libraries(wxSimple vtlib minidata vtdata xmlhelper vtui wxosg)
+target_link_libraries(wxSimple wxosg vtlib minidata vtdata xmlhelper vtui)
 
 # Windows specific stuff
 if (WIN32)
