@@ -23,7 +23,7 @@
 #include "vtdata/vtLog.h"
 
 #include "vtui/Helper.h"	// for LogWindowsVersion, ProgressDialog
-#include "vtui/GraphicsWindowWX.h"
+#include "wxosg/GraphicsWindowWX.h"
 
 #include "xmlhelper/easyxml.hpp"
 

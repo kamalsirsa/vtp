@@ -18,7 +18,7 @@
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/vtSOG.h"
 #include "vtui/Helper.h"	// for ConvertArgcArgv
-#include "vtui/GraphicsWindowWX.h"
+#include "wxosg/GraphicsWindowWX.h"
 #include "vtdata/vtLog.h"
 
 #include "app.h"

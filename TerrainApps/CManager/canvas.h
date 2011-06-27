@@ -8,7 +8,7 @@
 #ifndef CMANAGER_CANVASH
 #define CMANAGER_CANVASH
 
-#include "vtui/Canvas.h"
+#include "wxosg/Canvas.h"
 
 //
 // A Canvas for the main view area.

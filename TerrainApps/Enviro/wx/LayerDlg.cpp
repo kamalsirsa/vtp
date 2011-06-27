@@ -30,7 +30,7 @@
 #  include "road.xpm"
 #  include "veg1.xpm"
 #  include "raw.xpm"
-#  include "icons/fence.xpm"
+#  include "fence.xpm"
 #  include "instance.xpm"
 #  include "icon8.xpm"
 #  include "image.xpm"
@@ -47,6 +47,12 @@
 #  include "grid.xpm"
 #  include "refresh.xpm"
 #endif
+
+#include "wxosg/icons/top.xpm"
+#include "icons/raw.xpm"
+#include "icons/raw_yellow.xpm"
+
+#define LocalIcon(X) wxIcon( (const char**) X##_xpm )
 
 #define ICON_BUILDING	0
 #define ICON_ROAD		1
@@ -176,71 +182,6 @@ LayerDlg::~LayerDlg()
 	delete m_imageListNormal;
 }
 
-wxBitmap IconsFunc( size_t index )
-{
-    if (index == 0)
-    {
-        /* XPM */
-        static const char *xpm_data[] = {
-        /* columns rows colors chars-per-pixel */
-        "16 16 3 1",
-        "  c None",
-        "a c Black",
-        "b c #808080",
-        /* pixels */
-        "                ",
-        " aaaaaaa  a  a  ",
-        " a    a  a  a   ",
-        " a   a  a  a    ",
-        " a  a  a  a     ",
-        " a a  a  a   b  ",
-        " aa  a  a   bab ",
-        " a  a  a     b  ",
-        "   a  a   b     ",
-        "  a  a   bab    ",
-        " a  a     b     ",
-        "   a   b     b  ",
-        "  a   bab   bab ",
-        " a     b     b  ",
-        "                ",
-        "                "
-        };
-        wxBitmap bitmap( xpm_data );
-        return bitmap;
-    }
-    if (index == 1)
-    {
-        /* XPM */
-        static const char *xpm_data[] = {
-        /* columns rows colors chars-per-pixel */
-        "16 16 3 1",
-        "a c Black",
-        "b c #808080",
-        "c c #FFFF00",
-        /* pixels */
-        "cccccccccccccccc",
-        "caaaaaaaccaccacc",
-        "caccccaccaccaccc",
-        "cacccaccaccacccc",
-        "caccaccaccaccccc",
-        "cacaccaccacccbcc",
-        "caaccaccacccbabc",
-        "caccaccacccccbcc",
-        "cccaccacccbccccc",
-        "ccaccacccbabcccc",
-        "caccacccccbccccc",
-        "cccacccbcccccbcc",
-        "ccacccbabcccbabc",
-        "cacccccbcccccbcc",
-        "cccccccccccccccc",
-        "cccccccccccccccc"
-        };
-        wxBitmap bitmap( xpm_data );
-        return bitmap;
-    }
-    return wxNullBitmap;
-}
-
 void LayerDlg::CreateImageList(int size)
 {
 	delete m_imageListNormal;
@@ -254,15 +195,15 @@ void LayerDlg::CreateImageList(int size)
 	m_imageListNormal = new wxImageList(size, size, TRUE);
 
 	wxIcon icons[9];
-	icons[0] = wxICON(building);
-	icons[1] = wxICON(road);
-	icons[2] = wxICON(veg1);
-	icons[3].CopyFromBitmap(IconsFunc(0));
-	icons[4] = wxICON(fence);
-	icons[5] = wxICON(instance);
-	icons[6] = wxICON(icon8);
-	icons[7] = wxICON(image);
-	icons[8].CopyFromBitmap(IconsFunc(1));
+	icons[0] = wxICON(building);		// ICON_BUILDING
+	icons[1] = wxICON(road);			// ICON_ROAD
+	icons[2] = wxICON(veg1);			// ICON_VEG1
+	icons[3] = LocalIcon(raw);			// ICON_RAW
+	icons[4] = wxICON(fence);			// ICON_FENCE
+	icons[5] = wxICON(instance);		// ICON_INSTANCE
+	icons[6] = LocalIcon(top);			// ICON_TOP
+	icons[7] = wxICON(image);			// ICON_IMAGE
+	icons[8] = LocalIcon(raw_yellow);	// ICON_RAW_YELLOW
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )

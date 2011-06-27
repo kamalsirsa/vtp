@@ -28,21 +28,14 @@
 
 DECLARE_APP(vtApp)
 
-// under Windows the icons are in the .rc file
-#ifndef __WXMSW__
-#  include "../Enviro/wx/icons/icon1.xpm"
-#  include "../Enviro/wx/icons/icon2.xpm"
-#  include "../Enviro/wx/icons/icon3.xpm"
-#  include "../Enviro/wx/icons/icon4.xpm"
-#  include "../Enviro/wx/icons/icon5.xpm"
-#  include "../Enviro/wx/icons/icon6.xpm"
-#  include "../Enviro/wx/icons/icon7.xpm"
-#  include "../Enviro/wx/icons/icon8.xpm"
-#  include "../Enviro/wx/icons/icon9.xpm"
-#  include "../Enviro/wx/icons/icon10.xpm"
+// We use xpm icons on all platforms
+#  include "wxosg/icons/geode.xpm"
+#  include "wxosg/icons/group.xpm"
+#  include "wxosg/icons/top.xpm"
 #  include "icons/group2.xpm"
 #  include "icons/geom2.xpm"
-#endif
+
+#define LocalIcon(X) wxIcon( (const char**) X##_xpm )
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -77,11 +70,11 @@ void MyTreeCtrl::CreateImageList(int size)
 
 	// should correspond to TreeCtrlIcon_xxx enum
 	wxIcon icons[5];
-	icons[0] = wxICON(icon8);
-	icons[1] = wxICON(icon4);
-	icons[2] = wxICON(group2);
-	icons[3] = wxICON(icon3);
-	icons[4] = wxICON(geom2);
+	icons[0] = LocalIcon(icon8);
+	icons[1] = LocalIcon(group);
+	icons[2] = LocalIcon(group2);
+	icons[3] = LocalIcon(geode);
+	icons[4] = LocalIcon(geom2);
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )

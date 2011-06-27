@@ -13,48 +13,6 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-SceneGraphDlgBase::SceneGraphDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxBoxSizer* bSizer78;
-	bSizer78 = new wxBoxSizer( wxVERTICAL );
-	
-	m_scenetree = new wxTreeCtrl( this, ID_SCENETREE, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxSUNKEN_BORDER );
-	bSizer78->Add( m_scenetree, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	wxBoxSizer* bSizer79;
-	bSizer79 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_enabled = new wxCheckBox( this, ID_ENABLED, _("Enabled"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_enabled->SetValue(true); 
-	bSizer79->Add( m_enabled, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_zoomto = new wxButton( this, ID_ZOOMTO, _("Zoom To"), wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	m_zoomto->SetDefault(); 
-	bSizer79->Add( m_zoomto, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_refresh = new wxButton( this, ID_REFRESH, _("Refresh"), wxDefaultPosition, wxSize( 55,-1 ), 0 );
-	m_refresh->SetDefault(); 
-	bSizer79->Add( m_refresh, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_log = new wxButton( this, ID_LOG, _("Log"), wxDefaultPosition, wxSize( 55,-1 ), 0 );
-	m_log->SetDefault(); 
-	bSizer79->Add( m_log, 0, wxALL, 5 );
-	
-	bSizer78->Add( bSizer79, 0, wxALIGN_CENTER|wxALL, 0 );
-	
-	this->SetSizer( bSizer78 );
-	this->Layout();
-	bSizer78->Fit( this );
-	
-	this->Centre( wxBOTH );
-}
-
-SceneGraphDlgBase::~SceneGraphDlgBase()
-{
-}
-
 PropPanelBase::PropPanelBase( wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style ) : wxPanel( parent, id, pos, size, style )
 {
 	wxBoxSizer* bSizer80;

@@ -1,9 +1,10 @@
 set(CMANAGER_SOURCE_FILES
-	app.cpp canvas.cpp CManager_UI.cpp frame.cpp ItemGroup.cpp LightDlg.cpp ModelDlg.cpp PropDlg.cpp SceneGraphDlg.cpp
-	TagDlg.cpp TreeView.cpp)
+	app.cpp canvas.cpp CManager_UI.cpp frame.cpp ItemGroup.cpp LightDlg.cpp
+	ModelDlg.cpp PropDlg.cpp TagDlg.cpp TreeView.cpp)
 	
 set(CMANAGER_HEADER_FILES
-	app.h canvas.h CManager_UI.h frame.h ItemGroup.h LightDlg.h menu_id.h ModelDlg.h PropDlg.h SceneGraphDlg.h TagDlg.h TreeView.h)
+	app.h canvas.h CManager_UI.h frame.h ItemGroup.h LightDlg.h menu_id.h
+	ModelDlg.h PropDlg.h TagDlg.h TreeView.h)
 	
 set(CMANAGER_RC_FILES
 	CManager.rc)
@@ -18,7 +19,7 @@ else(MSVC)
 endif(MSVC)
 
 # Internal library dependencies for this target
-target_link_libraries(CManager vtlib vtdata vtui xmlhelper minidata)
+target_link_libraries(CManager vtlib vtdata vtui xmlhelper minidata wxosg)
 
 # Windows specific stuff
 if (WIN32)

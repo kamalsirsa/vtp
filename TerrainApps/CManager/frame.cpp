@@ -28,11 +28,13 @@
 #include "canvas.h"
 #include "menu_id.h"
 #include "TreeView.h"
+#include "ItemGroup.h"
+
+// dialogs
 #include "PropDlg.h"
 #include "ModelDlg.h"
-#include "SceneGraphDlg.h"
-#include "ItemGroup.h"
 #include "LightDlg.h"
+#include "wxosg/SceneGraphDlg.h"
 
 #ifndef __WXMSW__
 #  include "icons/cmanager.xpm"

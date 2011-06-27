@@ -1,6 +1,6 @@
 
 aaaaaa ICON "icons/Enviro.ico"
-enviro ICON "icons/Enviro.ico"
+Enviro ICON "icons/Enviro.ico"
 #include "wx/msw/wx.rc"
 
 // Used in the main Enviro toolbar(s)
@@ -62,22 +62,6 @@ play_back	 BITMAP "bitmap/play_back.bmp"
 play_stop	 BITMAP "bitmap/play_stop.bmp"
 play_record1 BITMAP "bitmap/play_record1.bmp"
 play_play	 BITMAP "bitmap/play_play.bmp"
-
-// Icons for scenegraph treeview
-icon1   ICON "icons/camera.ico"
-icon2   ICON "icons/engine.ico"
-icon3   ICON "icons/geom.ico"
-icon4   ICON "icons/group.ico"
-icon5   ICON "icons/light.ico"
-icon6   ICON "icons/lod.ico"
-icon7   ICON "icons/mesh.ico"
-icon8   ICON "icons/top.ico"
-icon9   ICON "icons/unknown.ico"
-icon10  ICON "icons/xform.ico"
-icon11  ICON "icons/fog.ico"
-icon12  ICON "icons/shadow.ico"
-icon13  ICON "icons/hud.ico"
-icon14  ICON "icons/dyngeom.ico"
 
 // Icons for layer treeview
 building  ICON "icons/building.ico"

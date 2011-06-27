@@ -36,14 +36,13 @@
 #include "vtlib/core/TiledGeom.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/TripDub.h"
-#include "vtui/GraphicsWindowWX.h"
+#include "wxosg/GraphicsWindowWX.h"
 #include "vtui/Helper.h"	// for progress dialog
 
 #include "EnviroFrame.h"
 #include "StatusBar.h"
 
 // dialogs
-#include "BuildingDlg3d.h"
 #include "CameraDlg.h"
 #include "ContourDlg.h"
 #include "DistanceDlg3d.h"
@@ -56,15 +55,18 @@
 #include "LODDlg.h"
 #include "PlantDlg.h"
 #include "ScenarioSelectDialog.h"
-#include "SceneGraphDlg.h"
 #include "TextureDlg.h"
 #include "TimeDlg.h"
 #include "UtilDlg.h"
 #include "VehicleDlg.h"
+
 #include "vtui/InstanceDlg.h"
 #include "vtui/ProfileDlg.h"
 #include "vtui/SizeDlg.h"
 #include "vtui/TagDlg.h"
+
+#include "wxosg/BuildingDlg3d.h"
+#include "wxosg/SceneGraphDlg.h"
 
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 #include "PerformanceMonitor.h"
@@ -389,13 +391,12 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	// tell wxAuiManager to manage this frame
 	m_mgr.SetManagedWindow(this);
 
-#if WIN32
-	// Give it an icon
-	// Not sure why this doesn't work for Enviro on wxGTK, but it gives a
-	//  error, so it's disabled here.  Works on Windows, works with VTBuilder.
-	wxString str(ICON_NAME, wxConvUTF8);
-	VTLOG(" Setting icon: '%s'\n", ICON_NAME);
-	SetIcon(wxIcon(str));
+	// Give the frame an icon
+	VTLOG1(" Setting icon\n");
+#ifdef ICON_NAME
+	SetIcon(wxIcon(wxString(ICON_NAME)));
+#else
+	SetIcon(wxICON(Enviro));
 #endif
 
 	m_bCulleveryframe = true;

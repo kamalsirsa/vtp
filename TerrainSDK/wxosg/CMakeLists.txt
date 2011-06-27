@@ -1,0 +1,38 @@
+# Add a library target called wxosg
+set(WXOSG_SOURCE_FILES 
+		wxosg_UI.cpp BuildingDlg3d.cpp Canvas.cpp SceneGraphDlg.cpp)
+set(WXOSG_HEADER_FILES 
+		wxosg_UI.h BuildingDlg3d.h Canvas.h SceneGraphDlg.h
+		GraphicsWindowWX.h)
+
+if(MSVC)
+	add_library(wxosg ${WXOSG_SOURCE_FILES} ${WXOSG_HEADER_FILES} pre.cpp)
+	set_source_files_properties(${WXOSG_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
+	set_source_files_properties(pre.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
+else(MSVC)
+	add_library(wxosg ${WXOSG_SOURCE_FILES} ${WXOSG_HEADER_FILES})
+endif(MSVC)
+
+include_directories(${TERRAIN_SDK_ROOT})
+
+if(wxWidgets_FOUND)
+	include(${wxWidgets_USE_FILE})
+endif(wxWidgets_FOUND)
+
+if(GDAL_FOUND)
+	include_directories(${GDAL_INCLUDE_DIR})
+endif (GDAL_FOUND)
+
+if(ZLIB_FOUND)
+	include_directories(${ZLIB_INCLUDE_DIR})
+endif (ZLIB_FOUND)
+
+# Windows specific stuff
+if (WIN32)
+	set_property(TARGET wxosg APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_DEPRECATE)
+endif (WIN32)
+
+if(OSG_FOUND)
+	include_directories(${OSG_INCLUDE_DIR})
+endif(OSG_FOUND)
+

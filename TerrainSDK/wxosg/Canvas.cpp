@@ -15,7 +15,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Event.h"
-#include "vtui/GraphicsWindowWX.h"
+#include "GraphicsWindowWX.h"
 #include "vtdata/vtLog.h"
 
 #include "Canvas.h"

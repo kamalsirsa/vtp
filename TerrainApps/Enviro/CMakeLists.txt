@@ -32,7 +32,7 @@ else(MSVC)
 endif(MSVC)
 
 # Internal dependencies for this target
-target_link_libraries(Enviro envdlg vtlib vtui minidata vtdata xmlhelper)
+target_link_libraries(Enviro envdlg vtlib vtui minidata vtdata xmlhelper wxosg)
 
 # Performance monitoring
 if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)

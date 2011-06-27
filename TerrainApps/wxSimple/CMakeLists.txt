@@ -10,7 +10,7 @@ else(MSVC)
 endif(MSVC)
 
 # Internal library dependencies for this target
-target_link_libraries(wxSimple vtlib minidata vtdata xmlhelper vtui)
+target_link_libraries(wxSimple vtlib minidata vtdata xmlhelper vtui wxosg)
 
 # Windows specific stuff
 if (WIN32)

@@ -54,9 +54,5 @@ int EditTerrainParameters(wxWindow *parent, const char *filename);
 void SetupCustomOptions();
 #endif
 
-#ifndef ICON_NAME
-#define ICON_NAME "Enviro"
-#endif
-
 #define STRING_APPORG STRING_ORGNAME " " STRING_APPNAME
 

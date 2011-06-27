@@ -1,8 +1,8 @@
 # Add a library target called envdlg_xxx
 set(ENVDLG_SOURCE_FILES
-	EnviroUI.cpp BuildingDlg3d.cpp CameraDlg.cpp ContourDlg.cpp DistanceDlg3d.cpp DriveDlg.cpp EphemDlg.cpp
+	EnviroUI.cpp CameraDlg.cpp ContourDlg.cpp DistanceDlg3d.cpp DriveDlg.cpp EphemDlg.cpp
 	FeatureTableDlg3d.cpp LayerDlg.cpp LinearStructDlg3d.cpp LocationDlg.cpp LODDlg.cpp OptionsDlg.cpp
-	PlantDlg.cpp ScenarioParamsDialog.cpp ScenarioSelectDialog.cpp SceneGraphDlg.cpp StartupDlg.cpp
+	PlantDlg.cpp ScenarioParamsDialog.cpp ScenarioSelectDialog.cpp StartupDlg.cpp
 	StyleDlg.cpp TerrManDlg.cpp TextureDlg.cpp TimeDlg.cpp TParamsDlg.cpp UtilDlg.cpp VehicleDlg.cpp)
 
 if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
@@ -10,9 +10,9 @@ if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
 endif(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
 
 set(ENVDLG_HEADER_FILES
-	EnviroUI.h BuildingDlg3d.h CameraDlg.h ContourDlg.h DistanceDlg3d.h DriveDlg.h EphemDlg.h
+	EnviroUI.h CameraDlg.h ContourDlg.h DistanceDlg3d.h DriveDlg.h EphemDlg.h
 	FeatureTableDlg3d.h LayerDlg.h LinearStructDlg3d.h LocationDlg.h LODDlg.h OptionsDlg.h
-	PlantDlg.h ScenarioParamsDialog.h ScenarioSelectDialog.h SceneGraphDlg.h StartupDlg.h
+	PlantDlg.h ScenarioParamsDialog.h ScenarioSelectDialog.h StartupDlg.h
 	StyleDlg.h TerrManDlg.h TParamsDlg.h TextureDlg.h TimeDlg.h UtilDlg.h VehicleDlg.h)
 
 if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)

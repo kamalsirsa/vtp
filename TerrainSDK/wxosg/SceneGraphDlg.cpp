@@ -19,22 +19,24 @@
 #include "vtlib/core/Engine.h"
 #include "SceneGraphDlg.h"
 
-#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
-#  include "icon1.xpm"
-#  include "icon2.xpm"
-#  include "icon3.xpm"
-#  include "icon4.xpm"
-#  include "icon5.xpm"
-#  include "icon6.xpm"
-#  include "icon7.xpm"
-#  include "icon8.xpm"
-#  include "icon9.xpm"
-#  include "icon10.xpm"
-#  include "icon11.xpm"
-#  include "icon12.xpm"
-#  include "icon13.xpm"
-#  include "icon14.xpm"
-#endif
+// We use xpm on all platforms
+#  include "icons/camera.xpm"
+#  include "icons/engine.xpm"
+#  include "icons/geode.xpm"
+#  include "icons/group.xpm"
+#  include "icons/light.xpm"
+#  include "icons/lod.xpm"
+#  include "icons/mesh.xpm"
+#  include "icons/top.xpm"
+#  include "icons/unknown.xpm"
+#  include "icons/xform.xpm"
+#  include "icons/fog.xpm"
+#  include "icons/shadow.xpm"
+#  include "icons/hud.xpm"
+#  include "icons/dyngeom.xpm"
+
+#define LocalIcon(X) wxIcon( (const char**) X##_xpm )
+
 
 /////////////////////////////
 
@@ -105,20 +107,20 @@ void SceneGraphDlg::CreateImageList(int size)
 	m_imageListNormal = new wxImageList(size, size, TRUE);
 
 	wxIcon icons[14];
-	icons[0] = wxICON(icon1);		// camera
-	icons[1] = wxICON(icon2);		// engine
-	icons[2] = wxICON(icon3);		// geom
-	icons[3] = wxICON(icon4);		// group
-	icons[4] = wxICON(icon5);		// light
-	icons[5] = wxICON(icon6);		// lod
-	icons[6] = wxICON(icon7);		// mesh
-	icons[7] = wxICON(icon8);		// top
-	icons[8] = wxICON(icon9);		// unknown
-	icons[9] = wxICON(icon10);		// xform
-	icons[10] = wxICON(icon11);		// fog
-	icons[11] = wxICON(icon12);		// shadow
-	icons[12] = wxICON(icon13);		// hud
-	icons[13] = wxICON(icon14);		// dyngeom
+	icons[0] = LocalIcon(camera);	// camera
+	icons[1] = LocalIcon(engine);	// engine
+	icons[2] = LocalIcon(geode);	// geom
+	icons[3] = LocalIcon(group);	// group
+	icons[4] = LocalIcon(light);	// light
+	icons[5] = LocalIcon(lod);		// lod
+	icons[6] = LocalIcon(mesh);		// mesh
+	icons[7] = LocalIcon(top);		// top
+	icons[8] = LocalIcon(unknown);	// unknown
+	icons[9] = LocalIcon(xform);	// xform
+	icons[10] = LocalIcon(fog);		// fog
+	icons[11] = LocalIcon(shadow);	// shadow
+	icons[12] = LocalIcon(hud);		// hud
+	icons[13] = LocalIcon(dyngeom);	// dyngeom
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )

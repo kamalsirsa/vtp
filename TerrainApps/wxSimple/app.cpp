@@ -25,7 +25,7 @@
 #include "frame.h"
 
 #include "vtui/Helper.h"
-#include "vtui/GraphicsWindowWX.h"
+#include "wxosg/GraphicsWindowWX.h"
 #include "canvas.h"
 
 IMPLEMENT_APP(vtApp);

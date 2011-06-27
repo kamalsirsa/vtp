@@ -15,7 +15,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "BuildingDlg3d.h"
-#include "../Enviro.h"	// for GetCurrentTerrain
+#include "vtlib/core/TerrainScene.h"	// for GetCurrentTerrain
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/Fence3d.h"
 
@@ -35,7 +35,7 @@ BuildingDlg3d::BuildingDlg3d( wxWindow *parent, wxWindowID id, const wxString &t
 
 void BuildingDlg3d::Setup(vtBuilding3d *bld3d)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = vtGetTS()->GetCurrentTerrain();
 	m_pBuilding3d = bld3d;
 	BuildingDlg::Setup(pTerr->GetStructureLayer(), bld3d);
 }
@@ -44,7 +44,7 @@ void BuildingDlg3d::OnOK( wxCommandEvent &event )
 {
 	BuildingDlg::OnOK(event);
 
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = vtGetTS()->GetCurrentTerrain();
 	pTerr->GetStructureLayer()->ConstructStructure(m_pBuilding3d);
 }
 
@@ -56,7 +56,7 @@ void BuildingDlg3d::EnableRendering(bool bEnable)
 void BuildingDlg3d::Modified()
 {
 	// When a building is modified, we must reconstruct its 3D geometry
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = vtGetTS()->GetCurrentTerrain();
 	vtStructureLayer *slay = pTerr->GetStructureLayer();
 	slay->ConstructStructure(m_pBuilding3d);
 

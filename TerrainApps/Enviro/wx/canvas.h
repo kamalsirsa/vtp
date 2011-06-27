@@ -8,7 +8,7 @@
 #ifndef ENVIRO_CANVASH
 #define ENVIRO_CANVASH
 
-#include "vtui/Canvas.h"
+#include "wxosg/Canvas.h"
 
 //
 // A Canvas for the main view area.

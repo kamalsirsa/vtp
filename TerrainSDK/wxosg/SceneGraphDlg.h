@@ -9,7 +9,7 @@
 #define __SceneGraphDlg_H__
 
 #include "wx/imaglist.h"
-#include "CManager_UI.h"
+#include "wxosg_UI.h"
 
 // WDR: class declarations
 
