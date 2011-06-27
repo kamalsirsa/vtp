@@ -18,10 +18,6 @@
 
 #include "QuikGrid.h"
 
-#ifdef _MSC_VER
-#pragma comment( lib, "QuikGrid.lib" )
-#endif
-
 static ContourCallback s_pLineCallbackFunction = NULL;
 static void *s_pContext = NULL;
 

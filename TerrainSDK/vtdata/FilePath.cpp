@@ -46,13 +46,6 @@
 
 #if SUPPORT_BZIP2
   #include "bzlib.h"
-  #ifdef _MSC_VER
-	#ifdef _DEBUG
-	#pragma comment( lib, "bzip2d.lib" )
-	#else
-	#pragma comment( lib, "bzip2.lib" )
-	#endif
-  #endif
 #endif
 
 /**

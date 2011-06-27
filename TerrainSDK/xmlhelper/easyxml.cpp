@@ -213,7 +213,7 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path,
 		}
 
 		input.read(buf,16384);
-		if (!XML_Parse(parser, buf, input.gcount(), false))
+		if (!XML_Parse(parser, buf, (int) input.gcount(), false))
 		{
 			const XML_LChar *message = XML_ErrorString(XML_GetErrorCode(parser));
 			int line = XML_GetCurrentLineNumber(parser);
