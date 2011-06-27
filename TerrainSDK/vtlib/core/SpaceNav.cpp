@@ -85,7 +85,7 @@ bool vtSpaceNav::InitRawDevices()
 	UINT nDevices;
 	// Get Number of devices attached
 	if (pfnGetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0)
-	{ 
+	{
 		VTLOG("No RawInput devices attached\n");
 		return false;
 	}
@@ -96,7 +96,7 @@ bool vtSpaceNav::InitRawDevices()
 		return false;
 	}
 	// Now get the data on the attached devices
-	if (pfnGetRawInputDeviceList(g_pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == -1) 
+	if (pfnGetRawInputDeviceList(g_pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == -1)
 	{
 		VTLOG("Error from GetRawInputDeviceList\n");
 		return false;
@@ -210,7 +210,7 @@ void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam)
 	{
 		if (evt->header.dwType == RIM_TYPEHID)
 		{
-			static BOOL bGotTranslation = FALSE, 
+			static BOOL bGotTranslation = FALSE,
 				        bGotRotation    = FALSE;
 			static int all6DOFs[6] = {0};
 			LPRAWHID pRawHid = &evt->data.hid;
@@ -228,15 +228,15 @@ void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam)
 			// Translation or Rotation packet?  They come in two different packets.
 			if (pRawHid->bRawData[0] == 1) // Translation vector
 			{
-				all6DOFs[0] = (pRawHid->bRawData[1] & 0x000000ff) | ((signed short)(pRawHid->bRawData[2]<<8) & 0xffffff00); 
-				all6DOFs[1] = (pRawHid->bRawData[3] & 0x000000ff) | ((signed short)(pRawHid->bRawData[4]<<8) & 0xffffff00); 
+				all6DOFs[0] = (pRawHid->bRawData[1] & 0x000000ff) | ((signed short)(pRawHid->bRawData[2]<<8) & 0xffffff00);
+				all6DOFs[1] = (pRawHid->bRawData[3] & 0x000000ff) | ((signed short)(pRawHid->bRawData[4]<<8) & 0xffffff00);
 				all6DOFs[2] = (pRawHid->bRawData[5] & 0x000000ff) | ((signed short)(pRawHid->bRawData[6]<<8) & 0xffffff00);
 				bGotTranslation = TRUE;
 			}
 			else if (pRawHid->bRawData[0] == 2) // Rotation vector
 			{
-				all6DOFs[3] = (pRawHid->bRawData[1] & 0x000000ff) | ((signed short)(pRawHid->bRawData[2]<<8) & 0xffffff00); 
-				all6DOFs[4] = (pRawHid->bRawData[3] & 0x000000ff) | ((signed short)(pRawHid->bRawData[4]<<8) & 0xffffff00); 
+				all6DOFs[3] = (pRawHid->bRawData[1] & 0x000000ff) | ((signed short)(pRawHid->bRawData[2]<<8) & 0xffffff00);
+				all6DOFs[4] = (pRawHid->bRawData[3] & 0x000000ff) | ((signed short)(pRawHid->bRawData[4]<<8) & 0xffffff00);
 				all6DOFs[5] = (pRawHid->bRawData[5] & 0x000000ff) | ((signed short)(pRawHid->bRawData[6]<<8) & 0xffffff00);
 				bGotRotation = TRUE;
 			}

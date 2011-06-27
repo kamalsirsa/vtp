@@ -24,9 +24,11 @@
 #include "PerformanceMonitor.h"
 #endif
 
+#if WIN32
 // Support for the SpaceNavigator
 #include "vtlib/core/SpaceNav.h"
 vtSpaceNav g_SpaceNav;
+#endif
 
 #define LOG_MOUSE_CAPTURE	0
 #if LOG_MOUSE_CAPTURE
@@ -86,9 +88,11 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	// On RTL (right-to-left) system, the canvas should still be always LTR
 	SetLayoutDirection(wxLayout_LeftToRight);
 
+#if WIN32
 	// Initialize spacenavigator, if there is one present
 	g_SpaceNav.Init();
 	g_SpaceNav.SetTarget(vtGetScene()->GetCamera());
+#endif
 
 	s_canvas = this;
 #ifdef NVIDIA_PERFORMANCE_MONITORING
@@ -108,12 +112,16 @@ vtGLCanvas::~vtGLCanvas(void)
 
 void vtGLCanvas::SetSpaceNavSpeed(float f)
 {
+#if WIN32
 	g_SpaceNav.SetSpeed(f);
+#endif
 }
 
 void vtGLCanvas::SetSpaceNavAllowRoll(bool b)
 {
+#if WIN32
 	g_SpaceNav.SetAllowRoll(b);
+#endif
 }
 
 #if WIN32
