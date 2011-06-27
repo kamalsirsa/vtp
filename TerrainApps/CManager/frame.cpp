@@ -189,8 +189,8 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	// Make a vtGLCanvas
 	VTLOG1(" creating canvas\n");
-	m_canvas = new vtGLCanvas(m_splitter, wxID_ANY, wxPoint(0, 0), wxSize(-1, -1),
-		0, _T("vtGLCanvas"), gl_attrib);
+	m_canvas = new CManagerCanvas(m_splitter, wxID_ANY, wxPoint(0, 0), wxSize(-1, -1),
+		0, _T("CManagerCanvas"), gl_attrib);
 
 	VTLOG(" creating scenegraphdialog\n");
 	m_pSceneGraphDlg = new SceneGraphDlg(this, wxID_ANY, _T("Scene Graph"),

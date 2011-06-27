@@ -438,7 +438,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	}
 
 	VTLOG("Frame window: creating view canvas.\n");
-	m_canvas = new vtGLCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
+	m_canvas = new EnviroCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
 			_T("vtGLCanvas"), gl_attrib);
 
 	// Show the frame

@@ -5,64 +5,22 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifndef CANVASH
-#define CANVASH
+#ifndef CMANAGER_CANVASH
+#define CMANAGER_CANVASH
 
-#if !wxUSE_GLCANVAS
-#error Please set wxUSE_GLCANVAS to 1 in setup.h.
-#endif
-#include "wx/glcanvas.h"
+#include "vtui/Canvas.h"
 
 //
 // A Canvas for the main view area.
 //
-class vtGLCanvas: public wxGLCanvas
+class CManagerCanvas: public vtGLCanvas
 {
 public:
-	vtGLCanvas(wxWindow *parent, const wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = _T("vtGLCanvas"),
-		int* gl_attrib = NULL);
-	~vtGLCanvas(void);
+	CManagerCanvas(wxWindow *parent, const wxWindowID id, const wxPoint &pos,
+		const wxSize &size, long style, const wxString& name, int *gl_attrib);
 
-	// SpaceNavigator methods
-	void SetSpaceNavSpeed(float f);
-	void SetSpaceNavAllowRoll(bool b);
-
-#ifndef __WXMAC__
-	void OnPaint(wxPaintEvent& event);
-#endif
-	void OnSize(wxSizeEvent& event);
-	void OnEraseBackground(wxEraseEvent& event);
-	void OnMouseCaptureLost(wxMouseCaptureLostEvent & event);
-	void OnChar(wxKeyEvent& event);
-	void OnKeyDown(wxKeyEvent& event);
-	void OnKeyUp(wxKeyEvent& event);
-	void OnMouseEvent(wxMouseEvent& event);
-	void OnClose(wxCloseEvent& event);
-	void OnIdle(wxIdleEvent& event);
-
-#ifndef __WXMAC__
-	bool m_bPainting;
-	bool m_bFirstPaint;
-#endif
-	bool m_bRunning;
-	bool m_bCapture;
-
-#if WIN32
-    // Hook into the default window procedure
-    virtual WXLRESULT MSWDefWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
-#endif
-
-protected:
-	bool m_pbKeyState[512];
-
-	// The number of mousemoves we've gotten since last redraw
-	int m_iConsecutiveMousemoves;
-
-	DECLARE_EVENT_TABLE()
+	virtual void OnAfterUpdate();
 };
 
-void EnableContinuousRendering(bool bTrue);
-
-#endif	// CANVASH
+#endif	// CMANAGER_CANVASH
 

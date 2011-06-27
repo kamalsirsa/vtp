@@ -1,12 +1,14 @@
 # Add a library target called vtui
 set(VTUI_SOURCE_FILES 
-		vtui_UI.cpp AutoDialog.cpp BuildingDlg.cpp ColorMapDlg.cpp DistanceDlg.cpp DoubleProgDlg.cpp FeatureTableDlg.cpp Helper.cpp
-		InstanceDlg.cpp Joystick.cpp LinearStructDlg.cpp ProfileDlg.cpp ProfileEditDlg.cpp ProjectionDlg.cpp
+		vtui_UI.cpp AutoDialog.cpp BuildingDlg.cpp Canvas.cpp ColorMapDlg.cpp DistanceDlg.cpp
+		DoubleProgDlg.cpp FeatureTableDlg.cpp Helper.cpp InstanceDlg.cpp Joystick.cpp
+		LinearStructDlg.cpp ProfileDlg.cpp ProfileEditDlg.cpp ProjectionDlg.cpp
 		SizeDlg.cpp StatePlaneDlg.cpp TagDlg.cpp)
 set(VTUI_HEADER_FILES 
-		vtui_UI.h AutoDialog.h BuildingDlg.h ColorMapDlg.h DistanceDlg.h DoubleProgDlg.h FeatureTableDlg.h Helper.h InstanceDlg.h
-		Joystick.h LinearStructDlg.h ProfileDlg.h ProfileEditDlg.h ProjectionDlg.h SizeDlg.h StatePlaneDlg.h
-		TagDlg.h GraphicsWindowWX.h)
+		vtui_UI.h AutoDialog.h BuildingDlg.h Canvas.h ColorMapDlg.h DistanceDlg.h
+		DoubleProgDlg.h FeatureTableDlg.h Helper.h InstanceDlg.h Joystick.h
+		LinearStructDlg.h ProfileDlg.h ProfileEditDlg.h ProjectionDlg.h
+		SizeDlg.h StatePlaneDlg.h TagDlg.h GraphicsWindowWX.h)
 
 if(MSVC)
 	add_library(vtui ${VTUI_SOURCE_FILES} ${VTUI_HEADER_FILES} pre.cpp)
