@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2011.06.21
+AppVerName=VTP Software 2011.06.26
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -53,6 +53,8 @@ Source: "C:\VTP\TerrainApps\Enviro\Docs\*"; DestDir: "{app}\Docs\Enviro"; Flags:
 Source: "C:\VTP\vc9\TerrainApps\VTBuilder\Release\VTBuilder.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\Ship\VTBuilder.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*"; DestDir: "{app}\Docs\VTBuilder"; Flags: ignoreversion recursesubdirs; Components: docs
+
+Source: "C:\VTP\vc9\TerrainApps\Simple\Release\Simple.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 
 ; Translation files
 Source: "C:\VTP\TerrainApps\Enviro\af\Enviro.mo"; DestDir: "{app}\Apps\af"; Flags: ignoreversion; Components: main
@@ -116,7 +118,9 @@ Source: "C:\APIs\Collada_DOM_2.2\dom\external-libs\libxml2\win32\lib\libxml2.dll
 Name: "{group}\Documentation"; Filename: "{app}\Docs\index.html"
 ;Name: "{group}\BExtractor"; Filename: "{app}\Apps\BExtractor.exe"; WorkingDir: "{app}\Apps"
 Name: "{group}\CManager"; Filename: "{app}\Apps\CManager.exe"; WorkingDir: "{app}\Apps"
-Name: "{group}\Enviro"; Filename: "{app}\Apps\wxEnviro.exe"; WorkingDir: "{app}\Apps"
+Name: "{group}\Enviro"; Filename: "{app}\Apps\Enviro.exe"; WorkingDir: "{app}\Apps"
 Name: "{group}\VTBuilder"; Filename: "{app}\Apps\VTBuilder.exe"; WorkingDir: "{app}\Apps"
+Name: "{group}\Simple test - in window"; Filename: "{app}\Apps\Simple.exe"; Parameters: "--window 100 100 800 600"; WorkingDir: "{app}\Apps"
+Name: "{group}\Simple test - full screen"; Filename: "{app}\Apps\Simple.exe"; Parameters: "--screen 0"; WorkingDir: "{app}\Apps"
 Name: "{group}\Uninstall VTP Software"; Filename: "{uninstallexe}"
 
