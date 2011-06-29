@@ -114,6 +114,10 @@ if(MINI_FOUND)
 	target_link_libraries(VTBuilder ${MINI_LIBRARIES})
 endif(MINI_FOUND)
 
+#if(OPENGL_gl_LIBRARY)
+	target_link_libraries(VTBuilder ${OPENGL_gl_LIBRARY})
+#endif(OPENGL_LIBRARIES)
+
 find_library(NETCDF_LIBRARY netcdf DOC "Path to netcdf library")
 if(NETCDF_LIBRARY)
 	target_link_libraries(VTBuilder ${NETCDF_LIBRARY})
