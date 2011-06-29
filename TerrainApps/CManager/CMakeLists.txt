@@ -67,6 +67,10 @@ if(MINI_FOUND)
 	target_link_libraries(CManager ${MINI_LIBRARIES})
 endif(MINI_FOUND)
 
+if(OPENGL_gl_LIBRARY)
+	target_link_libraries(CManager ${OPENGL_gl_LIBRARY})
+endif(OPENGL_gl_LIBRARY)
+
 if(CURL_FOUND)
 	target_link_libraries(CManager ${CURL_LIBRARIES})
 endif(CURL_FOUND)

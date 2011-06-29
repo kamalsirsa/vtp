@@ -65,6 +65,10 @@ if(MINI_FOUND)
 	target_link_libraries(wxSimple ${MINI_LIBRARIES})
 endif(MINI_FOUND)
 
+if(OPENGL_gl_LIBRARY)
+	target_link_libraries(wxSimple ${OPENGL_gl_LIBRARY})
+endif(OPENGL_gl_LIBRARY)
+
 # Set up include directories for all targets at this level
 if(GDAL_FOUND)
 	include_directories(${GDAL_INCLUDE_DIR})

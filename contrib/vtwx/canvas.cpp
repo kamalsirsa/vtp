@@ -64,8 +64,10 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
   VTLOG1("vtGLCanvas constructor\n");
 
 #ifdef __WXMAC__
+#if 0 // temporarily commented out since aglSetInteger doesn't seem to match with wxMac any longer
   const GLint Value = 1;
   aglSetInteger(GetContext()->m_glContext, AGL_SWAP_INTERVAL, &Value); // Force VSYNC on
+#endif
 #else
   m_bFirstPaint = true;
   m_bPainting = false;
