@@ -96,6 +96,10 @@ if(MINI_FOUND)
 	target_link_libraries(Enviro ${MINI_LIBRARIES})
 endif(MINI_FOUND)
 
+if(OPENGL_gl_LIBRARY)
+	target_link_libraries(Enviro ${OPENGL_gl_LIBRARY})
+endif(OPENGL_gl_LIBRARY)
+
 # Set up include directories for all targets at this level
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/wx/icons)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/wx/bitmap)
