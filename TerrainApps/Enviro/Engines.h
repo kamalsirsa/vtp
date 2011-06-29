@@ -21,58 +21,6 @@ class vtHeightField;
 
 ///////////////////////////////////////////////////
 
-enum AirportCodes {ITO, KOA, MUE, UPP};
-
-class PlaneEngine : public vtEngine
-{
-public:
-	PlaneEngine(float fSpeedExag, AirportCodes code);
-	void Eval();
-	void SetHoop(int i);
-
-	FPoint3	m_hoop_pos[10];
-	float	m_hoop_speed[10];
-	int		m_hoops;
-	int		m_hoop;
-
-	FPoint3	m_pos, m_dir;
-	float	m_fSpeed;		// in meters/sec
-	float	m_fSpeedExag;	// this many times normal speed
-	float	m_fLastTime;
-};
-
-///////////////////////////////////////////////////
-
-class RoadFollowEngine : public vtEngine
-{
-public:
-	RoadFollowEngine(NodeGeom *pStartNode);
-	void Eval();
-
-	void	PickRoad(LinkGeom *last_road);
-
-	float	fAmount;
-//	RoadMap	*m_pRoadMap;
-	NodeGeom	*m_pLastNode;
-	LinkGeom	*m_pCurrentRoad;
-	float	m_pCurrentRoadLength;
-	bool	forwards;
-};
-
-//////////////////////////////////////////////////
-
-class FollowerEngine : public vtEngine
-{
-public:
-	FollowerEngine(vtTransform* model, vtCamera* camera);
-	void Eval();
-
-	vtTransform *m_model;
-	vtCamera *m_pCamera;
-};
-
-///////////////////////////////////////////////////
-
 class TerrainPicker : public vtLastMouse
 {
 public:
@@ -196,32 +144,6 @@ protected:
 	float	MapRatio;
 	float	ratioMapTerrain;
 	bool	m_bDown;
-};
-
-///////////////////////////////////////////////////////////////////////
-// vtSpriteSizer:
-//   An engine to put sprites in the right place, even when the window resizes.
-//
-class vtSpriteSizer : public vtEngine
-{
-public:
-	vtSpriteSizer(vtImageSprite *pSprite, float l, float t, float r, float b);
-
-	void SetRect(const FRECT &rect) { m_rect = rect; }
-	FRECT GetRect() { return m_rect; }
-	FRECT GetWindowRect() { return m_window_rect; }
-	FPoint2 GetWindowCenter();
-
-	void SetRotation(float rot) { m_fRotation = rot; }
-	float GetRotation() { return m_fRotation; }
-
-	void OnWindowSize(int width, int height);
-
-protected:
-	FRECT m_rect;
-	FRECT m_window_rect;
-	float m_fRotation;
-	osg::ref_ptr<vtImageSprite> m_pSprite;
 };
 
 #endif	// ENVIRO_ENGINESH

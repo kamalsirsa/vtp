@@ -26,9 +26,9 @@
 #include "vtdata/vtLog.h"
 #include "vtui/ColorMapDlg.h"
 #include "vtui/Helper.h"			// for AddFilenamesToChoice
+#include "wxosg/TimeDlg.h"
 
 #include "TParamsDlg.h"
-#include "TimeDlg.h"
 #include "StyleDlg.h"
 
 #include "ScenarioParamsDialog.h"

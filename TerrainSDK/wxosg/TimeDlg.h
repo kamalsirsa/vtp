@@ -8,8 +8,8 @@
 #ifndef __TimeDlg_H__
 #define __TimeDlg_H__
 
-#include "EnviroUI.h"
-#include "vtui/AutoDialog.h"
+#include "wxosg_UI.h"
+
 #include "vtdata/vtTime.h"
 #include "vtlib/core/TimeEngines.h"
 
@@ -34,7 +34,7 @@ public:
 	// WDR: method declarations for TimeDlg
 	wxSlider* GetSliderSpeed()  { return (wxSlider*) FindWindow( ID_SLIDER_SPEED ); }
 	wxTextCtrl* GetTextSpeed()  { return (wxTextCtrl*) FindWindow( ID_TEXT_SPEED ); }
-	wxButton* GetStop()  { return (wxButton*) FindWindow( ID_STOP ); }
+	wxButton* GetStop()  { return (wxButton*) FindWindow( ID_BUTTON_STOP ); }
 	wxSpinCtrl* GetSpinSecond()  { return (wxSpinCtrl*) FindWindow( ID_SPIN_SECOND ); }
 	wxSpinCtrl* GetSpinMinute()  { return (wxSpinCtrl*) FindWindow( ID_SPIN_MINUTE ); }
 	wxSpinCtrl* GetSpinHour()  { return (wxSpinCtrl*) FindWindow( ID_SPIN_HOUR ); }

@@ -1,21 +1,21 @@
 //
-// Hawai'i.cpp
+// Hawaii.cpp
 //
 // Terrain implementation specific to the Big Island of Hawai'i.
+//  Actually, this is a place where a lot of test and example code lives.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Content3d.h"
+#include "vtlib/core/TerrainScene.h"	// for vtGetContent
 #include "vtdata/Features.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
 
 #include "Hawaii.h"
-#include "Engines.h"	// for PlaneEngine
-#include "wx/EnviroGUI.h"
 
 
 ///////////////////////////////
@@ -24,7 +24,6 @@ bool g_bLineOfSightTest = false;
 IslandTerrain::IslandTerrain()
 {
 	m_pSA = NULL;
-	m_pTelescopes = NULL;
 }
 
 void IslandTerrain::PaintDib(bool progress_callback(int))
@@ -159,7 +158,7 @@ void IslandTerrain::CreateCustomCulture()
 
 	create_building_manually();
 
-	// TODO: replace these with a .vtst in the .ini
+	// TODO: replace these with a .vtst in Hawaii.xml
 	create_airports();
 
 #if 0
@@ -685,4 +684,167 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 	}
 #endif
 }
+
+//////////////////////////////////////////////////////////////
+
+float utm_points_ito[5][2] = {
+	{ 287450, 2182128 },	// come back
+	{ 287050, 2182130 },	// begin approach
+	{ 286820, 2182140 },	// touchdown point
+	{ 286760, 2182194 },	// begin takeoff point
+	{ 286400, 2182200 }		// end takeoff point
+};
+
+float utm_points_koa[5][2] = {
+	{ 181204, 2189667 },	// 0, 600m elev
+	{ 180920, 2186879 },	// 1, touchdown
+	{ 180801, 2185744 },	// 2, middle of runway
+	{ 180662, 2184397 },	// 3, liftoff
+	{ 180281, 2180278 }		// 4, 800m elev
+};
+
+PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
+{
+	m_fSpeedExag = fSpeedExag;
+
+	// set up some initial points
+	float x, y, z;
+	DPoint3 utm_points[5];
+
+	for (int i = 0; i < 5; i++)
+	{
+		if (code == KOA)
+		{
+			utm_points[i].x = utm_points_koa[i][0];
+			utm_points[i].y = utm_points_koa[i][1];
+		}
+		else
+		if (code == ITO)
+		{
+			utm_points[i].x = utm_points_ito[i][0];
+			utm_points[i].y = utm_points_ito[i][1];
+		}
+		utm_points[i].z = 0.0;
+	}
+
+	// 1 mile = 1.60934 km
+	// a typical flight speed, 450 mph = 725 kmph
+	// 1 kmph = 16.66 meters per minute = .2777777 meters per second
+	// 725 kmph = 200 meter per second, slowing to 25 m/s at touchdown
+	x = 10000.0f;
+	y = 5000.0f;
+	z = -130000.0f;
+
+	m_hoop_pos[0].Set(x, y, z);
+	m_hoop_speed[0] = 200.0f;
+	// done setting initial positions and speed
+
+	// begin approach
+	utm_points[0].z = 600.0f;
+	g_Conv.ConvertFromEarth(utm_points[0], m_hoop_pos[1]);
+	m_hoop_speed[1] = 100.0f;
+
+	// touchdown
+	// tarmac is 12-13m above sea level
+	// center of plane is 7?m above bottom of landing gear
+	double ground_offset1 = 16.8f + 7.0f;
+	double ground_offset = 12.5f + 7.0f;
+
+	utm_points[1].z = ground_offset1;
+	g_Conv.ConvertFromEarth(utm_points[1], m_hoop_pos[2]);
+	m_hoop_speed[2] = 25.0f;
+
+	// speeding up to takeoff point
+	utm_points[2].z = ground_offset;
+	g_Conv.ConvertFromEarth(utm_points[2], m_hoop_pos[3]);
+	m_hoop_speed[3] = 5.0f;
+
+	// takeoff to this point
+	utm_points[3].z = ground_offset;
+	g_Conv.ConvertFromEarth(utm_points[3], m_hoop_pos[4]);
+	m_hoop_speed[4] = 25.0f;
+
+	// point to loop to
+	utm_points[4].z = 800.0f;
+	g_Conv.ConvertFromEarth(utm_points[4], m_hoop_pos[5]);
+	m_hoop_speed[5] = 100.0f;
+
+	// saving last hoop info
+	x = 2000.0f;
+	y = 5000.0f;
+	z = -40000.0f;
+	m_hoop_pos[6].Set(x, y, z);
+	m_hoop_speed[6] = 200.0f;
+
+	m_hoops = 7;
+	m_hoop = 0;
+
+	m_pos = m_hoop_pos[0];
+
+	m_fLastTime = vtGetTime();
+}
+
+
+void PlaneEngine::Eval()
+{
+	// determine vectors between last hoop, current position, and next hoop
+	FPoint3 pos_next = m_hoop_pos[m_hoop+1];
+	FPoint3 diff1 = m_pos - m_hoop_pos[m_hoop];
+	FPoint3 diff2 = pos_next - m_pos;
+	FPoint3 diff3 = pos_next - m_hoop_pos[m_hoop];
+
+	// and their magnitudes
+	float mag1 = diff1.Length();
+	float mag2 = diff2.Length();
+	float mag3 = diff3.Length();
+
+	// simple linear interpolation of speed
+	float speed_diff = (m_hoop_speed[m_hoop+1] - m_hoop_speed[m_hoop]);
+	float speed = m_hoop_speed[m_hoop] + ((1.0f - (mag2/mag3)) * speed_diff);
+	float factor = (speed / mag2);
+
+	// moderate to real time
+	float time = vtGetTime();
+	float elapsed = time - m_fLastTime;		// time per frame
+	m_fLastTime = time;
+	factor *= elapsed;
+
+	// potentially faster than real life
+	factor *= m_fSpeedExag;
+
+	// scale difference vector by speed to produce direction vector
+	diff2 *= factor;
+
+	// have we reached/passed the next hoop?
+	if (mag1/mag3 > 1.0f)
+	{
+		m_hoop++;
+		if (m_hoop == m_hoops-1)
+			m_hoop = 0;
+		m_pos = m_hoop_pos[m_hoop];
+		return;
+	}
+
+	// determine position next frame
+	m_pos += diff2;
+
+	// turn plan to point toward next frame's position
+	// Yaw the object to face the point indicated
+	vtTransform *pTarget = dynamic_cast<vtTransform *> (GetTarget());
+	if (!pTarget) return;
+
+	pTarget->Identity();
+	float angle = atan2f(-diff2.z, diff2.x) - PID2f;
+	pTarget->RotateLocal(FPoint3(0,1,0), angle);
+
+	// set the plane to next frame's position
+	pTarget->SetTrans(m_pos);
+}
+
+void PlaneEngine::SetHoop(int i)
+{
+	m_hoop = i;
+	m_pos = m_hoop_pos[i];
+}
+
 

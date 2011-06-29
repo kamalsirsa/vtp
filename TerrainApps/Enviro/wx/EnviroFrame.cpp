@@ -56,7 +56,6 @@
 #include "PlantDlg.h"
 #include "ScenarioSelectDialog.h"
 #include "TextureDlg.h"
-#include "TimeDlg.h"
 #include "UtilDlg.h"
 #include "VehicleDlg.h"
 
@@ -67,6 +66,7 @@
 
 #include "wxosg/BuildingDlg3d.h"
 #include "wxosg/SceneGraphDlg.h"
+#include "wxosg/TimeDlg.h"
 
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 #include "PerformanceMonitor.h"

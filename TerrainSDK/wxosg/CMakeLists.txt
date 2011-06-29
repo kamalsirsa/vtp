@@ -1,8 +1,8 @@
 # Add a library target called wxosg
 set(WXOSG_SOURCE_FILES 
-		wxosg_UI.cpp BuildingDlg3d.cpp Canvas.cpp SceneGraphDlg.cpp)
+		wxosg_UI.cpp BuildingDlg3d.cpp Canvas.cpp SceneGraphDlg.cpp TimeDlg.cpp)
 set(WXOSG_HEADER_FILES 
-		wxosg_UI.h BuildingDlg3d.h Canvas.h SceneGraphDlg.h
+		wxosg_UI.h BuildingDlg3d.h Canvas.h SceneGraphDlg.h TimeDlg.h
 		GraphicsWindowWX.h)
 
 if(MSVC)

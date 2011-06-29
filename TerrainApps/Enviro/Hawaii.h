@@ -3,7 +3,7 @@
 //
 // The IslandTerrain class contains Hawaii-specific functionality and test code.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 
 #ifndef ISLANDH
@@ -43,7 +43,28 @@ public:
 	void create_airplane(int i, float fSpeed);
 
 	vtStructureArray3d *m_pSA;
-	vtStructureArray3d *m_pTelescopes;
+};
+
+///////////////////////////////////////////////////
+
+enum AirportCodes {ITO, KOA, MUE, UPP};
+
+class PlaneEngine : public vtEngine
+{
+public:
+	PlaneEngine(float fSpeedExag, AirportCodes code);
+	void Eval();
+	void SetHoop(int i);
+
+	FPoint3	m_hoop_pos[10];
+	float	m_hoop_speed[10];
+	int		m_hoops;
+	int		m_hoop;
+
+	FPoint3	m_pos, m_dir;
+	float	m_fSpeed;		// in meters/sec
+	float	m_fSpeedExag;	// this many times normal speed
+	float	m_fLastTime;
 };
 
 #endif // ISLANDH

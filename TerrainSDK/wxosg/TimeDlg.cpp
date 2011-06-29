@@ -17,6 +17,7 @@
 #endif
 
 #include "vtlib/vtlib.h"
+#include "vtui/AutoDialog.h"
 #include "TimeDlg.h"
 
 // WDR: class implementations
@@ -29,7 +30,7 @@
 
 BEGIN_EVENT_TABLE(TimeDlg, TimeDlgBase)
 	EVT_INIT_DIALOG (TimeDlg::OnInitDialog)
-	EVT_BUTTON( ID_STOP, TimeDlg::OnStop )
+	EVT_BUTTON( ID_BUTTON_STOP, TimeDlg::OnStop )
 	EVT_TEXT( ID_TEXT_SPEED, TimeDlg::OnTextSpeed )
 	EVT_SLIDER( ID_SLIDER_SPEED, TimeDlg::OnSliderSpeed )
 	EVT_SPINCTRL( ID_SPIN_YEAR, TimeDlg::OnSpinner )

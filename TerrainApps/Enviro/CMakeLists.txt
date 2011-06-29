@@ -10,8 +10,7 @@ set(ENVIRO_HEADER_FILES
 	Engines.h Enviro.h EnviroEnum.h Hawaii.h Nevada.h Options.h PlantingOptions.h SpecificTerrain.h)
 
 set(ENVIRO_HEADER_FILES_WX
-	wx/canvas.h wx/EnviroApp.h wx/EnviroFrame.h wx/EnviroGUI.h wx/menu_id.h wx/StatusBar.h wx/TextureDlg.h
-	wx/TimeDlg.h wx/VehicleDlg.h)
+	wx/canvas.h wx/EnviroApp.h wx/EnviroFrame.h wx/EnviroGUI.h wx/menu_id.h wx/StatusBar.h)
 
 set(ENVIRO_RC_FILES
 	wx/enviro-wx.rc)

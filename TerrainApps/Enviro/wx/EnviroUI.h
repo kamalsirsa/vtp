@@ -226,96 +226,88 @@
 #define ID_COPY 1181
 #define ID_DELETE 1182
 #define ID_EDIT_PARAMS 1183
-#define ID_SPIN_YEAR 1184
-#define ID_SPIN_MONTH 1185
-#define ID_SPIN_DAY 1186
-#define ID_SPIN_HOUR 1187
-#define ID_SPIN_MINUTE 1188
-#define ID_SPIN_SECOND 1189
-#define ID_TEXT_SPEED 1190
-#define ID_SLIDER_SPEED 1191
-#define ID_FULLSCREEN 1192
-#define ID_STEREO 1193
-#define ID_STEREO1 1194
-#define ID_STEREO2 1195
-#define ID_WINX 1196
-#define ID_WINY 1197
-#define ID_WIN_XSIZE 1198
-#define ID_WIN_YSIZE 1199
-#define ID_SIZE_INSIDE 1200
-#define ID_TEXTURE_COMPRESSION 1201
-#define ID_DISABLE_MIPMAPS 1202
-#define ID_DIRECT_PICKING 1203
-#define ID_SELECTION_CUTOFF 1204
-#define ID_SELECTION_RADIUS 1205
-#define ID_PLANTSIZE 1206
-#define ID_ONLY_AVAILABLE_SPECIES 1207
-#define ID_CHOICE_CONTENT 1208
-#define ID_TERRAIN_PROGRESS 1209
-#define ID_FLY_IN 1210
-#define ID_SCENARIO_NAME 1211
-#define ID_SCENARIO_VISIBLE_LAYERS 1212
-#define ID_SCENARIO_ADD_VISIBLE_LAYER 1213
-#define ID_SCENARIO_REMOVE_VISIBLE_LAYER 1214
-#define ID_SCENARIO_AVAILABLE_LAYERS 1215
-#define ID_SCENARIO_PREVIOUS 1216
-#define ID_SCENARIO_NEXT 1217
-#define ID_CHOICE_VEHICLES 1218
-#define ID_SET_VEHICLE_COLOR 1219
-#define ID_FEATURE_TYPE 1220
-#define ID_ENABLE_OBJECT_GEOM 1221
-#define ID_RADIO1 1222
-#define ID_OBJECT_GEOM_COLOR 1223
-#define ID_RADIO_USE_OBJECT_COLOR_FIELD 1224
-#define ID_OBJECT_COLOR_FIELD 1225
-#define ID_OBJECT_GEOM_HEIGHT 1226
-#define ID_OBJECT_GEOM_SIZE 1227
-#define ID_ENABLE_LINE_GEOM 1228
-#define ID_RADIO2 1229
-#define ID_LINE_GEOM_COLOR 1230
-#define ID_RADIO_USE_LINE_COLOR_FIELD 1231
-#define ID_LINE_COLOR_FIELD 1232
-#define ID_LINE_GEOM_HEIGHT 1233
-#define ID_LINE_WIDTH 1234
-#define ID_TESSELLATE 1235
-#define ID_ENABLE_TEXT_LABELS 1236
-#define ID_RADIO3 1237
-#define ID_TEXT_COLOR 1238
-#define ID_RADIO_USE_TEXT_COLOR_FIELD 1239
-#define ID_TEXT_COLOR_FIELD 1240
-#define ID_TEXT_FIELD 1241
-#define ID_LABEL_HEIGHT 1242
-#define ID_LABEL_SIZE 1243
-#define ID_FONT 1244
-#define ID_ENABLE_TEXTURE_OVERLAY 1245
-#define ID_TEXTURE_MODE 1246
-#define ID_PANEL1 1247
-#define ID_TARGET 1248
-#define ID_CURRENT 1249
-#define ID_SLIDER_PRANGE 1250
-#define ID_TEXT_PRANGE 1251
-#define ID_PANEL2 1252
-#define ID_TILE_STATUS 1253
-#define ID_TEXT_PAGEOUT 1254
-#define ID_SLIDER_PAGEOUT 1255
-#define ID_COUNT_CURRENT 1256
-#define ID_COUNT_MAXIMUM 1257
-#define ID_PANEL3 1258
-#define ID_SLIDER_FOG_DISTANCE 1259
-#define ID_SHADOWS 1260
-#define ID_AMBIENT_BIAS 1261
-#define ID_SLIDER_AMBIENT_BIAS 1262
-#define ID_TEXT_WIND_DIRECTION 1263
-#define ID_SLIDER_WIND_DIRECTION 1264
-#define ID_TEXT_WIND_SPEED 1265
-#define ID_SLIDER_WIND_SPEED 1266
-#define ID_ELEV 1267
-#define ID_RADIO_CREATE 1268
-#define ID_RADIO_ADD 1269
-#define ID_CHOICE_LAYER 1270
-#define ID_PM_LISTCTRL 1271
-#define ID_TURN 1272
-#define ID_DISTANCE 1273
+#define ID_FULLSCREEN 1184
+#define ID_STEREO 1185
+#define ID_STEREO1 1186
+#define ID_STEREO2 1187
+#define ID_WINX 1188
+#define ID_WINY 1189
+#define ID_WIN_XSIZE 1190
+#define ID_WIN_YSIZE 1191
+#define ID_SIZE_INSIDE 1192
+#define ID_TEXTURE_COMPRESSION 1193
+#define ID_DISABLE_MIPMAPS 1194
+#define ID_DIRECT_PICKING 1195
+#define ID_SELECTION_CUTOFF 1196
+#define ID_SELECTION_RADIUS 1197
+#define ID_PLANTSIZE 1198
+#define ID_ONLY_AVAILABLE_SPECIES 1199
+#define ID_CHOICE_CONTENT 1200
+#define ID_TERRAIN_PROGRESS 1201
+#define ID_FLY_IN 1202
+#define ID_SCENARIO_NAME 1203
+#define ID_SCENARIO_VISIBLE_LAYERS 1204
+#define ID_SCENARIO_ADD_VISIBLE_LAYER 1205
+#define ID_SCENARIO_REMOVE_VISIBLE_LAYER 1206
+#define ID_SCENARIO_AVAILABLE_LAYERS 1207
+#define ID_SCENARIO_PREVIOUS 1208
+#define ID_SCENARIO_NEXT 1209
+#define ID_CHOICE_VEHICLES 1210
+#define ID_SET_VEHICLE_COLOR 1211
+#define ID_FEATURE_TYPE 1212
+#define ID_ENABLE_OBJECT_GEOM 1213
+#define ID_RADIO1 1214
+#define ID_OBJECT_GEOM_COLOR 1215
+#define ID_RADIO_USE_OBJECT_COLOR_FIELD 1216
+#define ID_OBJECT_COLOR_FIELD 1217
+#define ID_OBJECT_GEOM_HEIGHT 1218
+#define ID_OBJECT_GEOM_SIZE 1219
+#define ID_ENABLE_LINE_GEOM 1220
+#define ID_RADIO2 1221
+#define ID_LINE_GEOM_COLOR 1222
+#define ID_RADIO_USE_LINE_COLOR_FIELD 1223
+#define ID_LINE_COLOR_FIELD 1224
+#define ID_LINE_GEOM_HEIGHT 1225
+#define ID_LINE_WIDTH 1226
+#define ID_TESSELLATE 1227
+#define ID_ENABLE_TEXT_LABELS 1228
+#define ID_RADIO3 1229
+#define ID_TEXT_COLOR 1230
+#define ID_RADIO_USE_TEXT_COLOR_FIELD 1231
+#define ID_TEXT_COLOR_FIELD 1232
+#define ID_TEXT_FIELD 1233
+#define ID_LABEL_HEIGHT 1234
+#define ID_LABEL_SIZE 1235
+#define ID_FONT 1236
+#define ID_ENABLE_TEXTURE_OVERLAY 1237
+#define ID_TEXTURE_MODE 1238
+#define ID_PANEL1 1239
+#define ID_TARGET 1240
+#define ID_CURRENT 1241
+#define ID_SLIDER_PRANGE 1242
+#define ID_TEXT_PRANGE 1243
+#define ID_PANEL2 1244
+#define ID_TILE_STATUS 1245
+#define ID_TEXT_PAGEOUT 1246
+#define ID_SLIDER_PAGEOUT 1247
+#define ID_COUNT_CURRENT 1248
+#define ID_COUNT_MAXIMUM 1249
+#define ID_PANEL3 1250
+#define ID_SLIDER_FOG_DISTANCE 1251
+#define ID_SHADOWS 1252
+#define ID_AMBIENT_BIAS 1253
+#define ID_SLIDER_AMBIENT_BIAS 1254
+#define ID_TEXT_WIND_DIRECTION 1255
+#define ID_SLIDER_WIND_DIRECTION 1256
+#define ID_TEXT_WIND_SPEED 1257
+#define ID_SLIDER_WIND_SPEED 1258
+#define ID_ELEV 1259
+#define ID_RADIO_CREATE 1260
+#define ID_RADIO_ADD 1261
+#define ID_CHOICE_LAYER 1262
+#define ID_PM_LISTCTRL 1263
+#define ID_TURN 1264
+#define ID_DISTANCE 1265
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class StartupDlgBase
@@ -745,38 +737,6 @@ class TerrManDlgBase : public wxDialog
 		
 		TerrManDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~TerrManDlgBase();
-	
-};
-
-///////////////////////////////////////////////////////////////////////////////
-/// Class TimeDlgBase
-///////////////////////////////////////////////////////////////////////////////
-class TimeDlgBase : public wxDialog 
-{
-	private:
-	
-	protected:
-		wxStaticText* m_text111;
-		wxSpinCtrl* m_spin_year;
-		wxStaticText* m_text112;
-		wxSpinCtrl* m_spin_month;
-		wxStaticText* m_text113;
-		wxSpinCtrl* m_spin_day;
-		wxStaticText* m_text114;
-		wxSpinCtrl* m_spin_hour;
-		wxStaticText* m_text115;
-		wxSpinCtrl* m_spin_minute;
-		wxStaticText* m_text116;
-		wxSpinCtrl* m_spin_second;
-		wxStaticText* m_text117;
-		wxTextCtrl* m_text_speed;
-		wxSlider* m_slider_speed;
-		wxButton* m_stop;
-	
-	public:
-		
-		TimeDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
-		~TimeDlgBase();
 	
 };
 
