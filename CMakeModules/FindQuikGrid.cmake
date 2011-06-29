@@ -15,11 +15,11 @@ else(QuikGrid_FIND_DEBUG)
 	endif(QUIKGRID_INCLUDE_DIR AND QUIKGRID_LIBRARY)
 endif(QuikGrid_FIND_DEBUG)
 
-find_path(QUIKGRID_INCLUDE_DIR surfgrid.h DOC "Directory containing surfgrid.h")
+find_path(QUIKGRID_INCLUDE_DIR surfgrid.h PATHS .. ../quikgrid ../quikgrid/core ../deps/quikgrid/core DOC "Directory containing surfgrid.h")
 
-find_library(QUIKGRID_LIBRARY NAMES QuikGrid DOC "Path to QuikGrid library")
+find_library(QUIKGRID_LIBRARY NAMES quikgrid QuikGrid PATHS .. ../quikgrid ../quikgrid/core ../deps/quikgrid/core DOC "Path to QuikGrid library")
 if(QuikGrid_FIND_DEBUG)
-	find_library(QUIKGRID_LIBRARY_DEBUG NAMES QuikGridd DOC "Path to QuikGridd library")
+	find_library(QUIKGRID_LIBRARY_DEBUG NAMES quikgridd QuikGridd PATHS .. ../quikgrid ../quikgrid/core ../deps/quikgrid/core DOC "Path to QuikGridd library")
 endif(QuikGrid_FIND_DEBUG)
 
 # handle the QUIETLY and REQUIRED arguments and set QUIKGRID_FOUND to TRUE if 

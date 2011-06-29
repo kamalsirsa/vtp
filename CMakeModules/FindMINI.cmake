@@ -15,11 +15,11 @@ else(MINI_FIND_DEBUG)
 	endif(MINI_INCLUDE_DIR AND MINI_LIBRARY)
 endif(MINI_FIND_DEBUG)
 
-find_path(MINI_INCLUDE_DIR mini/mini.h DOC "Directory containing mini/mini.h")
+find_path(MINI_INCLUDE_DIR mini/mini.h PATHS .. ../deps DOC "Directory containing mini/mini.h")
 
-find_library(MINI_LIBRARY NAMES libMini DOC "Path to Mini library")
+find_library(MINI_LIBRARY NAMES libMini PATHS .. ../mini ../deps/mini DOC "Path to Mini library")
 if(MINI_FIND_DEBUG)
-	find_library(MINI_LIBRARY_DEBUG NAMES libMinid DOC "Path to Mini debug library")
+	find_library(MINI_LIBRARY_DEBUG NAMES libMinid PATHS .. ../mini ../deps/mini DOC "Path to Mini debug library")
 endif(MINI_FIND_DEBUG)
 
 # handle the QUIETLY and REQUIRED arguments and set MINI_FOUND to TRUE if 
