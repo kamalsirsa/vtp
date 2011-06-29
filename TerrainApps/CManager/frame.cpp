@@ -40,7 +40,6 @@
 #  include "icons/cmanager.xpm"
 #  include "bitmaps/axes.xpm"
 #  include "bitmaps/contents_open.xpm"
-#  include "bitmaps/dummy_26x14.xpm"
 #  include "bitmaps/item_new.xpm"
 #  include "bitmaps/item_remove.xpm"
 #  include "bitmaps/model_add.xpm"
