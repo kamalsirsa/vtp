@@ -394,7 +394,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	// Give the frame an icon
 	VTLOG1(" Setting icon\n");
 #ifdef ICON_NAME
-	SetIcon(wxIcon(wxString(ICON_NAME)));
+	SetIcon(wxIcon(wxString(ICON_NAME, wxConvUTF8)));
 #else
 	SetIcon(wxICON(Enviro));
 #endif
