@@ -3830,6 +3830,7 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _T("\n");
 	str += _("Send feedback to: ");
 	str += _T("ben@vterrain.org\n");
+	str += _T("Version: 1.0\n");
 	str += _("Build date: ");
 	str += wxString(__DATE__, wxConvUTF8);
 	str += _T("\n");

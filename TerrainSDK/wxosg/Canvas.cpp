@@ -15,6 +15,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Event.h"
+#include "vtlib/core/TerrainScene.h"
 #include "GraphicsWindowWX.h"
 #include "vtdata/vtLog.h"
 
@@ -378,6 +379,10 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 
 	// inform vtlib scene, which informs the engines
 	vtGetScene()->OnMouse(mevent);
+
+	// and the terrainscene (this is awkward; need a better mechanism)
+	if (vtGetTS())
+		vtGetTS()->OnMouse(mevent);
 }
 
 void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)

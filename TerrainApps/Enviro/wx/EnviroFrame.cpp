@@ -2918,12 +2918,15 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 	str += _("The runtime environment for the Virtual Terrain Project.\n\n");
 	str += _("Please read the HTML documentation and license.\n\n");
 	str += _("Send feedback to: ben@vterrain.org\n");
+	str += _T("\nVersion: 1.0\n");
+	str += _("Build date: ");
+	str += wxString(__DATE__, *wxConvCurrent);
 #else
 	str += _T("Based on the Virtual Terrain Project 3D Runtime Environment.\n");
 #endif
-	str += _T("\nThis version was built with the OSG Library.\n\n");
-	str += _("Build date: ");
-	str += wxString(__DATE__, *wxConvCurrent);
+
+	str += _T("\n\n");
+	str += wxString("Application framework: wxWidgets v" wxVERSION_NUM_DOT_STRING "\n", wxConvUTF8);
 
 	wxString str2 = _("About ");
 	str2 += wxString(STRING_APPORG, wxConvUTF8);
