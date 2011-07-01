@@ -35,7 +35,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib osgSimd.lib osgShadowd.lib osgTerraind.lib osgTextd.lib osgUtild.lib osgViewerd.lib OpenThreadsd.lib opengl32.lib glu32.lib netcdf.lib libpng15d-vc7.lib zlib1d-vc7.lib gdal_id-vc7.lib libjpeg.lib libMinid.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib osgSimd.lib osgShadowd.lib osgTerraind.lib osgTextd.lib osgUtild.lib osgViewerd.lib OpenThreadsd.lib opengl32.lib glu32.lib netcdf.lib libpng15d-vc7.lib zlib1d-vc7.lib gdal_id-vc7.lib libjpeg.lib libMinid.lib C:\APIs\bzip2-1.0.3-bin-vc7\bzip2d.lib C:\APIs\curl-7.21.3\vc71\lib\libcurl-staticd.lib Ws2_32.lib"
 				OutputFile="$(OutDir)/vtocx.ocx"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
@@ -101,7 +101,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib OpenThreads.lib osg.lib osgDB.lib osgText.lib osgUtil.lib osgShadow.lib netcdf.lib libpng15-vc7.lib zlib1-vc7.lib gdal_i-vc7.lib libjpeg.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib OpenThreads.lib osg.lib osgDB.lib osgGA.lib osgSim.lib osgTerrain.lib osgText.lib osgUtil.lib osgShadow.lib osgViewer.lib netcdf.lib libpng15-vc7.lib zlib1-vc7.lib gdal_i-vc7.lib libjpeg.lib libMini.lib C:\APIs\bzip2-1.0.3-bin-vc7\bzip2.lib C:\APIs\curl-7.21.3\vc71\lib\libcurl-static.lib"
 				OutputFile="$(OutDir)/vtocx.ocx"
 				ModuleDefinitionFile=".\vtocx.def"
 				GenerateDebugInformation="TRUE"

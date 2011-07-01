@@ -976,7 +976,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	if (!pNode)
 	{
 		str.Printf(_T("Sorry, couldn't load model from %hs"), (const char *) model->m_filename);
-		VTLOG(str.mb_str());
+		VTLOG1(str.mb_str(wxConvUTF8));
 		DisplayMessageBox(str);
 		return NULL;
 	}
