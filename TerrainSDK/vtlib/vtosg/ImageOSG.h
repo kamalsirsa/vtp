@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -8,18 +8,24 @@
 
 #include "vtdata/vtDIB.h"
 #include "vtdata/Projections.h"
+
 #include <osg/Image>
+#include <osgDB/ReadFile>
 
 /**
- * This class represents an Image.  It can be loaded from a number of
- * file formats, and used as a texture map for a textured material, by
- * passing it to vtMaterial::SetTexture()
+ This class extends osg::Image with an interface to support vtdata's Bitmap
+ operations and use vtdata's vtDIB. It is useful for creating images in memory.
+
+ If you are going to use OSG to load an image from disk, you must use
+ osg::Image instead, which can be loaded with osgDB::readImageFile.
+
+ A common use for an image is as a texture map for a textured material, by
+ passing it to vtMaterial::SetTexture().
  */
 class vtImage: public vtBitmapBase, public osg::Image
 {
 public:
 	vtImage();
-//	vtImage(const char *fname, bool bAllowCache = true);
 	vtImage(class vtDIB *pDIB);
 	vtImage(vtImage *copyfrom);
 
@@ -47,7 +53,6 @@ public:
 
 	unsigned char *GetData() { return data(); }
 	unsigned char *GetRowData(int row) { return data(0, row); }
-	void Set16Bit(bool bFlag);
 
 protected:
 //	bool _Read(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
@@ -56,6 +61,49 @@ protected:
 	bool _ReadPNG(const char *filename);
 };
 typedef osg::ref_ptr<vtImage> vtImagePtr;
+typedef osg::ref_ptr<osg::Image> ImagePtr;
+
+
+/*
+ When you want to operate on an osg::Image with vtdata's Bitmap routines, it
+ can be wrapped in this class.
+ */
+class vtImageWrapper: public vtBitmapBase
+{
+public:
+	vtImageWrapper(osg::Image *image) { m_image = image; }
+
+	// Provide vtBitmapBase methods
+	unsigned char GetPixel8(int x, int y) const;
+	void GetPixel24(int x, int y, RGBi &rgb) const;
+	void GetPixel32(int x, int y, RGBAi &rgba) const;
+
+	void SetPixel8(int x, int y, unsigned char color);
+	void SetPixel24(int x, int y, const RGBi &rgb);
+	void SetPixel32(int x, int y, const RGBAi &rgba);
+
+	unsigned int GetWidth() const { return m_image->s(); } 
+	unsigned int GetHeight() const { return m_image->t(); }
+	unsigned int GetDepth() const { return m_image->getPixelSizeInBits(); }
+
+	unsigned char *GetData() { return m_image->data(); }
+	unsigned char *GetRowData(int row) { return m_image->data(0, row); }
+
+	osg::Image *m_image;
+};
+
+// To ease the transition from vtImage to osg::Image, some helpers:
+unsigned char GetPixel8(const osg::Image *image, int x, int y);
+void GetPixel24(const osg::Image *image, int x, int y, RGBi &rgb);
+void GetPixel32(const osg::Image *image, int x, int y, RGBAi &rgba);
+void SetPixel8(osg::Image *image, int x, int y, unsigned char color);
+void SetPixel24(osg::Image *image, int x, int y, const RGBi &rgb);
+void SetPixel32(osg::Image *image, int x, int y, const RGBAi &rgba);
+unsigned int GetWidth(const osg::Image *image);
+unsigned int GetHeight(const osg::Image *image);
+unsigned int GetDepth(const osg::Image *image);
+void Set16BitInternal(osg::Image *image, bool bFlag);
+
 
 class vtImageGeo : public vtImage
 {
@@ -78,21 +126,7 @@ protected:
 };
 typedef osg::ref_ptr<vtImageGeo> vtImageGeoPtr;
 
-class vtOverlappedTiledImage : public vtOverlappedTiledBitmap
-{
-public:
-	vtOverlappedTiledImage();
-	bool Create(int iTileSize, int iBitDepth);
-	bool Load(const char *filename, bool progress_callback(int) = NULL);
-
-	vtBitmapBase *GetTile(int i, int j) { return m_Tiles[i][j]; }
-	const vtBitmapBase *GetTile(int i, int j) const { return m_Tiles[i][j]; }
-
-	vtImagePtr m_Tiles[4][4];
-};
-
 bool vtImageInfo(const char *filename, int &width, int &height, int &depth);
-vtImagePtr vtImageRead(const char *fname);
 
 #endif	// VTOSG_IMAGEH
 

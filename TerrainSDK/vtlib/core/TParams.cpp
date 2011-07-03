@@ -14,8 +14,6 @@
 #include <string.h>
 #include "TParams.h"
 
-// default (currently fixed) number of tiles
-#define NTILES	4
 
 ScenarioParams::ScenarioParams()
 {
@@ -85,9 +83,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_TIMESPEED, "1");
 
 	AddTag(STR_TEXTURE, "0");
-	AddTag(STR_TILESIZE, "512");
 	AddTag(STR_TEXTUREFILE, "");
-	AddTag(STR_TEXTUREBASE, "");
 	AddTag(STR_TEXTURE_GRADUAL, "false");
 	AddTag(STR_TEXURE_LOD_FACTOR, "0.25");
 	AddTag(STR_MIPMAP, "false");
@@ -228,22 +224,6 @@ bool TParams::LoadFromXML(const char *fname)
 	// Convert old time values to new values
 	ConvertOldTimeValue();
 
-	// If pre-STR_TEXTURE4BY4, contruct it from the other params
-	if (!FindTag(STR_TEXTURE4BY4))
-	{
-		vtString str = GetValueString(STR_TEXTUREBASE);
-		vtString str2;
-		str2.Format("%d", NTILES * (GetValueInt(STR_TILESIZE)-1) + 1);
-		str += str2;
-
-		if (GetValueBool("Texture_Format") == 1)
-			str += ".jpg";
-		else
-			str += ".bmp";
-		SetValueString(STR_TEXTURE4BY4, str, true);
-		RemoveTag("Texture_Format");
-	}
-
 	// Remove some obsolete stuff
 	RemoveTag("Labels");
 	RemoveTag("LabelFile");
@@ -253,6 +233,10 @@ bool TParams::LoadFromXML(const char *fname)
 	RemoveTag("Overlay");
 	RemoveTag("Num_Tiles");
 	RemoveTag("Pixel_Error");
+	RemoveTag("Texture_Format");
+	RemoveTag("Tile_Size");
+	RemoveTag("Base_Texture");
+	RemoveTag("Texture_4by4");
 
 	// Is_TIN is obsolete, use Surface_Type=1 instead
 	bool bOldTin = GetValueBool("Is_TIN");

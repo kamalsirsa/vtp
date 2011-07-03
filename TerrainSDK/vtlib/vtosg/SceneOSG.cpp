@@ -99,6 +99,41 @@ int vtGetMaxTextureSize()
 	return tmax;
 }
 
+#if 0
+class MyCull : public osg::NodeCallback
+{
+public:
+    /** Callback method called by the NodeVisitor when visiting a node.*/
+	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+    { 
+		const GLubyte *test = glGetString(GL_VERSION);
+        traverse(node,nv);
+    }
+};
+
+class MyUpdate : public osg::NodeCallback
+{
+public:
+    /** Callback method called by the NodeVisitor when visiting a node.*/
+    virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+    { 
+		const GLubyte *test = glGetString(GL_VERSION);
+        traverse(node,nv);
+    }
+};
+
+class MyEvent : public osg::NodeCallback
+{
+public:
+    /** Callback method called by the NodeVisitor when visiting a node.*/
+    virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+    { 
+		const GLubyte *test = glGetString(GL_VERSION);
+        traverse(node,nv);
+    }
+};
+#endif
+
 /**
  * Initialize the vtlib library, including the display and scene graph.
  * You should call this function only once, before any other vtlib calls.
@@ -182,6 +217,10 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 	//  control global state
 	m_StateRoot = new osg::Group;
 	m_pOsgViewer->setSceneData(m_StateRoot);
+
+	//m_StateRoot->addCullCallback(new MyCull);
+	//m_StateRoot->setUpdateCallback(new MyUpdate);
+	//m_StateRoot->setEventCallback(new MyEvent);
 
 	m_bInitialized = true;
 

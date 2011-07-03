@@ -358,8 +358,7 @@ public:
 
 	// Texture
 	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
-	vtImage *GetTextureImage();
-	vtOverlappedTiledImage	*GetOverlappedImage() { return &m_ImageTiles; }
+	osg::Image *GetTextureImage();
 	vtMultiTexture *AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents, int TextureMode);
 	osg::Node *GetTerrainSurfaceNode();
 
@@ -392,8 +391,6 @@ protected:
 	void CreateArtificialHorizon(float fAltitude, bool bWater, bool bHorizon,
 		bool bCenter);
 
-	void _CreateSingleMaterial(float ambient, float diffuse, float emmisive);
-	void _CreateTiledMaterials(int patches, float ambient, float diffuse, float emmisive);
 	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtBitmapBase *dib,
 		const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	void _ComputeCenterLocation();
@@ -484,9 +481,9 @@ protected:
 	vtRouteMap		m_Routes;
 
 	// ground texture and shadows
-	vtImagePtr		m_pImageSource;
-	vtImagePtr		m_pImage;
-	vtOverlappedTiledImage	m_ImageTiles;
+	ImagePtr		m_pUnshadedImage;
+	ImagePtr		m_pSingleImage;
+
 	auto_ptr<ColorMap>	m_pTextureColors;
 	bool			m_bTextureInitialized;
 	vtTextureUnitManager m_TextureUnits;

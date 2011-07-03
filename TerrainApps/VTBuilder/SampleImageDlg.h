@@ -43,7 +43,6 @@ public:
 	wxButton* GetBigger()  { return (wxButton*) FindWindow( ID_BIGGER ); }
 	wxButton* GetSmaller()  { return (wxButton*) FindWindow( ID_SMALLER ); }
 	wxCheckBox* GetConstrain()  { return (wxCheckBox*) FindWindow( ID_CONSTRAIN ); }
-	wxCheckBox* Get4x4Tiling()  { return (wxCheckBox*) FindWindow( ID_TILING ); }
 
 	void SetView(BuilderView *pView) { m_pView = pView; }
 	void RecomputeSize();
@@ -61,7 +60,6 @@ public:
 	int	 m_iSizeX;
 	int	 m_iSizeY;
 	bool	m_bConstraint;
-	bool	m_bTiling;
 
 	double  m_fAreaX;
 	double  m_fAreaY;

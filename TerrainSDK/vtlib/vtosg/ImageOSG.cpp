@@ -1,7 +1,7 @@
 //
 // ImageOSG.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,15 +27,11 @@
 
 
 ////////////////////////////////////////////////////////////////////////
+// vtImage class
 
 vtImage::vtImage() : osg::Image()
 {
 }
-
-//vtImage::vtImage(const char *fname, bool bAllowCache) : osg::Image()
-//{
-//	Read(fname, bAllowCache);
-//}
 
 vtImage::vtImage(vtDIB *pDIB) : osg::Image()
 {
@@ -72,45 +68,6 @@ bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
 	return true;
 }
 
-vtImagePtr vtImageRead(const char *fname)
-{
-	osg::ref_ptr<osg::Image> img;
-	try
-	{
-		// OSG doesn't yet support utf-8 or wide filenames, so convert
-		vtString fname_local = UTF8ToLocal(fname);
-
-#if LOG_IMAGE_LOAD
-		VTLOG1("  readImageFile,");
-#endif
-		img = osgDB::readImageFile((const char *)fname_local);
-	}
-	catch (...)
-	{
-		// Don't do anything because the (!pOsgImage.valid() below will
-		//  test to see if the pointer is any good. However, we need the
-		//  catch or else if osgdb throws an exception, it will be passed
-		/// all the way to the app.
-	}
-	if (img.valid())
-	{
-		vtImagePtr vtimg = new vtImage;
-
-		// Take the data?
-		// Maybe this can work:
-		img->setAllocationMode(osg::Image::NO_DELETE);
-		vtimg->setImage(img->s(),img->t(),img->r(),
-				img->getInternalTextureFormat(),
-				img->getPixelFormat(),
-				img->getDataType(),
-				img->data(),
-				osg::Image::USE_NEW_DELETE);
-		return vtimg;
-	}
-	else
-		return vtImagePtr(NULL);
-}
-
 #if 0
 bool vtImage::_Read(const char *fname, bool bAllowCache, bool progress_callback(int))
 {
@@ -119,7 +76,6 @@ bool vtImage::_Read(const char *fname, bool bAllowCache, bool progress_callback(
 #endif
 	setName(fname);
 
-#if !USE_OSG_FOR_BMP
 	if (!stricmp(fname + strlen(fname) - 3, "bmp"))
 	{
 		vtDIB dib;
@@ -137,11 +93,7 @@ bool vtImage::_Read(const char *fname, bool bAllowCache, bool progress_callback(
 				_CreateFromDIB(&dib);
 		}
 	}
-	else
-#endif
-
-#if !USE_OSG_FOR_JPG
-	if (!stricmp(fname + strlen(fname) - 3, "jpg"))
+	else if (!stricmp(fname + strlen(fname) - 3, "jpg"))
 	{
 		vtDIB pDIB;
 		if (pDIB.ReadJPEG(fname))
@@ -149,74 +101,18 @@ bool vtImage::_Read(const char *fname, bool bAllowCache, bool progress_callback(
 			_CreateFromDIB(&pDIB);
 		}
 	}
-	else
-#endif
-
-#if !USE_OSG_FOR_PNG
-	if (!stricmp(fname + strlen(fname) - 3, "png"))
+	else if (!stricmp(fname + strlen(fname) - 3, "png"))
 	{
 		_ReadPNG(fname);
 	}
-	else
-#endif
-
-#if !USE_OSG_FOR_TIF
-	if (!stricmp(fname + strlen(fname) - 3, "tif") ||
-		!stricmp(fname + strlen(fname) - 4, "tiff"))
+	else if (!stricmp(fname + strlen(fname) - 3, "tif") ||
+			 !stricmp(fname + strlen(fname) - 4, "tiff"))
 	{
 		_ReadTIF(fname, progress_callback);
 	}
 	else
-#endif
-	// try to load with OSG (osgPlugins libraries)
 	{
-#if 0
-		if (bAllowCache)
-		{
-			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) |
-				OPTS::CACHE_IMAGES));
-		}
-		else
-		{
-			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) &
-				~(OPTS::CACHE_IMAGES)));
-		}
-#endif
-		// Call OSG to attempt image load.
-		osg::ref_ptr<osg::Image> img;
-		try
-		{
-			// OSG doesn't yet support utf-8 or wide filenames, so convert
-			vtString fname_local = UTF8ToLocal(fname);
-
-#if LOG_IMAGE_LOAD
-			VTLOG1("  readImageFile,");
-#endif
-			img = osgDB::readImageFile((const char *)fname_local);
-		}
-		catch (...)
-		{
-			// Don't do anything because the (!pOsgImage.valid() below will
-			//  test to see if the pointer is any good. However, we need the
-			//  catch or else if osgdb throws an exception, it will be passed
-			/// all the way to the app.
-		}
-
-		if (!img.valid())
-		{
-			VTLOG("  failed to read '%s'\n", fname);
-			return false;
-		}
-
-		// Take the data?
-		// Maybe this can work:
-		img->setAllocationMode(NO_DELETE);
-		setImage(img->s(),img->t(),img->r(),
-				img->getInternalTextureFormat(),
-				img->getPixelFormat(),
-				img->getDataType(),
-                img->data(),
-                osg::Image::USE_NEW_DELETE);
+		return false;
 	}
 #if LOG_IMAGE_LOAD
 	VTLOG("  succeeded.\n");
@@ -267,92 +163,6 @@ bool vtImage::WriteJPEG(const char *fname, int quality, bool progress_callback(i
 	// TODO: native libjpeg code here
 	return false;
 #endif
-}
-
-unsigned char vtImage::GetPixel8(int x, int y) const
-{
-	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = data(x, _t-1-y);
-	return *buf;
-}
-
-void vtImage::SetPixel8(int x, int y, unsigned char color)
-{
-	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = data(x, _t-1-y);
-	*buf = color;
-}
-
-void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
-{
-	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = data(x, _t-1-y);
-	rgb.r = buf[0];
-	rgb.g = buf[1];
-	rgb.b = buf[2];
-}
-
-void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
-{
-	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = data(x, _t-1-y);
-	buf[0] = rgb.r;
-	buf[1] = rgb.g;
-	buf[2] = rgb.b;
-}
-
-void vtImage::GetPixel32(int x, int y, RGBAi &rgba) const
-{
-	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = data(x, _t-1-y);
-	rgba.r = buf[0];
-	rgba.g = buf[1];
-	rgba.b = buf[2];
-	rgba.a = buf[3];
-}
-
-void vtImage::SetPixel32(int x, int y, const RGBAi &rgba)
-{
-	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = data(x, _t-1-y);
-	buf[0] = rgba.r;
-	buf[1] = rgba.g;
-	buf[2] = rgba.b;
-	buf[3] = rgba.a;
-}
-
-unsigned int vtImage::GetWidth() const
-{
-	return s();
-}
-
-unsigned int vtImage::GetHeight() const
-{
-	return t();
-}
-
-unsigned int vtImage::GetDepth() const
-{
-	return getPixelSizeInBits();
-}
-
-/**
- * Call this method to tell vtlib that you want it to use a 16-bit texture
- * (internal memory format) to be sent to the graphics card.
- */
-void vtImage::Set16Bit(bool bFlag)
-{
-	GLenum pixf = getPixelFormat();
-	if (bFlag)
-	{
-		// use a 16-bit internal
-		if (pixf == GL_RGB)
-			setInternalTextureFormat(GL_RGB5);
-		if (pixf == GL_RGBA)
-			setInternalTextureFormat(GL_RGB5_A1);
-	}
-	else
-		setInternalTextureFormat(pixf);
 }
 
 void vtImage::_CreateFromDIB(vtDIB *pDIB, bool b16bit)
@@ -582,8 +392,222 @@ bool vtImage::_ReadPNG(const char *filename)
 
 #endif	// USE_OSG_FOR_PNG
 
+unsigned char vtImage::GetPixel8(int x, int y) const
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = data(x, _t-1-y);
+	return *buf;
+}
 
-//////////////////////////
+void vtImage::SetPixel8(int x, int y, unsigned char color)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = data(x, _t-1-y);
+	*buf = color;
+}
+
+void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = data(x, _t-1-y);
+	rgb.r = buf[0];
+	rgb.g = buf[1];
+	rgb.b = buf[2];
+}
+
+void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = data(x, _t-1-y);
+	buf[0] = rgb.r;
+	buf[1] = rgb.g;
+	buf[2] = rgb.b;
+}
+
+void vtImage::GetPixel32(int x, int y, RGBAi &rgba) const
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = data(x, _t-1-y);
+	rgba.r = buf[0];
+	rgba.g = buf[1];
+	rgba.b = buf[2];
+	rgba.a = buf[3];
+}
+
+void vtImage::SetPixel32(int x, int y, const RGBAi &rgba)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = data(x, _t-1-y);
+	buf[0] = rgba.r;
+	buf[1] = rgba.g;
+	buf[2] = rgba.b;
+	buf[3] = rgba.a;
+}
+
+unsigned int vtImage::GetWidth() const
+{
+	return s();
+}
+
+unsigned int vtImage::GetHeight() const
+{
+	return t();
+}
+
+unsigned int vtImage::GetDepth() const
+{
+	return getPixelSizeInBits();
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// vtImageWrapper
+
+unsigned char vtImageWrapper::GetPixel8(int x, int y) const
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	return *buf;
+}
+
+void vtImageWrapper::SetPixel8(int x, int y, unsigned char color)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	*buf = color;
+}
+
+void vtImageWrapper::GetPixel24(int x, int y, RGBi &rgb) const
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	rgb.r = buf[0];
+	rgb.g = buf[1];
+	rgb.b = buf[2];
+}
+
+void vtImageWrapper::SetPixel24(int x, int y, const RGBi &rgb)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	buf[0] = rgb.r;
+	buf[1] = rgb.g;
+	buf[2] = rgb.b;
+}
+
+void vtImageWrapper::GetPixel32(int x, int y, RGBAi &rgba) const
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	rgba.r = buf[0];
+	rgba.g = buf[1];
+	rgba.b = buf[2];
+	rgba.a = buf[3];
+}
+
+void vtImageWrapper::SetPixel32(int x, int y, const RGBAi &rgba)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	buf[0] = rgba.r;
+	buf[1] = rgba.g;
+	buf[2] = rgba.b;
+	buf[3] = rgba.a;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Helpers
+
+unsigned char GetPixel8(const osg::Image *image, int x, int y)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = image->data(x, image->t()-1-y);
+	return *buf;
+}
+
+void SetPixel8(osg::Image *image, int x, int y, unsigned char color)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = image->data(x, image->t()-1-y);
+	*buf = color;
+}
+
+void GetPixel24(const osg::Image *image, int x, int y, RGBi &rgb)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = image->data(x, image->t()-1-y);
+	rgb.r = buf[0];
+	rgb.g = buf[1];
+	rgb.b = buf[2];
+}
+
+void SetPixel24(osg::Image *image, int x, int y, const RGBi &rgb)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = image->data(x, image->t()-1-y);
+	buf[0] = rgb.r;
+	buf[1] = rgb.g;
+	buf[2] = rgb.b;
+}
+
+void GetPixel32(const osg::Image *image, int x, int y, RGBAi &rgba)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	const unsigned char *buf = image->data(x, image->t()-1-y);
+	rgba.r = buf[0];
+	rgba.g = buf[1];
+	rgba.b = buf[2];
+	rgba.a = buf[3];
+}
+
+void SetPixel32(osg::Image *image, int x, int y, const RGBAi &rgba)
+{
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = image->data(x, image->t()-1-y);
+	buf[0] = rgba.r;
+	buf[1] = rgba.g;
+	buf[2] = rgba.b;
+	buf[3] = rgba.a;
+}
+
+unsigned int GetWidth(const osg::Image *image)
+{
+	return image->s();
+}
+
+unsigned int GetHeight(const osg::Image *image)
+{
+	return image->t();
+}
+
+unsigned int GetDepth(const osg::Image *image)
+{
+	return image->getPixelSizeInBits();
+}
+
+/**
+ * Call this method to tell vtlib that you want it to use a 16-bit texture
+ * (internal memory format) to be sent to the graphics card.
+ */
+void Set16BitInternal(osg::Image *image, bool bFlag)
+{
+	GLenum pixf = image->getPixelFormat();
+	if (bFlag)
+	{
+		// use a 16-bit internal format
+		if (pixf == GL_RGB)
+			image->setInternalTextureFormat(GL_RGB5);
+		if (pixf == GL_RGBA)
+			image->setInternalTextureFormat(GL_RGB5_A1);
+	}
+	else
+		image->setInternalTextureFormat(pixf);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// vtImageGeo class
 
 bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 {
@@ -985,154 +1009,6 @@ void vtImageGeo::ReadExtents(const char *filename)
 		}
 	}
 }
-
-
-///////////////////////////////////////////////////////////////////////
-// class vtOverlappedTiledImage
-
-vtOverlappedTiledImage::vtOverlappedTiledImage()
-{
-	m_iTilesize = 0;
-	m_iSpacing = 0;
-	int r, c;
-	for (r = 0; r < 4; r++)
-		for (c = 0; c < 4; c++)
-			m_Tiles[r][c] = NULL;
-}
-
-bool vtOverlappedTiledImage::Create(int iTilesize, int iBitDepth)
-{
-	// store the tile size
-	m_iTilesize = iTilesize;
-	m_iSpacing = iTilesize-1;
-
-	// create the 4x4 grid of image tiles
-	int r, c;
-	for (r = 0; r < 4; r++)
-		for (c = 0; c < 4; c++)
-		{
-			vtImage *image = new vtImage;
-			if (!image->Create(iTilesize, iTilesize, iBitDepth))
-				return false;
-			m_Tiles[r][c] = image;
-		}
-	return true;
-}
-
-bool vtOverlappedTiledImage::Load(const char *filename, bool progress_callback(int))
-{
-	g_GDALWrapper.RequestGDALFormats();
-
-	GDALDataset *poDataset = (GDALDataset *) GDALOpen(filename, GA_ReadOnly);
-	if (!poDataset)
-		return false;
-
-	int iBands = poDataset->GetRasterCount();
-
-	GDALRasterBand *poBand1;
-	GDALRasterBand *poBand2;
-	GDALRasterBand *poBand3;
-	GDALRasterBand *poBand4;
-	int xsize = poDataset->GetRasterXSize();
-	int ysize = poDataset->GetRasterYSize();
-
-	poBand1 = poDataset->GetRasterBand(1);
-	poBand2 = poDataset->GetRasterBand(2);
-	poBand3 = poDataset->GetRasterBand(3);
-	poBand4 = poDataset->GetRasterBand(4);
-
-	unsigned char *lineBuf1 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
-	unsigned char *lineBuf2 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
-	unsigned char *lineBuf3 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
-	unsigned char *lineBuf4 = (unsigned char *) CPLMalloc(sizeof(char)*xsize);
-
-	// To avoid thrashing GDAL's cache, we need one row of tiles to fit
-	int need_cache_bytes;
-	need_cache_bytes = m_iTilesize * xsize * iBands;
-
-	// add a little bit for rounding up
-	need_cache_bytes += (need_cache_bytes / 20);
-
-	// there's little point in shrinking the cache, so check existing size
-	int existing = GDALGetCacheMax();
-	if (need_cache_bytes > existing)
-		GDALSetCacheMax(need_cache_bytes);
-
-	int x_off, y_off, x, y, i, j;
-
-	for (i = 0; i < 4; i++)
-	{
-		x_off = i * m_iSpacing;
-		for (j = 0; j < 4; j++)
-		{
-			if (progress_callback != NULL)
-				progress_callback(((i*4)+j)*100 / (4*4));
-
-			y_off = j * m_iSpacing;
-
-			vtImage *target = m_Tiles[j][i];
-
-			RGBi rgb;
-			RGBAi rgba;
-			if (iBands == 1)
-			{
-				for (x = 0; x < m_iTilesize; x++)
-				{
-					poBand1->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
-						lineBuf1, xsize, 1, GDT_Byte, 0, 0);
-					for (y = 0; y < m_iTilesize; y++)
-					{
-						unsigned char *targetBandVec1 = lineBuf1 + y_off + y;
-						target->SetPixel8(x, y, *targetBandVec1);
-					}
-				}
-			}
-			else
-			{
-				for (x = 0; x < m_iTilesize; x++)
-				{
-					poBand1->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
-						lineBuf1,xsize,1,GDT_Byte,0,0);
-					poBand2->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
-						lineBuf2,xsize,1,GDT_Byte,0,0);
-					poBand3->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
-						lineBuf3,xsize,1,GDT_Byte,0,0);
-					if (iBands == 4)
-					{
-						poBand4->RasterIO(GF_Read, 0, x_off+x, xsize, 1,
-							lineBuf4,xsize,1,GDT_Byte,0,0);
-					}
-
-					for (y = 0; y < m_iTilesize; y++)
-					{
-						unsigned char *targetBandVec1 = lineBuf1 + y_off + y;
-						unsigned char *targetBandVec2 = lineBuf2 + y_off + y;
-						unsigned char *targetBandVec3 = lineBuf3 + y_off + y;
-						if (iBands == 3)
-						{
-							rgb.Set(*targetBandVec1,*targetBandVec2,*targetBandVec3);
-							target->SetPixel24(y, x, rgb);
-						}
-						else if (iBands == 4)
-						{
-							unsigned char *targetBandVec4 = lineBuf4 + y_off + y;
-							rgba.Set(*targetBandVec1,*targetBandVec2,*targetBandVec3,*targetBandVec4);
-							target->SetPixel32(y, x, rgba);
-						}
-
-					}
-				}
-			}
-		}
-	}
-	CPLFree( lineBuf1 );
-	CPLFree( lineBuf2 );
-	CPLFree( lineBuf3 );
-	CPLFree( lineBuf4 );
-	GDALClose(poDataset);
-	return true;
-}
-
 
 bool vtImageInfo(const char *filename, int &width, int &height, int &depth)
 {

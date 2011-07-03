@@ -33,7 +33,7 @@ public:
 	vtGroup		*m_pPast, *m_pPresent, *m_pFuture;
 	vtLodGrid	*m_pTreeGrid;
 	vtMovGeode	*m_pWaterShape, *m_pWaterShape2;
-	vtImagePtr	 m_pDetailTexture, m_pDetailTexture2;
+	ImagePtr	 m_pDetailTexture, m_pDetailTexture2;
 	vtMaterial	*m_pDetailMat;
 	vtMaterial	*m_pDetailMat2;
 	vtMaterialArray *m_pMats;

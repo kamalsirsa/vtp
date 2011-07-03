@@ -39,7 +39,6 @@ BEGIN_EVENT_TABLE(RenderDlg, RenderDlgBase)
 	EVT_RADIOBUTTON( ID_JPEG, RenderDlg::OnRadio )
 	EVT_BUTTON( ID_DOTDOTDOT, RenderDlg::OnDotdotdot )
 	EVT_CHECKBOX( ID_CONSTRAIN, RenderDlg::OnConstrain )
-	EVT_CHECKBOX( ID_TILING, RenderDlg::OnConstrain )
 	EVT_CHECKBOX( ID_CONSTRAIN, RenderDlg::OnConstrain )
 	EVT_BUTTON( ID_SMALLER, RenderDlg::OnSmaller )
 	EVT_BUTTON( ID_BIGGER, RenderDlg::OnBigger )
@@ -53,7 +52,6 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	m_power = 8;
 	m_bConstraint = false;
-	m_bTiling = false;
 	m_bToFile = false;
 	m_bJPEG = false;
 	m_ColorNODATA.Set(255,0,0);
@@ -72,7 +70,6 @@ RenderDlg::RenderDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(this, ID_SIZEX, &m_iSizeX);
 	AddNumValidator(this, ID_SIZEY, &m_iSizeY);
 	AddValidator(this, ID_CONSTRAIN, &m_bConstraint);
-	AddValidator(this, ID_TILING, &m_bTiling);
 
 	UpdateEnabling();
 
@@ -93,12 +90,6 @@ void RenderDlg::RecomputeSize()
 {
 	if (m_bConstraint)  // powers of 2 + 1
 		m_iSizeX = m_iSizeY = (1 << m_power);
-
-	if (m_bConstraint && m_bTiling)
-	{
-		m_iSizeX -= 3;
-		m_iSizeY -= 3;
-	}
 }
 
 void RenderDlg::UpdateEnabling()
@@ -110,7 +101,6 @@ void RenderDlg::UpdateEnabling()
 
 	GetSmaller()->Enable(m_bConstraint);
 	GetBigger()->Enable(m_bConstraint);
-	GetTiling()->Enable(m_bConstraint);
 	GetSizeX()->SetEditable(!m_bConstraint);
 	GetSizeY()->SetEditable(!m_bConstraint);
 }

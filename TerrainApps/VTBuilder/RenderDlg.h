@@ -34,7 +34,6 @@ public:
 	wxRadioButton* GetGeotiff()  { return (wxRadioButton*) FindWindow( ID_GEOTIFF ); }
 	wxButton* GetDotdotdot()  { return (wxButton*) FindWindow( ID_DOTDOTDOT ); }
 	wxTextCtrl* GetTextToFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_FILE ); }
-	wxCheckBox* GetTiling()  { return (wxCheckBox*) FindWindow( ID_TILING ); }
 	wxButton* GetBigger()  { return (wxButton*) FindWindow( ID_BIGGER ); }
 	wxButton* GetSmaller()  { return (wxButton*) FindWindow( ID_SMALLER ); }
 	wxTextCtrl* GetSizeY()  { return (wxTextCtrl*) FindWindow( ID_SIZEY ); }
@@ -47,7 +46,6 @@ public:
 	void UpdateColorMapChoice();
 
 	bool m_bConstraint;
-	bool m_bTiling;
 	int  m_power;
 	bool m_bSetting;
 

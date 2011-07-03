@@ -32,7 +32,6 @@
 #include "StyleDlg.h"
 
 #include "ScenarioParamsDialog.h"
-#define NTILES 4
 
 //---------------------------------------------------------------------------
 
@@ -93,13 +92,9 @@ BEGIN_EVENT_TABLE(TParamsDlg,TParamsDlgBase)
 	EVT_CHOICE( ID_LODMETHOD, TParamsDlg::OnCheckBox )
 
 	// Texture
-	EVT_CHOICE( ID_CHOICE_TILESIZE, TParamsDlg::OnTileSize )
-	EVT_CHOICE( ID_TFILE_BASE, TParamsDlg::OnTextureFileBase )
-
 	EVT_RADIOBUTTON( ID_NONE, TParamsDlg::OnTextureNone )
 	EVT_RADIOBUTTON( ID_SINGLE, TParamsDlg::OnTextureSingle )
 	EVT_RADIOBUTTON( ID_DERIVED, TParamsDlg::OnTextureDerived )
-	EVT_RADIOBUTTON( ID_TILED_4BY4, TParamsDlg::OnTextureTiled )
 	EVT_RADIOBUTTON( ID_TILESET, TParamsDlg::OnTextureTileset )
 	EVT_CHECKBOX( ID_TILE_THREADING, TParamsDlg::OnCheckBox )
 
@@ -192,7 +187,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pNone = GetNone();
 	m_pSingle = GetSingle();
 	m_pDerived = GetDerived();
-	m_pTiled = GetTiled();
 	m_pTileset = GetTileset();
 	m_pColorMap = GetColorMap();
 
@@ -201,16 +195,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iOverlayY = 0;
 	m_bOverview = false;
 	m_bCompass = false;
-
-	GetTilesize()->Clear();
-	GetTilesize()->Append(_T("256"));
-	GetTilesize()->Append(_T("512"));
-	GetTilesize()->Append(_T("1024"));
-	GetTilesize()->Append(_T("2048"));
-	GetTilesize()->Append(_T("4096"));
-	GetTilesize()->SetSelection(2);
-	m_iTilesizeIndex = 2;
-	m_iTilesize = 1024;
 
 	// Create Validators To Attach C++ Members To WX Controls
 
@@ -253,9 +237,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	// texture
 	AddValidator(this, ID_TFILE_SINGLE, &m_strTextureSingle);
-	AddValidator(this, ID_CHOICE_TILESIZE, &m_iTilesizeIndex);
-	AddValidator(this, ID_TFILE_BASE, &m_strTextureBase);
-	AddValidator(this, ID_TFILENAME, &m_strTexture4x4);
 	AddValidator(this, ID_TFILE_TILESET, &m_strTextureTileset);
 	AddValidator(this, ID_TEXTURE_GRADUAL, &m_bTextureGradual);
 	AddNumValidator(this, ID_TEX_LOD, &m_fTextureLODFactor);
@@ -400,12 +381,6 @@ void TParamsDlg::SetParams(const TParams &Params)
 	// single
 	if (m_iTexture != TE_TILESET)
 		m_strTextureSingle = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
-
-	// tile4x4
-	m_strTextureBase = wxString(Params.GetValueString(STR_TEXTUREBASE), wxConvUTF8);
-	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
-	m_iTilesizeIndex = vt_log2(m_iTilesize)-8;
-	m_strTexture4x4 = wxString(Params.GetValueString(STR_TEXTURE4BY4), wxConvUTF8);
 
 	// derived
 	m_strColorMap = wxString(Params.GetValueString(STR_COLOR_MAP), wxConvUTF8);
@@ -569,11 +544,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	if (m_iTexture != TE_TILESET)
 		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle.mb_str(wxConvUTF8));
 
-	// tile4x4
-	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
-	Params.SetValueString(STR_TEXTUREBASE, (const char *) m_strTextureBase.mb_str(wxConvUTF8));
-	Params.SetValueString(STR_TEXTURE4BY4, (const char *) m_strTexture4x4.mb_str(wxConvUTF8));
-
 	// derived
 	Params.SetValueString(STR_COLOR_MAP, (const char *) m_strColorMap.mb_str(wxConvUTF8));
 
@@ -663,64 +633,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_Scenarios = m_Scenarios;
 }
 
-void TParamsDlg::UpdateFilenameBases()
-{
-	int totalsize = NTILES * (m_iTilesize-1) + 1;
-
-	vtString filter;
-	filter.Format("*%d.*", totalsize);
-	vtString number;
-	number.Format("%d", totalsize);
-
-	GetTFileBase()->Clear();
-	for (unsigned int i = 0; i < m_TextureFiles.size(); i++)
-	{
-		// fill the "single texture filename" control with available bitmap files
-		if (m_TextureFiles[i].Matches(filter))
-		{
-			vtString s = m_TextureFiles[i];
-			int offset = s.Find(number);
-			if (offset != -1)
-				s = s.Left(offset);
-			wxString str(s, wxConvUTF8);
-			GetTFileBase()->Append(str);
-		}
-	}
-	if (GetTFileBase()->GetCount() == 0)
-		GetTFileBase()->Append(_("<none>"));
-
-	int sel = GetTFileBase()->FindString(m_strTextureBase);
-	if (sel != -1)
-		GetTFileBase()->SetSelection(sel);
-	else
-	{
-		GetTFileBase()->SetSelection(0);
-		m_strTextureBase = GetTFileBase()->GetString(0);
-	}
-}
-
-void TParamsDlg::UpdateTiledTextureFilename()
-{
-	int totalsize = NTILES * (m_iTilesize-1) + 1;
-
-	vtString filter;
-	filter.Format("%s%d.*", (const char *) m_strTextureBase.mb_str(wxConvUTF8), totalsize);
-
-	bool bFound = false;
-	m_strTexture4x4 = _("<none>");
-	for (unsigned int i = 0; i < m_TextureFiles.size(); i++)
-	{
-		// fill the "single texture filename" control with available bitmap files
-		if (m_TextureFiles[i].Matches(filter))
-		{
-			m_strTexture4x4 = wxString(m_TextureFiles[i], wxConvUTF8);
-			bFound = true;
-			break;
-		}
-	}
-	TransferDataToWindow();
-}
-
 void TParamsDlg::UpdateEnableState()
 {
 	GetTtExternalData()->Enable(m_bExternal);
@@ -738,15 +650,11 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_NONE)->Enable(!m_bTileset);
 	FindWindow(ID_SINGLE)->Enable(!m_bTileset);
 	FindWindow(ID_DERIVED)->Enable(!m_bTileset);
-	FindWindow(ID_TILED_4BY4)->Enable(!m_bTileset);
 	FindWindow(ID_TILESET)->Enable(m_bTileset);
 
 	FindWindow(ID_TFILE_SINGLE)->Enable(m_iTexture == TE_SINGLE);
 	FindWindow(ID_CHOICE_COLORS)->Enable(m_iTexture == TE_DERIVED);
 	FindWindow(ID_EDIT_COLORS)->Enable(m_iTexture == TE_DERIVED);
-	FindWindow(ID_CHOICE_TILESIZE)->Enable(m_iTexture == TE_TILED);
-	FindWindow(ID_TFILE_BASE)->Enable(m_iTexture == TE_TILED);
-	FindWindow(ID_TFILENAME)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILE_TILESET)->Enable(m_iTexture == TE_TILESET);
 	FindWindow(ID_TEXTURE_GRADUAL)->Enable(m_iTexture == TE_TILESET && m_bTileThreading);
 	FindWindow(ID_TEX_LOD)->Enable(m_iTexture == TE_TILESET);
@@ -907,22 +815,6 @@ void TParamsDlg::OnBgColor( wxCommandEvent &event )
 	}
 }
 
-void TParamsDlg::OnTextureFileBase( wxCommandEvent &event )
-{
-	if (m_bSetting || !m_bReady) return;
-	TransferDataFromWindow();
-	UpdateTiledTextureFilename();
-}
-
-void TParamsDlg::OnTileSize( wxCommandEvent &event )
-{
-	if (m_bSetting || !m_bReady) return;
-	TransferDataFromWindow();
-	m_iTilesize = 1 << (m_iTilesizeIndex + 8);
-	UpdateFilenameBases();
-	UpdateTiledTextureFilename();
-}
-
 void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	VTLOG1("TParamsDlg::OnInitDialog\n");
@@ -1075,8 +967,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 //  DetermineSizeFromBMP();
 
 //  OnChangeMem();
-	UpdateFilenameBases();
-	UpdateTiledTextureFilename();
 
 	GetUseGrid()->SetValue(m_bGrid);
 	GetUseTin()->SetValue(m_bTin);
@@ -1111,7 +1001,6 @@ bool TParamsDlg::TransferDataToWindow()
 	m_pNone->SetValue(m_iTexture == TE_NONE);
 	m_pSingle->SetValue(m_iTexture == TE_SINGLE);
 	m_pDerived->SetValue(m_iTexture == TE_DERIVED);
-	m_pTiled->SetValue(m_iTexture == TE_TILED);
 	m_pTileset->SetValue(m_iTexture == TE_TILESET);
 
 	unsigned int i;
@@ -1158,7 +1047,6 @@ bool TParamsDlg::TransferDataFromWindow()
 	if (m_pNone->GetValue()) m_iTexture = TE_NONE;
 	if (m_pSingle->GetValue()) m_iTexture = TE_SINGLE;
 	if (m_pDerived->GetValue()) m_iTexture = TE_DERIVED;
-	if (m_pTiled->GetValue()) m_iTexture = TE_TILED;
 	if (m_pTileset->GetValue()) m_iTexture = TE_TILESET;
 
 	return wxDialog::TransferDataFromWindow();
@@ -1267,14 +1155,12 @@ void TParamsDlg::OnCheckBoxElevType( wxCommandEvent &event )
 		m_iTexture = TE_NONE;
 
 	UpdateEnableState();
-	UpdateTiledTextureFilename();
 }
 
 void TParamsDlg::OnCheckBox( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	UpdateEnableState();
-	UpdateTiledTextureFilename();
 }
 
 //

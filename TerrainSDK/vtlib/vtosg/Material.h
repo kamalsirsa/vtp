@@ -15,8 +15,6 @@
 // Shorthand
 #define FAB		osg::Material::FRONT_AND_BACK
 
-class vtImage;
-
 /** \addtogroup sg */
 /*@{*/
 
@@ -60,8 +58,8 @@ public:
 	void SetWireframe(bool bOn);
 	bool GetWireframe() const;
 
-	void SetTexture(vtImage *pImage);
-	vtImage	*GetTexture() const;
+	void SetTexture(osg::Image *pImage);
+	osg::Image	*GetTexture() const;
 	void ModifiedTexture();
 
 	void SetClamp(bool bClamp);
@@ -86,7 +84,7 @@ public:
 	static bool s_bTextureCompression;
 
 	// remember this for convenience and referencing
-	osg::ref_ptr<vtImage> m_Image;
+	osg::ref_ptr<osg::Image> m_Image;
 
 	// the VT material object includes texture
 	osg::ref_ptr<osg::Material>		m_pMaterial;
@@ -103,7 +101,7 @@ class vtMaterialArray : public std::vector<vtMaterialPtr>, public osg::Reference
 {
 public:
 	int Find(vtMaterial *mat);
-	int AddTextureMaterial(class vtImage *pImage,
+	int AddTextureMaterial(osg::Image *pImage,
 						 bool bCulling, bool bLighting,
 						 bool bTransp = false, bool bAdditive = false,
 						 float fAmbient = 0.0f, float fDiffuse = 1.0f,
@@ -125,7 +123,7 @@ public:
 					 float fAlpha = 1.0f, float fEmissive = 0.0f);
 	void AddShadowMaterial(float fOpacity);
 	int FindByDiffuse(const RGBAf &rgba) const;
-	int FindByImage(const vtImage *image) const;
+	int FindByImage(const osg::Image *image) const;
 
 	void CopyFrom(vtMaterialArray *pFromMats);
 

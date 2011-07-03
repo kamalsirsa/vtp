@@ -33,7 +33,6 @@ BEGIN_EVENT_TABLE(SampleImageDlg, SampleImageDlgBase)
 	EVT_BUTTON( ID_SMALLER, SampleImageDlg::OnSmaller )
 	EVT_BUTTON( ID_BIGGER, SampleImageDlg::OnBigger )
 	EVT_CHECKBOX( ID_CONSTRAIN, SampleImageDlg::OnConstrain )
-	EVT_CHECKBOX( ID_TILING, SampleImageDlg::OnConstrain )
 	EVT_TEXT( ID_SIZEX, SampleImageDlg::OnSizeXY )
 	EVT_TEXT( ID_SIZEY, SampleImageDlg::OnSizeXY )
 	EVT_TEXT( ID_SPACINGX, SampleImageDlg::OnSpacingXY )
@@ -51,7 +50,6 @@ SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString 
 {
 	m_power = 8;
 	m_bConstraint = false;
-	m_bTiling = false;
 	m_bSetting = false;
 
 	m_bNewLayer = true;
@@ -79,7 +77,6 @@ SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString 
 	AddNumValidator(this, ID_SIZEX, &m_iSizeX);
 	AddNumValidator(this, ID_SIZEY, &m_iSizeY);
 	AddValidator(this, ID_CONSTRAIN, &m_bConstraint);
-	AddValidator(this, ID_TILING, &m_bTiling);
 
 	// informations
 	AddNumValidator(this, ID_AREAX, &m_fAreaX);
@@ -123,11 +120,6 @@ void SampleImageDlg::RecomputeSize()
 	else if (m_bConstraint)  // powers of 2 + 1
 		m_iSizeX = m_iSizeY = (1 << m_power);
 
-	if (m_bConstraint && m_bTiling)
-	{
-		m_iSizeX -= 3;
-		m_iSizeY -= 3;
-	}
 	m_fSpacingX = m_fAreaX / m_iSizeX;
 	m_fSpacingY = m_fAreaY / m_iSizeY;
 }
@@ -200,7 +192,6 @@ void SampleImageDlg::EnableBasedOnConstraint()
 	GetTileOptions()->Enable(m_bToTiles);
 
 	GetConstrain()->Enable(!m_bToTiles);
-	Get4x4Tiling()->Enable(m_bConstraint);
 	GetSmaller()->Enable(m_bConstraint && !m_bToTiles);
 	GetBigger()->Enable(m_bConstraint && !m_bToTiles);
 

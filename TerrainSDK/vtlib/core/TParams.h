@@ -229,32 +229,14 @@ protected:
 	<td>Texture</td>
 	<td>Int</td>
 	<td>0</td>
-	<td>Enumeration for source of ground texture. 0=none, 1=single, 2=4x4tile,
+	<td>Enumeration for source of ground texture. 0=none, 1=single, 
 		3=derived from elevation, 4=tileset</td>
-</tr>
-<tr>
-	<td>Tile_Size</td>
-	<td>Int</td>
-	<td>512</td>
-	<td>For the 4x4tile texturing only, the size in texels of each tile.</td>
 </tr>
 <tr>
 	<td>Texture_Filename</td>
 	<td>String</td>
 	<td></td>
 	<td>For the single texture or tileset, the filename to load from.</td>
-</tr>
-<tr>
-	<td>Base_Texture</td>
-	<td>String</td>
-	<td></td>
-	<td>For the 4x4tile texturing, the base of the filename to load from.</td>
-</tr>
-<tr>
-	<td>Texture_4by4</td>
-	<td>String</td>
-	<td></td>
-	<td>For the 4x4tile texturing, the full filename to load from.</td>
 </tr>
 <tr>
 	<td>MIP_Map</td>
@@ -428,11 +410,11 @@ protected:
 #define STR_INITTIME "Init_Time"
 #define STR_TIMESPEED "Time_Speed"
 
-#define STR_TEXTURE "Texture"	// 0=none, 1=single, 2=tile4x4, 3=derived, 4=tileset
-#define STR_TILESIZE "Tile_Size"
+#define STR_TEXTURE "Texture"	// 0=none, 1=single, 3=derived, 4=tileset
+//#define STR_TILESIZE "Tile_Size"				// obsolete
 #define STR_TEXTUREFILE "Texture_Filename"
-#define STR_TEXTUREBASE "Base_Texture"
-#define STR_TEXTURE4BY4 "Texture_4by4"
+//#define STR_TEXTUREBASE "Base_Texture"		// obsolete
+//#define STR_TEXTURE4BY4 "Texture_4by4"		// obsolete
 //#define STR_TEXTUREFORMAT "Texture_Format"	// 0=bmp, 1=jpg; obsolete
 #define STR_TEXTURE_GRADUAL "Texture_Gradual"
 #define STR_TEXURE_LOD_FACTOR "Texture_LOD_Factor"

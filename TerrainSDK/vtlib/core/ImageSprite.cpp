@@ -33,7 +33,7 @@ vtImageSprite::~vtImageSprite()
  */
 bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
 {
-	vtImagePtr image = vtImageRead(szTextureName);
+	ImagePtr image = osgDB::readImageFile(szTextureName);
 	if (!image.valid())
 		return false;
 	bool success = Create(image, bBlending);
@@ -47,10 +47,10 @@ bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
  * \param bBlending Set to true for alpha-blending, which produces smooth
  *		edges on transparent textures.
  */
-bool vtImageSprite::Create(vtImage *pImage, bool bBlending)
+bool vtImageSprite::Create(osg::Image *pImage, bool bBlending)
 {
-	m_Size.x = pImage->GetWidth();
-	m_Size.y = pImage->GetHeight();
+	m_Size.x = GetWidth(pImage);
+	m_Size.y = GetHeight(pImage);
 
 	// set up material and geometry container
 	m_pMats = new vtMaterialArray;
@@ -112,7 +112,7 @@ void vtImageSprite::SetPosition(float l, float t, float r, float b, float rot)
 /**
  * Set (replace) the image on a sprite that has already been created.
  */
-void vtImageSprite::SetImage(vtImage *pImage)
+void vtImageSprite::SetImage(osg::Image *pImage)
 {
 	// Sprite must already be created
 	if (!m_pMats)

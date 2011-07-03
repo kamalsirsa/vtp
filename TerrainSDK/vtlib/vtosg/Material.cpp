@@ -242,7 +242,7 @@ bool vtMaterial::GetWireframe() const
 /**
  * Set the texture for this material.
  */
-void vtMaterial::SetTexture(vtImage *pImage)
+void vtMaterial::SetTexture(osg::Image *pImage)
 {
 	if (!m_pTexture)
 		m_pTexture = new osg::Texture2D;
@@ -278,11 +278,11 @@ void vtMaterial::SetTexture(vtImage *pImage)
 /**
  * Returns the texture (image) associated with a material.
  */
-vtImage	*vtMaterial::GetTexture() const
+osg::Image *vtMaterial::GetTexture() const
 {
 	// It is valid to return a non-const pointer to the image, since the image
 	//  can be modified entirely independently of the material.
-	return const_cast<vtImage*>(m_Image.get());
+	return m_Image.get();
 }
 
 /**
@@ -373,7 +373,7 @@ int vtMaterialArray::Find(vtMaterial *mat)
 }
 
 /**
- * Create and add a simple textured material.  This method takes a vtImage
+ * Create and add a simple textured material.  This method takes a osg::Image
  * and let you control many other aspects of the material.  Only the first
  * three parameters are required, the rest will be assumed with default
  * values if desired.
@@ -432,7 +432,7 @@ int vtMaterialArray::Find(vtMaterial *mat)
  *
  * \return The index of the added material.
  */
-int vtMaterialArray::AddTextureMaterial(vtImage *pImage,
+int vtMaterialArray::AddTextureMaterial(osg::Image *pImage,
 						 bool bCulling, bool bLighting,
 						 bool bTransp, bool bAdditive,
 						 float fAmbient, float fDiffuse,
@@ -475,7 +475,7 @@ int vtMaterialArray::AddTextureMaterial2(const char *fname,
 	if (*fname == 0)
 		return -1;
 
-	vtImagePtr image = vtImageRead(fname);
+	ImagePtr image = osgDB::readImageFile(fname);
 	if (!image.valid())
 		return -1;
 
@@ -639,11 +639,11 @@ int vtMaterialArray::FindByDiffuse(const RGBAf &rgba) const
  *
  * \return The index of the material if found, otherwise -1.
  */
-int vtMaterialArray::FindByImage(const vtImage *image) const
+int vtMaterialArray::FindByImage(const osg::Image *image) const
 {
 	for (unsigned int i = 0; i < size(); i++)
 	{
-		const vtImage *tex = at(i)->GetTexture();
+		const osg::Image *tex = at(i)->GetTexture();
 		if (tex == image)
 			return i;
 	}

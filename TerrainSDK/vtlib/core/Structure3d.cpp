@@ -575,7 +575,7 @@ void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor
 	vtMaterial *pMat = MakeMaterial(descriptor, color);
 
 	vtString path = FindFileOnPaths(vtGetDataPath(), descriptor->GetSourceName());
-	pMat->SetTexture(vtImageRead(path));
+	pMat->SetTexture(osgDB::readImageFile((const char *)path));
 	pMat->SetClamp(false);	// material needs to repeat
 
 	if (descriptor->GetBlending())
@@ -593,7 +593,7 @@ void vtMaterialDescriptorArray3d::CreateColorableTextureMaterial(vtMaterialDescr
 		VTLOG("\n\tMissing texture: %s\n", (const char *) source);
 		return;
 	}
-	vtImagePtr img = vtImageRead(path);
+	ImagePtr img = osgDB::readImageFile((const char *)path);
 
 	for (int i = 0; i < COLOR_SPREAD; i++)
 	{

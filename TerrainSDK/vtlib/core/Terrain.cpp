@@ -48,8 +48,6 @@ vtTerrain::vtTerrain()
 	m_pContainerGroup = NULL;
 	m_pTerrainGroup = NULL;
 	m_pUnshadowedGroup = NULL;
-	m_pImage = NULL;
-	m_pImageSource = NULL;
 	m_bTextureInitialized = false;
 	m_iShadowTextureUnit = -1;
 	m_pFog = NULL;
@@ -319,115 +317,46 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	// measure total texture processing time
 	clock_t c1 = clock();
 
-	int iTiles = 4;		// fixed for now
 	TextureEnum eTex = m_Params.GetTextureEnum();
 
-	float ambient, diffuse, emmisive;
-	diffuse = 1.0f;
-	ambient = emmisive = 0.0f;
-
-	int iTileSize = m_Params.GetValueInt(STR_TILESIZE);
 	bool bRetain = m_Params.GetValueBool(STR_TEXTURE_RETAIN);
-
 	bool bFirstTime = !m_bTextureInitialized;
-	if (bFirstTime)
-	{
-		if (eTex == TE_SINGLE || eTex == TE_DERIVED)
-			m_pImage = new vtImage;
-		if (bRetain)
-			m_pImageSource = new vtImage;
-		else
-			m_pImageSource = m_pImage;
-	}
-	// TODO: simplify this logic; it shouldn't need to be so complex.
-	bool bLoad = (bFirstTime || !bRetain);
-	bool bLoadSingle = bLoad && (eTex == TE_SINGLE || (eTex == TE_TILED && bRetain));
-	bool bLoadTiles = bLoad && (eTex == TE_TILED && !bRetain);
+	bool bLoadSingle = (bFirstTime || !bRetain) && (eTex == TE_SINGLE);
 
 	vtString texture_path;
-	if (bLoadSingle || bLoadTiles)	// look for texture
+	if (bLoadSingle)	// look for texture
 	{
-		vtString texname;
-		if (eTex == TE_SINGLE)
-		{
-			texname = m_Params.GetValueString(STR_TEXTUREFILE);
-			VTLOG("  Single Texture: '%s'\n", (const char *) texname);
-		}
-		else
-		{
-			texname = m_Params.GetValueString(STR_TEXTURE4BY4);
-			VTLOG("  Tiled Texture: '%s'\n", (const char *) texname);
-		}
-
 		vtString texture_fname = "GeoSpecific/";
-		texture_fname += texname;
+		texture_fname += m_Params.GetValueString(STR_TEXTUREFILE);
 
-		VTLOG("  Looking for: %s\n", (const char *) texture_fname);
+		VTLOG("  Looking for single texture: %s\n", (const char *) texture_fname);
 		texture_path = FindFileOnPaths(vtGetDataPath(), texture_fname);
 		if (texture_path == "")
 		{
 			// failed to find texture
 			VTLOG("  Failed to find texture.\n");
 			eTex = TE_NONE;
-			bLoadSingle = bLoadTiles = false;
+			bLoadSingle = false;
 		}
 		else
 			VTLOG("  Found texture, path is: %s\n", (const char *) texture_path);
 	}
-	if (bLoadSingle)	// load texture
+	if (bLoadSingle)		// Load the whole single texture
 	{
-		// Load a DIB of the whole, large texture
 		clock_t r1 = clock();
-		m_pImageSource = vtImageRead(texture_path);
-		if (m_pImageSource.valid())
+		m_pUnshadedImage = osgDB::readImageFile((const char *)texture_path);
+		if (m_pUnshadedImage.valid())
 		{
-			int depth = m_pImageSource->GetDepth();
-			VTLOG("  Loaded texture: depth %d, %.3f seconds.\n", depth, (float)(clock() - r1) / CLOCKS_PER_SEC);
+			VTLOG("  Loaded texture: size %d x %d, depth %d, %.3f seconds.\n",
+				m_pUnshadedImage->s(), m_pUnshadedImage->t(),
+				m_pUnshadedImage->getPixelSizeInBits(),
+				(float)(clock() - r1) / CLOCKS_PER_SEC);
 		}
 		else
 		{
 			VTLOG("  Failed to load texture.\n");
 			m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-										RGBf(0.2f, 0.2f, 0.2f),
-										true, false);
-			eTex = TE_NONE;
-			_SetErrorMessage("Failed to load texture.");
-		}
-		// TODO? check that image size is correct, and warn if not.
-	}
-	if ((eTex == TE_SINGLE || eTex == TE_DERIVED) && bFirstTime)
-	{
-		// If the user has asked for 16-bit textures to be sent down to the
-		//  card (internal memory format), then tell this vtImage
-		m_pImage->Set16Bit(m_Params.GetValueBool(STR_REQUEST16BIT));
-	}
-	if (eTex == TE_TILED && bFirstTime)
-	{
-		int w, h, depth;
-		vtImageInfo(texture_path, w, h, depth);
-		m_ImageTiles.Create(iTileSize, depth);
-
-		// If the user has asked for 16-bit textures to be sent down to the
-		//  card (internal memory format), then tell this vtImage
-		bool b16bit = m_Params.GetValueBool(STR_REQUEST16BIT);
-		int i, j;
-		for (i = 0; i < iTiles; i++)
-			for (j = 0; j < iTiles; j++)
-				m_ImageTiles.m_Tiles[i][j]->Set16Bit(b16bit);
-	}
-	if (bLoadTiles)
-	{
-		// alternate loading: load straight into tiled images
-		clock_t r1 = clock();
-		bool result = m_ImageTiles.Load(texture_path, progress_callback);
-		if (result)
-			VTLOG("  Load texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
-		else
-		{
-			VTLOG("  Failed to load texture.\n");
-			m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-										RGBf(0.2f, 0.2f, 0.2f),
-										true, false);
+				RGBf(0.2f, 0.2f, 0.2f), true, false);
 			eTex = TE_NONE;
 			_SetErrorMessage("Failed to load texture.");
 		}
@@ -440,9 +369,9 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		if (bFirstTime)
 		{
 			// Derive color from elevation.
-			// Determine the correct size for the derived texture: ideally
-			// as large as the input grid, but not larger than the hardware
-			// texture size limit.
+			// Determine the correct size for the derived texture: ideally as
+			// large as the input grid, but not larger than the hardware texture
+			// size limit.
 			int tmax = vtGetMaxTextureSize();
 
 			int cols, rows;
@@ -454,35 +383,28 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 			VTLOG("\t grid width is %d, texture max is %d, creating artificial texture of dimension %d\n",
 				cols, tmax, tsize);
 
-			m_pImageSource->Create(tsize, tsize, 24, false);
+			vtImage *vti = new vtImage;
+			vti->Create(tsize, tsize, 24, false);
+			m_pUnshadedImage = vti;
 		}
 		if (bFirstTime || !bRetain)
 		{
-			// This method is virtual to allow subclasses to customize the Dib,
-			//  before we turn it into an vtImage
+			// The PaintDib method is virtual to allow subclasses to customize
+			// the unshaded image.
 			PaintDib(progress_callback);
 		}
 	}
 
 	if (bRetain)
 	{
-		// We need to copy from the retained image to the displayed image
+		// We need to copy from the retained image to a second image which will
+		//  be shaded and displayed.
 		if (eTex == TE_SINGLE || eTex == TE_DERIVED)
-		{
-			if (bFirstTime)
-			{
-				int w = m_pImageSource->GetWidth();
-				int h = m_pImageSource->GetHeight();
-				int d = m_pImageSource->GetDepth();
-				m_pImage->Create(w, h, d);
-			}
-			m_pImageSource->BlitTo(*m_pImage, 0, 0);
-		}
-		else if (eTex == TE_TILED)
-		{
-			m_pImageSource->BlitTo(m_ImageTiles, 0, 0);
-		}
+			m_pSingleImage = new osg::Image(*m_pUnshadedImage);
 	}
+	else
+		// we can use the original image directly
+		m_pSingleImage = m_pUnshadedImage;
 
 	// If we get this far, we can consider the texture initialized
 	m_bTextureInitialized = true;
@@ -497,42 +419,45 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	}
 	if (m_Params.GetValueBool(STR_PRELIGHT) && pHFGrid)
 	{
-		// apply pre-lighting (darkening)
-		vtBitmapBase *target;
-		if (eTex == TE_TILED)
-			target = &m_ImageTiles;
-		else
-			target = m_pImage;
-		_ApplyPreLight(pHFGrid, target, light_dir, progress_callback);
+		// apply pre-lighting (a.k.a. darkening, a.k.a. shading)
+		vtImageWrapper wrap(m_pSingleImage);
+		_ApplyPreLight(pHFGrid, &wrap, light_dir, progress_callback);
 	}
 
-	// The terrain's base texture will always use unit 0
-	m_TextureUnits.ReserveTextureUnit();
+	// If the user has asked for 16-bit textures to be sent down to the
+	//  card (internal memory format), then tell this Image
+	Set16BitInternal(m_pSingleImage, m_Params.GetValueBool(STR_REQUEST16BIT));
 
-	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
+	// single texture
+	if (bFirstTime)
 	{
-		// single texture
-		if (bFirstTime)
-			_CreateSingleMaterial(ambient, diffuse, emmisive);
-		else
-		{
-			VTLOG("Marking texture image as modified.\n");
-			vtMaterial *mat = m_pTerrMats->at(0);
-			mat->ModifiedTexture();
-		}
+		// The terrain's base texture will always use unit 0
+		m_TextureUnits.ReserveTextureUnit();
+
+		bool bTransp = (GetDepth(m_pSingleImage) == 32);
+		bool bMipmap = m_Params.GetValueBool(STR_MIPMAP);
+		float ambient = 0.0f, diffuse = 1.0f, emmisive = 0.0f;
+
+		m_pTerrMats->AddTextureMaterial(m_pSingleImage,
+			!m_bBothSides,	// culling
+			false,			// lighting
+			bTransp,		// transparency blending
+			false,			// additive
+			ambient, diffuse,
+			1.0f,			// alpha
+			0.0f,			// emmisive,
+			true,			// texgen
+			false,			// clamp
+			bMipmap);
 	}
-	if (eTex == TE_TILED)
+	else
 	{
-		if (bFirstTime)
-			_CreateTiledMaterials(iTiles, ambient, diffuse, emmisive);
-		else
-		{
-			// we don't need to re-create the materials, but we do have to
-			//  let the scenegraph know the texture contents have changed.
-			for (unsigned int i = 0; i < m_pTerrMats->size(); i++)
-				m_pTerrMats->at(i)->ModifiedTexture();
-		}
+		VTLOG("Marking texture image as modified.\n");
+		vtMaterial *mat = m_pTerrMats->at(0);
+		mat->SetTexture(m_pSingleImage);
+		mat->ModifiedTexture();
 	}
+
 	VTLOG("  Total CreateTextures: %.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
 }
 
@@ -618,7 +543,9 @@ void vtTerrain::PaintDib(bool progress_callback(int))
 	}
 
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-	pHFGrid->ColorDibFromElevation(m_pImageSource, m_pTextureColors.get(), 4000,
+
+	vtImageWrapper wrap(m_pUnshadedImage);
+	pHFGrid->ColorDibFromElevation(&wrap, m_pTextureColors.get(), 4000,
 		RGBi(255,0,0), progress_callback);
 }
 
@@ -708,12 +635,12 @@ void vtTerrain::RecreateTextures(vtTransform *pSunLight, bool progress_callback(
 }
 
 /**
- * Get the image (vtImage) of the ground texture, if there is one.  If the
- * texture is more complicated (multi or tiled) then NULL is returned.
+ * Get the texture image of the ground texture, if there is one.  If the
+ * texture is more complicated (e.g. tileset) then NULL is returned.
  */
-vtImage *vtTerrain::GetTextureImage()
+osg::Image *vtTerrain::GetTextureImage()
 {
-	return m_pImage;
+	return m_pSingleImage.get();
 }
 
 
@@ -721,12 +648,6 @@ vtImage *vtTerrain::GetTextureImage()
 
 bool vtTerrain::_CreateDynamicTerrain()
 {
-	int texture_patches;
-	if (m_Params.GetTextureEnum() == TE_TILED)
-		texture_patches = 4;	// tiled, which is always 4x4
-	else
-		texture_patches = 1;	// assume one texture
-
 	LodMethodEnum method = m_Params.GetLodMethod();
 	VTLOG(" LOD method %d\n", method);
 
@@ -766,9 +687,6 @@ bool vtTerrain::_CreateDynamicTerrain()
 		_SetErrorMessage("Unknown LOD method.");
 		return false;
 	}
-
-	m_pDynGeom->SetOptions(m_Params.GetValueBool(STR_TRISTRIPS),
-		texture_patches, m_Params.GetValueInt(STR_TILESIZE));
 
 	DTErr result = m_pDynGeom->Init(m_pElevGrid.get(), m_fVerticalExag);
 	if (result != DTErr_OK)
@@ -2938,50 +2856,6 @@ int vtTerrain::GetShadowTextureUnit()
 		m_iShadowTextureUnit = m_TextureUnits.ReserveTextureUnit(true);
 	return m_iShadowTextureUnit;
 }
-
-/*
- * Creates an array of materials for the dynamic LOD terrain geometry.
- */
-void vtTerrain::_CreateSingleMaterial(float ambient, float diffuse, float emmisive)
-{
-	bool bTransp = (m_pImage->GetDepth() == 32);
-	m_pTerrMats->AddTextureMaterial(m_pImage,
-		!m_bBothSides,		// culling
-		false,		// lighting
-		bTransp,	// transparency blending
-		false,		// additive
-		ambient, diffuse,
-		1.0f,		// alpha
-		emmisive,
-		true,		// texgen
-		false,		// clamp
-		m_Params.GetValueBool(STR_MIPMAP));
-}
-
-void vtTerrain::_CreateTiledMaterials(int patches, float ambient,
-									  float diffuse, float emmisive)
-{
-	for (int i = 0; i < patches; i++)
-	{
-		for (int j = 0; j < patches; j++)
-		{
-			vtImage *image = m_ImageTiles.m_Tiles[i][j];
-			bool bTransp = (image->GetDepth() == 32);
-			m_pTerrMats->AddTextureMaterial(image,
-				!m_bBothSides,	// culling
-				false,		// lighting
-				bTransp,	// transparency
-				false,		// additive
-				ambient, diffuse,
-				1.0f,		// alpha
-				emmisive,
-				true,		// texgen
-				false,		// clamp
-				m_Params.GetValueBool(STR_MIPMAP));
-		}
-	}
-}
-
 
 void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bitmap,
 							  const FPoint3 &light_dir, bool progress_callback(int))

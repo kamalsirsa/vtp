@@ -44,7 +44,6 @@ public:
 	DTErr ReInit(const vtElevationGrid *pGrid);
 
 	void LoadSingleMaterial();
-	void LoadBlockMaterial(int a, int b);
 
 	int		m_iBlockSize;
 

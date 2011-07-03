@@ -36,8 +36,6 @@ public:
 
 	void SetParams(const TParams &Params);
 	void GetParams(TParams &Params);
-	void UpdateFilenameBases();
-	void UpdateTiledTextureFilename();
 	void UpdateEnableState();
 	void RefreshLocationFields();
 	void UpdateTimeString();
@@ -87,11 +85,7 @@ public:
 
 	// texture
 	int	 m_iTexture;
-	int	 m_iTilesize;
 	wxString   m_strTextureSingle;
-	wxString   m_strTextureBase;
-	wxString   m_strTexture4x4;
-	wxString   m_strTextureFilename;
 	wxString   m_strTextureTileset;
 	bool	m_bTextureGradual;
 	float	m_fTextureLODFactor;
@@ -181,8 +175,6 @@ public:
 	wxTextCtrl* GetTtExternalData()  { return (wxTextCtrl*) FindWindow( ID_TT_EXTERNAL_DATA ); }
 	wxRadioButton* GetUseExternal()  { return (wxRadioButton*) FindWindow( ID_USE_EXTERNAL ); }
 	wxChoice* GetScenarios()  { return (wxChoice*) FindWindow( ID_CHOICE_SCENARIO ); }
-	wxChoice* GetTilesize()  { return (wxChoice*) FindWindow( ID_CHOICE_TILESIZE ); }
-	wxChoice* GetTFileBase()  { return (wxChoice*) FindWindow( ID_TFILE_BASE ); }
 	wxButton* GetMovedownScenario()  { return (wxButton*) FindWindow( ID_MOVEDOWN_SCENARIO ); }
 	wxButton* GetMoveupScenario()  { return (wxButton*) FindWindow( ID_MOVEUP_SCENARIO ); }
 	wxButton* GetEditScenario()  { return (wxButton*) FindWindow( ID_EDIT_SCENARIO ); }
@@ -201,7 +193,6 @@ public:
 	wxRadioButton* GetUseTileset()  { return (wxRadioButton*) FindWindow( ID_USE_TILESET ); }
 	wxComboBox* GetLocfile()  { return (wxComboBox*) FindWindow( ID_LOCFILE ); }
 	wxRadioButton* GetTileset()  { return (wxRadioButton*) FindWindow( ID_TILESET ); }
-	wxRadioButton* GetTiled()  { return (wxRadioButton*) FindWindow( ID_TILED_4BY4 ); }
 	wxRadioButton* GetDerived()  { return (wxRadioButton*) FindWindow( ID_DERIVED ); }
 	wxRadioButton* GetSingle()  { return (wxRadioButton*) FindWindow( ID_SINGLE ); }
 	wxRadioButton* GetNone()  { return (wxRadioButton*) FindWindow( ID_NONE ); }
@@ -225,7 +216,6 @@ public:
 	bool	m_bReady;
 	bool	m_bSetting;
 	vtStringArray m_TextureFiles;
-	int		m_iTilesizeIndex;
 
 private:
 	// WDR: member variable declarations for TParamsDlg
@@ -262,8 +252,6 @@ private:
 	void OnComboTFileSingle( wxCommandEvent &event );
 	void OnOverlay( wxCommandEvent &event );
 	void OnBgColor( wxCommandEvent &event );
-	void OnTextureFileBase( wxCommandEvent &event );
-	void OnTileSize( wxCommandEvent &event );
 	void OnTextureNone( wxCommandEvent &event );
 	void OnTextureSingle( wxCommandEvent &event );
 	void OnTextureDerived( wxCommandEvent &event );

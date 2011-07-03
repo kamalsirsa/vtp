@@ -555,10 +555,10 @@ vtOBJFile *OBJFileBegin(vtGeode *geode, const char *filename)
 			fprintf(fp2, "Kd %f %f %f\n", dif.r, dif.g, dif.b);
 			fprintf(fp2, "Ks %f %f %f\n", spe.r, spe.g, spe.b);
 
-			vtImage *tex = mat->GetTexture();
+			osg::Image *tex = mat->GetTexture();
 			if (tex)
 			{
-				vtString texfname = tex->GetFilename().c_str();
+				vtString texfname = tex->getFileName().c_str();
 				fprintf(fp2, "map_Kd %s\n", (const char *) texfname);
 			}
 		}

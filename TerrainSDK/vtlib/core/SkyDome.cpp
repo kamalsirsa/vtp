@@ -188,7 +188,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	if (sun_texture && *sun_texture)
 	{
 		VTLOG("   Loading Sun Image\n");
-		m_pSunImage = vtImageRead(sun_texture);
+		m_pSunImage = osgDB::readImageFile(sun_texture);
 		if (!m_pSunImage.valid())
 			return;		// could not load texture, cannot have sun
 
@@ -516,8 +516,8 @@ bool vtSkyDome::SetTexture(const char *filename)
 	if (m_pTextureMat)
 	{
 		// if it hasn't changed, return
-		vtImage *image = m_pTextureMat->GetTexture();
-		if (filename && image->GetFilename() == filename)
+		osg::Image *image = m_pTextureMat->GetTexture();
+		if (filename && image->getFileName() == filename)
 			return true;
 
 		// Already textured; remove previous material
@@ -541,7 +541,7 @@ bool vtSkyDome::SetTexture(const char *filename)
 	}
 
 	VTLOG("   SkyDome: Set Texture to '%s'.. ", filename);
-	vtImagePtr pImage = vtImageRead(filename);
+	ImagePtr pImage = osgDB::readImageFile(filename);
 	if (!pImage.valid())
 	{
 		VTLOG("failed.\n");
@@ -549,8 +549,8 @@ bool vtSkyDome::SetTexture(const char *filename)
 	}
 	VTLOG("loaded OK.\n");
 
-	VTLOG("    Image is %d x %d, depth %d\n", pImage->GetWidth(),
-		pImage->GetHeight(), pImage->GetDepth());
+	VTLOG("    Image is %d x %d, depth %d\n", GetWidth(pImage),
+		GetHeight(pImage), GetDepth(pImage));
 
 	// create and apply the texture material
 	int index = m_pMats->AddTextureMaterial(pImage, false, false);
@@ -701,7 +701,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	if (moon_texture && *moon_texture)
 	{
 		int idx = -1;
-		m_pMoonImage = vtImageRead(moon_texture);
+		m_pMoonImage = osgDB::readImageFile(moon_texture);
 		if (m_pMoonImage->valid())
 		{
 			idx = m_pMats->AddTextureMaterial(m_pMoonImage,

@@ -69,20 +69,6 @@ DTErr vtDynTerrainGeom::BasicInit(const vtElevationGrid *pGrid)
 }
 
 
-/**
- * Set the  options for this vtDynTerrainGeom:
- * \param bUseTriStrips True to enable triangle strips; this is only observed
- *		by SMTerrain.
- * \param iTPatchDim The number of texture patches, e.g. 4 indicated a 4x4 grid of patches.
- * \param iTPatchSize The size of each texture, e.g. 1024.
- */
-void vtDynTerrainGeom::SetOptions(bool bUseTriStrips, int iTPatchDim, int iTPatchSize)
-{
-	m_bUseTriStrips = bUseTriStrips;
-	m_iTPatchDim = iTPatchDim;
-	m_iTPatchSize = iTPatchSize;
-}
-
 // overrides for HeightField
 bool vtDynTerrainGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const
 {
@@ -320,30 +306,6 @@ void vtDynTerrainGeom::SetupTexGen(float fTiling)
 {
 	GLfloat sPlane[4] = { fTiling * 1.0f / (m_iColumns-1), 0.0f, 0.0f, 0.0f };
 	GLfloat tPlane[4] = { 0.0f, 0.0f, fTiling * 1.0f / (m_iRows-1), 0.0f };
-
-	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-	glTexGenfv(GL_S, GL_OBJECT_PLANE, sPlane);
-	glTexGenfv(GL_T, GL_OBJECT_PLANE, tPlane);
-	glEnable(GL_TEXTURE_GEN_S);
-	glEnable(GL_TEXTURE_GEN_T);
-	glEnable(GL_TEXTURE_2D);
-}
-
-void vtDynTerrainGeom::SetupBlockTexGen(int a, int b)
-{
-	// carefully determine the right u,v offset, leaving a
-	// half-texel of buffer at the edge of each patch
-	float uv_offset = 1.0f / m_iTPatchSize / 2.0f;
-
-	float grid_offset_x = uv_offset * ((m_iColumns-1)/4.0f) * 2.0f;
-	float grid_offset_y = uv_offset * (-(m_iRows-1)/4.0f) * 2.0f;
-
-	float factor_x = (float) (1.0 / ((m_iColumns-1)/4.00+grid_offset_x));
-	float factor_y = (float) (1.0 / (-(m_iRows-1)/4.00+grid_offset_y));
-
-	GLfloat sPlane[4] = { factor_x, 0.00, 0.0, (a*2+1) * uv_offset };
-	GLfloat tPlane[4] = { 0.0, 0.00, -factor_y, (b*2+1) * uv_offset };
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
 	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);

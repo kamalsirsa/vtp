@@ -141,11 +141,11 @@ void NevadaTerrain::CreateDetailTextures()
 	str = FindFileOnPaths(vtGetDataPath(), "Nevada/playa3.png");
 	if (str == "")
 		return;
-	m_pDetailTexture = vtImageRead(str);
+	m_pDetailTexture = osgDB::readImageFile((const char *)str);
 	str = FindFileOnPaths(vtGetDataPath(), "Nevada/green3.png");
 	if (str == "")
 		return;
-	m_pDetailTexture2 = vtImageRead(str);
+	m_pDetailTexture2 = osgDB::readImageFile((const char *)str);
 
 	int id;
 	id = m_pMats->AddTextureMaterial(m_pDetailTexture,

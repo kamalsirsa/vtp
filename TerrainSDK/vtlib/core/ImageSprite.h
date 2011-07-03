@@ -19,10 +19,10 @@ public:
 	vtImageSprite();
 	~vtImageSprite();
 	bool Create(const char *szTextureName, bool bBlending = false);
-	bool Create(vtImage *pImage, bool bBlending = false);
+	bool Create(osg::Image *pImage, bool bBlending = false);
 	IPoint2 GetSize() const { return m_Size; }
 	void SetPosition(float l, float t, float r, float b, float rot = 0.0f);
-	void SetImage(vtImage *image);
+	void SetImage(osg::Image *image);
 	vtGeode *GetGeode() const { return m_pGeode; }
 
 protected:

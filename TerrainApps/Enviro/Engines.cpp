@@ -473,9 +473,9 @@ void MapOverviewEngine::CreateMapView()
 
 void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 {
-	vtImage *image;
+	osg::Image *image;
 
-	// We only support overviews for 'single' or '4x4 tiled' textures
+	// We only support overviews for 'single' textures
 	int depth;
 	TextureEnum eTex = pTerr->GetParams().GetTextureEnum();
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
@@ -483,37 +483,7 @@ void MapOverviewEngine::SetTerrain(vtTerrain *pTerr)
 		image = pTerr->GetTextureImage();
 		if (!image)
 			return;
-		depth = image->GetDepth();
-	}
-	else if (eTex == TE_TILED)
-	{
-		vtOverlappedTiledImage	*olap = pTerr->GetOverlappedImage();
-		int xsize = olap->GetWidth();
-		int ysize = olap->GetHeight();
-
-		depth = olap->GetDepth();
-		image = new vtImage;
-		image->Create(256, 256, depth);
-
-		RGBi rgb;
-		RGBAi rgba;
-		for (int i = 0; i < 256; i++)
-		{
-			for (int j = 0; j < 256; j++)
-			{
-				if (depth == 24)
-				{
-					olap->GetPixel24(i * xsize / 256, j * ysize / 256, rgb);
-					image->SetPixel24(i, j, rgb);
-				}
-				else
-				{
-					olap->GetPixel32(i * xsize / 256, j * ysize / 256, rgba);
-					image->SetPixel32(i, j, rgba);
-				}
-			}
-		}
-		m_pOwnedImage = image;
+		depth = GetDepth(image);
 	}
 	else
 		return;		// not supported

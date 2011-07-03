@@ -168,7 +168,6 @@ protected:
 	void RenderBlock(BlockPtr block, bool bFans);
 	bool BlockIsVisible(BlockPtr block);
 	void LoadSingleMaterial();
-	void LoadBlockMaterial(int a, int b);
 	void render_triangle_as_fan(BinTri *pTri, int v0, int v1, int va,
 		bool even, bool right);
 	void render_triangle_single(BinTri *pTri, int v0, int v1, int va);
@@ -214,6 +213,7 @@ private:
 	BinTri *m_pSETri;
 
 	bool hack_detail_pass;
+	bool m_bUseTriStrips;
 };
 
 /*@}*/	// Group dynterr

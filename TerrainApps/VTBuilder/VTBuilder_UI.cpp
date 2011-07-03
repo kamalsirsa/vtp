@@ -11,6 +11,8 @@
 
 #include "VTBuilder_UI.h"
 
+#include "../../TerrainSDK/vtui/bitmaps/dummy_32x18.xpm"
+
 ///////////////////////////////////////////////////////////////////////////
 
 ExtentDlgBase::ExtentDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
@@ -1483,7 +1485,7 @@ ImportStructDlgBase::ImportStructDlgBase( wxWindow* parent, wxWindowID id, const
 	m_radio_color_fixed->SetValue( true ); 
 	bSizer78->Add( m_radio_color_fixed, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( wxT("bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, 0 );
+	m_color3 = new wxStaticBitmap( this, ID_COLOR3, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer78->Add( m_color3, 0, wxALIGN_CENTER|wxLEFT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_color1 = new wxButton( this, ID_SET_COLOR1, _("Set"), wxDefaultPosition, wxSize( 40,-1 ), 0 );
@@ -1494,7 +1496,7 @@ ImportStructDlgBase::ImportStructDlgBase( wxWindow* parent, wxWindowID id, const
 	m_text1->Wrap( 0 );
 	bSizer78->Add( m_text1, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color4 = new wxStaticBitmap( this, ID_COLOR4, wxBitmap( wxT("bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, 0 );
+	m_color4 = new wxStaticBitmap( this, ID_COLOR4, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer78->Add( m_color4, 0, wxALIGN_CENTER|wxLEFT|wxTOP|wxBOTTOM, 5 );
 	
 	m_set_color2 = new wxButton( this, ID_SET_COLOR2, _("Set"), wxDefaultPosition, wxSize( 40,-1 ), 0 );
@@ -1874,10 +1876,6 @@ SampleImageDlgBase::SampleImageDlgBase( wxWindow* parent, wxWindowID id, const w
 	m_constrain = new wxCheckBox( this, ID_CONSTRAIN, _("Size constraint: power of 2 for texture map"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_constrain->SetValue(true); 
 	bSizer98->Add( m_constrain, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_tiling = new wxCheckBox( this, ID_TILING, _("Constrain to size for 4x4 overlap tiling"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_tiling->SetValue(true); 
-	bSizer98->Add( m_tiling, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	sbSizer21->Add( bSizer98, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 	
@@ -2356,7 +2354,7 @@ RenderDlgBase::RenderDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	m_text27->Wrap( -1 );
 	bSizer122->Add( m_text27, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_color_nodata = new wxBitmapButton( this, ID_COLOR_NODATA, wxBitmap( wxT("bitmaps/dummy_32x18.bmp"), wxBITMAP_TYPE_ANY ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_color_nodata = new wxBitmapButton( this, ID_COLOR_NODATA, wxBitmap( dummy_32x18_xpm ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_color_nodata->SetDefault(); 
 	bSizer122->Add( m_color_nodata, 0, wxALIGN_CENTER, 5 );
 	
@@ -2382,18 +2380,9 @@ RenderDlgBase::RenderDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	
 	sbSizer27->Add( bSizer123, 0, wxALIGN_CENTER, 5 );
 	
-	wxBoxSizer* bSizer124;
-	bSizer124 = new wxBoxSizer( wxVERTICAL );
-	
 	m_constrain = new wxCheckBox( this, ID_CONSTRAIN, _("Size constraint: power of 2 for texture map"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_constrain->SetValue(true); 
-	bSizer124->Add( m_constrain, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_tiling = new wxCheckBox( this, ID_TILING, _("Constrain to size for 4x4 overlap tiling"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_tiling->SetValue(true); 
-	bSizer124->Add( m_tiling, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	sbSizer27->Add( bSizer124, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+	sbSizer27->Add( m_constrain, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	wxBoxSizer* bSizer125;
 	bSizer125 = new wxBoxSizer( wxHORIZONTAL );

@@ -80,17 +80,6 @@ void fanvertex_vtp(float x, float y, float z)
 	s_pSRTerrain->m_iDrawnTriangles++;
 }
 
-void notify_vtp(int i, int j, int size)
-{
-	// check to see if we need to switch texture
-	if (s_pSRTerrain->m_iTPatchDim > 1 && size == s_pSRTerrain->m_iBlockSize)
-	{
-		int a = i / size;
-		int b = j / size;
-		s_pSRTerrain->LoadBlockMaterial(a, b);
-	}
-}
-
 short int getelevation_vtp1(int i, int j, int size, void *objref)
 {
 //	return ((vtElevationGrid *)objref)->GetShortValue(i, s_iRows-1-j) / 4;
@@ -144,7 +133,7 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 		m_pMini = new ministub(image,
 				&size, &dim, m_fMaximumScale, cellaspect,
 				0.0f, 0.0f, 0.0f,	// grid center
-				beginfan_vtp, fanvertex_vtp, notify_vtp,
+				beginfan_vtp, fanvertex_vtp, NULL,
 				getelevation_vtp2,
 				objref);
 	}
@@ -155,7 +144,7 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 		m_pMini = new ministub(image,
 				&size, &dim, m_fMaximumScale, cellaspect,
 				0.0f, 0.0f, 0.0f,	// grid center
-				beginfan_vtp, fanvertex_vtp, notify_vtp,
+				beginfan_vtp, fanvertex_vtp, NULL,
 				getelevation_vtp1,
 				objref);
 	}
@@ -181,7 +170,7 @@ DTErr SRTerrain::ReInit(const vtElevationGrid *pGrid)
 		m_pMini = new ministub(image,
 				&size, &dim, m_fMaximumScale, cellaspect,
 				0.0f, 0.0f, 0.0f,	// grid center
-				beginfan_vtp, fanvertex_vtp, notify_vtp,
+				beginfan_vtp, fanvertex_vtp, NULL,
 				getelevation_vtp2,
 				objref);
 	}
@@ -191,7 +180,7 @@ DTErr SRTerrain::ReInit(const vtElevationGrid *pGrid)
 		m_pMini = new ministub(image,
 				&size, &dim, m_fMaximumScale, cellaspect,
 				0.0f, 0.0f, 0.0f,	// grid center
-				beginfan_vtp, fanvertex_vtp, notify_vtp,
+				beginfan_vtp, fanvertex_vtp, NULL,
 				getelevation_vtp1,
 				objref);
 	}
@@ -254,7 +243,6 @@ void SRTerrain::DoCulling(const vtCamera *pCam)
 	}
 }
 
-
 void SRTerrain::DoRender()
 {
 	// Prepare the render state for our OpenGL usage
@@ -267,7 +255,6 @@ void SRTerrain::DoRender()
 	PostRender();
 }
 
-
 void SRTerrain::LoadSingleMaterial()
 {
 	// single texture for the whole terrain
@@ -279,33 +266,11 @@ void SRTerrain::LoadSingleMaterial()
 	}
 }
 
-
-void SRTerrain::LoadBlockMaterial(int a, int b)
-{
-	// we can't change the texture between glBegin/glEnd
-	if (myfancnt++>0)
-		glEnd();
-
-	// each block has it's own texture map
-	int matidx = a*m_iTPatchDim + (m_iTPatchDim-1-b);
-	vtMaterial *pMat = GetMaterial(matidx);
-	if (pMat)
-	{
-		ApplyMaterial(pMat);
-		SetupBlockTexGen(a, b);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-
-	glBegin(GL_TRIANGLE_FAN);
-}
-
-
 void SRTerrain::RenderSurface()
 {
 	s_pSRTerrain = this;
 
-	if (m_iTPatchDim == 1)
-		LoadSingleMaterial();
+	LoadSingleMaterial();
 
 	RenderPass();
 
@@ -326,7 +291,6 @@ void SRTerrain::RenderSurface()
 	}
 	DisableTexGen();
 }
-
 
 void SRTerrain::RenderPass()
 {

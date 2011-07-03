@@ -668,7 +668,7 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->Append(ID_TERRAIN_LOD, _("Level of Detail Info\tCtrl+Q"));
 	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _("Toggle Artificial Foundations"));
-	m_pTerrainMenu->Append(ID_TERRAIN_RESHADE, _("&Recalculate Shading\tCtrl+R"));
+	m_pTerrainMenu->Append(ID_TERRAIN_RESHADE, _("&Recalculate Shading\tCtrl+H"));
 	m_pTerrainMenu->Append(ID_TERRAIN_CHANGE_TEXTURE, _("&Change Texture"));
 	m_pTerrainMenu->Append(ID_TERRAIN_DISTRIB_VEHICLES, _("&Distribute Vehicles (test)"));
 	m_pTerrainMenu->Append(ID_TERRAIN_WRITE_ELEVATION, _("Write Elevation to BT"));
@@ -1269,25 +1269,26 @@ void EnviroFrame::DoTestCode()
 
 void EnviroFrame::LoadClouds(const char *fname)
 {
-	vtImagePtr input = vtImageRead(fname);
+	osg::ref_ptr<osg::Image> input = osgDB::readImageFile(fname);
 	if (input.valid())
 	{
-		int depth = input->GetDepth();
+		int depth = input->getPixelSizeInBits();
 		if (depth != 8)
 			DisplayAndLog("That isn't an 8-bit cloud image.");
 		else
 		{
 			// For transparency, convert the 8-bit (from black to white) to a
 			//  32-bit (RGB is white, Alpha is 0-255)
-			unsigned int w = input->GetWidth();
-			unsigned int h = input->GetHeight();
+			unsigned int w = input->s();
+			unsigned int h = input->t();
+
 			vtImagePtr img2 = new vtImage;
 			img2->Create(w, h, 32);
 			RGBAi rgba(255,255,255,0);
 			for (unsigned int i = 0; i < w; i++)
 				for (unsigned int j = 0; j < h; j++)
 				{
-					rgba.a = input->GetPixel8(i, j);
+					rgba.a = GetPixel8(input, i, j);
 					img2->SetPixel32(i, j, rgba);
 				}
 
@@ -1686,7 +1687,7 @@ void EnviroFrame::OnUpdateViewMapOverView(wxUpdateUIEvent& event)
 	if (curr)
 	{
 		TextureEnum eTex = curr->GetParams().GetTextureEnum();
-		bEnable = (eTex == TE_SINGLE || eTex == TE_TILED  || eTex == TE_DERIVED);
+		bEnable = (eTex == TE_SINGLE || eTex == TE_DERIVED);
 	}
 	event.Enable(bEnable);
 	event.Check(g_App.GetShowMapOverview());

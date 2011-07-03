@@ -899,7 +899,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	TParamsPanel1->SetSizer( bSizer15 );
 	TParamsPanel1->Layout();
 	bSizer15->Fit( TParamsPanel1 );
-	m_notebook->AddPage( TParamsPanel1, _("Elevation"), true );
+	m_notebook->AddPage( TParamsPanel1, _("Elevation"), false );
 	TParamsPanel2 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer24;
 	bSizer24 = new wxBoxSizer( wxHORIZONTAL );
@@ -945,45 +945,6 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer26->Add( id_edit_colors, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	sbSizer7->Add( bSizer26, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
-	
-	mmiled_4by4 = new wxRadioButton( TParamsPanel2, ID_TILED_4BY4, _("4x4 Tiled texture"), wxDefaultPosition, wxDefaultSize, 0 );
-	mmiled_4by4->SetValue( true ); 
-	sbSizer7->Add( mmiled_4by4, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
-	wxFlexGridSizer* fgSizer1;
-	fgSizer1 = new wxFlexGridSizer( 0, 2, 0, 0 );
-	fgSizer1->AddGrowableCol( 1 );
-	fgSizer1->SetFlexibleDirection( wxBOTH );
-	fgSizer1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	id_text1 = new wxStaticText( TParamsPanel2, ID_TEXT, _("Tile size: "), wxDefaultPosition, wxDefaultSize, 0 );
-	id_text1->Wrap( -1 );
-	fgSizer1->Add( id_text1, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	wxString m_choice_tilesizeChoices[] = { _("ChoiceItem") };
-	int m_choice_tilesizeNChoices = sizeof( m_choice_tilesizeChoices ) / sizeof( wxString );
-	m_choice_tilesize = new wxChoice( TParamsPanel2, ID_CHOICE_TILESIZE, wxDefaultPosition, wxSize( 100,-1 ), m_choice_tilesizeNChoices, m_choice_tilesizeChoices, 0 );
-	m_choice_tilesize->SetSelection( 0 );
-	fgSizer1->Add( m_choice_tilesize, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM, 5 );
-	
-	m_text213 = new wxStaticText( TParamsPanel2, ID_TEXT, _("Filename base: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text213->Wrap( -1 );
-	fgSizer1->Add( m_text213, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	wxString m_tfile_baseChoices[] = { _("ChoiceItem") };
-	int m_tfile_baseNChoices = sizeof( m_tfile_baseChoices ) / sizeof( wxString );
-	m_tfile_base = new wxChoice( TParamsPanel2, ID_TFILE_BASE, wxDefaultPosition, wxSize( 100,-1 ), m_tfile_baseNChoices, m_tfile_baseChoices, 0 );
-	m_tfile_base->SetSelection( 0 );
-	fgSizer1->Add( m_tfile_base, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxBOTTOM, 5 );
-	
-	id_text2 = new wxStaticText( TParamsPanel2, ID_TEXT, _("Filename: "), wxDefaultPosition, wxDefaultSize, 0 );
-	id_text2->Wrap( -1 );
-	fgSizer1->Add( id_text2, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	mmfilename = new wxTextCtrl( TParamsPanel2, ID_TFILENAME, wxEmptyString, wxDefaultPosition, wxSize( 220,-1 ), 0 );
-	fgSizer1->Add( mmfilename, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxBOTTOM, 5 );
-	
-	sbSizer7->Add( fgSizer1, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
 	wxBoxSizer* bSizer27;
 	bSizer27 = new wxBoxSizer( wxHORIZONTAL );
@@ -1127,7 +1088,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	TParamsPanel2->SetSizer( bSizer24 );
 	TParamsPanel2->Layout();
 	bSizer24->Fit( TParamsPanel2 );
-	m_notebook->AddPage( TParamsPanel2, _("Texture"), false );
+	m_notebook->AddPage( TParamsPanel2, _("Texture"), true );
 	TParamsPanel3 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer38;
 	bSizer38 = new wxBoxSizer( wxHORIZONTAL );
@@ -2431,42 +2392,11 @@ TextureDlgBase::TextureDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	bSizer247->Add( bSizer249, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	m_tiled_4by4 = new wxRadioButton( this, ID_TILED_4BY4, _("4x4 Tiled texture"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_tiled_4by4->SetValue( true ); 
-	bSizer247->Add( m_tiled_4by4, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
 	wxFlexGridSizer* fgSizer7;
 	fgSizer7 = new wxFlexGridSizer( 0, 2, 0, 0 );
 	fgSizer7->AddGrowableCol( 1 );
 	fgSizer7->SetFlexibleDirection( wxBOTH );
 	fgSizer7->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	m_text160 = new wxStaticText( this, ID_TEXT, _("Tile size: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text160->Wrap( -1 );
-	fgSizer7->Add( m_text160, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	wxString m_choice_tilesizeChoices[] = { _("ChoiceItem") };
-	int m_choice_tilesizeNChoices = sizeof( m_choice_tilesizeChoices ) / sizeof( wxString );
-	m_choice_tilesize = new wxChoice( this, ID_CHOICE_TILESIZE, wxDefaultPosition, wxSize( 100,-1 ), m_choice_tilesizeNChoices, m_choice_tilesizeChoices, 0 );
-	m_choice_tilesize->SetSelection( 0 );
-	fgSizer7->Add( m_choice_tilesize, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM, 5 );
-	
-	m_text161 = new wxStaticText( this, ID_TEXT, _("Filename base: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text161->Wrap( -1 );
-	fgSizer7->Add( m_text161, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	wxString m_tfile_baseChoices[] = { _("ChoiceItem") };
-	int m_tfile_baseNChoices = sizeof( m_tfile_baseChoices ) / sizeof( wxString );
-	m_tfile_base = new wxChoice( this, ID_TFILE_BASE, wxDefaultPosition, wxSize( 100,-1 ), m_tfile_baseNChoices, m_tfile_baseChoices, 0 );
-	m_tfile_base->SetSelection( 0 );
-	fgSizer7->Add( m_tfile_base, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxBOTTOM, 5 );
-	
-	m_text162 = new wxStaticText( this, ID_TEXT, _("Filename: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text162->Wrap( 0 );
-	fgSizer7->Add( m_text162, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	m_tfilename = new wxTextCtrl( this, ID_TFILENAME, wxEmptyString, wxDefaultPosition, wxSize( 220,-1 ), 0 );
-	fgSizer7->Add( m_tfilename, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxBOTTOM, 5 );
 	
 	bSizer247->Add( fgSizer7, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	

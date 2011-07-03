@@ -2,7 +2,7 @@
 // SMTerrain class : An implementation a terrain rendering engine
 //		based on the ideas and input of Seumas McNally.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -130,6 +130,8 @@ SMTerrain::SMTerrain() : vtDynTerrainGeom()
 	m_TriPool = NULL;
 	m_HypoLength = NULL;
 	m_pBlockArray = NULL;
+
+	m_bUseTriStrips = true;
 }
 
 SMTerrain::~SMTerrain()
@@ -180,21 +182,11 @@ DTErr SMTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	// these levels are numbered with 1-based numbering, (1 2 3...)
 	m_iLevels = 2 * m_n + 2;
 
-	if (m_iTPatchDim != 1)
-	{
-		// If a number of texture patches is specified, set our number
-		// of blocks to match it.
-		m_iBlockN = m_n - vt_log2(m_iTPatchDim);	// create 4x4 blocks (eg. 1024 -> 256*256 (actually, 257))
-	}
-	else
-	{
-		// Default: create 8x8 blocks (eg. 1024 -> 128*128 (actually, 129))
-		m_iBlockN = m_n - 3;	// 8x8 blocks
-//		m_iBlockN = m_n - 1;	// 2x2 blocks
-//		m_iBlockN = m_n;		// 1x1 blocks
-		// safety check
-		if (m_iBlockN < 0) m_iBlockN = 0;
-	}
+	// Default: create 8x8 blocks (eg. 1024 -> 128*128 (actually, 129))
+	m_iBlockN = m_n - 3;	// 8x8 blocks
+	// safety check
+	if (m_iBlockN < 0) m_iBlockN = 0;
+
 	m_iBlockLevel = 2 * (m_n - m_iBlockN) + 1;
 	m_iBlockCutoff = 1 << (2 * (m_n - m_iBlockN));
 	m_iBlockArrayDim = 1 << (m_n - m_iBlockN);
@@ -1030,7 +1022,6 @@ bool SMTerrain::BlockIsVisible(BlockPtr block)
 	return (ret > 0);
 }
 
-
 void SMTerrain::LoadSingleMaterial()
 {
 	// single texture for the whole terrain
@@ -1042,22 +1033,6 @@ void SMTerrain::LoadSingleMaterial()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 }
-
-
-void SMTerrain::LoadBlockMaterial(int a, int b)
-{
-	// each block has it's own texture map
-	int matidx = a*m_iBlockArrayDim + (m_iBlockArrayDim-1-b);
-//	int matidx = a*m_iBlockArrayDim + (b);
-	vtMaterial *pMat = GetMaterial(matidx);
-	if (pMat)
-	{
-		ApplyMaterial(pMat);
-		SetupBlockTexGen(a, b);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-}
-
 
 void SMTerrain::RenderSurface()
 {
@@ -1084,10 +1059,7 @@ void SMTerrain::RenderSurface()
 			// do block-level culling
 			if (!BlockIsVisible(block)) continue;
 
-			if (m_iTPatchDim == 1)
-				LoadSingleMaterial();
-			else
-				LoadBlockMaterial(a, b);
+			LoadSingleMaterial();
 
 			hack_detail_pass = false;
 			RenderBlock(block, m_bUseTriStrips);
