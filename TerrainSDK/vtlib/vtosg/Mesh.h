@@ -21,7 +21,9 @@
 #define VT_Normals		1
 #define VT_Colors		2
 #define VT_TexCoords	4
-
+#ifdef AVOID_OSG_INDICES
+#define VT_VBO			8
+#endif
 class vtImage;
 
 /** \addtogroup sg */
@@ -58,7 +60,11 @@ public:
 	void AddQuad(int p0, int p1, int p2, int p3);
 
 	// Accessors
+#ifdef AVOID_OSG_INDICES
+	PrimType getPrimType() const { return m_PrimType; }
+#else
 	PrimType getPrimType() const { return (PrimType) getPrimSet()->getMode(); }
+#endif
 
 	void SetMatIndex(int i) { m_iMatIdx = i; }
 	int GetMatIndex() const { return m_iMatIdx; }
@@ -179,6 +185,9 @@ protected:
 	const osg::Vec2Array *getTexCoords() const { return (const osg::Vec2Array*) getTexCoordArray(0); }
 
 	int m_iMatIdx;
+#ifdef AVOID_OSG_INDICES
+	PrimType m_PrimType;
+#endif
 };
 
 /** A Font for use with vtTextMesh. */
