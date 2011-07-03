@@ -79,8 +79,8 @@ void NevadaTerrain::CreateCustomCulture()
 
 #if 0
 	// Buildings
-	osg::Node *dome = vtLoadModel("Nevada/bluedometent.dsm");
-	if (dome)
+	NodePtr dome = vtLoadModel("Nevada/bluedometent.dsm");
+	if (dome.valid())
 	{
 		m_Future.addChild(dome);
 		PlantModelAtPoint(dome, DPoint2(MAN_LONLAT), true);
@@ -272,7 +272,7 @@ void NevadaTerrain::CreatePast()
 
 			tree = pPlantApp->GenerateGeom();
 			float fScale = 1.0f + random_offset(0.5f);
-			tree->Scale3(fScale, fScale, fScale);
+			tree->Scale(fScale);
 			tree->SetTrans(p3);
 			// add tree to scene graph
 			m_pTreeGrid->AppendToGrid(tree);
@@ -446,7 +446,7 @@ bool JumpingEngine::Eval(float t)
 	pos.z = m_center.z + cosf(t/50.0f + m_fPhase) * 300.0f;
 
 	pTarget->Identity();
-	pTarget->Scale3(m_fScale, m_fScale, m_fScale);
+	pTarget->Scale(m_fScale);
 	pTarget->SetTrans(pos);
 
 	// wiggle it.. just a little bit

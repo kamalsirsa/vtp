@@ -51,20 +51,19 @@ bool vtItem3d::LoadModels()
 	for (i = 0; i < models; i++)
 	{
 		vtModel *model = GetModel(i);
-		osg::Node *pNode = NULL;
 
 		// perhaps it's directly resolvable
-		pNode = vtLoadModel(model->m_filename);
+		NodePtr pNode = vtLoadModel(model->m_filename);
 
 		// if there are some data path(s) to search, use them
-		if (!pNode)
+		if (!pNode.valid())
 		{
 			vtString fullpath = FindFileOnPaths(vtGetDataPath(), model->m_filename);
 			if (fullpath != "")
 				pNode = vtLoadModel(fullpath);
 		}
 
-		if (pNode)
+		if (pNode.valid())
 			VTLOG(" Loaded successfully.\n");
 		else
 		{
@@ -80,7 +79,7 @@ bool vtItem3d::LoadModels()
 			pTrans->setName("scaling xform");
 			pTrans->addChild(pNode);
 			pTrans->Identity();
-			pTrans->Scale3(model->m_scale, model->m_scale, model->m_scale);
+			pTrans->Scale(model->m_scale);
 			pNode = pTrans;
 		}
 

@@ -50,7 +50,7 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 	m_pContainer->Identity();
 
 	if (m_fScale != 1.0f)
-		m_pContainer->Scale3(m_fScale, m_fScale, m_fScale);
+		m_pContainer->Scale(m_fScale);
 
 	if (m_fRotation != 0.0f)
 		m_pContainer->Rotate2(FPoint3(0,1,0), m_fRotation);

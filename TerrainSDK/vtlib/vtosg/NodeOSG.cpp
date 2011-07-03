@@ -309,6 +309,13 @@ void ApplyVertexTransform(osg::Node *node, const FMatrix4 &mat)
 	if (!node)
 		return;
 
+	// Remember the parent (TODO: beware possible case of multiple parents)
+	//  We must remove the node from the parent temporarily in order for the
+	//  optimization below to work, but we don't want to de-ref the node, so
+	//  order is important.
+	GroupPtr parent = node->getParent(0);
+
+	// Put it under a temporary parent instead
 	vtGroupPtr temp = new vtGroup;
 
 	osg::Matrix omat;
@@ -316,23 +323,22 @@ void ApplyVertexTransform(osg::Node *node, const FMatrix4 &mat)
 
 	osg::MatrixTransform *transform = new osg::MatrixTransform;
 	transform->setMatrix(omat);
-	// it's not going to change, so tell OSG that it can be optimized
+	// Tell OSG that it can be optimized
 	transform->setDataVariance(osg::Object::STATIC);
 
     temp->addChild(transform);
 	transform->addChild(node);
 
+	// carefully remove from the true parent
+	parent->removeChild(node);
+
 	// Now do some OSG voodoo, which should spread the transform downward
 	//  through the loaded model, and delete the transform.
-	//
-	// NOTE: OSG 1.0 seems to have a bug (limitation): Optimizer doesn't
-	//  inform the display lists that they have changed.  So, this doesn't
-	//  produce a visual update for objects which have already been rendered.
-	// It is a one-line fix in Optimizer.cpp (CollectLowestTransformsVisitor::doTransform)
-	// I wrote the OSG list with the fix on 2006.04.12.
-	//
 	osgUtil::Optimizer optimizer;
 	optimizer.optimize(temp.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+
+	// now carefully add back again to true parent
+	parent->addChild(node);
 }
 
 
@@ -514,9 +520,13 @@ void TransformExtension::SetDirection(const FPoint3 &point, bool bPitch)
 	SetTransform1(m4);
 }
 
+void TransformExtension::Scale(float factor)
+{
+	m_pTransform->preMult(osg::Matrix::scale(factor, factor, factor));
+}
+
 void TransformExtension::Scale3(float x, float y, float z)
 {
-	// OSG 0.8.43 and later
 	m_pTransform->preMult(osg::Matrix::scale(x, y, z));
 }
 
@@ -826,7 +836,7 @@ void SetLoadModelCallback(osg::Node *callback(osg::Transform *input))
  *
  * \return A node pointer if successful, or NULL if the load failed.
  */
-osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
+osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
 {
 	// Some of OSG's file readers, such as the Wavefront OBJ reader, have
 	//  sensitivity to stdio issues with '.' and ',' in European locales.
@@ -867,12 +877,12 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 #if VTDEBUG
 	VTLOG("[");
 #endif
-	osg::Node *node = osgDB::readNodeFile((const char *)fname_local);
+	NodePtr node = osgDB::readNodeFile((const char *)fname_local);
 #if VTDEBUG
 	VTLOG("]");
 #endif
 	// If OSG could not load it, there is nothing more to do
-	if (!node)
+	if (!node.valid())
 		return NULL;
 
 	// We must insert a 'Normalize' state above the geometry objects
@@ -898,15 +908,8 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 
 	// We must insert a rotation transform above the model, because OSG's
 	//  file loaders (now mostly consistently) tweak the model to put Z
-	//  up, and the VTP uses OpenGL coordinates which has Y up.
+	//  up, and the VTP uses OpenGL coordinates which have Y up.
 	float fRotation = -PID2f;
-
-	// OSG expects OBJ models to have Y up.  I have seen models with Z
-	//  up, and we used to correct for that here (fRotation = -PIf).
-	//  However, over time it has appeared that there are more OBJ out
-	//  there with Y up than with Z up.  So, we now treat all models from
-	//  OSG the same.
-
 	osg::MatrixTransform *transform = new osg::MatrixTransform;
 	transform->setName("corrective 90 degrees");
 	transform->setMatrix(osg::Matrix::rotate(fRotation, osg::Vec3(1,0,0)));
@@ -916,19 +919,13 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 
 	if (s_NodeCallback == NULL)
 	{
-#if 0
 		// Now do some OSG voodoo, which should spread ("flatten") the
 		//  transform downward through the loaded model, and delete the transform.
-		// In practice, i find that it doesn't actually do any flattening.
-		osg::Group *group = new osg::Group;
+		vtGroupPtr group = new vtGroup;
 		group->addChild(transform);
 
 		osgUtil::Optimizer optimizer;
 		optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
-		node = group;
-#else
-		node = transform;
-#endif
 	}
 	else
 	{

@@ -108,6 +108,8 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_ITEM_MODELPROPS, vtFrame::OnUpdateItemModelExists)
 	EVT_MENU(ID_ITEM_ROTMODEL, vtFrame::OnItemRotModel)
 	EVT_UPDATE_UI(ID_ITEM_ROTMODEL, vtFrame::OnUpdateItemModelExists)
+	EVT_MENU(ID_ITEM_SET_AMBIENT, vtFrame::OnItemSetAmbient)
+	EVT_UPDATE_UI(ID_ITEM_SET_AMBIENT, vtFrame::OnUpdateItemModelExists)
 	EVT_MENU(ID_ITEM_SAVESOG, vtFrame::OnItemSaveSOG)
 	EVT_MENU(ID_ITEM_SAVEOSG, vtFrame::OnItemSaveOSG)
 	EVT_MENU(ID_ITEM_SAVEIVE, vtFrame::OnItemSaveIVE)
@@ -312,6 +314,7 @@ void vtFrame::CreateMenus()
 	itemMenu->Append(ID_ITEM_MODELPROPS, _T("Model Properties"));
 	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_ROTMODEL, _T("Rotate Model Around X Axis"));
+	itemMenu->Append(ID_ITEM_SET_AMBIENT, _T("Set materials' ambient from diffuse"));
 	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"));
 	itemMenu->Append(ID_ITEM_SAVEOSG, _T("Save Model as OSG"));
@@ -675,10 +678,54 @@ void vtFrame::OnUpdateItemModelExists(wxUpdateUIEvent& event)
 	event.Enable(m_pCurrentItem && m_pCurrentModel);
 }
 
+// Walk an OSG scenegraph looking for geodes with statesets, change the ambient
+//  component of any materials found.
+class SetAmbientVisitor : public osg::NodeVisitor
+{
+public:
+	SetAmbientVisitor() : NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
+	virtual void apply(osg::Geode& geode)
+	{
+		osg::StateSet *ss1 = geode.getStateSet();
+		if (ss1)
+			SetAmbient(ss1);
+		for (unsigned i=0; i<geode.getNumDrawables(); ++i)
+		{
+			osg::StateSet *ss2 = geode.getDrawable(i)->getStateSet();
+			if (ss2)
+				SetAmbient(ss2);
+		}
+		osg::NodeVisitor::apply(geode);
+	}
+	void SetAmbient(osg::StateSet *ss)
+	{
+		osg::StateAttribute *state = ss->getAttribute(osg::StateAttribute::MATERIAL);
+		if (!state) return;
+
+		osg::Material *mat = dynamic_cast<osg::Material *>(state);
+		if (!mat) return;
+
+		osg::Vec4 amb = mat->getAmbient(FAB);
+		osg::Vec4 d = mat->getDiffuse(FAB);
+
+		VTLOG("oldamb %f %f %f, ", amb.r(), amb.g(), amb.b(), amb.a());
+
+		osg::Material *newmat = (osg::Material *)mat->clone(osg::CopyOp::DEEP_COPY_ALL);
+		newmat->setAmbient(FAB, osg::Vec4(d.r()*ratio,d.g()*ratio,d.b()*ratio,1));
+
+		amb = newmat->getAmbient(FAB);
+		VTLOG("newamb %f %f %f\n", amb.r(), amb.g(), amb.b(), amb.a());
+
+		ss->setAttribute(newmat);
+	}
+	float ratio;
+};
+
 void vtFrame::OnItemRotModel(wxCommandEvent& event)
 {
 	vtModel *mod = m_pCurrentModel;
 	osg::Node *node = m_nodemap[mod];
+
 	// this node is actually the scaling transform; we want its child
 	vtTransform *transform = dynamic_cast<vtTransform*>(node);
 	if (!transform)
@@ -686,6 +733,16 @@ void vtFrame::OnItemRotModel(wxCommandEvent& event)
 	osg::Node *node2 = transform->getChild(0);
 
 	ApplyVertexRotation(node2, FPoint3(1,0,0), -PID2f);
+}
+
+void vtFrame::OnItemSetAmbient(wxCommandEvent& event)
+{
+	vtModel *mod = m_pCurrentModel;
+	osg::Node *node = m_nodemap[mod];
+
+	SetAmbientVisitor sav;
+	sav.ratio = 0.4f;
+	node->accept(sav);
 }
 
 #include "vtlib/core/vtSOG.h"
@@ -738,8 +795,8 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 	vtTransform *trans = m_nodemap[m_pCurrentModel];
 	if (!trans)
 		return;
-	osg::Node *node = dynamic_cast<osg::Node*>(trans->getChild(0));
-	if (!node)
+	NodePtr node = trans->getChild(0);
+	if (!node.valid())
 		return;
 
 	vtString fname = GetSaveName("OSG", "*.osg");
@@ -788,6 +845,7 @@ void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
 	// Rotate back again
 	ApplyVertexRotation(node, FPoint3(1,0,0), -PID2f);
 
+	CloseProgressDialog();
 	if (success)
 		wxMessageBox(_("File saved.\n"));
 	else
@@ -961,7 +1019,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	wxString str(model->m_filename, wxConvUTF8);
 	UpdateProgressDialog(1, str);
 
-	osg::Node *pNode = NULL;
+	NodePtr pNode;
 	vtString fullpath = FindFileOnPaths(vtGetDataPath(), model->m_filename);
 	if (fullpath != "")
 	{
@@ -973,7 +1031,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	// resume rendering after progress dialog is closed
 	m_canvas->m_bRunning = true;
 
-	if (!pNode)
+	if (!pNode.valid())
 	{
 		str.Printf(_T("Sorry, couldn't load model from %hs"), (const char *) model->m_filename);
 		VTLOG1(str.mb_str(wxConvUTF8));
@@ -1289,7 +1347,7 @@ void vtFrame::UpdateTransform(vtModel *model)
 	trans->Identity();
 
 	vtString ext = GetExtension(model->m_filename, false);
-	trans->Scale3(model->m_scale, model->m_scale, model->m_scale);
+	trans->Scale(model->m_scale);
 }
 
 void vtFrame::RenderingPause()

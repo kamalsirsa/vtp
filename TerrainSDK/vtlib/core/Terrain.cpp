@@ -1328,7 +1328,7 @@ MyTerrain::CreateCustomCulture()
 	// model is in centimeters (cm)
 	vtTransform *pFountain = LoadModel("Culture/fountain.3ds");
 
-	pFountain->Scale3(.01f, .01f, .01f);
+	pFountain->Scale(.01f);
 
 	PlantModelAtPoint(pFountain, DPoint2(217690, 4123475));
 	AddModel(pFountain);
@@ -1337,23 +1337,20 @@ MyTerrain::CreateCustomCulture()
  */
 vtTransform *vtTerrain::LoadModel(const char *filename, bool bAllowCache)
 {
-	osg::Node *node = NULL;
 	vtString path = FindFileOnPaths(vtGetDataPath(), filename);
 	if (path == "")
 	{
 		VTLOG("Couldn't locate file '%s'\n", filename);
+		return NULL;
 	}
-	else
-		node = vtLoadModel(path, bAllowCache);
-
-	if (node)
+	NodePtr node = vtLoadModel(path, bAllowCache);
+	if (node.valid())
 	{
 		vtTransform *trans = new vtTransform;
 		trans->addChild(node);
 		return trans;
 	}
-	else
-		return NULL;
+	return NULL;
 }
 
 

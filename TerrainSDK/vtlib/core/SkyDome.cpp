@@ -175,7 +175,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	SphVertices = new FPoint3[NumVertices];
 	ConvertVertices();
 
-	Scale3(radius, radius, radius);
+	Scale(radius);
 
 	// Set default horizon, azimuth and sunset colors
 	DayHorizonCol.Set(0.5f, 1.0f, 1.0f);

@@ -105,6 +105,8 @@ struct TransformExtension: public NodeExtension
 		is the direction the object is facing. */
 	void SetDirection(const FPoint3 &point, bool bPitch = true);
 
+	/** Scale (stretch) by the given factor in all dimensions. */
+	void Scale(float factor);
 	/** Scale (stretch) by given factors in the x,y,z dimensions. */
 	void Scale3(float x, float y, float z);
 
@@ -169,7 +171,7 @@ void WriteDotFile(osg::Group *node, const char *filename);
 //
 
 /// Load a 3D model file
-osg::Node *vtLoadModel(const char *filename, bool bAllowCache = true,
+osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache = true,
 					   bool bDisableMipmaps = false);
 bool vtSaveModel(osg::Node *node, const char *filename);
 void SetLoadModelCallback(osg::Node *callback(osg::Transform *input));
@@ -191,6 +193,7 @@ public:
 	vtGroup();
 };
 typedef osg::ref_ptr<vtGroup> vtGroupPtr;
+typedef osg::ref_ptr<osg::Group> GroupPtr;
 
 /**
  * A Transform node allows you to apply a transform (scale, rotate, translate)

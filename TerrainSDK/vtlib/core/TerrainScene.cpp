@@ -406,7 +406,7 @@ void vtTerrainScene::UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 	if (radius > max_radius)
 		radius = max_radius;
 	m_pSkyDome->Identity();
-	m_pSkyDome->Scale3(radius, radius, radius);
+	m_pSkyDome->Scale(radius);
 
 	// Tell the skydome where on the planet we are
 	DPoint2 geo = pTerrain->GetCenterGeoLocation();

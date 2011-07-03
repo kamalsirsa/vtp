@@ -31,7 +31,7 @@ void TransitTerrain::CreateCustomCulture()
 
 #if 0
 	AddNode(campus);
-	campus->Scale3(scale, scale, scale);
+	campus->Scale(scale);
 	campus->Rotate2(FPoint3(0.0f, 1.0f, 0.0f), -PIf*63/180);
 
 	PlantModelAtPoint(campus, DPoint2(591849, 4138117));

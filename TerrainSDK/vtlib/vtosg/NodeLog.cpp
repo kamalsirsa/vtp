@@ -85,6 +85,9 @@ void vtLogGraph(osg::Node *node, bool bExtents, bool bRefCounts, int indent)
 		if (node->getNodeMask() != 0xffffffff)
 			VTLOG(" mask=%x", node->getNodeMask());
 
+		if (node->getStateSet() != NULL)
+			VTLOG(" (has stateset)");
+
 		if (bExtents)
 		{
 			const osg::BoundingSphere &bs = node->getBound();

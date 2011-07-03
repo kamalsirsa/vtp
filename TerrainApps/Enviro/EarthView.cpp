@@ -95,7 +95,7 @@ void Enviro::SetupGlobe()
 
 		m_pGlobeContainer->SetEnabled(true);
 		m_pCursorMGeom->Identity();
-		m_pCursorMGeom->Scale3(.1f, .1f, .1f);
+		m_pCursorMGeom->Scale(.1f);
 	}
 	if (m_iInitStep == 4)
 	{
@@ -213,7 +213,7 @@ void Enviro::MakeGlobe()
 		pStars->Create(bsc_file, 5.0f);	// brightness
 		vtTransform *pScale = new vtTransform;
 		pScale->setName("Star Scaling Transform");
-		pScale->Scale3(20, 20, 20);
+		pScale->Scale(20);
 		m_pGlobeContainer->addChild(pScale);
 		pScale->addChild(pStars);
 	}
@@ -281,7 +281,7 @@ void Enviro::MakeDemoGlobe()
 	m_pGlobeContainer->addChild(m_pDemoGroup);
 	m_pDemoGroup->addChild(trans);
 	trans->addChild(Globe2->GetTop());
-	trans->Scale3(1.006f, 1.006f, 1.006f);
+	trans->Scale(1.006f);
 	m_pGlobeTime->AddTarget((vtTimeTarget *)Globe2);
 
 	// Planetwork globe is around 3 PM GMT, summer over the north atlantic
@@ -448,7 +448,7 @@ void Enviro::MakeOverlayGlobe(vtImage *input, bool progress_callback(int))
 
 	vtTransform *trans = new vtTransform;
 	trans->setName("Overlay Globe Scaler");
-	trans->Scale3(1.006f, 1.005f, 1.005f);
+	trans->Scale(1.005f);
 
 	m_pIcoGlobe->GetTop()->addChild(trans);
 	trans->addChild(m_pOverlayGlobe->GetTop());

@@ -76,6 +76,7 @@ protected:
 	void OnItemRemoveModel(wxCommandEvent& event);
 	void OnItemModelProps(wxCommandEvent& event);
 	void OnItemRotModel(wxCommandEvent& event);
+	void OnItemSetAmbient(wxCommandEvent& event);
 	void OnItemSaveSOG(wxCommandEvent& event);
 	void OnItemSaveOSG(wxCommandEvent& event);
 	void OnItemSaveIVE(wxCommandEvent& event);

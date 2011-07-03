@@ -193,7 +193,7 @@ void IslandTerrain::CreateCustomCulture()
 	}
 
 #if 0
-	osg::Node *blade = vtLoadModel("G:/Data-Distro/Culture/picnictable.ive");
+	NodePtr blade = vtLoadModel("G:/Data-Distro/Culture/picnictable.ive");
 	vtTransform *trans = new vtTransform;
 	trans->addChild(blade);
 	SpinEngine *eng = new SpinEngine;
@@ -219,7 +219,7 @@ void IslandTerrain::create_state_park()
 		// model is at .1 inch per unit
 		float scale = .1f * 2.54f / 100;
 		scale *= 10;	// Exaggerate its size to make it easier to find
-		table->Scale3(scale, scale, scale);
+		table->Scale(scale);
 		PlantModelAtPoint(table, park_location);
 //		addNodeToStructGrid(table);
 		addNode(table);

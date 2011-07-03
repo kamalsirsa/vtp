@@ -641,7 +641,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(unsigned int i)
 	// We need to scale the model to produce the desired size, not the
 	//  size of the appearance but of the instance.
 	float scale = size / pApp->m_height;
-	inst3d->m_pContainer->Scale3(scale, scale, scale);
+	inst3d->m_pContainer->Scale(scale);
 
 	if (pApp->m_eType == AT_BILLBOARD)
 	{

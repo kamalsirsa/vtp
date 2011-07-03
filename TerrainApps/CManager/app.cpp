@@ -139,8 +139,8 @@ bool vtApp::OnInit(void)
 
 	// Memleak Testing
 //	GetMainFrame()->AddModelFromFile("E:/3D/Sample FLT files/spitfire.flt");
-//	osg::Node *pNode = vtLoadModel("E:/3D/Sample FLT files/spitfire.flt");
-//	if (pNode)
+//	NodePtr pNode = vtLoadModel("E:/3D/Sample FLT files/spitfire.flt");
+//	if (pNode.valid())
 //		m_pRoot->addChild(pNode);
 //	GetMainFrame()->AddNewItem();
 

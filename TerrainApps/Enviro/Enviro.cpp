@@ -746,7 +746,7 @@ void Enviro::DoCursorOnTerrain()
 			float sc = (float) sqrt(distance) / 1.0f;
 			FPoint3 pos = m_pCursorMGeom->GetTrans();
 			m_pCursorMGeom->Identity();
-			m_pCursorMGeom->Scale3(sc, sc, sc);
+			m_pCursorMGeom->Scale(sc);
 			m_pCursorMGeom->SetTrans(pos);
 		}
 
