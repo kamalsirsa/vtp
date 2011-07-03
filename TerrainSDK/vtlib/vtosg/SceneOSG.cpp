@@ -669,31 +669,6 @@ void vtScene::CalcCullPlanes()
 //	LogCullPlanes(m_cullPlanes);
 }
 
-
-void vtScene::DrawFrameRateChart()
-{
-	static float fps[100];
-	static int s = 0;
-	fps[s] = GetFrameRate();
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_LIGHTING);
-	glColor3f(1.0f, 1.0f, 0.0f);
-
-	glBegin(GL_LINE_STRIP);
-	for (int i = 1; i <= 100; i++)
-	{
-		glVertex3f(-1.0 + i/200.0f, -1.0f + fps[(s+i)%100]/200.0f, 0.0f);
-	}
-	glEnd();
-
-	s++;
-	if (s == 100) s = 0;
-}
-
 void vtScene::SetGlobalWireframe(bool bWire)
 {
 	m_bWireframe = bWire;

@@ -1131,7 +1131,6 @@ unsigned int vtMesh::GetNumVertices() const
  */
 void vtMesh::SetVtxPos(unsigned int i, const FPoint3 &p)
 {
-#ifdef AVOID_OSG_INDICES
 	osg::Vec3 s;
 	v2s(p, s);
 
@@ -1139,24 +1138,19 @@ void vtMesh::SetVtxPos(unsigned int i, const FPoint3 &p)
 		getVerts()->resize(i + 1);
 	getVerts()->at(i) = s;
 
+#ifdef AVOID_OSG_INDICES
 	if (getPrimType() == osg::PrimitiveSet::POINTS)
 		getDrawArrays()->setCount(getVerts()->size());
 #else
-	osg::Vec3 s;
-	v2s(p, s);
-
-	if (i >= (int)getVerts()->size())
-		getVerts()->resize(i + 1);
-
-
-	osg::UIntArray *uia = getIndices();
-
 	if (getPrimType() == GL_POINTS)
 	{
+		osg::UIntArray *uia = getIndices();
+
 		if (i >= (int) uia->size())
 			uia->resize(i + 1);
 
 		uia->at(i) = i;
+		getDrawArrays()->setCount(getVerts()->size());
 	}
 #endif
 }

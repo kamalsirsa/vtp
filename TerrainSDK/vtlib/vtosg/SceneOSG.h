@@ -92,7 +92,6 @@ public:
 	{
 		return 1.0 / m_fLastFrameTime;
 	}
-	void DrawFrameRateChart();
 
 	/// Time in seconds since the scene began.
 	float GetTime()
