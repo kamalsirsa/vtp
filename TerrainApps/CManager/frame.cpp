@@ -19,6 +19,7 @@
 #include "vtlib/core/NavEngines.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
+#include "vtdata/Version.h"
 #include "vtui/Helper.h"	// for ProgressDialog
 
 #include "xmlhelper/easyxml.hpp"
@@ -931,7 +932,10 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 	wxString str = _T("VTP Content Manager\n\n");
 	str += _T("Manages sources of 3d models for the Virtual Terrain Project software.\n\n");
 	str += _T("Please read the HTML documentation and license.\n");
-	str += _T("Send feedback to: ben@vterrain.org\n\n");
+	str += _T("Send feedback to: ben@vterrain.org\n");
+	str += _T("\nVersion: ");
+	str += _T(VTP_VERSION);
+	str += _T("\n");
 	str += _T("Build date: ");
 	str += _T(__DATE__);
 	wxMessageBox(str, _T("About CManager"));

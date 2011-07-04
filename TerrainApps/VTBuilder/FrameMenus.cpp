@@ -22,6 +22,7 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/Icosa.h"
 #include "vtdata/TripDub.h"
+#include "vtdata/Version.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/WFSClient.h"
@@ -3830,7 +3831,9 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _T("\n");
 	str += _("Send feedback to: ");
 	str += _T("ben@vterrain.org\n");
-	str += _T("Version: 1.0\n");
+	str += _T("\nVersion: ");
+	str += _T(VTP_VERSION);
+	str += _T("\n");
 	str += _("Build date: ");
 	str += wxString(__DATE__, wxConvUTF8);
 	str += _T("\n");

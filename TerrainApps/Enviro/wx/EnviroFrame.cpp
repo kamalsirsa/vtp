@@ -36,6 +36,7 @@
 #include "vtlib/core/TiledGeom.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/TripDub.h"
+#include "vtdata/Version.h"
 #include "wxosg/GraphicsWindowWX.h"
 #include "vtui/Helper.h"	// for progress dialog
 
@@ -2919,7 +2920,9 @@ void EnviroFrame::OnHelpAbout(wxCommandEvent& event)
 	str += _("The runtime environment for the Virtual Terrain Project.\n\n");
 	str += _("Please read the HTML documentation and license.\n\n");
 	str += _("Send feedback to: ben@vterrain.org\n");
-	str += _T("\nVersion: 1.0\n");
+	str += _T("\nVersion: ");
+	str += _T(VTP_VERSION);
+	str += _T("\n");
 	str += _("Build date: ");
 	str += wxString(__DATE__, *wxConvCurrent);
 #else
