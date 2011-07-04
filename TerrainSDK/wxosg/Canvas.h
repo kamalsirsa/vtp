@@ -24,6 +24,7 @@ public:
 	~vtGLCanvas(void);
 
 	// SpaceNavigator methods
+	void EnableSpaceNav();
 	void SetSpaceNavSpeed(float f);
 	void SetSpaceNavAllowRoll(bool b);
 

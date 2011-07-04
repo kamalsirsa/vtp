@@ -72,6 +72,8 @@ private:
 	wxString   m_strContentFile;
 	bool	m_bShowProgress;
 	bool	m_bFlyIn;
+	bool	m_bUseJoystick;
+	bool	m_bUseSpaceNav;
 
 private:
 	// WDR: handler declarations for OptionsDlg

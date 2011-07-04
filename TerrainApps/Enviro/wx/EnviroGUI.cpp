@@ -24,6 +24,7 @@
 #include "EnviroApp.h"
 #include "EnviroFrame.h"
 #include "canvas.h"
+#include "../Options.h"
 
 // dialogs
 #include "DistanceDlg3d.h"
@@ -250,10 +251,13 @@ void EnviroGUI::SetupScene3()
 	GetFrame()->Setup3DScene();
 
 #if wxUSE_JOYSTICK || WIN32
-	m_pJFlyer = new vtJoystickEngine;
-	m_pJFlyer->setName("Joystick");
-	vtGetScene()->AddEngine(m_pJFlyer);
-	m_pJFlyer->SetTarget(m_pNormalCamera);
+	if (g_Options.m_bUseJoystick)
+	{
+		m_pJFlyer = new vtJoystickEngine;
+		m_pJFlyer->setName("Joystick");
+		vtGetScene()->AddEngine(m_pJFlyer);
+		m_pJFlyer->SetTarget(m_pNormalCamera);
+	}
 #endif
 }
 

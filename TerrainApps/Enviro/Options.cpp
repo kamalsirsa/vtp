@@ -42,6 +42,8 @@ EnviroOptions g_Options;
 #define STR_DIRECT_PICKING "DirectPicking"
 #define STR_SHOW_PROGRESS "ShowProgress"
 #define STR_FLY_IN "FlyIn"
+#define STR_USE_JOYSTICK "UseJoystick"
+#define STR_USE_SPACENAV "UseSpaceNav"
 #define STR_TB_CULTURE "TBCulture"
 #define STR_TB_SNAPSHOT "TBSnapshot"
 #define STR_TB_TIME "TBTime"
@@ -94,105 +96,6 @@ void LocalToUTF8(vtString &str)
 	str = ws.to_utf8();
 }
 
-bool EnviroOptions::ReadINI(const char *szFilename)
-{
-	VTLOG("Reading options from '%s'\n", szFilename);
-
-	ifstream input(szFilename, ios::in | ios::binary);
-	if (!input.is_open())
-		return false;
-
-	char buf[80];
-	bool bFoundContentFile = false;
-
-	while (!input.eof())
-	{
-		if (input.peek() == '\n')
-			input.ignore();
-		input >> buf;
-
-		// data value should been separated by a tab or space
-		int next = input.peek();
-		if (next != '\t' && next != ' ')
-			continue;
-		while (input.peek() == '\t' || input.peek() == ' ')
-			input.ignore();
-
-		if (strcmp(buf, STR_DATAPATH) == 0)
-		{
-			m_oldDataPaths.push_back(vtString(get_line_from_stream(input)));
-		}
-		else if (strcmp(buf, STR_EARTHVIEW) == 0)
-			input >> m_bEarthView;
-		else if (strcmp(buf, STR_EARTHIMAGE) == 0)
-			m_strEarthImage = get_line_from_stream(input);
-		else if (strcmp(buf, STR_INITTERRAIN) == 0)
-			m_strInitTerrain = get_line_from_stream(input);
-		else if (strcmp(buf, STR_FULLSCREEN) == 0)
-			input >> m_bFullscreen;
-		else if (strcmp(buf, STR_STEREO) == 0)
-			input >> m_bStereo;
-		else if (strcmp(buf, STR_STEREO_MODE) == 0)
-			input >> m_iStereoMode;
-		else if (strcmp(buf, STR_WINLOC) == 0)
-			input >> m_WinPos.x >> m_WinPos.y >> m_WinSize.x >> m_WinSize.y;
-		else if (strcmp(buf, STR_LOCINSIDE) == 0)
-			input >> m_bLocationInside;
-		else if (strcmp(buf, STR_HTMLPANE) == 0)
-			input >> m_bHtmlpane;
-		else if (strcmp(buf, STR_FLOATBAR) == 0)
-			input >> m_bFloatingToolbar;
-		else if (strcmp(buf, STR_TEXTURE_COMPRESSION) == 0)
-			input >> m_bTextureCompression;
-		else if (strcmp(buf, STR_PLANTSIZE) == 0)
-			input >> m_fPlantScale;
-		else if (strcmp(buf, STR_PLANTSHADOWS) == 0)
-			input >> m_bShadows;
-		else if (strcmp(buf, STR_ONLY_AVAILABLE_SPECIES) == 0)
-			input >> m_bOnlyAvailableSpecies;
-		else if (strcmp(buf, STR_DIRECT_PICKING) == 0)
-			input >> m_bDirectPicking;
-		else if (strcmp(buf, STR_SELECTIONCUTOFF) == 0)
-			input >> m_fSelectionCutoff;
-		else if (strcmp(buf, STR_DISABLE_MODEL_MIPMAPS) == 0)
-			input >> m_bDisableModelMipmaps;
-		else if (strcmp(buf, STR_CURSOR_THICKNESS) == 0)
-			input >> m_fCursorThickness;
-		else if (strcmp(buf, STR_CATENARY_FACTOR) == 0)
-			input >> m_fCatenaryFactor;
-		else if (strcmp(buf, STR_CONTENT_FILE) == 0)
-		{
-			m_strContentFile = get_line_from_stream(input);
-			bFoundContentFile = true;
-		}
-		else if (strcmp(buf, STR_MAX_INST_RADIUS) == 0)
-			input >> m_fMaxPickableInstanceRadius;
-		else if (strcmp(buf, STR_SHOW_PROGRESS) == 0)
-			input >> m_bShowProgress;
-		else if (strcmp(buf, STR_FLY_IN) == 0)
-			input >> m_bFlyIn;
-		else
-		{
-//			cout << "Input from INI file unrecognized.\n";
-			get_line_from_stream(input);
-		}
-	}
-
-	// if we have an old file, provide the modern default
-	if (!bFoundContentFile)
-		m_strContentFile = "common_content.vtco";
-
-	// Bad old INI file stored its strings in the local charset, which could
-	//  vary from machine to machine.  Nowadays we always encode in utf-8.
-	for (unsigned int i = 0; i < m_oldDataPaths.size(); i++)
-		LocalToUTF8(m_oldDataPaths[i]);
-	LocalToUTF8(m_strEarthImage);
-	LocalToUTF8(m_strInitTerrain);
-	LocalToUTF8(m_strContentFile);
-
-	m_strFilename = szFilename;
-	return true;
-}
 
 ///////////////////////////////////////////////////////////////////////
 // XML format
@@ -276,6 +179,10 @@ void EnviroOptionsVisitor::endElement(const char *name)
 		s2b(m_data, m_opt.m_bShowProgress);
 	else if (strcmp(name, STR_FLY_IN) == 0)
 		s2b(m_data, m_opt.m_bFlyIn);
+	else if (strcmp(name, STR_USE_JOYSTICK) == 0)
+		s2b(m_data, m_opt.m_bUseJoystick);
+	else if (strcmp(name, STR_USE_SPACENAV) == 0)
+		s2b(m_data, m_opt.m_bUseSpaceNav);
 
 	else if (strcmp(name, STR_TB_CULTURE) == 0)
 		s2b(m_data, m_opt.m_bShowToolsCulture);
@@ -385,6 +292,8 @@ bool EnviroOptions::WriteXML()
 	WriteElemF(output, STR_MAX_INST_RADIUS, m_fMaxPickableInstanceRadius);
 	WriteElemB(output, STR_SHOW_PROGRESS, m_bShowProgress);
 	WriteElemB(output, STR_FLY_IN, m_bFlyIn);
+	WriteElemB(output, STR_USE_JOYSTICK, m_bUseJoystick);
+	WriteElemB(output, STR_USE_SPACENAV, m_bUseSpaceNav);
 	WriteElemB(output, STR_TB_CULTURE, m_bShowToolsCulture);
 	WriteElemB(output, STR_TB_SNAPSHOT, m_bShowToolsSnapshot);
 	WriteElemB(output, STR_TB_TIME, m_bShowToolsTime);

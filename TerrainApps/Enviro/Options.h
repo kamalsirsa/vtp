@@ -19,9 +19,6 @@ public:
 	bool ReadXML(const char *szFilename);
 	bool WriteXML();
 
-	// older method was .ini files
-	bool ReadINI(const char *szFilename);
-
 	vtStringArray m_oldDataPaths;
 	bool		m_bEarthView;
 	vtString	m_strEarthImage;
@@ -58,6 +55,8 @@ public:
 
 	bool	m_bShowProgress;
 	bool	m_bFlyIn;
+	bool	m_bUseJoystick;
+	bool	m_bUseSpaceNav;
 
 	// toolbar options
 	bool m_bShowToolsCulture;

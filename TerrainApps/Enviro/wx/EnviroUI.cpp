@@ -2093,6 +2093,13 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_fly_in->SetValue(true); 
 	bSizer190->Add( m_fly_in, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
+	m_fly_in1 = new wxCheckBox( this, ID_ENABLE_JOYSTICK, _("Enable joystick navigation"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fly_in1->SetValue(true); 
+	bSizer190->Add( m_fly_in1, 0, wxALL, 5 );
+	
+	m_fly_in2 = new wxCheckBox( this, ID_ENABLE_SPACENAV, _("Enable SpaceNavigator"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer190->Add( m_fly_in2, 0, wxALL, 5 );
+	
 	wxBoxSizer* bSizer195;
 	bSizer195 = new wxBoxSizer( wxHORIZONTAL );
 	

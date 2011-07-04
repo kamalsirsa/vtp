@@ -443,6 +443,10 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_canvas = new EnviroCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
 			_T("vtGLCanvas"), gl_attrib);
 
+	// only use the spacenavigator if the user wants
+	if (g_Options.m_bUseSpaceNav)
+		m_canvas->EnableSpaceNav();
+
 	// Show the frame
 	VTLOG("Showing the main frame\n");
 	Show(true);

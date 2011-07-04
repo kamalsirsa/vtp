@@ -89,12 +89,6 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	// On RTL (right-to-left) system, the canvas should still be always LTR
 	SetLayoutDirection(wxLayout_LeftToRight);
 
-#if WIN32
-	// Initialize spacenavigator, if there is one present
-	g_SpaceNav.Init();
-	g_SpaceNav.SetTarget(vtGetScene()->GetCamera());
-#endif
-
 	s_canvas = this;
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 	CPerformanceMonitorDialog::NVPM_init();
@@ -109,6 +103,15 @@ vtGLCanvas::~vtGLCanvas(void)
 	CPerformanceMonitorDialog::NVPM_shutdown();
 #endif
 	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->CloseOsgContext();
+}
+
+void vtGLCanvas::EnableSpaceNav()
+{
+#if WIN32
+	// Initialize spacenavigator, if there is one present
+	g_SpaceNav.Init();
+	g_SpaceNav.SetTarget(vtGetScene()->GetCamera());
+#endif
 }
 
 void vtGLCanvas::SetSpaceNavSpeed(float f)

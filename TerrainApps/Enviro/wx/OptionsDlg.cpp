@@ -67,6 +67,8 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddValidator(this, ID_TERRAIN_PROGRESS, &m_bShowProgress);
 	AddValidator(this, ID_FLY_IN, &m_bFlyIn);
+	AddValidator(this, ID_ENABLE_JOYSTICK, &m_bUseJoystick);
+	AddValidator(this, ID_ENABLE_SPACENAV, &m_bUseSpaceNav);
 
 	GetSizer()->SetSizeHints(this);
 }
@@ -97,6 +99,8 @@ void OptionsDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_strContentFile = wxString(opt.m_strContentFile, wxConvUTF8);
 	m_bShowProgress = opt.m_bShowProgress;
 	m_bFlyIn = opt.m_bFlyIn;
+	m_bUseJoystick = opt.m_bUseJoystick;
+	m_bUseSpaceNav = opt.m_bUseSpaceNav;
 }
 
 void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
@@ -124,6 +128,8 @@ void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
 	opt.m_strContentFile = m_strContentFile.mb_str(wxConvUTF8);
 	opt.m_bShowProgress = m_bShowProgress;
 	opt.m_bFlyIn = m_bFlyIn;
+	opt.m_bUseJoystick = m_bUseJoystick;
+	opt.m_bUseSpaceNav = m_bUseSpaceNav;
 }
 
 void OptionsDlg::UpdateEnabling()
