@@ -204,7 +204,8 @@ public:
 	// handle matrixtransform objects
 	virtual void apply(osg::MatrixTransform &node)
 	{
-		if (node.getDataVariance() == osg::Object::UNSPECIFIED)
+		if (node.getDataVariance() == osg::Object::UNSPECIFIED ||
+			node.getDataVariance() == osg::Object::DYNAMIC)
 		{
 			node.setDataVariance(osg::Object::STATIC);
 			count++;
@@ -362,8 +363,10 @@ void ApplyVertexTransform(osg::Node *node, const FMatrix4 &mat)
 	osgUtil::Optimizer optimizer;
 	optimizer.optimize(temp.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
 
-	// now carefully add back again to true parent
-	parent->addChild(node);
+	// now carefully add back again, whatever remains after the optimization,
+	//  to the true parent. Hopefully, our corrective transform has been applied.
+	// Our original node may have been optimized away too.
+	parent->addChild(temp->getChild(0));
 }
 
 
@@ -968,6 +971,9 @@ osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache, bool
 			VTLOG1("  Transform flatten FAILED.\n");
 		else
 			VTLOG1("  Transform flatten Succeeded.\n");
+
+		// The resulting node is whatever remains under the optimization parent
+		node = group->getChild(0);
 	}
 	else
 	{
