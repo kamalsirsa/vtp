@@ -347,7 +347,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		m_pUnshadedImage = osgDB::readImageFile((const char *)texture_path);
 		if (m_pUnshadedImage.valid())
 		{
-			VTLOG("  Loaded texture: size %d x %d, depth %d, %.3f seconds.\n",
+			VTLOG("  Loaded texture: size %d x %d, depth %d, %.2f seconds.\n",
 				m_pUnshadedImage->s(), m_pUnshadedImage->t(),
 				m_pUnshadedImage->getPixelSizeInBits(),
 				(float)(clock() - r1) / CLOCKS_PER_SEC);
@@ -389,9 +389,11 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		}
 		if (bFirstTime || !bRetain)
 		{
+			clock_t r1 = clock();
 			// The PaintDib method is virtual to allow subclasses to customize
 			// the unshaded image.
 			PaintDib(progress_callback);
+			VTLOG("  PaintDib: %.2f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 		}
 	}
 
@@ -452,13 +454,13 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	}
 	else
 	{
-		VTLOG("Marking texture image as modified.\n");
+		// Make sure OSG knows that the texture may have changed
 		vtMaterial *mat = m_pTerrMats->at(0);
 		mat->SetTexture(m_pSingleImage);
 		mat->ModifiedTexture();
 	}
 
-	VTLOG("  Total CreateTextures: %.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
+	VTLOG("  Total CreateTextures: %.2f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
 }
 
 //

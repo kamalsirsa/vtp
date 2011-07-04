@@ -121,18 +121,16 @@ void GetBoundSphere(osg::Node *node, FSphere &sphere, bool bGlobal)
 	}
 }
 
+
 //////////////////////////////////////////////////////////////////////////////
-// class ExtentsVisitor
-//
-// description: visit all nodes and compute bounding box extents
-//
+/**
+ This class visits all nodes and computes bounding box extents.
+*/
 class ExtentsVisitor : public osg::NodeVisitor
 {
 public:
 	// constructor
 	ExtentsVisitor():NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
-	// destructor
-	~ExtentsVisitor() {}
 
 	virtual void apply(osg::Geode &node)
 	{
@@ -189,6 +187,33 @@ void GetNodeBoundBox(osg::Node *node, FBox3 &box)
 	osg::BoundingBox extents = ev.GetBound();
 	s2v(extents, box);
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+/**
+	This class visits all matrixtransform nodes and set their datavariance to "STATIC"
+*/
+class TransformStaticVisitor : public osg::NodeVisitor
+{
+public:
+	// constructor
+	TransformStaticVisitor() : NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN)
+	{
+		count = 0;
+	}
+	// handle matrixtransform objects
+	virtual void apply(osg::MatrixTransform &node)
+	{
+		if (node.getDataVariance() == osg::Object::UNSPECIFIED)
+		{
+			node.setDataVariance(osg::Object::STATIC);
+			count++;
+		}
+		// continue traversing the graph
+		traverse(node);
+	}
+	int count;
+};
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -906,6 +931,7 @@ osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache, bool
 		node->accept(visitor);
 	}
 
+#if 1
 	// We must insert a rotation transform above the model, because OSG's
 	//  file loaders (now mostly consistently) tweak the model to put Z
 	//  up, and the VTP uses OpenGL coordinates which have Y up.
@@ -921,11 +947,27 @@ osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache, bool
 	{
 		// Now do some OSG voodoo, which should spread ("flatten") the
 		//  transform downward through the loaded model, and delete the transform.
+		// The voodoo is picky: there must be no other parents of this branch
+		//  of the scenegraph, and all matriced must be STATIC
+		TransformStaticVisitor tsv;
+		node->accept(tsv);
+		if (tsv.count != 0)
+			VTLOG("  Set %d transforms to STATIC\n", tsv.count);
+
 		vtGroupPtr group = new vtGroup;
 		group->addChild(transform);
 
+		//vtLogGraph(group);
 		osgUtil::Optimizer optimizer;
 		optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+		//vtLogGraph(group);
+
+		// If it worked, the transform will be replaced by a Group
+		osg::Node *node = group->getChild(0);
+		if (dynamic_cast<osg::MatrixTransform*>(node) != NULL)
+			VTLOG1("  Transform flatten FAILED.\n");
+		else
+			VTLOG1("  Transform flatten Succeeded.\n");
 	}
 	else
 	{
@@ -934,6 +976,7 @@ osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache, bool
 	}
 	//VTLOG1("--------------\n");
 	//vtLogGraph(node);
+#endif
 
 	// Use the filename as the node's name
 	node->setName(fname);

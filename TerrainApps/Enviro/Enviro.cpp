@@ -546,7 +546,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
-		SetMessage(_("Loading/Chopping/Prelighting Textures"));
+		SetMessage(_("Loading/Coloring/Prelighting Textures"));
 		UpdateProgress(m_strMessage, 30, 0);
 	}
 	else if (m_iInitStep == 4)
