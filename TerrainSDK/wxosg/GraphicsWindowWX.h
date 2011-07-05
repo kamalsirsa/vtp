@@ -37,6 +37,29 @@ public:
 #endif
 		m_bValid = true;
 		m_bIsRealized = false;
+
+		wxPoint pos = m_pCanvas->GetPosition();
+		wxSize  size = m_pCanvas->GetSize();
+
+		// Set up traits to match the canvas
+		_traits = new GraphicsContext::Traits;
+		_traits->x = pos.x;
+		_traits->y = pos.y;
+		_traits->width = size.x;
+		_traits->height = size.y;
+
+		// Set up a new context ID - I don't think we make use of this at the moment
+		setState( new osg::State );
+		getState()->setGraphicsContext(this);
+        if (_traits.valid() && _traits->sharedContext)
+        {
+			// I left this code in just in case we want shared contexts in the future
+			// they would need to be passed in and set up in the traits object above
+            getState()->setContextID( _traits->sharedContext->getState()->getContextID() );
+            incrementContextIDUsageCount( getState()->getContextID() );
+        }
+        else
+            getState()->setContextID( osg::GraphicsContext::createNewContextID() );
 	}
 
 	~GraphicsWindowWX()
@@ -87,20 +110,6 @@ public:
 #ifndef __WXMAC__
 		m_pGLContext = new LocalGLContext(m_pCanvas);
 #endif
-		wxPoint pos = m_pCanvas->GetPosition();
-		wxSize  size = m_pCanvas->GetSize();
-
-		// Set up traits to match the canvas
-		_traits = new GraphicsContext::Traits;
-		_traits->x = pos.x;
-		_traits->y = pos.y;
-		_traits->width = size.x;
-		_traits->height = size.y;
-
-		// Set up a new context ID - I don't think we make use of this at the moment
-		setState( new osg::State );
-		getState()->setGraphicsContext(this);
-		getState()->setContextID( osg::GraphicsContext::createNewContextID() );
 		m_bIsRealized = true;
 		return true;
 	}
