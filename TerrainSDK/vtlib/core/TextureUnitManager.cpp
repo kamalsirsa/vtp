@@ -43,8 +43,7 @@ void vtTextureUnitManager::Initialise()
 	osg::ref_ptr<osg::GraphicsContext> pGraphicsContext = osg::GraphicsContext::createGraphicsContext(pTraits.get());
 	pGraphicsContext->realize();
 	pGraphicsContext->makeCurrent();
-	osg::ref_ptr<osg::Texture::Extensions> pTextureExtensions = osg::Texture::getExtensions(pGraphicsContext->getState()->getContextID(), true);
-	m_iNumTextureUnits = pTextureExtensions->numTextureUnits();
+	glGetIntegerv(GL_MAX_TEXTURE_UNITS,&m_iNumTextureUnits);
 	if (m_iNumTextureUnits < 0)
 	{
 		// got a bogus value, probably because there is no OpenGL context yet.
