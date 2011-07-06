@@ -85,6 +85,7 @@
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "Enviro_32x32.xpm"
 #  include "axes.xpm"
+#  include "bld_corner.xpm"
 #  include "building.xpm"
 #  include "camera.xpm"
 #  include "distance.xpm"
@@ -165,6 +166,8 @@ EVT_MENU(ID_TOOLS_NAVIGATE,			EnviroFrame::OnToolsNavigate)
 EVT_UPDATE_UI(ID_TOOLS_NAVIGATE,	EnviroFrame::OnUpdateToolsNavigate)
 EVT_MENU(ID_TOOLS_MEASURE,			EnviroFrame::OnToolsMeasure)
 EVT_UPDATE_UI(ID_TOOLS_MEASURE,		EnviroFrame::OnUpdateToolsMeasure)
+EVT_MENU(ID_TOOLS_CONSTRAIN,		EnviroFrame::OnToolsConstrain)
+EVT_UPDATE_UI(ID_TOOLS_CONSTRAIN,	EnviroFrame::OnUpdateToolsConstrain)
 
 EVT_MENU(ID_VIEW_MAINTAIN,			EnviroFrame::OnViewMaintain)
 EVT_UPDATE_UI(ID_VIEW_MAINTAIN,		EnviroFrame::OnUpdateViewMaintain)
@@ -562,6 +565,8 @@ void EnviroFrame::CreateMenus()
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _("Navigate"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances\tCtrl+D"));
+	m_pToolsMenu->AppendSeparator();
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_CONSTRAIN, _("Constrain building angles"));
 	m_pMenuBar->Append(m_pToolsMenu, _("&Tools"));
 
 	// shortcuts:
@@ -811,6 +816,7 @@ void EnviroFrame::RefreshToolbar()
 	{
 		m_pToolbar->AddSeparator();
 		AddTool(ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), true);
+		AddTool(ID_TOOLS_CONSTRAIN, wxBITMAP(bld_corner), _("Constrain Angles"), true);
 	}
 	if (g_Options.m_bShowToolsSnapshot)
 	{
@@ -2218,6 +2224,17 @@ void EnviroFrame::OnUpdateToolsMeasure(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain || g_App.m_state == AS_Orbit);
 	event.Check(g_App.m_mode == MM_MEASURE);
+}
+
+void EnviroFrame::OnToolsConstrain(wxCommandEvent& event)
+{
+	g_App.m_bConstrainAngles = !g_App.m_bConstrainAngles;
+}
+
+void EnviroFrame::OnUpdateToolsConstrain(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_bConstrainAngles);
 }
 
 

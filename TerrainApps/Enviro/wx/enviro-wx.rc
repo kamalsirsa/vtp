@@ -5,6 +5,7 @@ Enviro ICON "icons/Enviro.ico"
 
 // Used in the main Enviro toolbar(s)
 axes	    BITMAP "bitmap/axes.bmp"
+bld_corner  BITMAP "bitmap/bld_corner.bmp"
 building    BITMAP "bitmap/building.bmp"
 camera		BITMAP "bitmap/camera.bmp"
 distance	BITMAP "bitmap/distance.bmp"

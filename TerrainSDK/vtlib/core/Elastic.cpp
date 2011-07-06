@@ -50,16 +50,59 @@ void ElasticPolyline::SetPolyline(const DLine2 &line)
 	Realize();
 }
 
-void ElasticPolyline::AddPoint(const DPoint2 &point)
+void ElasticPolyline::AddPoint(const DPoint2 &point, bool bEnforceRightAngles)
 {
 	m_Line.Append(point);
+
+	if (bEnforceRightAngles)
+		EnforceRightAngles();
+
 	Realize();
 }
 
-void ElasticPolyline::SetPoint(int iPoint, const DPoint2 &point)
+void ElasticPolyline::RemovePoint(int iPoint)
+{
+	m_Line.RemovePoint(iPoint);
+	Realize();
+}
+
+void ElasticPolyline::SetPoint(int iPoint, const DPoint2 &point, bool bEnforceRightAngles)
 {
 	m_Line.SetAt(iPoint, point);
+
+	if (bEnforceRightAngles)
+		EnforceRightAngles();
+
 	Realize();
+}
+
+void ElasticPolyline::EnforceRightAngles()
+{
+	int npoints = m_Line.GetSize();
+	if (npoints < 3)
+		return;
+
+	DPoint2 p2 = m_Line[npoints-1];
+	DPoint2 p1 = m_Line[npoints-2];
+	DPoint2 p0 = m_Line[npoints-3];
+	DPoint2 vec = p1 - p0;	// Vector along previous edge
+
+	// Normalize carefully; if we're in dange of dividing by zero, it's better
+	//  to quietly return
+	if (vec.Length() == 0.0)
+		return;
+
+	vec.Normalize();
+	DPoint2 vec2 = p2 - p1;	// Vector to new point
+
+	double a = vec2.Dot(vec);	// Distance along edge
+	DPoint2 result = p1 + (vec * a);
+	m_Line[npoints-2] = result;
+
+	vec.Rotate(PID2d);
+	double b = vec2.Dot(vec);	// Distance perpendicular to edge
+	result += (vec * b);
+	m_Line[npoints-1] = result;
 }
 
 void ElasticPolyline::Clear()

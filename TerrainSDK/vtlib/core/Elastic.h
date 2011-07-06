@@ -25,8 +25,10 @@ public:
 	void SetLineColor(const RGBAf &color);
 
 	void SetPolyline(const DLine2 &line);
-	void AddPoint(const DPoint2 &point);
-	void SetPoint(int iPoint, const DPoint2 &point);
+	void AddPoint(const DPoint2 &point, bool bEnforceRightAngles = false);
+	void RemovePoint(int iPoint);
+	void SetPoint(int iPoint, const DPoint2 &point, bool bEnforceRightAngles = false);
+	void EnforceRightAngles();
 	void Clear();
 
 	DLine2 &GetPolyline() { return m_Line; }

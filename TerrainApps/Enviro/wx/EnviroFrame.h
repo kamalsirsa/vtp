@@ -191,6 +191,8 @@ protected:
 	void OnUpdateToolsNavigate(wxUpdateUIEvent& event);
 	void OnToolsMeasure(wxCommandEvent& event);
 	void OnUpdateToolsMeasure(wxUpdateUIEvent& event);
+	void OnToolsConstrain(wxCommandEvent& event);
+	void OnUpdateToolsConstrain(wxUpdateUIEvent& event);
 
 	void OnSceneGraph(wxCommandEvent& event);
 	#ifdef NVIDIA_PERFORMANCE_MONITORING

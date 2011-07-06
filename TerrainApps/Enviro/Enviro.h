@@ -232,6 +232,7 @@ public:
 	vtRoute		*m_pSelRoute;
 	IPoint2		m_MouseDown, m_MouseLast;
 	float		m_StartRotation;
+	bool		m_bConstrainAngles;
 
 	// handle to the singleton
 	static Enviro *s_pEnviro;

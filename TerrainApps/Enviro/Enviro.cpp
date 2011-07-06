@@ -65,7 +65,6 @@ Enviro::Enviro() : vtTerrainScene()
 	m_pEarthLines = NULL;
 
 	m_bTopDown = false;
-	m_pTopDownCamera = NULL;
 	m_pTerrainPicker = NULL;
 	m_pGlobePicker = NULL;
 	m_pCursorMGeom = NULL;
@@ -79,7 +78,6 @@ Enviro::Enviro() : vtTerrainScene()
 	m_fMessageTime = 0.0f;
 	m_pHUD = NULL;
 	m_pHUDMessage = NULL;
-	m_pArial = NULL;
 
 	// plants
 	m_pPlantList = NULL;
@@ -98,7 +96,6 @@ Enviro::Enviro() : vtTerrainScene()
 	m_pControlEng = NULL;
 
 	// HUD
-	m_pHUDMaterials = NULL;
 	m_pLegendGeom = NULL;
 	m_bCreatedLegend = false;
 
@@ -115,6 +112,9 @@ Enviro::Enviro() : vtTerrainScene()
 
 	m_Elastic.SetPostHeight(4.0f);
 	m_Elastic.SetLineHeight(2.0f);
+
+	// There are more buildings with all right angles than those without..
+	m_bConstrainAngles = true;
 }
 
 Enviro::~Enviro()
@@ -1452,10 +1452,26 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	{
 		// Use cursor point to add to a polyline being visually selected.
 		DPoint2 g1(m_EarthPos.x, m_EarthPos.y);
-		m_Elastic.AddPoint(g1);
+
+		// Try to prevent the user from making bad geometry with points too close together
+		int npoints = m_Elastic.NumPoints();
+		if ( npoints >= 3)
+		{
+			DPoint2 p0 = m_Elastic.GetPolyline().GetAt(npoints-3);
+			DPoint2 p1 = m_Elastic.GetPolyline().GetAt(npoints-2);
+			DPoint2 p2 = m_Elastic.GetPolyline().GetAt(npoints-1);
+			double dMin = (pTerr->GetProjection().IsGeographic() ? 2e-6 : 0.2);
+			if ((p0 - p1).Length() < dMin || (p1 - p2).Length() < dMin)
+			{
+				// too close
+				VTLOG1(" too close, omitting point.\n");
+				return;
+			}
+		}
 		// we use two points to begin with
-		if (m_Elastic.NumPoints() == 1)
+		if (npoints == 0)
 			m_Elastic.AddPoint(g1);
+		m_Elastic.AddPoint(g1);
 	}
 	if (m_mode == MM_ROUTES)
 	{
@@ -1958,7 +1974,16 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 	{
 		VTLOG1("OnMouseRightDown, closing building polygon\n");
 
-		// Hide the temporary markers which showed the vertices
+		if (m_bConstrainAngles)
+		{
+			// To ensure that we have right angle all around, act as if the user
+			//  clicked back on the original point
+			//m_Elastic.RemovePoint(m_Elastic.NumPoints()-1);
+			m_Elastic.AddPoint(m_Elastic.GetPolyline().GetAt(0), m_bConstrainAngles);
+			m_Elastic.RemovePoint(m_Elastic.NumPoints()-1);
+		}
+
+		// Hide the temporary markers which showed the polyline
 		DLine2 line = m_Elastic.GetPolyline();
 		m_Elastic.Clear();
 
@@ -2136,7 +2161,8 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 	{
 		int npoints = m_Elastic.NumPoints();
 		if (npoints > 1)
-			m_Elastic.SetPoint(npoints-1, DPoint2(m_EarthPos.x, m_EarthPos.y));
+			m_Elastic.SetPoint(npoints-1, DPoint2(m_EarthPos.x, m_EarthPos.y),
+				m_bConstrainAngles);
 	}
 	if (m_mode == MM_SLOPE && m_bDragging && m_bOnTerrain)
 	{
