@@ -1,7 +1,9 @@
+
 set(VTLIB_CORE_SOURCE_FILES
-		../core/AbstractLayer.cpp ../core/AnimPath.cpp ../core/AttribMap.cpp ../core/Building3d.cpp ../core/CarEngine.cpp
-		../core/Content3d.cpp ../core/Contours.cpp ../core/BruteTerrain.cpp ../core/DemeterTerrain.cpp
-		../core/DynTerrain.cpp ../core/Engine.cpp ../core/Fence3d.cpp ../core/GeomUtil.cpp ../core/Globe.cpp ../core/ImageSprite.cpp
+		../core/AbstractLayer.cpp ../core/AnimPath.cpp ../core/AttribMap.cpp ../core/Building3d.cpp
+		../core/CarEngine.cpp ../core/Content3d.cpp ../core/Contours.cpp ../core/BruteTerrain.cpp
+		../core/DemeterTerrain.cpp ../core/DynTerrain.cpp ../core/Elastic.cpp ../core/Engine.cpp
+		../core/Fence3d.cpp ../core/GeomUtil.cpp ../core/Globe.cpp ../core/ImageSprite.cpp
 		../core/IntersectionEngine.cpp ../core/Location.cpp ../core/LodGrid.cpp ../core/NavEngines.cpp ../core/PagedLodGrid.cpp
 		../core/Roads.cpp ../core/Route.cpp ../core/SkyDome.cpp ../core/SMTerrain.cpp ../core/SRTerrain.cpp
 		../core/Structure3d.cpp ../core/Terrain.cpp ../core/TerrainLayers.cpp ../core/TerrainScene.cpp ../core/TextureUnitManager.cpp
@@ -12,8 +14,9 @@ set(VTLIB_CORE_SOURCE_FILES_NON_PCH
 		../core/FelkelComponents.cpp ../core/FelkelIntersection.cpp ../core/FelkelStraightSkeleton.cpp ../core/SpaceNav.cpp PARENT_SCOPE)
 
 set(VTLIB_CORE_HEADER_FILES
-		../core/AbstractLayer.h ../core/AnimPath.h ../core/AttribMap.h ../core/Building3d.h ../core/CarEngine.h ../core/Content3d.h
-		../core/Contours.h ../core/BruteTerrain.h ../core/DemeterTerrain.h ../core/DynTerrain.h ../core/Engine.h ../core/Event.h
+		../core/AbstractLayer.h ../core/AnimPath.h ../core/AttribMap.h ../core/Building3d.h
+		../core/CarEngine.h ../core/Content3d.h ../core/Contours.h ../core/BruteTerrain.h
+		../core/DemeterTerrain.h ../core/DynTerrain.h ../core/Elastic.h ../core/Engine.h ../core/Event.h
 		../core/FelkelComponents.h ../core/FelkelIntersection.h ../core/FelkelStraightSkeleton.h ../core/Fence3d.h ../core/FP8.h
 		../core/GeomUtil.h ../core/Globe.h ../core/ImageSprite.h ../core/IntersectionEngine.h ../core/Light.h ../core/Location.h ../core/LodGrid.h
 		../core/NavEngines.h ../core/PagedLodGrid.h ../core/Roads.h ../core/Route.h ../core/SkyDome.h ../core/SMTerrain.h ../core/SpaceNav.h

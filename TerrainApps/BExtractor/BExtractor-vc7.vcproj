@@ -107,7 +107,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="vfw32.lib gdal_id.lib zlib1d.lib libjpeg.lib libpng13d.lib"
+				AdditionalDependencies="vfw32.lib libjpeg.lib libpng15d-vc7.lib zlib1d-vc7.lib gdal_id-vc7.lib C:\APIs\bzip2-1.0.3-bin-vc7\bzip2d.lib"
 				OutputFile=".\Debug/BExtractor.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

@@ -13,6 +13,7 @@
 #include "vtdata/Fence.h"
 #include "vtdata/Projections.h"
 #include "vtlib/core/AnimPath.h"
+#include "vtlib/core/Elastic.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/Vehicles.h"
 #include "EnviroEnum.h"
@@ -153,7 +154,6 @@ public:
 	// event handlers
 	bool OnMouse(vtMouseEvent &event);
 	void OnMouseLeftDownTerrain(vtMouseEvent &event);
-	void OnMouseLeftDownBuildings();
 	void OnMouseLeftDownTerrainSelect(vtMouseEvent &event);
 	void OnMouseLeftDownTerrainMove(vtMouseEvent &event);
 	void OnMouseLeftDownOrbit(vtMouseEvent &event);
@@ -206,9 +206,6 @@ public:
 	void SetWind(int iDirection, float fSpeed);
 
 	// UI
-	void PolygonSelectionAddPoint();
-	void PolygonSelectionClose();
-	DLine2 &GetPolygonSelection() { return m_NewLine; }
 	void UpdateCompass();
 
 	// global state
@@ -314,9 +311,9 @@ protected:
 	bool		m_bActiveFence, m_bFenceClosed;
 	vtFence3d	*m_pCurFence;
 	vtLinearParams m_FenceParams;
-	DLine2		m_NewLine;		// Line for building footprint
-	bool		m_bLineDrawing;	//is Drawing
-	std::vector<vtTransform*> m_Markers;
+
+	// line for making buildings and other uses
+	ElasticPolyline m_Elastic;
 
 	// route members
 	bool		m_bActiveRoute;

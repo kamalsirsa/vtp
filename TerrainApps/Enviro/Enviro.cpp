@@ -112,6 +112,9 @@ Enviro::Enviro() : vtTerrainScene()
 	m_pMapOverview = NULL;
 	m_bFlyIn = false;
 	m_iFlightStage = 0;
+
+	m_Elastic.SetPostHeight(4.0f);
+	m_Elastic.SetLineHeight(2.0f);
 }
 
 Enviro::~Enviro()
@@ -678,6 +681,8 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		// Layer view needs to update
 		RefreshLayerView();
+
+		m_Elastic.SetTerrain(pTerr);
 	}
 }
 
@@ -1444,8 +1449,14 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		pTerr->AddFencepoint(m_pCurFence, DPoint2(m_EarthPos.x, m_EarthPos.y));
 	}
 	if (m_mode == MM_BUILDINGS)
-		OnMouseLeftDownBuildings();
-
+	{
+		// Use cursor point to add to a polyline being visually selected.
+		DPoint2 g1(m_EarthPos.x, m_EarthPos.y);
+		m_Elastic.AddPoint(g1);
+		// we use two points to begin with
+		if (m_Elastic.NumPoints() == 1)
+			m_Elastic.AddPoint(g1);
+	}
 	if (m_mode == MM_ROUTES)
 	{
 		if (!m_bActiveRoute)
@@ -1539,11 +1550,6 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		// TODO
 		//pTerr->AddFencepoint(m_pCurFence, DPoint2(m_EarthPos.x, m_EarthPos.y));
 	}
-}
-
-void Enviro::OnMouseLeftDownBuildings()
-{
-	PolygonSelectionAddPoint();
 }
 
 void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
@@ -1948,16 +1954,17 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 
 void Enviro::OnMouseRightDown(vtMouseEvent &event)
 {
-	if (m_mode == MM_BUILDINGS && m_bLineDrawing)
+	if (m_mode == MM_BUILDINGS && m_Elastic.NumPoints() > 0)
 	{
 		VTLOG1("OnMouseRightDown, closing building polygon\n");
 
 		// Hide the temporary markers which showed the vertices
-		PolygonSelectionClose();
+		DLine2 line = m_Elastic.GetPolyline();
+		m_Elastic.Clear();
 
 		VTLOG1(" Polygon:");
-		for (unsigned int i = 0; i < m_NewLine.GetSize(); i++)
-			VTLOG(" (%lf %lf)", m_NewLine[i].x, m_NewLine[i].y);
+		for (unsigned int i = 0; i < line.GetSize(); i++)
+			VTLOG(" (%lf %lf)", line[i].x, line[i].y);
 		VTLOG1("\n");
 
 		// Close and create new building in the current structure array
@@ -1967,9 +1974,9 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 
 		// Force footprint anticlockwise
 		PolyChecker PolyChecker;
-		if (PolyChecker.IsClockwisePolygon(m_NewLine))
-			m_NewLine.ReverseOrder();
-		pbuilding->SetFootprint(0, m_NewLine);
+		if (PolyChecker.IsClockwisePolygon(line))
+			line.ReverseOrder();
+		pbuilding->SetFootprint(0, line);
 
 		// Describe the appearance of the new building
 		pbuilding->SetStories(2);
@@ -2124,6 +2131,12 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 			SetTerrainMeasure(g1, g2);
 		}
 		UpdateDistanceTool();
+	}
+	if (m_mode == MM_BUILDINGS)
+	{
+		int npoints = m_Elastic.NumPoints();
+		if (npoints > 1)
+			m_Elastic.SetPoint(npoints-1, DPoint2(m_EarthPos.x, m_EarthPos.y));
 	}
 	if (m_mode == MM_SLOPE && m_bDragging && m_bOnTerrain)
 	{
@@ -2290,58 +2303,6 @@ void Enviro::SetWind(int iDirection, float fSpeed)
 	TParams &params = terr->GetParams();
 	params.SetValueInt("WindDirection", iDirection);
 	params.SetValueFloat("WindSpeed", fSpeed);
-}
-
-//
-// Use the current cursor position as a point to add to a polygon being
-//  visually selected.
-//
-void Enviro::PolygonSelectionAddPoint()
-{
-	SetupArcMesh();
-	DPoint2 g1(m_EarthPos.x, m_EarthPos.y);
-
-	// Create a marker pole for this corner of the new building
-	int matidx = 2;
-	float fHeight = 10.0f;
-	float fRadius = 0.2f;
-	vtGeode *geode = CreateCylinderGeom(m_pArcMats, matidx, VT_Normals, fHeight,
-		fRadius, 10, true, false, false, 1);
-	vtTransform *trans = new vtTransform;
-	trans->addChild(geode);
-	m_Markers.push_back(trans);
-	vtTerrain *pTerr = GetCurrentTerrain();
-	pTerr->PlantModelAtPoint(trans, g1);
-	pTerr->addNode(trans);
-
-	if (m_bLineDrawing)
-	{
-		// continue existing line
-		m_NewLine.Append(g1);
-
-		vtTerrain *pTerr = GetCurrentTerrain();
-		vtGeomFactory mf(m_pArc, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
-		pTerr->AddSurfaceLineToMesh(&mf, m_NewLine, m_fDistToolHeight, true);
-	}
-	else
-	{
-		// start new line
-		m_bLineDrawing = true;
-		m_NewLine.Empty();
-		m_NewLine.Append(g1);
-	}
-}
-
-void Enviro::PolygonSelectionClose()
-{
-	m_bLineDrawing = false;
-
-	// Hide the temporary markers which showed the vertices
-	SetupArcMesh();
-	for (unsigned int i = 0; i < m_Markers.size(); i++)
-		GetCurrentTerrain()->removeNode(m_Markers[i]);
-
-	m_Markers.clear();
 }
 
 
