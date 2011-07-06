@@ -3081,15 +3081,17 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 			if (m_pPagedStructGrid)
 				m_pPagedStructGrid->RemoveFromGrid(slay, i);
 
-			RemoveNodeFromStructGrid(str3d->GetContainer());
-			str3d->DeleteNode();
+			// If it was a successfully create structure, it will have a container
+			if (str3d->GetContainer())
+			{
+				RemoveNodeFromStructGrid(str3d->GetContainer());
+				str3d->DeleteNode();
+			}
 		}
 
 		// Be certain we're not still trying to page it in
 		if (m_pPagedStructGrid)
 			m_pPagedStructGrid->ClearQueue(slay);
-
-		delete slay;
 
 		// If that was the current layer, deal with it
 		if (slay == m_pActiveStructLayer)
@@ -3099,7 +3101,6 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 	{
 		// first remove them from the terrain
 		RemoveFeatureGeometries(alay);
-		delete alay;
 
 		// If that was the current layer, deal with it
 		if (alay == m_pActiveAbstractLayer)
