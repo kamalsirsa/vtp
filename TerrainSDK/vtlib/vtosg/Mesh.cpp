@@ -105,10 +105,7 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 	pVert->reserve(NumVertices);
 	setVertexArray(pVert);
 
-#ifdef AVOID_OSG_INDICES
-//	if (VertType & VT_VBO)
-//		setUseVertexBufferObjects(true);
-#else
+#ifndef AVOID_OSG_INDICES
 	osg::UIntArray *pIndex = new osg::UIntArray;
 	pIndex->reserve(NumVertices);
 	setVertexIndices(pIndex);
@@ -143,6 +140,19 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 		setTexCoordIndices(0, pIndex);
 #endif
 	}
+
+#ifdef USE_OPENGL_BUFFER_OBJECTS
+	// This can only be done after the arrays have been set up
+	// The buffer objects will be compiled on the next rendering pass
+	// So if you change the contents of the vertex, normal, colour, or tex coord arrys
+	// after the next rendering pass you need to call the DirtyBufferObjects() function
+	// to cause them to recompile.
+	// Element Index buffer objects are handled slightly differently by OSG but the
+	// same constraint applies if you change any element indices. This occurs when
+	// you add geometry definitions to the mesh e.g by calling AddTriangle etc.
+	if (VertType & VT_VBO)
+		setUseVertexBufferObjects(true);
+#endif
 
 	osg::PrimitiveSet *pPrimSet;
 #ifndef AVOID_OSG_INDICES
@@ -1141,6 +1151,9 @@ void vtMesh::SetVtxPos(unsigned int i, const FPoint3 &p)
 #ifdef AVOID_OSG_INDICES
 	if (getPrimType() == osg::PrimitiveSet::POINTS)
 		getDrawArrays()->setCount(getVerts()->size());
+#ifdef USE_OPENGL_BUFFER_OBJECTS
+	getVerts()->dirty();
+#endif
 #else
 	if (getPrimType() == GL_POINTS)
 	{
@@ -1182,6 +1195,9 @@ void vtMesh::SetVtxNormal(unsigned int i, const FPoint3 &norm)
 		getNormals()->resize(i + 1);
 
 	getNormals()->at(i) = s;
+#ifdef USE_OPENGL_BUFFER_OBJECTS
+	getNormals()->dirty();
+#endif
 }
 
 /**
@@ -1214,6 +1230,9 @@ void vtMesh::SetVtxColor(unsigned int i, const RGBAf &color)
 		getColors()->resize(i + 1);
 
 	getColors()->at(i) = s;
+#ifdef USE_OPENGL_BUFFER_OBJECTS
+	getColors()->dirty();
+#endif
 }
 
 /**
@@ -1252,6 +1271,9 @@ void vtMesh::SetVtxTexCoord(unsigned int i, const FPoint2 &uv)
 		getTexCoords()->resize(i + 1);
 
 	getTexCoords()->at(i) = s;
+#ifdef USE_OPENGL_BUFFER_OBJECTS
+	getTexCoords()->dirty();
+#endif
 }
 
 /**

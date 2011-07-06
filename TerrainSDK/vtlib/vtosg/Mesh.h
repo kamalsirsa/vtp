@@ -14,6 +14,10 @@
 #include <osgText/Font>
 #include <osgText/Text>
 
+#ifdef AVOID_OSG_INDICES
+//#define USE_OPENGL_BUFFER_OBJECTS
+#endif
+
 // Shorthand
 #define FAB		osg::Material::FRONT_AND_BACK
 
@@ -21,7 +25,7 @@
 #define VT_Normals		1
 #define VT_Colors		2
 #define VT_TexCoords	4
-#ifdef AVOID_OSG_INDICES
+#ifdef USE_OPENGL_BUFFER_OBJECTS
 #define VT_VBO			8
 #endif
 class vtImage;
