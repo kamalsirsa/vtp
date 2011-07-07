@@ -644,7 +644,7 @@ void vtTiledGeom::SetVertexTarget(int iVertices)
 
 void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 {
-	VTLOG("Calling miniload constructor(%d,%d,..)\n", cols, rows);
+	VTLOG("SetupMiniLoad: Calling miniload constructor(%d,%d,..)\n", cols, rows);
 	m_pMiniLoad = new miniload((const unsigned char **)hfields,
 		(const unsigned char **)textures,
 		cols, rows,
@@ -655,6 +655,7 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 
 #if USE_VERTEX_CACHE
 	// use primitive caching with vertex arrays
+	VTLOG1(" Using vertex cache.\n");
 	m_pMiniCache = new minicache;
 	m_pMiniCache->attach(m_pMiniTile);
 #endif
@@ -772,6 +773,7 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 #if SUPPORT_THREADING
 	if (bThreading)
 	{
+		VTLOG1(" Using threading.\n");
 		// Now set up MiniCloud
 		m_pDataCloud = new datacloud(m_pMiniLoad);
 		m_pDataCloud->setloader(request_callback_async, this, check_callback,
@@ -800,6 +802,7 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 		// If the user wants, start with minimal tileset and load first tiles gradually
 		if (bGradual)
 		{
+			VTLOG1(" Using gradual loading.\n");
 			float rx = center.x;
 			float rz = center.z;
 			//float rrad = prange;
@@ -815,7 +818,10 @@ void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 			m_pMiniLoad->updateroi(rrad);
 		}
 	}
+	else
+		VTLOG1(" Not using threading.\n");
 #endif // THREADED
+	VTLOG1(" SetupMiniLoad finished.\n");
 }
 
 void vtTiledGeom::SetPagingRange(float val)
@@ -895,6 +901,10 @@ void vtTiledGeom::SetBaseURL(const char *url)
 
 void vtTiledGeom::DoRender()
 {
+	static bool bFirst = true;
+	if (bFirst)
+		VTLOG1("First vtTiledGeom render\n");
+
 	clock_t c1 = clock();
 
 	// This vtlib material is just a placeholder, since libMini applies its own
@@ -944,12 +954,11 @@ void vtTiledGeom::DoRender()
 //	m_iVertexCount = m_pMiniCache->getvtxcnt();
 #endif
 
-	static bool first = true;
-	if (first)
+	if (bFirst)
 	{
 		VTLOG("  First Render: %.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
-		first = false;
 		SetProgressCallback(NULL);
+		bFirst = false;
 	}
 
 	// When vertex count changes, we know a full update occurred

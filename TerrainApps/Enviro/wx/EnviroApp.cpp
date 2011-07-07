@@ -21,6 +21,7 @@
 
 #include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/Version.h"
 
 #include "vtui/Helper.h"	// for LogWindowsVersion, ProgressDialog
 #include "wxosg/GraphicsWindowWX.h"
@@ -190,6 +191,8 @@ bool EnviroApp::OnInit()
 
 		VTLOG("Opening the Startup dialog.\n");
 		wxString appname(STRING_APPNAME, wxConvUTF8);
+		appname += _T(" v");
+		appname += _T(VTP_VERSION);
 		appname += _(" Startup");
 		STARTUP_DIALOG StartDlg(NULL, -1, appname, wxDefaultPosition);
 

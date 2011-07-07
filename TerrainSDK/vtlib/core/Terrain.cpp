@@ -2094,6 +2094,7 @@ bool vtTerrain::CreateStep1()
 	// User may have have supplied a grid directly, via SetLocalGrid
 	if (m_pElevGrid.get())
 	{
+		VTLOG1("Using supplied elevation grid.\n");
 		m_pElevGrid->SetupConversion(m_Params.GetValueFloat(STR_VERTICALEXAG));
 		m_pHeightField = m_pElevGrid.get();
 		m_proj = m_pElevGrid->GetProjection();
@@ -2105,6 +2106,7 @@ bool vtTerrain::CreateStep1()
 	// User may have supplied a TIN directly, via SetTin
 	if (m_pTin)
 	{
+		VTLOG1("Using supplied TIN.\n");
 		m_pHeightField = m_pTin;
 		m_proj = m_pTin->m_proj;
 		// set global projection based on this terrain

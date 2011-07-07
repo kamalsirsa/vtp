@@ -557,6 +557,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (m_pSkyDome)
 		{
 			// Tell the skydome where on the planet we are
+			VTLOG1("Placing skydome.\n");
 			DPoint2 geo = pTerr->GetCenterGeoLocation();
 			m_pSkyDome->SetGeoLocation(geo);
 
