@@ -204,7 +204,7 @@ EVT_UPDATE_UI(ID_ELEV_FILL_SLOW,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILL_REGIONS,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateIsElevation)
 EVT_UPDATE_UI(ID_ELEV_VERT_OFFSET,	MainFrame::OnUpdateIsElevation)
-EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateIsElevation)
 EVT_UPDATE_UI(ID_ELEV_EXPORT_TILES,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_COPY,			MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
@@ -2208,44 +2208,70 @@ void MainFrame::OnVertOffsetElevation(wxCommandEvent &event)
 
 void MainFrame::OnElevExport(wxCommandEvent &event)
 {
-	if (!GetActiveElevLayer())
+	vtElevLayer *pEL = GetActiveElevLayer();
+	if (!pEL)
 		return;
 
-	wxString choices[13];
-	choices[0] = _T("3TX");
-	choices[1] = _T("ArcInfo ASCII Grid");
-	choices[2] = _T("BMP");
-	choices[3] = _T("ChunkLOD (.chu)");
-	choices[4] = _T("GeoTIFF");
-	choices[5] = _T("MSI Planet");
-	choices[6] = _T("PNG (16-bit greyscale)");
-	choices[7] = _T("RAW/INF for MS Flight Simulator");
-	choices[8] = _T("STM");
-	choices[9] = _T("TIN (.itf)");
-	choices[10] = _T("TerraGen");
-	choices[11] = _T("VRML ElevationGrid");
-	choices[12] = _T("XYZ ASCII Points");
+	bool bIsGrid = (pEL->GetGrid() != NULL);
+
+	wxArrayString choices;
+	if (bIsGrid)
+	{
+		choices.Add(_T("3TX"));
+		choices.Add(_T("ArcInfo ASCII Grid"));
+		choices.Add(_T("BMP"));
+		choices.Add(_T("ChunkLOD (.chu)"));
+		choices.Add(_T("GeoTIFF"));
+		choices.Add(_T("MSI Planet"));
+		choices.Add(_T("PNG (16-bit greyscale)"));
+		choices.Add(_T("RAW/INF for MS Flight Simulator"));
+		choices.Add(_T("STM"));
+		choices.Add(_T("TIN (.itf)"));
+		choices.Add(_T("TerraGen"));
+		choices.Add(_T("VRML ElevationGrid"));
+		choices.Add(_T("XYZ ASCII Points"));
+	}
+	else
+	{
+		choices.Add(_T("GMS (Aquaveo) .tin"));
+	}
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 13, choices);
+		_("Export to file format:"), choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
-	switch (dlg.GetSelection())
+	if (bIsGrid)
 	{
-	case 0: Export3TX(); break;
-	case 1: ExportASC(); break;
-	case 2: ExportBMP(); break;
-	case 3: ExportChunkLOD(); break;
-	case 4: ExportGeoTIFF(); break;
-	case 5: ExportPlanet(); break;
-	case 6: ExportPNG16(); break;
-	case 7: ExportRAWINF(); break;
-	case 8: ExportSTM(); break;
-	case 9: ExportTIN(); break;
-	case 10: ExportTerragen(); break;
-	case 11: ExportVRML(); break;
-	case 12: ExportXYZ(); break;
+		switch (dlg.GetSelection())
+		{
+		case 0: Export3TX(); break;
+		case 1: ExportASC(); break;
+		case 2: ExportBMP(); break;
+		case 3: ExportChunkLOD(); break;
+		case 4: ExportGeoTIFF(); break;
+		case 5: ExportPlanet(); break;
+		case 6: ExportPNG16(); break;
+		case 7: ExportRAWINF(); break;
+		case 8: ExportSTM(); break;
+		case 9: ExportTIN(); break;
+		case 10: ExportTerragen(); break;
+		case 11: ExportVRML(); break;
+		case 12: ExportXYZ(); break;
+		}
+	}
+	else	// is a TIN
+	{
+		vtString fname = pEL->GetExportFilename(FSTRING_GMS);
+		if (fname == "")
+			return;
+		OpenProgressDialog(_T("Writing TIN"), false, this);
+		bool success = pEL->GetTin()->WriteGMS(fname, progress_callback);
+		CloseProgressDialog();
+		if (success)
+			DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+		else
+			DisplayAndLog("Error writing file.");
 	}
 }
 

@@ -77,6 +77,7 @@ public:
 	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadADF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadGMS(const char *fname, bool progress_callback(int) = NULL);
+	bool WriteGMS(const char *fname, bool progress_callback(int));
 	void FreeData();
 
 	unsigned int AddSurfaceType(const vtString &surface_texture, bool bTiled = false);

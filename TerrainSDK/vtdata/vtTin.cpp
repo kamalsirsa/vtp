@@ -515,6 +515,47 @@ bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 	return true;
 }
 
+bool vtTin::WriteGMS(const char *fname, bool progress_callback(int))
+{
+	FILE *fp = vtFileOpen(fname, "wb");
+	if (!fp)
+		return false;
+
+	// first line is file identifier
+	fprintf(fp, "TIN\n");
+	fprintf(fp, "BEGT\n");
+	//fprintf(fp, "TNAM tin\n");	// "name" of the TIN
+	//fprintf(fp, "MAT 1\n");		// "TIN material ID"; optional?
+
+	int i, count = 0;
+	int verts = NumVerts();
+	int tris = NumTris();
+	int total = verts + tris;
+
+	// write verts
+	fprintf(fp, "VERT %d\n", verts);
+	for (i = 0; i < verts; i++)
+	{
+		fprintf(fp, "%lf %lf %lf\n", m_vert[i].x, m_vert[i].y, m_z[i]);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}
+	// write tris
+	fprintf(fp, "TRI %d\n", tris);
+	for (i = 0; i < tris; i++)
+	{
+		// the indices in the file are 1-based, so add 1
+		fprintf(fp, "%d %d %d\n", m_tri[i*3+0]+1, m_tri[i*3+1]+1, m_tri[i*3+2]+1);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}
+	fprintf(fp, "ENDT\n");
+	fclose(fp);
+	return true;
+}
+
 void vtTin::FreeData()
 {
 	m_vert.FreeData();

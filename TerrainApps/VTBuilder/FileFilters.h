@@ -24,6 +24,7 @@
 #define FSTRING_ECW		_T("ECW Files (*.ecw)|*.ecw")
 #define FSTRING_ENZI	_T("ENZI Files (*.enzi)|*.enzi")
 #define FSTRING_GML		_T("GML Files (*.gml, *.xml)|*.gml;*.xml")
+#define FSTRING_GMS		_T("GMS Files (*.tin)|*.tin")
 #define FSTRING_GTOPO	_T("GTOPO30 Files (*.hdr)|*.hdr")
 #define FSTRING_HGT		_T("HGT SRTM Files (*.hgt)|*.hgt")
 #define FSTRING_HTML	_T("HTML Files (*.html)|*.html")
