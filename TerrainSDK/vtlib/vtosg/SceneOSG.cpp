@@ -235,6 +235,9 @@ m_pOsgViewer->suggestBestThreadingModel();
 	m_StateRoot = new osg::Group;
 	m_pOsgViewer->setSceneData(m_StateRoot);
 
+	// By default, things are lit, unless they ask not to be
+	m_StateRoot->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+
 	//m_StateRoot->addCullCallback(new MyCull);
 	//m_StateRoot->setUpdateCallback(new MyUpdate);
 	//m_StateRoot->setEventCallback(new MyEvent);

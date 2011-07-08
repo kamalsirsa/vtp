@@ -198,8 +198,6 @@ vtGroup *vtTerrainScene::BeginTerrainScene()
 
 	m_pTop = new vtGroup;
 	m_pTop->setName("All Terrain");
-	// Manage our own lights
-	m_pTop->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 
 	// create sky group - this holds all celestial objects
 	_CreateSky();
