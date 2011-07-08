@@ -181,7 +181,7 @@ void InstanceDlg::OnBrowseModelFile( wxCommandEvent &event )
 {
 	wxString filter;
 	filter += _("3D Model files");
-	filter += _T(" (*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive)|*.3ds;*.obj;*.lwo;*.flt;*.osg;*.ive|");
+	filter += _T(" (*.3ds;*.dae;*.obj;*.lwo;*.flt;*.osg;*.ive)|*.3ds;*.dae;*.obj;*.lwo;*.flt;*.osg;*.ive|");
 	filter += _("All files");
 	filter += _T(" (*.*)|*.*");
 	wxFileDialog SelectFile(this, _("Choose model file"),
