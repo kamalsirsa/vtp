@@ -524,8 +524,9 @@ bool vtTin::WriteGMS(const char *fname, bool progress_callback(int))
 	// first line is file identifier
 	fprintf(fp, "TIN\n");
 	fprintf(fp, "BEGT\n");
+	fprintf(fp, "ID 1\n");			// Indices start at 1
 	//fprintf(fp, "TNAM tin\n");	// "name" of the TIN
-	//fprintf(fp, "MAT 1\n");		// "TIN material ID"; optional?
+	//fprintf(fp, "MAT 1\n");		// "TIN material ID"; optional
 
 	int i, count = 0;
 	int verts = NumVerts();
@@ -908,6 +909,40 @@ int vtTin::RemoveUnusedVertices()
 			i++;
 	}
 	return count;
+}
+
+/**
+ Copy all the vertices and triangle of another TIN to this one.
+ This is a simple join.  No attempt is made to share vertices or any other integration.
+ It is further assumed that the two TINs have compatible coordinate systems.
+ */
+void vtTin::AppendFrom(vtTin *pTin)
+{
+	size_t verts = pTin->NumVerts();
+	size_t tris = pTin->NumTris();
+
+	// Preallocate (for efficiency)
+	m_vert.SetMaxSize(m_vert.GetSize() + verts + 1);
+	m_z.SetMaxSize(m_vert.GetSize() + verts + 1);
+	m_tri.SetMaxSize(m_tri.GetSize() + (tris*3) + 1);
+
+	// Remember the starting point for vertex indices
+	int base = NumVerts();
+
+	// Simple, naive copy of vertices and triangles
+	DPoint2 p;
+	float z;
+	for (size_t i = 0; i < verts; i++)
+	{
+		pTin->GetVert(i, p, z);
+		AddVert(p, z);
+	}
+	for (size_t i = 0; i < tris; i++)
+	{
+		int *tri = pTin->GetAtTri(i);
+		AddTri(base+tri[0], base+tri[1], base+tri[2]);
+	}
+	ComputeExtents();
 }
 
 /**

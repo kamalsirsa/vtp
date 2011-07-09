@@ -89,6 +89,11 @@ public:
 	void VertOffset(float fAmount);
 	bool ConvertProjection(const vtProjection &proj_new);
 
+	// Accessors
+	void GetVert(int v, DPoint2 &p, float &z) { p = m_vert.GetAt(v); z = m_z[v]; }
+	void GetTri(int t, int &v0, int &v1, int &v2) { v0 = m_tri[t*3]; v1 = m_tri[t*3+1]; v2 = m_tri[t*3+2]; }
+	int *GetAtTri(int t) { return m_tri.GetData() + (t*3); }
+
 	// Implement required vtHeightField methods
 	virtual bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
@@ -101,6 +106,7 @@ public:
 
 	void CleanupClockwisdom();
 	int RemoveUnusedVertices();
+	void AppendFrom(vtTin *pTin);
 	double GetTriMaxEdgeLength(int iTri) const;
 	void MergeSharedVerts(bool progress_callback(int) = NULL);
 	bool HasVertexNormals() { return m_vert_normal.GetSize() != 0; }

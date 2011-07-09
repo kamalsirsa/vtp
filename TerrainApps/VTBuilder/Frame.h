@@ -109,7 +109,7 @@ protected:
 	void OnLayerProperties(wxCommandEvent& event);
 	void OnLayerConvert(wxCommandEvent& event);
 	void OnLayerSetProjection(wxCommandEvent& event);
-	void OnLayerFlatten(wxCommandEvent& event);
+	void OnLayerCombine(wxCommandEvent& event);
 
 	void OnUpdateLayerSave(wxUpdateUIEvent& event);
 	void OnUpdateLayerSaveAs(wxUpdateUIEvent& event);
@@ -117,7 +117,7 @@ protected:
 	void OnUpdateMRUImport(wxUpdateUIEvent& event);
 	void OnUpdateLayerProperties(wxUpdateUIEvent& event);
 	void OnUpdateLayerConvert(wxUpdateUIEvent& event);
-	void OnUpdateLayerFlatten(wxUpdateUIEvent& event);
+	void OnUpdateLayerCombine(wxUpdateUIEvent& event);
 
 	void OnLayerShow(wxCommandEvent& event);
 	void OnLayerUp(wxCommandEvent& event);

@@ -109,7 +109,7 @@ EVT_MENU(ID_LAYER_IMPORT_DXF,	MainFrame::OnLayerImportDXF)
 EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
 EVT_MENU(ID_LAYER_CONVERTPROJ,	MainFrame::OnLayerConvert)
 EVT_MENU(ID_LAYER_SETPROJ,		MainFrame::OnLayerSetProjection)
-EVT_MENU(ID_LAYER_FLATTEN,		MainFrame::OnLayerFlatten)
+EVT_MENU(ID_LAYER_COMBINE,		MainFrame::OnLayerCombine)
 EVT_MENU(ID_EDIT_OFFSET,		MainFrame::OnEditOffset)
 
 EVT_UPDATE_UI(ID_LAYER_SAVE,	MainFrame::OnUpdateLayerSave)
@@ -117,7 +117,7 @@ EVT_UPDATE_UI(ID_LAYER_SAVE_AS,	MainFrame::OnUpdateLayerSaveAs)
 EVT_UPDATE_UI(ID_MRU_LAYER,		MainFrame::OnUpdateMRULayer)
 EVT_UPDATE_UI(ID_MRU_IMPORT,	MainFrame::OnUpdateMRUImport)
 EVT_UPDATE_UI(ID_LAYER_PROPS,	MainFrame::OnUpdateLayerProperties)
-EVT_UPDATE_UI(ID_LAYER_FLATTEN,	MainFrame::OnUpdateLayerFlatten)
+EVT_UPDATE_UI(ID_LAYER_COMBINE,	MainFrame::OnUpdateLayerCombine)
 EVT_UPDATE_UI(ID_EDIT_OFFSET,	MainFrame::OnUpdateEditOffset)
 
 EVT_MENU(ID_VIEW_SHOWLAYER,		MainFrame::OnLayerShow)
@@ -429,7 +429,7 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_LAYER_PROPS, _("Layer Properties"), _("Layer Properties"));
 	layerMenu->Append(ID_EDIT_OFFSET, _("Offset Coordinates"), _("Offset"));
 	layerMenu->AppendSeparator();
-	layerMenu->Append(ID_LAYER_FLATTEN, _("&Flatten Layers"), _("Flatten"));
+	layerMenu->Append(ID_LAYER_COMBINE, _("&Combine Layers"), _("Combine"));
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_CONVERTPROJ, _("Convert Projection"), _("Convert"));
 	layerMenu->Append(ID_LAYER_SETPROJ, _("Set Projection"), _("Set Projection"));
@@ -1507,7 +1507,7 @@ void MainFrame::OnUpdateLayerConvert(wxUpdateUIEvent& event)
 	event.Enable(m_Layers.GetSize() != 0);
 }
 
-void MainFrame::OnLayerFlatten(wxCommandEvent &event)
+void MainFrame::OnLayerCombine(wxCommandEvent &event)
 {
 	vtLayer *pActive = GetActiveLayer();
 	LayerType t = pActive->GetType();
@@ -1541,15 +1541,17 @@ void MainFrame::OnLayerFlatten(wxCommandEvent &event)
 	}
 }
 
-void MainFrame::OnUpdateLayerFlatten(wxUpdateUIEvent& event)
+void MainFrame::OnUpdateLayerCombine(wxUpdateUIEvent& event)
 {
 	vtLayer *lp = GetActiveLayer();
+	vtElevLayer *ep = GetActiveElevLayer();
 	event.Enable(lp &&
 			(lp->GetType() == LT_ROAD ||
 			 lp->GetType() == LT_VEG ||
 			 lp->GetType() == LT_WATER ||
 			 lp->GetType() == LT_STRUCTURE ||
-			 lp->GetType() == LT_RAW));
+			 lp->GetType() == LT_RAW ||
+			 (ep && ep->GetTin() != NULL)));	// TINs can also combine
 }
 
 

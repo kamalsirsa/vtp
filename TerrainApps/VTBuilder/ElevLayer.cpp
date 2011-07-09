@@ -512,12 +512,14 @@ bool vtElevLayer::AppendDataFrom(vtLayer *pL)
 	vtElevLayer *pEL = (vtElevLayer *)pL;
 	if (m_pGrid)
 	{
-		// deliberately unimplemented - it does not make sense to do this
+		// Deliberately unimplemented - it does not make sense to do this
 		// operation with grids
 	}
 	if (m_pTin && pEL->m_pTin)
 	{
-		// TODO (long-term..)
+		// In some cases, it does make sense to merge TINs
+		m_pTin->AppendFrom(pEL->m_pTin);
+		return true;
 	}
 	return false;
 }
