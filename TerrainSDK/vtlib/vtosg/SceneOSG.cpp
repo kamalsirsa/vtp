@@ -181,23 +181,7 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 	// Kill multi-threading on OSX until wxGLContext properly implemented on that platform
 	m_pOsgViewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
 #endif
-	switch(m_pOsgViewer->getThreadingModel() == osgViewer::Viewer::AutomaticSelection ? m_pOsgViewer->suggestBestThreadingModel() : m_pOsgViewer->getThreadingModel())
-	{
-		case osgViewer::Viewer::SingleThreaded:
-			VTLOG("OSG threading model is - singleThreaded\n");
-			break;
-		case osgViewer::Viewer::CullDrawThreadPerContext:
-			VTLOG("OSG threading model is - CullDrawThreadPerContext\n");
-			break;
-		case osgViewer::Viewer::DrawThreadPerContext:
-			VTLOG("OSG threading model is - DrawThreadPerContext\n");
-			break;
-		case osgViewer::Viewer::CullThreadPerCameraDrawThreadPerContext:
-			VTLOG("OSG threading model is - CullThreadPerCameraDrawThreadPerContext\n");
-			break;
-	}
 
-m_pOsgViewer->suggestBestThreadingModel();
 #ifdef USE_OSG_STATS
 	osgViewer::StatsHandler* pStatsHandler = new osgViewer::StatsHandler;
 	pStatsHandler->setKeyEventPrintsOutStats(0);

@@ -391,6 +391,23 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 	vtGetScene()->Init(MyArgc, MyArgv, g_Options.m_bStereo, g_Options.m_iStereoMode);
 	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
 
+	switch(vtGetScene()->getViewer()->getThreadingModel() == osgViewer::Viewer::AutomaticSelection
+		? vtGetScene()->getViewer()->suggestBestThreadingModel() : vtGetScene()->getViewer()->getThreadingModel())
+	{
+		case osgViewer::Viewer::SingleThreaded:
+			VTLOG("OSG threading model is - singleThreaded\n");
+			break;
+		case osgViewer::Viewer::CullDrawThreadPerContext:
+			VTLOG("OSG threading model is - CullDrawThreadPerContext\n");
+			break;
+		case osgViewer::Viewer::DrawThreadPerContext:
+			VTLOG("OSG threading model is - DrawThreadPerContext\n");
+			break;
+		case osgViewer::Viewer::CullThreadPerCameraDrawThreadPerContext:
+			VTLOG("OSG threading model is - CullThreadPerCameraDrawThreadPerContext\n");
+			break;
+	}
+
 	// Make sure the scene knows the size of the canvas
 	//  (on wxGTK, the first size events arrive too early before the Scene exists)
 	wxSize canvas_size = frame->m_canvas->GetClientSize();
