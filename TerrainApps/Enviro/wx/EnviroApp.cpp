@@ -55,6 +55,7 @@ EnviroApp::EnviroApp()
 
 void EnviroApp::Args(int argc, wxChar **argv)
 {
+	VTLOG("There are %d command-line arguments:\n", argc);
 	for (int i = 0; i < argc; i++)
 	{
 		wxString str1 = argv[i];
@@ -76,6 +77,8 @@ void EnviroApp::Args(int argc, wxChar **argv)
 
 void EnviroApp::SetupLocale()
 {
+	VTLOG1("SetupLocale:\n");
+
 	wxLog::SetVerbose(true);
 //	wxLog::AddTraceMask(_T("i18n"));
 
