@@ -37,6 +37,8 @@
 #include "LightDlg.h"
 #include "wxosg/SceneGraphDlg.h"
 
+#include "osgUtil/SmoothingVisitor"
+
 #ifndef __WXMSW__
 #  include "icons/cmanager.xpm"
 #  include "bitmaps/axes.xpm"
@@ -111,6 +113,8 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_ITEM_ROTMODEL, vtFrame::OnUpdateItemModelExists)
 	EVT_MENU(ID_ITEM_SET_AMBIENT, vtFrame::OnItemSetAmbient)
 	EVT_UPDATE_UI(ID_ITEM_SET_AMBIENT, vtFrame::OnUpdateItemModelExists)
+	EVT_MENU(ID_ITEM_SMOOTHING, vtFrame::OnItemSmoothing)
+	EVT_UPDATE_UI(ID_ITEM_SMOOTHING, vtFrame::OnUpdateItemModelExists)
 	EVT_MENU(ID_ITEM_SAVESOG, vtFrame::OnItemSaveSOG)
 	EVT_MENU(ID_ITEM_SAVEOSG, vtFrame::OnItemSaveOSG)
 	EVT_MENU(ID_ITEM_SAVEIVE, vtFrame::OnItemSaveIVE)
@@ -316,6 +320,7 @@ void vtFrame::CreateMenus()
 	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_ROTMODEL, _T("Rotate Model Around X Axis"));
 	itemMenu->Append(ID_ITEM_SET_AMBIENT, _T("Set materials' ambient from diffuse"));
+	itemMenu->Append(ID_ITEM_SMOOTHING, _T("Fix normals (apply smoothing)"));
 	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"));
 	itemMenu->Append(ID_ITEM_SAVEOSG, _T("Save Model as OSG"));
@@ -744,6 +749,15 @@ void vtFrame::OnItemSetAmbient(wxCommandEvent& event)
 	SetAmbientVisitor sav;
 	sav.ratio = 0.4f;
 	node->accept(sav);
+}
+
+void vtFrame::OnItemSmoothing(wxCommandEvent& event)
+{
+	vtModel *mod = m_pCurrentModel;
+	osg::Node *node = m_nodemap[mod];
+
+	osgUtil::SmoothingVisitor smoother;
+	node->accept(smoother);
 }
 
 #include "vtlib/core/vtSOG.h"
