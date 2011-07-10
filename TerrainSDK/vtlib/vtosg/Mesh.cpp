@@ -1030,7 +1030,7 @@ void vtMesh::AddFan(int *idx, int iNVerts)
 }
 
 /**
- * Adds an indexed triangle strip to the mesh.
+ * Adds an indexed strip to the mesh.
  *
  * \param iNVerts The number of vertices in the strip.
  * \param pIndices An array of the indices of the vertices in the strip.
@@ -1039,7 +1039,18 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 {
 #ifdef AVOID_OSG_INDICES
 	osg::DrawElements *pDrawElements;
-	pDrawElements = new osg::DrawElementsUShort(osg::PrimitiveSet::TRIANGLE_STRIP);
+	switch(m_PrimType)
+	{
+		case osg::PrimitiveSet::LINE_STRIP:
+			pDrawElements = new osg::DrawElementsUShort(osg::PrimitiveSet::LINE_STRIP);
+			break;
+		case osg::PrimitiveSet::TRIANGLE_STRIP:
+			pDrawElements = new osg::DrawElementsUShort(osg::PrimitiveSet::TRIANGLE_STRIP);
+			break;
+		case osg::PrimitiveSet::QUAD_STRIP:
+			pDrawElements = new osg::DrawElementsUShort(osg::PrimitiveSet::QUAD_STRIP);
+			break;
+	}
 	pDrawElements->reserveElements(iNVerts);
 	for (int i = 0; i < iNVerts; i++)
 		pDrawElements->addElement(pIndices[i]);
