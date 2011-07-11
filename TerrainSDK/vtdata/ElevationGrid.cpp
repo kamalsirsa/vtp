@@ -574,9 +574,6 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 	int gaps = 1;
 	float value, value2, sum;
 
-	float *patch_column = new float[m_iRows];
-	float *patch_row = new float[m_iColumns];
-
 	int xmin = 0, xmax = m_iColumns, ymin = 0, ymax = m_iRows;
 	if (area)
 	{
@@ -599,14 +596,13 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 		if (ymax > m_iRows) ymax = m_iRows;
 	}
 
+	std::vector<float> patch_column(m_iRows);
+	std::vector<float> patch_row(m_iColumns);
+
 	// For speed, remember which lines already have no gaps, so we don't have
 	// to visit them again.
-	bool *line_gap_columns = new bool[m_iColumns];
-	bool *line_gap_rows = new bool[m_iRows];
-	for (i = 0; i < m_iColumns; i++)
-		line_gap_columns[i] = true;
-	for (i = 0; i < m_iRows; i++)
-		line_gap_rows[i] = true;
+	std::vector<bool> line_gap_columns(m_iColumns, true);
+	std::vector<bool> line_gap_rows(m_iRows, true);
 
 	int iPass = 0;
 	int iTotalGaps;
@@ -744,10 +740,6 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 		}
 		iPass++;
 	}
-	delete [] line_gap_columns;
-	delete [] line_gap_rows;
-	delete [] patch_column;
-	delete [] patch_row;
 
 	// recompute what has likely changed
 	ComputeHeightExtents();
