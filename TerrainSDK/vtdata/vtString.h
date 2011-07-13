@@ -15,7 +15,9 @@
 
 #include "config_vtdata.h"
 
+#if SUPPORT_WSTRING
 class wstring2;
+#endif
 
 #ifdef WIN32
 #  define WIN_UNIX_CDECL __cdecl
@@ -212,8 +214,8 @@ public:
 
 #if SUPPORT_WSTRING
 	wstring2 UTF8ToWideString();
-	vtString UTF8ToLocal();
 #endif
+	vtString UTF8ToLocal();
 
 // Implementation
 public:
@@ -349,10 +351,8 @@ void EscapeStringForXML(const std::wstring &input, std::string &output);
 void EscapeStringForXML(const std::wstring &input, std::wstring &output);
 #endif
 
-
-#if SUPPORT_WSTRING
 vtString UTF8ToLocal(const char *string_utf8);
-#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 // wstring2

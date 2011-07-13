@@ -932,7 +932,6 @@ void DisplayAndLog(const char *pFormat, ...)
 	VTLOG1(ach);
 }
 
-#if SUPPORT_WSTRING
 //
 // Also wide-character version of the same function.
 //
@@ -963,10 +962,9 @@ void DisplayAndLog(const wchar_t *pFormat, ...)
 	if (IsGUIApp())
 		wxMessageBox(msg);
 
-	VTLOG1(ach);
+	VTLOG1(msg.ToUTF8());
 	VTLOG1("\n");
 }
-#endif // SUPPORT_WSTRING
 
 /**
  * Example: to launch the enviro documentation in Italian:

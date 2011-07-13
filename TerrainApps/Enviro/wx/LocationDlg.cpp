@@ -778,7 +778,11 @@ void LocationDlg::OnStoreAs( wxCommandEvent &event )
 		return;
 
 	str = dlg.GetValue();
+#if SUPPORT_WSTRING
 	bool success = m_pSaver->StoreTo(num, str.c_str());
+#else
+	bool success = m_pSaver->StoreTo(num, (const char *) str.ToUTF8());
+#endif
 	if (success)
 	{
 		RefreshList();

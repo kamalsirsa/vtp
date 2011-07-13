@@ -368,9 +368,9 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 								   bool bRefresh, bool bWarn)
 {
 	VTLOG1("ImportDataFromFile '");
-	VTLOG1(strFileName);
+	VTLOG1(strFileName.ToUTF8());
 	VTLOG1("', type '");
-	VTLOG1(GetLayerTypeName(ltype));
+	VTLOG1(GetLayerTypeName(ltype).ToUTF8());
 	VTLOG1("'\n");
 
 	// check the file extension

@@ -20,6 +20,7 @@
 // Dialogs
 #include "GeocodeDlg.h"
 
+#if SUPPORT_WSTRING
 
 bool FindGeoPointInBuffer(const char *buffer, DPoint2 &p)
 {
@@ -311,3 +312,8 @@ void MainFrame::DoGeocode()
 	}
 }
 
+#else
+void MainFrame::DoGeocode()
+{
+}
+#endif // SUPPORT_WSTRING

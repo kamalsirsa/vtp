@@ -372,13 +372,13 @@ void LayerDlg::RefreshTreeTerrain()
 						if (vs != "")
 						{
 							str = _("File ");
-							str += vs.UTF8ToWideString().c_str();
+							str += wxString((const char *)vs, wxConvUTF8);
 						}
 						else
 						{
 							vs = inst->GetValueString("itemname", true);
 							str = _("Item ");
-							str += vs.UTF8ToWideString().c_str();
+							str += wxString((const char *)vs, wxConvUTF8);
 						}
 						hItem = m_pTree->AppendItem(hLayer, str, ICON_INSTANCE, ICON_INSTANCE);
 					}

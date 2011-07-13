@@ -966,14 +966,21 @@ osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache, bool
 		//vtLogGraph(group);
 
 		// If it worked, the transform will be replaced by a Group
-		osg::Node *node = group->getChild(0);
-		if (dynamic_cast<osg::MatrixTransform*>(node) != NULL)
+		osg::Node *child = group->getChild(0);
+		if (dynamic_cast<osg::MatrixTransform*>(child) != NULL)
+		{
 			VTLOG1("  Transform flatten FAILED.\n");
+
+			// We have to return it with the transform still above it
+			node = transform;
+		}
 		else
+		{
 			VTLOG1("  Transform flatten Succeeded.\n");
 
-		// The resulting node is whatever remains under the optimization parent
-		node = group->getChild(0);
+			// The resulting node is whatever remains under the optimization parent
+			node = child;
+		}
 	}
 	else
 	{

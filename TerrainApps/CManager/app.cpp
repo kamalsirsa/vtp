@@ -18,24 +18,14 @@
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/vtSOG.h"
 #include "vtui/Helper.h"	// for ConvertArgcArgv
+#include "vtui/LogCatcher.h"
 #include "wxosg/GraphicsWindowWX.h"
-#include "vtdata/vtLog.h"
 
 #include "app.h"
 #include "frame.h"
 #include "canvas.h"
 
 IMPLEMENT_APP(vtApp)
-
-class LogCatcher : public wxLog
-{
-	void DoLogString(const wxChar *szString, time_t t)
-	{
-		VTLOG(" wxLog: ");
-		VTLOG(szString);
-		VTLOG("\n");
-	}
-};
 
 
 //

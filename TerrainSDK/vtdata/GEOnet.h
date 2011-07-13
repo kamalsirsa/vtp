@@ -1,7 +1,7 @@
 //
 // GEOnet.h
 //
-// Copyright (c) 2002-2006 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,10 +10,9 @@
 
 #include "config_vtdata.h"
 #include "MathTypes.h"
+#include "vtString.h"
 
 #if SUPPORT_WSTRING
-
-#include "vtString.h"
 
 class Place
 {

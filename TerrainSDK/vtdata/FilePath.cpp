@@ -3,7 +3,7 @@
 //
 // Functions for helping with management of files, paths and directories.
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -60,10 +60,17 @@ dir_iter::dir_iter()
 
 dir_iter::dir_iter(std::string const &dirname)
 {
+#if SUPPORT_WSTRING
 	wstring2 name;
 	name.from_utf8(dirname.c_str());
 	name += L"\\*";
 	m_handle = _wfindfirst((wchar_t *)name.c_str(), &m_data);
+#else
+	std::string name;
+	name = dirname;
+	name += "\\*";
+	m_handle = _findfirst(name.c_str(), &m_data);
+#endif
 }
 
 dir_iter::~dir_iter()
@@ -84,15 +91,24 @@ bool dir_iter::is_hidden()
 
 std::string dir_iter::filename()
 {
+#if SUPPORT_WSTRING
 	wstring2 name = m_data.name;
 	return name.to_utf8();
+#else
+	std::string name = m_data.name;
+	return name;
+#endif
 }
 
 void dir_iter::operator++()
 {
 	if (m_handle != -1)
 	{
+#if SUPPORT_WSTRING
 		if (_wfindnext(m_handle, &m_data) == -1)
+#else
+		if (_findnext(m_handle, &m_data) == -1)
+#endif
 		{
 			_findclose(m_handle);
 			m_handle = -1;
@@ -242,9 +258,13 @@ int vtMkdir(const char *dirname)
 {
 #ifdef _MSC_VER
 	// convert utf-8 to widechar
+#if SUPPORT_WSTRING
 	wstring2 name;
 	name.from_utf8(dirname);
 	return _wmkdir(name.c_str());
+#else
+	return _mkdir(dirname);
+#endif
 #else
 	return mkdir(dirname, 0775);
 #endif
@@ -769,9 +789,13 @@ FILE *vtFileOpen(const char *fname_utf8, const char *mode)
 
 #if WIN32
 	// Windows
+#if SUPPORT_WSTRING
 	wstring2 fn, mo(mode);
 	fn.from_utf8(fname_utf8);
 	FILE *fp = _wfopen(fn.c_str(), mo.c_str());
+#else
+	FILE *fp = fopen(fname_utf8, mode);
+#endif
 	if (!fp)
 	{
 		if (errno != ENOENT)
@@ -796,7 +820,7 @@ FILE *vtFileOpen(const char *fname_utf8, const char *mode)
 }
 
 /**
- * Open a file using a UTF-8 encoded filename.
+ * Open a file using a wide-character (i.e. Unicode) filename.
  *
  * Parameters are the same as fopen().  The only difference is that
  * instead of being limited to multi-byte local charset, it is Unicode
@@ -804,6 +828,8 @@ FILE *vtFileOpen(const char *fname_utf8, const char *mode)
  */
 FILE *vtFileOpen(wchar_t *fname_wide, const char *mode)
 {
+  #if SUPPORT_WSTRING
+
 #if WIN32
 	// Windows
 	wstring2 mo(mode);
@@ -814,13 +840,13 @@ FILE *vtFileOpen(wchar_t *fname_wide, const char *mode)
 	return fopen(fn.to_utf8(), mode);
 #else
 	// some other Unix flavor
-  #if SUPPORT_WSTRING
 	wstring2 fn(fname_wide);
 	return fopen(fn.mb_str(), mode);
+#endif
+
   #else
 	return NULL;	// Are there Unix platforms without wstring?
   #endif
-#endif
 }
 
 #if SUPPORT_WSTRING

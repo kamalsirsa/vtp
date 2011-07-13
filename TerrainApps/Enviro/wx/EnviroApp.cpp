@@ -20,10 +20,10 @@
 #include "vtlib/core/Terrain.h"
 
 #include "vtdata/DataPath.h"
-#include "vtdata/vtLog.h"
 #include "vtdata/Version.h"
 
 #include "vtui/Helper.h"	// for LogWindowsVersion, ProgressDialog
+#include "vtui/LogCatcher.h"
 #include "wxosg/GraphicsWindowWX.h"
 
 #include "xmlhelper/easyxml.hpp"
@@ -144,16 +144,6 @@ void EnviroApp::SetupLocale()
 
 	wxLog::SetVerbose(false);
 }
-
-class LogCatcher : public wxLog
-{
-	void DoLogString(const wxChar *szString, time_t t)
-	{
-		VTLOG1(" wxLog: ");
-		VTLOG1(szString);
-		VTLOG1("\n");
-	}
-};
 
 //
 // Initialize the app object

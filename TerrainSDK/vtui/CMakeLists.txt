@@ -7,7 +7,7 @@ set(VTUI_SOURCE_FILES
 set(VTUI_HEADER_FILES 
 		vtui_UI.h AutoDialog.h BuildingDlg.h ColorMapDlg.h DistanceDlg.h
 		DoubleProgDlg.h FeatureTableDlg.h Helper.h InstanceDlg.h Joystick.h
-		LinearStructDlg.h ProfileDlg.h ProfileEditDlg.h ProjectionDlg.h
+		LinearStructDlg.h LogCatcher.h ProfileDlg.h ProfileEditDlg.h ProjectionDlg.h
 		SizeDlg.h StatePlaneDlg.h TagDlg.h)
 
 if(MSVC)

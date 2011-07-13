@@ -71,7 +71,11 @@ public:
 
 private:
 #ifdef WIN32
+#if SUPPORT_WSTRING
 	struct _wfinddata_t m_data;
+#else
+	struct _finddata_t m_data;
+#endif
 	long               m_handle;
 #else
 	DIR         *m_handle;

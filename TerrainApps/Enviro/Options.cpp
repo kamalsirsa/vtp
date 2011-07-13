@@ -92,8 +92,12 @@ EnviroOptions::~EnviroOptions()
 
 void LocalToUTF8(vtString &str)
 {
+#if SUPPORT_WSTRING
 	wstring2 ws((const char *)str);
 	str = ws.to_utf8();
+#else
+	// hope for the best and do nothing
+#endif
 }
 
 

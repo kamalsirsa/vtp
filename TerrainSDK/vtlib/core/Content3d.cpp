@@ -3,7 +3,7 @@
 //
 // 3D Content Management class.
 //
-// Copyright (c) 2003-2008 Virtual Terrain Project.
+// Copyright (c) 2003-2011 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,17 +13,6 @@
 #include "vtdata/DataPath.h"
 #include "Content3d.h"
 
-vtItem3d::vtItem3d()
-{
-	m_pNode = NULL;
-}
-
-vtItem3d::~vtItem3d()
-{
-	// Don't need to explicitly release the item's node here, because all nodes
-	//  are released when the the manager's group is released.
-	m_pNode = NULL;
-}
 
 /**
  * Load the model(s) associated with an item.  If there are several models,

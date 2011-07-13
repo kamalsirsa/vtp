@@ -743,7 +743,7 @@ void TParamsDlg::RefreshLocationFields()
 	for (i = 0; i < num; i++)
 	{
 		vtLocation *loc = saver.GetLocation(i);
-		wxString str(loc->m_strName.c_str());
+		wxString str(loc->m_strName.c_str(), wxConvUTF8);
 		m_pLocField->Append(str);
 	}
 	if (num)

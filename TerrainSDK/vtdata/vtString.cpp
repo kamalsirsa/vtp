@@ -1129,6 +1129,16 @@ vtString UTF8ToLocal(const char *string_utf8)
 	return str;
 }
 
+#else
+// Fallback for non-WSTRING case: we just hope our string is UTF8 compatible!
+vtString vtString::UTF8ToLocal()
+{
+	return *this;
+}
+vtString UTF8ToLocal(const char *string_utf8)
+{
+	return vtString(string_utf8);
+}
 #endif	// SUPPORT_WSTRING
 
 

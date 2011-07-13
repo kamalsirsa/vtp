@@ -1,7 +1,7 @@
 //
 // App.cpp - Main application class for VTBuilder
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,8 +14,8 @@
 
 #include "Frame.h"
 #include "BuilderView.h"
-#include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
+#include "vtui/LogCatcher.h"
 #include "gdal_priv.h"
 #include "App.h"
 
@@ -38,17 +38,6 @@ void BuilderApp::Args(int argc, wxChar **argv)
 			m_locale_name = (const char *)cbuf + 8;
 	}
 }
-
-
-class LogCatcher : public wxLog
-{
-	void DoLogString(const wxChar *szString, time_t t)
-	{
-		VTLOG1(" wxLog: ");
-		VTLOG1(szString);
-		VTLOG1("\n");
-	}
-};
 
 bool BuilderApp::OnInit()
 {
