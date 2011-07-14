@@ -34,6 +34,7 @@
 #include "vtlib/core/SRTerrain.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/TiledGeom.h"
+#include "vtlib/vtosg/ScreenCaptureHandler.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/TripDub.h"
 #include "vtdata/Version.h"
@@ -1761,14 +1762,6 @@ void EnviroFrame::Snapshot(bool bNumbered)
 {
 	VTLOG1("EnviroFrame::Snapshot\n");
 
-	vtScene *scene = vtGetScene();
-	IPoint2 size = scene->GetWindowSize();
-
-	vtImagePtr pImage = new vtImage;
-	pImage->Create(size.x, size.y, 24);
-	glPixelStorei(GL_PACK_ALIGNMENT, 1);
-	glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
-
 	wxString use_name;
 	if (!bNumbered || (bNumbered && m_strSnapshotFilename == _T("")))
 	{
@@ -1789,7 +1782,6 @@ void EnviroFrame::Snapshot(bool bNumbered)
 			wxSetWorkingDirectory(path);	// restore
 			return;
 		}
-		m_iFormat = saveFile.GetFilterIndex();
 		if (bNumbered)
 		{
 			m_strSnapshotFilename = saveFile.GetPath();
@@ -1809,37 +1801,9 @@ void EnviroFrame::Snapshot(bool bNumbered)
 		use_name = start + number + extension;
 	}
 
-	unsigned char *data;
-	vtDIB dib;
-	dib.Create(size.x, size.y, 24);
-	int x, y;
-	short r, g, b;
-	for (y = 0; y < size.y; y++)
-	{
-		data = pImage->GetRowData(y);
-		for (x = 0; x < size.x; x++)
-		{
-			r = *data++;
-			g = *data++;
-			b = *data++;
-			dib.SetPixel24(x, size.y-1-y, RGBi(r, g, b));
-		}
-	}
-	switch (m_iFormat)
-	{
-	case 0:
-		dib.WriteJPEG(use_name.mb_str(wxConvUTF8), 98);
-		break;
-	case 1:
-		dib.WriteBMP(use_name.mb_str(wxConvUTF8));
-		break;
-	case 2:
-		dib.WritePNG(use_name.mb_str(wxConvUTF8));
-		break;
-	case 3:
-		dib.WriteTIF(use_name.mb_str(wxConvUTF8));
-		break;
-	}
+	std::string Filename(use_name.mb_str(wxConvUTF8));
+	CScreenCaptureHandler::SetupScreenCapture(Filename);
+
 }
 
 void EnviroFrame::OnViewSnapshot(wxCommandEvent& event)

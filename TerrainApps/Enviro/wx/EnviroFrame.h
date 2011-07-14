@@ -335,7 +335,6 @@ protected:
 	// snapshot members
 	wxString m_strSnapshotFilename;
 	int		m_iSnapshotNumber;
-	int		m_iFormat;
 
 	bool m_bCloseOnIdle;
 
