@@ -127,7 +127,7 @@ bool CSaveImageOSG::SaveImage(std::string& FilePath, int Width, int Height)
 
 	pViewer->addSlave(pCamera.get());
 	// The call to addSlave creates a default renderer with _compileOnNextDraw set to true
-	// Because I am using the master cameras scene graph I can assume that the display lists have
+	// Because I am using the master cameras scene graph and graphics context I can assume that the display lists have
 	// already been compiled. This is another way of avoiding the annoying white flash which is caused by the display
 	// lists being recompiled into the main frame buffer with the projection and view matrices set to identity, rather than
 	// into this cameras frame buffer object with the projection and view matrices set to something reasonable.
