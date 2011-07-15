@@ -35,6 +35,7 @@
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/TiledGeom.h"
 #include "vtlib/vtosg/ScreenCaptureHandler.h"
+#include "vtlib/vtosg/SaveImageOSG.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/TripDub.h"
 #include "vtdata/Version.h"
@@ -1818,50 +1819,7 @@ void EnviroFrame::OnViewSnapAgain(wxCommandEvent& event)
 
 void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 {
-#if WIN32
 	VTLOG1("EnviroFrame::OnViewSnapHigh\n");
-
-	// OpenGL Extension functions we'll need for OnViewSnapHigh
-	PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT = NULL;
-	PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT = NULL;
-	PFNGLGENRENDERBUFFERSEXTPROC glGenRenderbuffersEXT = NULL;
-	PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT = NULL;
-	PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT = NULL;
-	PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT = NULL;
-	PFNGLGENFRAMEBUFFERSEXTPROC glGenFramebuffersEXT = NULL;
-	PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT = NULL;
-	PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT = NULL;
-
-	VTLOG("\tLooking up the OpenGL Extension functions\n");
-	// Look up the OpenGL Extension functions we'll need
-	glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC)wglGetProcAddress("glBindRenderbufferEXT");
-	glDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC)wglGetProcAddress("glDeleteRenderbuffersEXT");
-	glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC)wglGetProcAddress("glGenRenderbuffersEXT");
-	glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)wglGetProcAddress("glRenderbufferStorageEXT");
-	glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)wglGetProcAddress("glBindFramebufferEXT");
-	glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)wglGetProcAddress("glDeleteFramebuffersEXT");
-	glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC)wglGetProcAddress("glGenFramebuffersEXT");
-	glCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)wglGetProcAddress("glCheckFramebufferStatusEXT");
-	glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)wglGetProcAddress("glFramebufferRenderbufferEXT");
-
-	// Check that we got them
-	if( !glBindRenderbufferEXT ||
-		!glGenFramebuffersEXT ||
-		!glGenRenderbuffersEXT ||
-		!glRenderbufferStorageEXT ||
-		!glBindFramebufferEXT ||
-		!glCheckFramebufferStatusEXT ||
-		!glFramebufferRenderbufferEXT )
-	{
-		// Warning about limitation
-		VTLOG("\tSorry, this computer doesn't support rendering to offscreen image.\n");
-		wxMessageBox(_("Sorry, this computer doesn't support rendering to a image of a different size than the 3D view"),
-			_("Warning"));
-
-		// We can't return a bitmap of a different size than requested of us
-		// (by falling through) so instead we have to return here.
-		return;
-	}
 
 	vtScene *scene = vtGetScene();
 	IPoint2 original_size = scene->GetWindowSize();
@@ -1869,86 +1827,13 @@ void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 	SizeDlg dlg(this, -1, _("High-resolution Snapshot"));
 	dlg.SetBase(original_size);
 	dlg.SetRatioRange(1.0f, 4.0f);
-	dlg.GetTextCtrl()->SetValue(_("The size of the rendered image should be a multiple of the existing window, up to the limit of your graphics card.  If you request a size that your card does not support, the output will be blank."));
+	dlg.GetTextCtrl()->SetValue(_("If the size requested is greater than your graphics card supports, the size will be clamped to the card's limit"));
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
 	int  aPixWidth = dlg.m_Current.x;
     int  aPixHeight = dlg.m_Current.y;
 	VTLOG("\tSize: %d %d\n", aPixWidth, aPixHeight);
-
-	GLuint g_frameBuffer;
-	GLuint g_depthRenderBuffer;
-	GLuint g_drawRenderBuffer;
-
-	int buffer_width = aPixWidth, buffer_height = aPixHeight;
-
-	// Create a frame-buffer object and two render-buffer objects...
-	VTLOG("\tCalling glGenFramebuffersEXT etc.\n");
-	glGenFramebuffersEXT( 1, &g_frameBuffer );
-	glGenRenderbuffersEXT( 1, &g_depthRenderBuffer );
-	glGenRenderbuffersEXT( 1, &g_drawRenderBuffer );
-
-	// Initialize the render-buffer for usage as a depth buffer.
-	// without it, the geometry will not be sorted properly.
-	glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, g_depthRenderBuffer );
-	glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, buffer_width, buffer_height );
-
-	// Initialize the other render-buffer for usage as a draw buffer.
-	glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, g_drawRenderBuffer );
-	glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_RGBA, buffer_width, buffer_height );
-
-	// Check for errors...
-	VTLOG("\tCalling glCheckFramebufferStatusEXT\n");
-	GLenum status = glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT );
-
-	VTLOG("\t status: %d\n", status);
-	switch (status)
-	{
-	case GL_FRAMEBUFFER_COMPLETE_EXT:
-		// "SUCCESS"
-		break;
-	case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-		wxMessageBox(_T("GL_FRAMEBUFFER_UNSUPPORTED_EXT!"),_T("ERROR"));
-		return;
-		break;
-	default:
-		wxMessageBox(_T("Sorry, glCheckFramebufferStatusEXT failed."),_T("ERROR"));
-		return;
-	}
-
-	// Bind the frame-buffer object and attach to it a render-buffer object
-	// set up as a depth-buffer.
-	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, g_frameBuffer );
-	glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, g_drawRenderBuffer );
-	glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, g_depthRenderBuffer );
-
-	// Set up the frame-buffer object just like you would set up a window.
-	glViewport(0, 0, buffer_width, buffer_height);
-
-	// Now, render to the frame-buffer object just like you we would
-	// have done with a regular window.
-	VTLOG("\tRendering scene\n");
-	scene->SetWindowSize(buffer_width, buffer_height);
-	scene->DoUpdate();
-
-	// Restore!
-	scene->SetWindowSize(original_size.x, original_size.y);
-	glViewport(0, 0, original_size.x, original_size.y);
-
-	// grab contents of the framebuffer
-	vtImagePtr pImage = new vtImage;
-	pImage->Create(aPixWidth, aPixHeight, 24);
-	glPixelStorei(GL_PACK_ALIGNMENT, 1);
-	glReadPixels(0, 0, aPixWidth, aPixHeight, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
-
-	// Unbind the frame-buffer and render-buffer objects.
-	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
-
-	// Clean up
-	glDeleteFramebuffersEXT( 1, &g_frameBuffer );
-	glDeleteRenderbuffersEXT( 1, &g_depthRenderBuffer );
-	glDeleteRenderbuffersEXT( 1, &g_drawRenderBuffer );
 
 	// save current directory
 	wxString path = wxGetCwd();
@@ -1964,11 +1849,10 @@ void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 		wxSetWorkingDirectory(path);	// restore
 		return;
 	}
-	vtString fname = (const char *) saveFile.GetPath().mb_str(wxConvUTF8);
 
-	VTLOG("\tWriting '%s'\n", (const char *) fname);
-	pImage->WriteJPEG(fname);
-#endif	// WIN32
+	std::string Filename(saveFile.GetPath().mb_str(wxConvUTF8));
+	if (!CSaveImageOSG::SaveImage(Filename, aPixWidth, aPixHeight))
+		wxMessageBox(_T("Sorry - could not save image. Yuor graphics card software may need updating"),_T("ERROR"));
 }
 
 void EnviroFrame::OnViewStatusBar(wxCommandEvent& event)
