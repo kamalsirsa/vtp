@@ -899,7 +899,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	TParamsPanel1->SetSizer( bSizer15 );
 	TParamsPanel1->Layout();
 	bSizer15->Fit( TParamsPanel1 );
-	m_notebook->AddPage( TParamsPanel1, _("Elevation"), false );
+	m_notebook->AddPage( TParamsPanel1, _("Elevation"), true );
 	TParamsPanel2 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer24;
 	bSizer24 = new wxBoxSizer( wxHORIZONTAL );
@@ -1088,7 +1088,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	TParamsPanel2->SetSizer( bSizer24 );
 	TParamsPanel2->Layout();
 	bSizer24->Fit( TParamsPanel2 );
-	m_notebook->AddPage( TParamsPanel2, _("Texture"), true );
+	m_notebook->AddPage( TParamsPanel2, _("Texture"), false );
 	TParamsPanel3 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer38;
 	bSizer38 = new wxBoxSizer( wxHORIZONTAL );

@@ -268,10 +268,6 @@ vtStructureArray3d::vtStructureArray3d() : vtStructureArray()
 
 vtBuilding *vtStructureArray3d::NewBuilding()
 {
-	// Make sure that subsequent operations on this building are done in with
-	// the correct local coordinate system
-	vtBuilding::s_Conv.Setup(m_proj.GetUnits(), DRECT(0,1,1,0));
-
 	return new vtBuilding3d;
 }
 

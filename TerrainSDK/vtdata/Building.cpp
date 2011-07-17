@@ -1130,9 +1130,6 @@ vtLevel *vtBuilding::CreateLevel(const DPolygon2 &footprint)
 
 	m_Levels.Append(pLev);
 
-	// keep 2d and 3d in synch
-	DetermineLocalFootprints();
-
 	return pLev;
 }
 
@@ -1395,6 +1392,10 @@ void vtBuilding::DetermineLocalFootprints()
 {
 	DPoint2 center;
 	GetBaseLevelCenter(center);
+
+	// The local conversion for a building must be the same as the global conversion,
+	//  wiht the only difference being a different origin.
+	s_Conv = g_Conv;
 	s_Conv.SetOrigin(center);
 
 	int i;

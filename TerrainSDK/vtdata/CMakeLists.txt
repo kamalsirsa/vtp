@@ -11,7 +11,7 @@ add_library(vtdata
 		DLG.h DxfParser.h ElevationGrid.h Features.h Fence.h FilePath.h GEOnet.h HeightField.h Icosa.h LevellerTag.h
 		LocalConversion.h LULC.h Mainpage.h MathTypes.h Plants.h PolyChecker.h Projections.h QuikGrid.h RoadMap.h
 		Selectable.h SPA.h StatePlane.h StructArray.h Structure.h Triangulate.h TripDub.h Unarchive.h UtilityMap.h
-		Vocab.h vtDIB.h vtLog.h vtString.h vtTime.h vtTin.h vtUnzip.h WFSClient.h
+		Version.h Vocab.h vtDIB.h vtLog.h vtString.h vtTime.h vtTin.h vtUnzip.h WFSClient.h
 
 		triangle/triangle.c triangle/triangle.h)
 
