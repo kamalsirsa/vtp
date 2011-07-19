@@ -146,7 +146,7 @@ wxString MyTreeCtrl::MakeItemName(vtLayerPtr lp)
 	wxString path = lp->GetLayerFilename();
 
 	if (!m_bShowPaths)
-		path = StartOfFilename(path);
+		path = StartOfFilenameWX(path);
 
 	str += path;
 	return str;

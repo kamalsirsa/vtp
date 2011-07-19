@@ -157,7 +157,7 @@ void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
 	vtString previous = (const char *) m_strFile.mb_str(wxConvUTF8);
 	if (previous != "")
 	{
-		default_file = wxString(StartOfFilename(previous), wxConvUTF8);
+		default_file = StartOfFilenameWX(m_strFile);
 		default_dir = wxString(ExtractPath(previous, false), wxConvUTF8);
 	}
 

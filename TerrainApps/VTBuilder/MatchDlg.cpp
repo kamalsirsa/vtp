@@ -96,7 +96,7 @@ void MatchDlg::UpdateLayers()
 	{
 		vtLayer *lay = g_bld->GetLayer(i);
 
-		wxString name = StartOfFilename(lay->GetLayerFilename());
+		wxString name = StartOfFilenameWX(lay->GetLayerFilename());
 		GetMatchLayer()->Append(name);
 	}
 	GetMatchLayer()->SetSelection(0);

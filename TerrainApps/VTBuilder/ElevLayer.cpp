@@ -1402,7 +1402,7 @@ bool vtElevLayer::AskForSaveFilename()
 	//  checking for validity first, and strip the path if needed.
 	bool valid = wxFile::Access(defaultFilename, wxFile::read);
 	if (!valid)
-		defaultFilename = StartOfFilename(defaultFilename);
+		defaultFilename = StartOfFilenameWX(defaultFilename);
 
 	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), defaultFilename,
 		filter, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -1936,7 +1936,7 @@ bool ElevCacheLoadData(vtElevLayer *elev)
 				mem -= elay->GetMemoryUsed();
 
 				VTLOG("  Freeing '%s', Need %d bytes (%.1f MB)\n",
-					(const char *) StartOfFilename(elay->GetLayerFilename().mb_str(wxConvUTF8)),
+					(const char *) StartOfFilenameWX(elay->GetLayerFilename()).ToAscii(),
 					mem, (float)mem / (1024*1024));
 
 				elay->FreeData();

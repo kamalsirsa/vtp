@@ -804,7 +804,7 @@ vtString MakeFilenameDB(const vtString &base, int col, int row,
  * Given a full path containing a filename, return a pointer to
  * the filename portion of the string.
  */
-wxString StartOfFilename(const wxString &strFullPath)
+wxString StartOfFilenameWX(const wxString &strFullPath)
 {
 	int index = 0;
 
