@@ -169,6 +169,7 @@ vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum)
 
 		DLine2 result;
 		CallTriangle(dpoly, result);
+//		CallPoly2Tri(dpoly, result);	// TEST
 		int res = result.GetSize();
 		int base = NumVerts();
 		for (int j = 0; j < res; j++)

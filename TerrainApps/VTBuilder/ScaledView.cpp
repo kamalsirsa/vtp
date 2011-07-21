@@ -274,9 +274,24 @@ void vtScaledView::DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill)
 	}
 	else
 	{
+#if 0
 		// just draw each ring
 		for (unsigned int ring = 0; ring < poly.size(); ring++)
 			DrawPolyLine(pDC, poly[ring], true);
+#else
+		// Draw holes differently
+		wxPen pen(pDC->GetPen());
+		pen.SetStyle(wxSOLID);
+		pDC->SetPen(pen);
+		DrawPolyLine(pDC, poly[0], true);
+		if (poly.size() > 0)
+		{
+			pen.SetStyle(wxDOT);
+			pDC->SetPen(pen);
+			for (unsigned int ring = 1; ring < poly.size(); ring++)
+				DrawPolyLine(pDC, poly[ring], true);
+		}
+#endif
 	}
 }
 

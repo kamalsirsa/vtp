@@ -882,11 +882,23 @@ void DPolygon2::RemovePoint(int N)
 	}
 }
 
+/**
+ For each ring of the polygon, remove any points which are degenerate (less than
+ dEpsilon apart).
+ \return The number of points that were removed.
+ */
 int DPolygon2::RemoveDegeneratePoints(double dEpsilon)
 {
 	int removed = 0;
 	for (unsigned int ring = 0; ring < size(); ring++)
-		removed += at(ring).RemoveDegeneratePoints(dEpsilon);
+	{
+		DLine2 &dline = at(ring);
+		removed += dline.RemoveDegeneratePoints(dEpsilon);
+		if (dline.GetSize() < 3)
+		{
+			int bad = 1;
+		}
+	}
 	return removed;
 }
 

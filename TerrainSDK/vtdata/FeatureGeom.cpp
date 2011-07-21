@@ -7,6 +7,7 @@
 
 #include "Features.h"
 #include "xmlhelper/easyxml.hpp"
+#include "PolyChecker.h"
 #include "vtLog.h"
 #include "DLG.h"
 
@@ -1016,6 +1017,42 @@ int vtFeatureSetPolygon::FindPolygon(const DPoint2 &p) const
 		}
 	}
 	return -1;	// not found
+}
+
+/*
+ Fix geometry: Remove redundant points, remove colinear points,
+ fix the winding direction of polygonal rings.
+ */
+int vtFeatureSetPolygon::FixGeometry(double dEpsilon)
+{
+	PolyChecker PolyChecker;
+
+	int removed = 0;
+	int clock = 0, not = 0;
+	int num = m_Poly.size();
+
+	for (int i = 0; i < num; i++)
+	{
+		DPolygon2 &dpoly = m_Poly[i];
+
+		// Remove redundant points
+		removed += dpoly.RemoveDegeneratePoints(dEpsilon);
+
+		// Check clockwisdom (winding direction)
+		for (size_t r = 0; r < dpoly.size(); r++)
+		{
+			DLine2 &dline = dpoly[r];
+			if (PolyChecker.IsClockwisePolygon(dline))
+				clock++;
+			else
+				not++;
+		}
+		// (TODO)
+	}
+
+	// TODO: remove colinear
+
+	return removed;
 }
 
 void vtFeatureSetPolygon::CreateIndex(int iSize)

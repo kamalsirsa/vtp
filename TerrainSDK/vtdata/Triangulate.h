@@ -87,5 +87,11 @@ private:
 void CallTriangle(const DLine2 &contour, DLine2 &result);
 void CallTriangle(const DPolygon2 &contour, DLine2 &result);
 
+/**
+ * Third algorithm: poly2tri
+ */
+void CallPoly2Tri(const DLine2 &contour, DLine2 &result);
+void CallPoly2Tri(const DPolygon2 &contour, DLine2 &result);
+
 #endif	// TRIANGULATE_H
 
