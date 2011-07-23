@@ -1837,7 +1837,6 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer84->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cancel->SetDefault(); 
 	bSizer84->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer13->Add( bSizer84, 0, wxALIGN_CENTER|wxRIGHT|wxLEFT, 5 );

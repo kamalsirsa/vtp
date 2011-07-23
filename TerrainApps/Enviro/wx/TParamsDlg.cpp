@@ -480,7 +480,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 }
 
 //
-// get the values from the dialog into the supplied paramter structure
+// get the values from the dialog into the supplied parameter structure
 //
 void TParamsDlg::GetParams(TParams &Params)
 {
