@@ -415,6 +415,7 @@ public:
 	void RemovePoint(int i);
 	void ReverseOrder();
 	int RemoveDegeneratePoints(double dEpsilon);
+	int RemoveColinearPoints(double dEpsilon);
 
 	// Query
 	bool ContainsPoint(const DPoint2 &p) const;
@@ -774,6 +775,7 @@ public:
 	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
 	void RemovePoint(int N);
 	int RemoveDegeneratePoints(double dEpsilon);
+	int RemoveColinearPoints(double dEpsilon);
 };
 
 /**

@@ -272,6 +272,8 @@ protected:
 	void OnRawScaleH(wxCommandEvent& event);
 	void OnRawScaleV(wxCommandEvent& event);
 	void OnRawOffsetV(wxCommandEvent& event);
+	void OnRawClean(wxCommandEvent& event);
+	void OnRawSelectBad(wxCommandEvent& event);
 
 	void OnUpdateRawSetType(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPoints(wxUpdateUIEvent& event);
@@ -279,6 +281,7 @@ protected:
 	void OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event);
 	void OnUpdateRawIsActive(wxUpdateUIEvent& event);
 	void OnUpdateRawIsActive3D(wxUpdateUIEvent& event);
+	void OnUpdateRawIsPolygon(wxUpdateUIEvent& event);
 	void OnUpdateRawGenElevation(wxUpdateUIEvent& event);
 
 	void OnAreaClear(wxCommandEvent& event);

@@ -118,6 +118,34 @@ int DLine2::RemoveDegeneratePoints(double dEpsilon)
 	return removed;
 }
 
+/**
+ Given three points A B C, where the distance from B to the line A-C
+  is less than dEpsilon units, B is co-linear and should be removed.
+
+ We could use another measure of linearity, the angle between (B-A)
+ and (C-A), but didn't do that.
+ */
+int DLine2::RemoveColinearPoints(double dEpsilon)
+{
+	int removed = 0;
+	for (int i = 0; i < (int) GetSize(); i++)
+	{
+		DPoint2 &prev = GetSafePoint(i-1);
+		DPoint2 &next = GetSafePoint(i+1);
+
+		DPoint2 ray = next - prev;
+		ray.Normalize();
+		double dist = ray.Cross(GetAt(i) - prev);
+		if (fabs(dist) < dEpsilon)
+		{
+			RemoveAt(i);
+			removed++;
+			i--;
+		}
+	}
+	return removed;
+}
+
 bool DLine2::IsConvex() const
 {
 	int positive = 0;
@@ -127,8 +155,8 @@ bool DLine2::IsConvex() const
 	for (unsigned int i = 0; i < length; i++)
 	{
 		DPoint2 &p0 = GetAt(i);
-		DPoint2 &p1 = GetAt((i+1) % length);
-		DPoint2 &p2 = GetAt((i+2) % length);
+		DPoint2 &p1 = GetSafePoint(i+1);
+		DPoint2 &p2 = GetSafePoint(i+2);
 		double cross = (p1-p0).Cross(p2-p1);
 
 		if ( cross < 0 )
@@ -894,6 +922,26 @@ int DPolygon2::RemoveDegeneratePoints(double dEpsilon)
 	{
 		DLine2 &dline = at(ring);
 		removed += dline.RemoveDegeneratePoints(dEpsilon);
+		if (dline.GetSize() < 3)
+		{
+			int bad = 1;
+		}
+	}
+	return removed;
+}
+
+/**
+ For each ring of the polygon, remove any points which are co-linear, defined
+ as point p(n) which is less than dEpsilon displaced from the line from P(n-1) to P(n+1)
+ \return The number of points that were removed.
+ */
+int DPolygon2::RemoveColinearPoints(double dEpsilon)
+{
+	int removed = 0;
+	for (unsigned int ring = 0; ring < size(); ring++)
+	{
+		DLine2 &dline = at(ring);
+		removed += dline.RemoveColinearPoints(dEpsilon);
 		if (dline.GetSize() < 3)
 		{
 			int bad = 1;

@@ -291,6 +291,8 @@ EVT_MENU(ID_RAW_STYLE,				MainFrame::OnRawStyle)
 EVT_MENU(ID_RAW_SCALE_H,			MainFrame::OnRawScaleH)
 EVT_MENU(ID_RAW_SCALE_V,			MainFrame::OnRawScaleV)
 EVT_MENU(ID_RAW_OFFSET_V,			MainFrame::OnRawOffsetV)
+EVT_MENU(ID_RAW_CLEAN,				MainFrame::OnRawClean)
+EVT_MENU(ID_RAW_SELECT_BAD,			MainFrame::OnRawSelectBad)
 
 EVT_UPDATE_UI(ID_RAW_SETTYPE,			MainFrame::OnUpdateRawSetType)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS,			MainFrame::OnUpdateRawAddPoints)
@@ -306,6 +308,8 @@ EVT_UPDATE_UI(ID_RAW_STYLE,				MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_SCALE_H,			MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_SCALE_V,			MainFrame::OnUpdateRawIsActive3D)
 EVT_UPDATE_UI(ID_RAW_OFFSET_V,			MainFrame::OnUpdateRawIsActive3D)
+EVT_UPDATE_UI(ID_RAW_CLEAN,				MainFrame::OnUpdateRawIsPolygon)
+EVT_UPDATE_UI(ID_RAW_SELECT_BAD,		MainFrame::OnUpdateRawIsPolygon)
 
 EVT_MENU(ID_AREA_CLEAR,				MainFrame::OnAreaClear)
 EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
@@ -590,6 +594,8 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_SCALE_H, _("Scale horizontally"));
 	rawMenu->Append(ID_RAW_SCALE_V, _("Scale vertically"));
 	rawMenu->Append(ID_RAW_OFFSET_V, _("Offset vertically"));
+	rawMenu->Append(ID_RAW_CLEAN, _("Clean polygon geometry"));
+	rawMenu->Append(ID_RAW_SELECT_BAD, _("Select bad geometry"));
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
 	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
@@ -3394,6 +3400,13 @@ void MainFrame::OnUpdateRawIsActive3D(wxUpdateUIEvent& event)
 		(pRL->GetGeomType() == wkbPoint25D || pRL->GetGeomType() == wkbLineString25D));
 }
 
+void MainFrame::OnUpdateRawIsPolygon(wxUpdateUIEvent& event)
+{
+	// if the current layer is polygon
+	vtRawLayer *pRL = GetActiveRawLayer();
+	event.Enable(pRL != NULL && pRL->GetGeomType() == wkbPolygon);
+}
+
 void MainFrame::OnRawSetType(wxCommandEvent& event)
 {
 	static OGRwkbGeometryType types[5] = {
@@ -3844,6 +3857,49 @@ void MainFrame::OnRawOffsetV(wxCommandEvent& event)
 
 	double value = atof(str.mb_str(wxConvUTF8));
 	pRL->OffsetVertically(value);
+	m_pView->Refresh();
+}
+
+void MainFrame::OnRawClean(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	vtFeatureSetPolygon *fsp = (vtFeatureSetPolygon*) pRL->GetFeatureSet();
+
+	wxString str = _T("0.10");
+	str = wxGetTextFromUser(_("Distance threshhold for proximity and co-linearity?"),
+		_("Clean Raw Layer"), str, this);
+	if (str == _T(""))
+		return;
+
+	double value = atof(str.mb_str(wxConvUTF8));
+	int removed = fsp->FixGeometry(value);
+
+	str.Printf(_("Removed %d degenerate points"), removed);
+	wxMessageBox(str);
+
+	if (removed != 0)
+		pRL->SetModified(true);
+
+	m_pView->Refresh();
+}
+
+void MainFrame::OnRawSelectBad(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	vtFeatureSetPolygon *fsp = (vtFeatureSetPolygon*) pRL->GetFeatureSet();
+
+	wxString str = _T("0.10");
+	str = wxGetTextFromUser(_("Distance threshhold for proximity?"),
+		_("Select bad polygons"), str, this);
+	if (str == _T(""))
+		return;
+
+	double value = atof(str.mb_str(wxConvUTF8));
+	int bad = fsp->SelectBadFeatures(value);
+
+	str.Printf(_("Found %d degenerate polygons"), bad);
+	wxMessageBox(str);
+
 	m_pView->Refresh();
 }
 

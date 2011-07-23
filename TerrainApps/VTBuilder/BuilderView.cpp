@@ -2219,11 +2219,11 @@ void BuilderView::RunTest()
 		}
 	}
 #endif
-#if 1
+#if 0
 	vtRawLayer *pRaw = g_bld->GetActiveRawLayer();
 	if (!pRaw) return;
 	vtFeatureSetPolygon *fsp = (vtFeatureSetPolygon*) pRaw->GetFeatureSet();
-	int fixed = fsp->FixGeometry(0.05);	// 5 cm
+	int fixed = fsp->SelectBadFeatures(0.05);	// 5 cm
 	Refresh();
 #endif
 }
