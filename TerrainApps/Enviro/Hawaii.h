@@ -21,6 +21,9 @@
 #define	TRANS_YAxis	FPoint3(0,1,0)
 #define	TRANS_ZAxis	FPoint3(0,0,1)
 
+/**
+ A specific vtTerrain implementation which exists to hold a variety of test code.
+ */
 class IslandTerrain : public vtTerrain
 {
 public:

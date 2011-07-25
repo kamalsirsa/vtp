@@ -279,7 +279,7 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	}
 
 	VTLOG("  Creating CDib\n");
-	m_pSourceDIB = new CDib();
+	m_pSourceDIB = new CDib;
 	m_pSourceDIB->Setup(pDC, pDataset, hdd, progress_callback);
 
 	// create monochrome version

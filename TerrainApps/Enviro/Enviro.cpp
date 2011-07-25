@@ -13,6 +13,7 @@
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/PagedLodGrid.h"
 #include "vtlib/core/TiledGeom.h"
+#include "vtlib/core/MapOverviewEngine.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/PolyChecker.h"
 #include "vtdata/DataPath.h"
@@ -22,7 +23,6 @@
 #include "Options.h"
 #include "Hawaii.h"
 #include "Nevada.h"
-#include "SpecificTerrain.h"
 
 // Although there is no string translation in the core of Enviro (because it
 //  is independent of wx or any GUI library) nonetheless we want the text
@@ -227,8 +227,6 @@ void Enviro::LoadTerrainDescriptions(const vtString &path)
 			pTerr = new IslandTerrain;
 		else if (before_dot == "Nevada")
 			pTerr = new NevadaTerrain;
-		else if (before_dot == "TransitTerrain")
-			pTerr = new TransitTerrain;
 		else
 			pTerr = new vtTerrain;
 
@@ -278,7 +276,7 @@ void Enviro::StartControlEngine()
 {
 	VTLOG1("StartControlEngine\n");
 
-	m_pControlEng = new ControlEngine();
+	m_pControlEng = new ControlEngine;
 	m_pControlEng->setName("Control Engine");
 	vtGetScene()->AddEngine(m_pControlEng);
 }
@@ -813,7 +811,7 @@ void Enviro::SetupScene2()
 	m_pGFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pGFlyer);
 
-	m_pFlatFlyer = new FlatFlyer();
+	m_pFlatFlyer = new FlatFlyer;
 	m_pFlatFlyer->setName("Flat Flyer");
 	m_pFlatFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pFlatFlyer);
@@ -831,7 +829,7 @@ void Enviro::SetupScene2()
 	m_pCursorMGeom->setName("Cursor");
 
 	GetTop()->addChild(m_pCursorMGeom);
-	m_pTerrainPicker = new TerrainPicker();
+	m_pTerrainPicker = new TerrainPicker;
 	m_pTerrainPicker->setName("TerrainPicker");
 	vtGetScene()->AddEngine(m_pTerrainPicker);
 
@@ -2705,7 +2703,7 @@ void Enviro::CreateMapOverview()
 	// setup the mapoverview engine
 	if (!m_pMapOverview)
 	{
-		m_pMapOverview = new MapOverviewEngine;
+		m_pMapOverview = new MapOverviewEngine(GetCurrentTerrain());
 		m_pMapOverview->setName("Map overview engine");
 		vtGetScene()->AddEngine(m_pMapOverview);
 	}

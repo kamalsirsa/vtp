@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
 	osg::ref_ptr<Producer::KeyboardMouse>  kbm = new Producer::KeyboardMouse(renderSurface.get());
 
 	// create a KeyboardMouseCallback to handle the mouse events within this applications
-	osg::ref_ptr<MyKeyboardMouseCallback> kbmcb = new MyKeyboardMouseCallback();
+	osg::ref_ptr<MyKeyboardMouseCallback> kbmcb = new MyKeyboardMouseCallback;
 
 	// main loop (note, window toolkits which take control over the main loop will require a window redraw callback containing the code below.)
 	while( renderSurface->isRealized() && !kbmcb->done())

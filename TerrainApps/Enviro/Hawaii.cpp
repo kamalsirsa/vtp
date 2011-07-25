@@ -88,7 +88,7 @@ public:
 		 traverse(node, nv);
 	  }
    };
-   psGeodeTransform() {setUpdateCallback( new psGeodeTransformCallback() );}
+   psGeodeTransform() {setUpdateCallback( new psGeodeTransformCallback );}
 
 };
 class findGeodeVisitor : public osg::NodeVisitor
@@ -114,17 +114,17 @@ class particleSystemHelper : public osg::Group
 public:
    particleSystemHelper(osg::Group* psGroup) : osg::Group(*psGroup)
    {
-	  findGeodeVisitor* fg = new findGeodeVisitor();
+	  findGeodeVisitor* fg = new findGeodeVisitor;
 	  accept(*fg);
 	  osg::Geode* psGeode = fg->getGeode();
-	  psGeodeXForm = new psGeodeTransform();
+	  psGeodeXForm = new psGeodeTransform;
 	  psGeodeXForm->addChild (psGeode);
 	  replaceChild(psGeode,psGeodeXForm);
    }
    void addEffect(osg::Group* psGroup)
    {
 	  this->addChild(psGroup);
-	  findGeodeVisitor* fg = new findGeodeVisitor();
+	  findGeodeVisitor* fg = new findGeodeVisitor;
 	  psGroup->accept(*fg);
 	  osg::Geode* psGeode = fg->getGeode();
 	  psGeodeXForm->addChild(psGeode);

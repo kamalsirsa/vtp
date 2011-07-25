@@ -22,6 +22,9 @@
 // OptionsDlg
 //----------------------------------------------------------------------------
 
+/**
+ Dialog to edit Enviro's global options, EnviroOptions.
+ */
 class OptionsDlg: public OptionsDlgBase
 {
 public:

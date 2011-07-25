@@ -669,7 +669,7 @@ CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd, bool progress_callback(i
 	pDib->GetDIBFromSection();
 
 	CSize size = pDib->GetSize();
-	CDib *pNew = new CDib();
+	CDib *pNew = new CDib;
 	pNew->Setup(pDC, size.cx, size.cy, 8, hdd);
 
 	BITMAPINFOHEADER *header = pNew->GetDIBHeader();

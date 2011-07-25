@@ -49,6 +49,15 @@ public:
 	void Eval();
 };
 
+/**
+ The central, core class of the Enviro applcation.  It maintains a collection
+ of terrains (by extending vtTerrainScene) and adds all the non-GUI functionality,
+ including handling mouse events in the 3D view, navigating, creating and
+ editing objects.
+
+ It is extended by the GUI code as the class EnviroGUI, of which there is one
+ global instance (singleton), called "g_App".
+ */
 class Enviro : public vtTerrainScene
 {
 public:

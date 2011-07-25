@@ -263,7 +263,7 @@ void LocationDlg::AppendAnimPath(vtAnimPath *anim, const char *name)
 
 vtAnimPath *LocationDlg::CreateAnimPath()
 {
-	vtAnimPath *anim = new vtAnimPath();
+	vtAnimPath *anim = new vtAnimPath;
 
 	// Ensure that anim knows the projection
 	const vtProjection &proj = m_pSaver->GetAtProjection();

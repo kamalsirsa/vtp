@@ -666,7 +666,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	else if (method == LM_DEMETER)
 	{
 #if 0	// disabled until its working
-		m_pDynGeom = new DemeterTerrain();
+		m_pDynGeom = new DemeterTerrain;
 		m_pDynGeom->setName("Demeter Geom");
 #endif
 	}

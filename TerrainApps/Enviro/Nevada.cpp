@@ -59,7 +59,7 @@ void NevadaTerrain::CreateCustomCulture()
 	m_fHigh = m_fGround + (50);
 	m_fLow = m_fGround - (50);
 
-	m_pMats = new vtMaterialArray();
+	m_pMats = new vtMaterialArray;
 
 	if (m_Params.GetValueBool(STR_DETAILTEXTURE))
 		CreateDetailTextures();
@@ -178,7 +178,7 @@ void NevadaTerrain::CreateDetailTextures()
 
 void NevadaTerrain::CreatePast()
 {
-	m_pPast = new vtGroup();
+	m_pPast = new vtGroup;
 	addNode(m_pPast);
 	m_pPast->setName("Past");
 	m_pPast->SetEnabled(false);
@@ -307,7 +307,7 @@ void NevadaTerrain::CreatePast()
 
 void NevadaTerrain::CreatePresent()
 {
-	m_pPresent = new vtGroup();
+	m_pPresent = new vtGroup;
 
 	addNode(m_pPresent);
 	m_pPresent->setName("Present");
@@ -332,7 +332,7 @@ void NevadaTerrain::CreatePresent()
 	vtTransform *lamppost2 = LoadModel("Nevada/lamppost72lod_v2.dsm");
 	lamppost2->Scale2(sc, sc, sc);
 
-	vtLOD *pLampLod = new vtLOD();
+	vtLOD *pLampLod = new vtLOD;
 	pLampLod->addChild(lamppost);
 	pLampLod->addChild(lamppost2);
 	pLampLod->setRanges(0, 0.0f, 40.0f);
@@ -386,7 +386,7 @@ void NevadaTerrain::CreatePresent()
 
 void NevadaTerrain::CreateFuture()
 {
-	m_pFuture = new vtGroup();
+	m_pFuture = new vtGroup;
 
 	addNode(m_pFuture);
 	m_pFuture->setName("Future");

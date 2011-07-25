@@ -17,6 +17,7 @@ enum AppState {
 	AS_Error
 };
 
+/// Navigation types
 enum NavType {
 	NT_Normal,
 	NT_Velo,
@@ -25,6 +26,7 @@ enum NavType {
 	NT_Pano
 };
 
+/// Mouse modes
 enum MouseMode
 {
 	MM_NAVIGATE,

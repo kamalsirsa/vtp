@@ -10,9 +10,9 @@
 
 #include "wxosg/Canvas.h"
 
-//
-// A Canvas for the main view area.
-//
+/**
+ A Canvas for the main view area.
+*/
 class EnviroCanvas: public vtGLCanvas
 {
 public:

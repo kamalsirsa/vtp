@@ -1,7 +1,7 @@
 //
 // Name: EnviroFrame.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,7 @@
 #include "../EnviroEnum.h"
 #include "vtlib/core/Event.h"
 
-// forward declare dialogs
+// Forward declare the dialogs
 class BuildingDlg3d;
 class CameraDlg;
 class DistanceDlg3d;
@@ -45,6 +45,10 @@ class CPerformanceMonitorDialog;
 #define ADD_TOOL2(bar, id, bmp, label, type) \
 	bar->AddTool(id, label, bmp, wxNullBitmap, type, label, label)
 
+/**
+ The main wxWidgets window for the application, subclass of wxFrame.
+ Handles all the menu items and toolbars, creates and manages all the dialog.
+ */
 class EnviroFrame: public wxFrame
 {
 public:

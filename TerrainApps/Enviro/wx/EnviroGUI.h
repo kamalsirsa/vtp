@@ -21,6 +21,10 @@ public:
 	float m_fSpeed, m_fLastTime;
 };
 
+/**
+ The core GUI class of the application.  Handles GUI implementations of all the
+ functionality of the Enviro class.
+ */
 class EnviroGUI : public Enviro
 {
 public:
@@ -72,6 +76,6 @@ public:
 vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr, bool bAskStyle = true);
 vtAbstractLayer *CreateNewAbstractLineLayer(vtTerrain *pTerr, bool bAskStyle = true);
 
-// global singleton
+/** global singleton */
 extern EnviroGUI g_App;
 

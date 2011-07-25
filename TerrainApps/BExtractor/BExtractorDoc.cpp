@@ -210,7 +210,7 @@ void BExtractorDoc::FloodFillDIB(CDib *bm, CProgressDlg *prog)
 				//center of the original building
 				point.x += 5;
 
-				vtBuilding *bld = new vtBuilding();
+				vtBuilding *bld = new vtBuilding;
 				bld->SetRectangle(point, 10, 10);
 				bld->SetStories(1);
 				bld->GetLevel(1)->SetEdgeColor(RGBi(255,255,255));	// white roof
@@ -364,7 +364,7 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 {
 	VTLOG("OnImportimage2 %s\n", szPathName);
 	m_picLoaded = false;
-	m_pImage = new CBImage();
+	m_pImage = new CBImage;
 
 	if (1)
 	{

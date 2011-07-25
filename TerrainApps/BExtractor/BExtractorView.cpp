@@ -876,7 +876,7 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 		if (abs(diff.x) + abs(diff.y) < 6)
 		{
 			// yes, done
-			vtBuilding *bld = new vtBuilding();
+			vtBuilding *bld = new vtBuilding;
 			bld->SetFootprint(0, m_poly);
 			bld->SetStories(1);
 			bld->GetLevel(1)->SetEdgeColor(RGBi(255,255,255));	// white roof
@@ -906,7 +906,7 @@ void BExtractorView::OnLButtonUpRectangle(CPoint point)
 	{
 		DPoint2 p0, p1, p2, p3;
 
-		vtBuilding *bld = new vtBuilding();
+		vtBuilding *bld = new vtBuilding;
 
 		s_UTM(m_p0, p0);
 		s_UTM(m_p1, p1);
@@ -945,7 +945,7 @@ void BExtractorView::OnLButtonUpCircle(CPoint point)
 
 	BExtractorDoc* pDoc = GetDocument();
 
-	vtBuilding *bld = new vtBuilding();
+	vtBuilding *bld = new vtBuilding;
 
 	DPoint2 p;
 	s_UTM(m_p0, p);
@@ -982,7 +982,7 @@ void BExtractorView::OnLButtonUpAddRemove(CPoint point)
 			return;
 
 		// create and add building
-		vtBuilding *bld = new vtBuilding();
+		vtBuilding *bld = new vtBuilding;
 		bld->SetRectangle(imagepoint, 10, 10);
 		bld->SetStories(1);
 		bld->GetLevel(1)->SetEdgeColor(RGBi(255,255,255));	// white roof

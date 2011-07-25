@@ -78,13 +78,13 @@ DTErr DemeterTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 		// have far more triangles than are seen at one time, especially with
 		// dynamic tessellation)
 		const int MAX_NUM_VISIBLE_TRIANGLES = 50000;
-		m_pTerrain = new Terrain();
+		m_pTerrain = new Terrain;
 		const int width = m_iColumns;
 		const int height = m_iRows;
 
 		m_pTerrain->SetAllElevations(m_pData,width,height,20.0f);
 
-		m_pDrawable = new DemeterDrawable();
+		m_pDrawable = new DemeterDrawable;
 		m_pDrawable->SetTerrain(m_pTerrain);
 	}
 	catch (DemeterException* pEx)

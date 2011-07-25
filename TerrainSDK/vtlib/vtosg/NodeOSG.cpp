@@ -864,7 +864,7 @@ void SetLoadModelCallback(osg::Node *callback(osg::Transform *input))
  *
  * \return A node pointer if successful, or NULL if the load failed.
  */
-osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
+osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
 {
 	// Some of OSG's file readers, such as the Wavefront OBJ reader, have
 	//  sensitivity to stdio issues with '.' and ',' in European locales.
@@ -994,7 +994,11 @@ osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache, bool
 	// Use the filename as the node's name
 	node->setName(fname);
 
-	return node;
+	// We are holding a ref_ptr to the object (with refcount=1) so we can't just
+	//  return node.get(), because node will go out of scope, decrement the count
+	//  and delete the object.  Instead, use release(), which will decrease the
+	//  refcount to 0, but NOT delete the object.
+	return node.release();
 }
 
 bool vtSaveModel(osg::Node *node, const char *filename)

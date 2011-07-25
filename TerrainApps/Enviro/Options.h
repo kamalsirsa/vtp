@@ -10,6 +10,11 @@
 
 #include "vtdata/FilePath.h"
 
+/**
+ All the global options for the Enviro application.  These can be accessed anywhere,
+ anytime using the global singleton "g_Options".  Enviro let the user edit them with
+ OptionsDlg and serializes them to a file called "Enviro.xml".
+ */
 class EnviroOptions
 {
 public:

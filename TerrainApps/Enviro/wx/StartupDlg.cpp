@@ -45,7 +45,7 @@ static void ShowOGLInfo2(bool bLog)
 		canvas->GetContext()->SetCurrent(*canvas);
 #endif
 #else
-	wxFrame *frame = new wxFrame();
+	wxFrame *frame = new wxFrame;
 	frame->Create(NULL, -1, _T("Test"));
 	wxGLCanvas *canvas = new wxGLCanvas(frame, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 	frame->Show();

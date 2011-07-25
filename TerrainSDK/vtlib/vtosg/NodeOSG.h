@@ -171,7 +171,7 @@ void WriteDotFile(osg::Group *node, const char *filename);
 //
 
 /// Load a 3D model file
-osg::ref_ptr<osg::Node> vtLoadModel(const char *filename, bool bAllowCache = true,
+osg::Node *vtLoadModel(const char *filename, bool bAllowCache = true,
 					   bool bDisableMipmaps = false);
 bool vtSaveModel(osg::Node *node, const char *filename);
 void SetLoadModelCallback(osg::Node *callback(osg::Transform *input));
@@ -463,8 +463,8 @@ public:
 	OsgDynMesh();
 
 	// overrides
-	virtual osg::Object* cloneType() const { return new OsgDynMesh(); }
-	virtual osg::Object* clone(const osg::CopyOp &foo) const { return new OsgDynMesh(); }
+	virtual osg::Object* cloneType() const { return new OsgDynMesh; }
+	virtual osg::Object* clone(const osg::CopyOp &foo) const { return new OsgDynMesh; }
 	virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const OsgDynMesh*>(obj)!=NULL; }
 	virtual const char* className() const { return "OsgDynMesh"; }
 
