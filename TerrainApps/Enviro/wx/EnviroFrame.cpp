@@ -30,6 +30,7 @@
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/Contours.h"
 #include "vtlib/core/Fence3d.h"
+#include "vtlib/core/PickEngines.h"
 #include "vtlib/core/SMTerrain.h"
 #include "vtlib/core/SRTerrain.h"
 #include "vtlib/core/SkyDome.h"

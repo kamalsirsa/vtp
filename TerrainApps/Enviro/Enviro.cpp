@@ -12,6 +12,7 @@
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/PagedLodGrid.h"
+#include "vtlib/core/PickEngines.h"
 #include "vtlib/core/TiledGeom.h"
 #include "vtlib/core/MapOverviewEngine.h"
 #include "vtdata/vtLog.h"

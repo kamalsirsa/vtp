@@ -6,9 +6,10 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Terrain.h"
+#include "vtlib/core/PickEngines.h"
 #include "vtlib/core/Globe.h"
 #include "vtlib/core/SkyDome.h"
+#include "vtlib/core/Terrain.h"
 #include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 

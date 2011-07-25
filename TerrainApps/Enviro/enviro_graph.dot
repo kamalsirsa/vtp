@@ -35,10 +35,12 @@ digraph G
 		vtTerrainFlyer [label="vtTerrainFlyer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="../vtlib/classvtTerrainFlyer.html"];
 		vtHeightConstrain [label="vtHeightConstrain",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="../vtlib/classvtHeightConstrain.html"];
 		MapOverviewEngine [label="MapOverviewEngine",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="../vtlib/classMapOverviewEngine.html"];
+		TerrainPicker [label="TerrainPicker",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="classTerrainPicker.html"];
 
 		vtEngine -> vtLastMouse [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 		vtEngine -> vtHeightConstrain [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 		vtLastMouse -> vtFlyer [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+		vtLastMouse -> TerrainPicker [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 		vtFlyer -> vtTerrainFlyer [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 		vtEngine -> MapOverviewEngine [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 	}
@@ -83,7 +85,6 @@ digraph G
 		EnviroFrame [label="EnviroFrame",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="classEnviroFrame.html"];
 		Enviro [label="Enviro",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="classEnviro.html"];
 		EnviroGUI [label="EnviroGUI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="classEnviroGUI.html"];
-		TerrainPicker [label="TerrainPicker",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="classTerrainPicker.html"];
 
 		Enviro -> EnviroGUI [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 
@@ -94,7 +95,6 @@ digraph G
 	wxFrame -> EnviroFrame [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 	vtGLCanvas -> EnviroCanvas [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 	vtTerrainScene -> Enviro [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-	vtLastMouse -> TerrainPicker [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 
 	EnviroApp -> EnviroFrame [style="dotted", label="creates", color="#880000"];
 	EnviroFrame -> EnviroCanvas [style="dotted", label="creates", color="#880000"];
