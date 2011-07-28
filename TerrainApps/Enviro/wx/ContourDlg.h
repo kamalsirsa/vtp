@@ -27,11 +27,12 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for ContourDlg
-	wxChoice* GetChoiceLayer()  { return (wxChoice*) FindWindow( ID_CHOICE_LAYER ); }
-	wxTextCtrl* GetElev()  { return (wxTextCtrl*) FindWindow( ID_ELEV ); }
+	wxChoice *LayerChoice() { return m_choice_layer; }
 	void UpdateEnabling();
 
-	float m_fElev;
+	float m_fElevSingle;
+	float m_fElevEvery;
+	bool m_bSingle;
 	bool m_bCreate;
 	wxString m_strLayer;
 

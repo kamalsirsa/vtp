@@ -710,7 +710,7 @@
                                         <property name="bg"></property>
                                         <property name="context_help"></property>
                                         <property name="context_menu">1</property>
-                                        <property name="default"></property>
+                                        <property name="default">1</property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
@@ -767,7 +767,7 @@
                                         <property name="bg"></property>
                                         <property name="context_help"></property>
                                         <property name="context_menu">1</property>
-                                        <property name="default"></property>
+                                        <property name="default">0</property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
@@ -2141,7 +2141,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -2198,7 +2198,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -2913,7 +2913,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -2970,7 +2970,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -3467,7 +3467,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -3524,7 +3524,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -5170,7 +5170,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -5227,7 +5227,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -5775,7 +5775,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -5832,7 +5832,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -7266,7 +7266,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -7323,7 +7323,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -7822,7 +7822,7 @@
                                         <property name="bg"></property>
                                         <property name="context_help"></property>
                                         <property name="context_menu">1</property>
-                                        <property name="default"></property>
+                                        <property name="default">1</property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
@@ -7879,7 +7879,7 @@
                                         <property name="bg"></property>
                                         <property name="context_help"></property>
                                         <property name="context_menu">1</property>
-                                        <property name="default"></property>
+                                        <property name="default">0</property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
@@ -10142,7 +10142,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -10199,7 +10199,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -10571,7 +10571,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -10628,7 +10628,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -11474,7 +11474,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -11531,7 +11531,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -12545,7 +12545,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -12602,7 +12602,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -14586,7 +14586,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -14643,7 +14643,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -15619,7 +15619,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -15676,7 +15676,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -15932,7 +15932,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -15989,7 +15989,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -16042,7 +16042,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="1">
+        <object class="Dialog" expanded="0">
             <property name="bg"></property>
             <property name="center">wxBOTH</property>
             <property name="context_help"></property>
@@ -17532,7 +17532,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -17589,7 +17589,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -19115,7 +19115,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -19172,7 +19172,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -19740,7 +19740,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -20375,7 +20375,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -20432,7 +20432,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -20485,7 +20485,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="1">
+        <object class="Dialog" expanded="0">
             <property name="bg"></property>
             <property name="center">wxBOTH</property>
             <property name="context_help"></property>
@@ -21817,7 +21817,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -21874,7 +21874,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -22197,7 +22197,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -22254,7 +22254,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -23318,7 +23318,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -23375,7 +23375,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -24350,7 +24350,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -24407,7 +24407,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -24790,7 +24790,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -24847,7 +24847,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -26839,7 +26839,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -26896,7 +26896,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -27998,7 +27998,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -28055,7 +28055,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -29194,7 +29194,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -29251,7 +29251,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -30913,7 +30913,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -30970,7 +30970,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -31618,7 +31618,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">1</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
@@ -31675,7 +31675,7 @@
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
-                                <property name="default"></property>
+                                <property name="default">0</property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>

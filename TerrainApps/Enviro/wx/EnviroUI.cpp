@@ -2107,7 +2107,6 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer195->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cancel->SetDefault(); 
 	bSizer195->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer190->Add( bSizer195, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -2264,7 +2263,6 @@ ScenarioParamsDlgBase::ScenarioParamsDlgBase( wxWindow* parent, wxWindowID id, c
 	bSizer237->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cancel->SetDefault(); 
 	bSizer237->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer232->Add( bSizer237, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -2414,7 +2412,6 @@ TextureDlgBase::TextureDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer250->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cancel->SetDefault(); 
 	bSizer250->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer247->Add( bSizer250, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
@@ -2586,7 +2583,6 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizer202 = new wxBoxSizer( wxHORIZONTAL );
 	
 	m_radio_use_object_color_field = new wxRadioButton( StylePanel1, ID_RADIO_USE_OBJECT_COLOR_FIELD, _("Field"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_radio_use_object_color_field->SetValue( true ); 
 	bSizer202->Add( m_radio_use_object_color_field, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	wxString m_object_color_fieldChoices[] = { _("Item") };
@@ -2738,7 +2734,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel2->SetSizer( bSizer205 );
 	StylePanel2->Layout();
 	bSizer205->Fit( StylePanel2 );
-	m_notebook->AddPage( StylePanel2, _("Line Geometry"), false );
+	m_notebook->AddPage( StylePanel2, _("Line Geometry"), true );
 	StylePanel3 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer213;
 	bSizer213 = new wxBoxSizer( wxVERTICAL );
@@ -2777,7 +2773,6 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizer217 = new wxBoxSizer( wxHORIZONTAL );
 	
 	m_radio_use_text_color_field = new wxRadioButton( StylePanel3, ID_RADIO_USE_TEXT_COLOR_FIELD, _("Field"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_radio_use_text_color_field->SetValue( true ); 
 	bSizer217->Add( m_radio_use_text_color_field, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	wxString m_text_color_fieldChoices[] = { _("Item") };
@@ -2856,7 +2851,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel3->SetSizer( bSizer213 );
 	StylePanel3->Layout();
 	bSizer213->Fit( StylePanel3 );
-	m_notebook->AddPage( StylePanel3, _("Text Labels"), true );
+	m_notebook->AddPage( StylePanel3, _("Text Labels"), false );
 	StylePanel4 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer222;
 	bSizer222 = new wxBoxSizer( wxVERTICAL );
@@ -2903,7 +2898,6 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizer224->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_cancell = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cancell->SetDefault(); 
 	bSizer224->Add( m_cancell, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer196->Add( bSizer224, 0, wxALIGN_CENTER, 5 );
@@ -3297,11 +3291,11 @@ ContourDlgBase::ContourDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer308;
 	bSizer308 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text210 = new wxStaticText( this, ID_TEXT, _("Contour at elevation:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text210->Wrap( -1 );
-	bSizer308->Add( m_text210, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_radioBtn31 = new wxRadioButton( this, ID_RADIO_SINGLE, _("Single contour at:"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	m_radioBtn31->SetValue( true ); 
+	bSizer308->Add( m_radioBtn31, 0, wxALL, 5 );
 	
-	m_elev = new wxTextCtrl( this, ID_ELEV, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
+	m_elev = new wxTextCtrl( this, ID_ELEV1, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
 	bSizer308->Add( m_elev, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_text211 = new wxStaticText( this, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -3309,6 +3303,24 @@ ContourDlgBase::ContourDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer308->Add( m_text211, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer307->Add( bSizer308, 0, wxALIGN_CENTER, 5 );
+	
+	wxBoxSizer* bSizer3081;
+	bSizer3081 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_radioBtn30 = new wxRadioButton( this, ID_RADIO_EVERY, _("Contours every:"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer3081->Add( m_radioBtn30, 0, wxALL, 5 );
+	
+	m_elev2 = new wxTextCtrl( this, ID_ELEV2, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
+	bSizer3081->Add( m_elev2, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_text2111 = new wxStaticText( this, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text2111->Wrap( 0 );
+	bSizer3081->Add( m_text2111, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	bSizer307->Add( bSizer3081, 1, wxEXPAND, 5 );
+	
+	m_staticline5 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	bSizer307->Add( m_staticline5, 0, wxEXPAND | wxALL, 5 );
 	
 	wxBoxSizer* bSizer309;
 	bSizer309 = new wxBoxSizer( wxHORIZONTAL );
@@ -3342,7 +3354,6 @@ ContourDlgBase::ContourDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer311->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cancel->SetDefault(); 
 	bSizer311->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer307->Add( bSizer311, 0, wxALIGN_CENTER, 5 );

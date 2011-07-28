@@ -500,6 +500,8 @@ vtAbstractLayer *CreateNewAbstractLineLayer(vtTerrain *pTerr, bool bAskStyle)
 		StyleDlg dlg(NULL, -1, _("Style"));
 		dlg.SetFeatureSet(pSet);
 		dlg.SetOptions(props);
+		// Show the "Line Geometry" page, which is most relevant for a line layer
+		dlg.GetNotebook()->SetSelection(1);
 		if (dlg.ShowModal() != wxID_OK)
 		{
 			delete pSet;

@@ -286,7 +286,6 @@ BuildingDlgBase::BuildingDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	bSizer317->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_edges = new wxButton( this, ID_EDGES, _("Edges >>"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_edges->SetDefault(); 
 	bSizer317->Add( m_edges, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer308->Add( bSizer317, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -1104,7 +1103,6 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	bSizer369->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cancel->SetDefault(); 
 	bSizer369->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer364->Add( bSizer369, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -1173,7 +1171,6 @@ StatePlaneDlgBase::StatePlaneDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	bSizer374->Add( wxID_OK, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	wxID_CANCEL = new wxButton( this, wxID_ANY, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	wxID_CANCEL->SetDefault(); 
 	bSizer374->Add( wxID_CANCEL, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer370->Add( bSizer374, 0, wxALIGN_CENTER|wxALL, 5 );
@@ -1356,7 +1353,6 @@ SizeDlgBase::SizeDlgBase( wxWindow* parent, wxWindowID id, const wxString& title
 	bSizer382->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cancel->SetDefault(); 
 	bSizer382->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer381->Add( bSizer382, 0, wxALIGN_CENTER, 5 );

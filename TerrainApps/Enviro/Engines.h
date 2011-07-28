@@ -10,14 +10,8 @@
 #ifndef ENVIRO_ENGINESH
 #define ENVIRO_ENGINESH
 
-#include "vtlib/core/Engine.h"
 #include "vtlib/core/NavEngines.h"
-#include "vtlib/core/ImageSprite.h"
 
-class NodeGeom;
-class LinkGeom;
-class vtRoute;
-class vtHeightField;
 class TerrainPicker;
 
 ///////////////////////////////////////////////////
@@ -40,7 +34,7 @@ protected:
 ///////////////////////////////////////////////////
 
 /**
- Grab-pivot navigation.  Grab the ground to move horizontally, orbit (pivor)
+ Grab-pivot navigation.  Grab the ground to move horizontally, orbit (pivot)
  the camera around a point on the ground to turn.
  */
 class GrabFlyer : public vtTerrainFlyer

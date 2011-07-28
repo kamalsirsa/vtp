@@ -73,6 +73,9 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// Work around wxFormDesigner's lack of support for limiting to smallest size
 	GetSizer()->SetSizeHints(this);
 
+	// Work around wxFormDesigner setting radio buttons to true when they aren't
+	GetRadio2()->SetValue(true);
+
 	// Object Geometry
 	m_bObjectGeometry = false;
 	m_ObjectGeomColor.Set(255, 255, 255);

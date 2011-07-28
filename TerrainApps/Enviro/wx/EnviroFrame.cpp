@@ -2589,7 +2589,7 @@ void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 	EnableContinuousRendering(false);
 	ContourDlg dlg(this, -1, _("Add Contour"));
 
-	dlg.GetChoiceLayer()->Clear();
+	dlg.LayerChoice()->Clear();
 	LayerSet &layers = pTerr->GetLayers();
 	for (unsigned int i = 0; i < layers.size(); i++)
 	{
@@ -2598,9 +2598,8 @@ void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 			continue;
 		vtString vname = alay->GetLayerName();
 		if (alay->GetFeatureSet()->GetGeomType() == wkbLineString)
-			dlg.GetChoiceLayer()->Append(wxString(vname, wxConvUTF8));
+			dlg.LayerChoice()->Append(wxString(vname, wxConvUTF8));
 	}
-	dlg.m_fElev = 1000;
 
 	bool bResult = (dlg.ShowModal() == wxID_OK);
 	EnableContinuousRendering(true);
@@ -2620,15 +2619,18 @@ void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 		vtLayer *lay = layers.FindByName((const char *)wname.mb_str(wxConvUTF8));
 		if (!lay) return;
 		alay = dynamic_cast<vtAbstractLayer*>(lay);
-		if (!alay) return;
 	}
+	if (!alay) return;
 	vtFeatureSetLineString *pSet = (vtFeatureSetLineString *) alay->GetFeatureSet();
 
 	vtContourConverter cc;
 	if (!cc.Setup(pTerr, pSet))
 		return;
 
-	cc.GenerateContour(dlg.m_fElev);
+	if (dlg.m_bSingle)
+		cc.GenerateContour(dlg.m_fElevSingle);
+	else
+		cc.GenerateContours(dlg.m_fElevEvery);
 	cc.Finish();
 
 	// show the geometry

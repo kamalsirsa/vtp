@@ -453,7 +453,7 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 	{
 		const DLine2 &dline = pSetLS2->GetPolyLine(iIndex);
 
-		m_pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve);
+		m_pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve, true);
 	}
 	else if (pSetLS3)
 	{

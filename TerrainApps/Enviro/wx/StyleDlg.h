@@ -39,6 +39,7 @@ public:
 
 	void SetOptions(const vtTagArray &Layer);
 	void GetOptions(vtTagArray &pLayer);
+	wxNotebook *GetNotebook() { return m_notebook; }
 
 private:
 	// WDR: method declarations for StyleDlg

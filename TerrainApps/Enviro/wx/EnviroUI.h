@@ -299,13 +299,16 @@
 #define ID_SLIDER_WIND_DIRECTION 1254
 #define ID_TEXT_WIND_SPEED 1255
 #define ID_SLIDER_WIND_SPEED 1256
-#define ID_ELEV 1257
-#define ID_RADIO_CREATE 1258
-#define ID_RADIO_ADD 1259
-#define ID_CHOICE_LAYER 1260
-#define ID_PM_LISTCTRL 1261
-#define ID_TURN 1262
-#define ID_DISTANCE 1263
+#define ID_RADIO_SINGLE 1257
+#define ID_ELEV1 1258
+#define ID_RADIO_EVERY 1259
+#define ID_ELEV2 1260
+#define ID_RADIO_CREATE 1261
+#define ID_RADIO_ADD 1262
+#define ID_CHOICE_LAYER 1263
+#define ID_PM_LISTCTRL 1264
+#define ID_TURN 1265
+#define ID_DISTANCE 1266
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class StartupDlgBase
@@ -1103,9 +1106,13 @@ class ContourDlgBase : public wxDialog
 	private:
 	
 	protected:
-		wxStaticText* m_text210;
+		wxRadioButton* m_radioBtn31;
 		wxTextCtrl* m_elev;
 		wxStaticText* m_text211;
+		wxRadioButton* m_radioBtn30;
+		wxTextCtrl* m_elev2;
+		wxStaticText* m_text2111;
+		wxStaticLine* m_staticline5;
 		wxRadioButton* m_radio_create;
 		wxRadioButton* m_radio_add;
 		wxChoice* m_choice_layer;
