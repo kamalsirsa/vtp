@@ -192,6 +192,7 @@ EVT_MENU(ID_ELEV_COPY,				MainFrame::OnElevCopy)
 EVT_MENU(ID_ELEV_PASTE_NEW,			MainFrame::OnElevPasteNew)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_TOTIN,				MainFrame::OnElevToTin)
+EVT_MENU(ID_ELEV_CONTOURS,			MainFrame::OnElevContours)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 EVT_MENU(ID_ELEV_TRIMTIN,			MainFrame::OnElevTrimTin)
 
@@ -209,6 +210,7 @@ EVT_UPDATE_UI(ID_ELEV_EXPORT_TILES,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_COPY,			MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_TOTIN,		MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_CONTOURS,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 EVT_UPDATE_UI(ID_ELEV_TRIMTIN,		MainFrame::OnUpdateElevTrimTin)
 
@@ -522,6 +524,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_EXPORT_TILES, _("Export to libMini tileset..."));
 	elevMenu->Append(ID_ELEV_BITMAP, _("Re&nder to Bitmap..."));
 	elevMenu->Append(ID_ELEV_TOTIN, _("Convert Grid to TIN"));
+	elevMenu->Append(ID_ELEV_CONTOURS, _("Generate Contours"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _("&Merge shared TIN vertices"));
 	elevMenu->AppendCheckItem(ID_ELEV_TRIMTIN, _("Trim TIN triangles by line segment"));
@@ -1886,88 +1889,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	vtRoadLayer *pRL = GetActiveRoadLayer();
 	if (!pRL) return;
 
-	// check projection
-	vtProjection proj;
-	pRL->GetProjection(proj);
-	bool bDegrees = (proj.IsGeographic() != 0);
-
-	int count;
-	OpenProgressDialog(_("Cleaning RoadMap"));
-
-	UpdateProgressDialog(10, _("Removing unused nodes"));
-	count = pRL->RemoveUnusedNodes();
-	if (count)
-	{
-		DisplayAndLog("Removed %i nodes", count);
-		pRL->SetModified(true);
-	}
-
-	UpdateProgressDialog(20, _("Merging redundant nodes"));
-	// potentially takes a long time...
-	count = pRL->MergeRedundantNodes(bDegrees, progress_callback);
-	if (count)
-	{
-		DisplayAndLog("Merged %d redundant roads", count);
-		pRL->SetModified(true);
-	}
-
-	UpdateProgressDialog(30, _("Cleaning link points"));
-	count = pRL->CleanLinkPoints();
-	if (count)
-	{
-		DisplayAndLog("Cleaned %d link points", count);
-		pRL->SetModified(true);
-	}
-
-	UpdateProgressDialog(40, _T("Removing degenerate links"));
-	count = pRL->RemoveDegenerateLinks();
-	if (count)
-	{
-		DisplayAndLog("Removed %d degenerate links", count);
-		pRL->SetModified(true);
-	}
-
-#if 0
-	// The following cleanup operations are disabled until they are proven safe!
-
-	UpdateProgressDialog(40, _T("Removing unnecessary nodes"));
-	count = pRL->RemoveUnnecessaryNodes();
-	if (count)
-	{
-		DisplayAndLog("Removed %d unnecessary nodes", count);
-	}
-
-	UpdateProgressDialog(60, _T("Removing dangling links"));
-	count = pRL->DeleteDanglingRoads();
-	if (count)
-	{
-		DisplayAndLog("Removed %i dangling links", count);
-	}
-
-	UpdateProgressDialog(70, _T("Fixing overlapped roads"));
-	count = pRL->FixOverlappedRoads(bDegrees);
-	if (count)
-	{
-		DisplayAndLog("Fixed %i overlapped roads", count);
-	}
-
-	UpdateProgressDialog(80, _T("Fixing extraneous parallels"));
-	count = pRL->FixExtraneousParallels();
-	if (count)
-	{
-		DisplayAndLog("Fixed %i extraneous parallels", count);
-	}
-
-	UpdateProgressDialog(90, _T("Splitting looping roads"));
-	count = pRL->SplitLoopingRoads();
-	if (count)
-	{
-		DisplayAndLog("Split %d looping roads", count);
-	}
-#endif
-
-	CloseProgressDialog();
-	pRL->ComputeExtents();
+	pRL->DoClean();
 
 	m_pView->Refresh();
 }
@@ -2329,6 +2251,14 @@ void MainFrame::OnElevToTin(wxCommandEvent& event)
 
 	m_pView->Refresh();
 	RefreshTreeView();
+}
+
+void MainFrame::OnElevContours(wxCommandEvent& event)
+{
+	vtElevLayer *pEL = GetActiveElevLayer();
+	vtElevationGrid *grid = pEL->GetGrid();
+
+	// TODO
 }
 
 void MainFrame::OnElevMergeTin(wxCommandEvent& event)
@@ -2874,53 +2804,7 @@ void MainFrame::OnVegHTML(wxCommandEvent& event)
 		return;
 	wxString strPathName = saveFile.GetPath();
 
-	FILE *fp = fopen(strPathName.mb_str(), "wb");
-	fprintf(fp, "<html>\n\
-<head>\n\
-<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n\
-<title>VTP Plant Library: List of species</title>\n\
-<link rel=\"stylesheet\" href=\"../../vtp.css\">\n\
-</head>\n\
-\n\
-<body>\n\
-<script language=\"JavaScript\" type=\"text/javascript\" src=\"../../header3.js\"></script>\n\
-<h2>VTP Plant Library: List of species</h2>\n\
-\n");
-	fprintf(fp, "<blockquote>\n\
-<p><a href=\"index.html\">About the VTP Plant Library</a></p>\n\
-");
-	time_t t = time(NULL);
-	fprintf(fp, "<p>Generated on %s GMT</p>\n", asctime(gmtime(&t)));
-
-	int total = 0;
-	for (unsigned int i = 0; i < list->NumSpecies(); i++)
-		total += list->GetSpecies(i)->NumAppearances();
-
-	fprintf(fp, "<p>Total: %d species with %d appearances</p>\n", list->NumSpecies(), total);
-	fprintf(fp, "</blockquote>\n\n");
-
-	fprintf(fp, "<ul>\n");
-	for (unsigned int i = 0; i < list->NumSpecies(); i++)
-	{
-		vtPlantSpecies *sp = list->GetSpecies(i);
-		fprintf(fp, "  <li><i><font size=\"4\">%s</font></i>\n    <ul>\n", sp->GetSciName());
-		fprintf(fp, "      <li>Common names: ");
-		for (unsigned int j = 0; j < sp->NumCommonNames(); j++)
-		{
-			if (j > 0)
-				fprintf(fp, ", ");
-			vtPlantSpecies::CommonName cn = sp->GetCommonName(j);
-			fprintf(fp, "%s", (const char *) cn.m_strName);
-			if (cn.m_strLang != "" && cn.m_strLang != "en")
-				fprintf(fp, " (%s)", (const char *) cn.m_strLang);
-		}
-		fprintf(fp, "</li>\n");
-		fprintf(fp, "      <li>Appearances: %d images</li>\n", sp->NumAppearances());
-		fprintf(fp, "    </ul>\n");
-	}
-	fprintf(fp, "  </ul>\n  </li>\n");
-	fprintf(fp, "</ul>\n</body>\n</html>\n");
-	fclose(fp);
+	list->WriteHTML(strPathName.mb_str());
 }
 
 void MainFrame::OnUpdateVegExportSHP(wxUpdateUIEvent& event)

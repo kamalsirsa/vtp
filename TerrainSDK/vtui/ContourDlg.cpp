@@ -13,6 +13,7 @@
 #endif
 
 #include "ContourDlg.h"
+#include "AutoDialog.h"
 
 // WDR: class implementations
 

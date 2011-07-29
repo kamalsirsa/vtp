@@ -8,8 +8,7 @@
 #ifndef __ContourDlg_H__
 #define __ContourDlg_H__
 
-#include "EnviroUI.h"
-#include "vtui/AutoDialog.h"
+#include "vtui_UI.h"
 
 // WDR: class declarations
 

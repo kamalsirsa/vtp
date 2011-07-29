@@ -1,7 +1,7 @@
 //
 // RoadLayer.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -46,6 +46,7 @@ public:
 	int GetSelectedLinks();
 	void ToggleLinkDirection(LinkEdit *pLink);
 	bool SelectArea(const DRECT &box, bool nodemode, bool crossSelect);
+	void DoClean();
 	void MoveSelectedNodes(const DPoint2 &offset);
 	void CarveRoadway(class vtElevLayer *pElev, float margin);
 

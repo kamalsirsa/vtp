@@ -48,7 +48,6 @@
 
 // dialogs
 #include "CameraDlg.h"
-#include "ContourDlg.h"
 #include "DistanceDlg3d.h"
 #include "DriveDlg.h"
 #include "EphemDlg.h"
@@ -63,6 +62,7 @@
 #include "UtilDlg.h"
 #include "VehicleDlg.h"
 
+#include "vtui/ContourDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/ProfileDlg.h"
 #include "vtui/SizeDlg.h"
@@ -685,7 +685,7 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->Append(ID_TERRAIN_CHANGE_TEXTURE, _("&Change Texture"));
 	m_pTerrainMenu->Append(ID_TERRAIN_DISTRIB_VEHICLES, _("&Distribute Vehicles (test)"));
 	m_pTerrainMenu->Append(ID_TERRAIN_WRITE_ELEVATION, _("Write Elevation to BT"));
-	m_pTerrainMenu->Append(ID_TERRAIN_ADD_CONTOUR, _("Add Contour"));
+	m_pTerrainMenu->Append(ID_TERRAIN_ADD_CONTOUR, _("Add Contours"));
 	m_pMenuBar->Append(m_pTerrainMenu, _("Te&rrain"));
 
 	if (m_bEnableEarth)

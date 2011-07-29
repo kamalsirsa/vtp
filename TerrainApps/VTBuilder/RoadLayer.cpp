@@ -547,6 +547,92 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 	return ret;
 }
 
+void vtRoadLayer::DoClean()
+{
+	// check projection
+	vtProjection proj;
+	GetProjection(proj);
+	bool bDegrees = (proj.IsGeographic() != 0);
+
+	int count;
+	OpenProgressDialog(_("Cleaning RoadMap"));
+
+	UpdateProgressDialog(10, _("Removing unused nodes"));
+	count = RemoveUnusedNodes();
+	if (count)
+	{
+		DisplayAndLog("Removed %i nodes", count);
+		SetModified(true);
+	}
+
+	UpdateProgressDialog(20, _("Merging redundant nodes"));
+	// potentially takes a long time...
+	count = MergeRedundantNodes(bDegrees, progress_callback);
+	if (count)
+	{
+		DisplayAndLog("Merged %d redundant roads", count);
+		SetModified(true);
+	}
+
+	UpdateProgressDialog(30, _("Cleaning link points"));
+	count = CleanLinkPoints();
+	if (count)
+	{
+		DisplayAndLog("Cleaned %d link points", count);
+		SetModified(true);
+	}
+
+	UpdateProgressDialog(40, _T("Removing degenerate links"));
+	count = RemoveDegenerateLinks();
+	if (count)
+	{
+		DisplayAndLog("Removed %d degenerate links", count);
+		SetModified(true);
+	}
+
+#if 0
+	// The following cleanup operations are disabled until they are proven safe!
+
+	UpdateProgressDialog(40, _T("Removing unnecessary nodes"));
+	count = RemoveUnnecessaryNodes();
+	if (count)
+	{
+		DisplayAndLog("Removed %d unnecessary nodes", count);
+	}
+
+	UpdateProgressDialog(60, _T("Removing dangling links"));
+	count = DeleteDanglingRoads();
+	if (count)
+	{
+		DisplayAndLog("Removed %i dangling links", count);
+	}
+
+	UpdateProgressDialog(70, _T("Fixing overlapped roads"));
+	count = FixOverlappedRoads(bDegrees);
+	if (count)
+	{
+		DisplayAndLog("Fixed %i overlapped roads", count);
+	}
+
+	UpdateProgressDialog(80, _T("Fixing extraneous parallels"));
+	count = FixExtraneousParallels();
+	if (count)
+	{
+		DisplayAndLog("Fixed %i extraneous parallels", count);
+	}
+
+	UpdateProgressDialog(90, _T("Splitting looping roads"));
+	count = SplitLoopingRoads();
+	if (count)
+	{
+		DisplayAndLog("Split %d looping roads", count);
+	}
+#endif
+
+	CloseProgressDialog();
+	ComputeExtents();
+}
+
 #include "ElevLayer.h"
 #include "vtdata/ElevationGrid.h"
 

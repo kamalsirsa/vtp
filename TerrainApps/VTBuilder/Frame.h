@@ -189,6 +189,7 @@ protected:
 	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
 	void OnElevToTin(wxCommandEvent& event);
+	void OnElevContours(wxCommandEvent& event);
 	void OnElevExportTiles(wxCommandEvent& event);
 	void OnElevMergeTin(wxCommandEvent& event);
 	void OnElevTrimTin(wxCommandEvent& event);

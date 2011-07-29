@@ -1,7 +1,7 @@
 //
 // Plants.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -163,6 +163,59 @@ bool vtSpeciesList::WriteXML(const char *fname) const
 	return true;
 }
 
+bool vtSpeciesList::WriteHTML(const char *fname) const
+{
+	FILE *fp = fopen(fname, "wb");
+	if (!fp)
+		return false;
+	fprintf(fp, "<html>\n\
+<head>\n\
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n\
+<title>VTP Plant Library: List of species</title>\n\
+<link rel=\"stylesheet\" href=\"../../vtp.css\">\n\
+</head>\n\
+\n\
+<body>\n\
+<script language=\"JavaScript\" type=\"text/javascript\" src=\"../../header3.js\"></script>\n\
+<h2>VTP Plant Library: List of species</h2>\n\
+\n");
+	fprintf(fp, "<blockquote>\n\
+<p><a href=\"index.html\">About the VTP Plant Library</a></p>\n\
+");
+	time_t t = time(NULL);
+	fprintf(fp, "<p>Generated on %s GMT</p>\n", asctime(gmtime(&t)));
+
+	int total = 0;
+	for (unsigned int i = 0; i < NumSpecies(); i++)
+		total += GetSpecies(i)->NumAppearances();
+
+	fprintf(fp, "<p>Total: %d species with %d appearances</p>\n", NumSpecies(), total);
+	fprintf(fp, "</blockquote>\n\n");
+
+	fprintf(fp, "<ul>\n");
+	for (unsigned int i = 0; i < NumSpecies(); i++)
+	{
+		vtPlantSpecies *sp = GetSpecies(i);
+		fprintf(fp, "  <li><i><font size=\"4\">%s</font></i>\n    <ul>\n", sp->GetSciName());
+		fprintf(fp, "      <li>Common names: ");
+		for (unsigned int j = 0; j < sp->NumCommonNames(); j++)
+		{
+			if (j > 0)
+				fprintf(fp, ", ");
+			vtPlantSpecies::CommonName cn = sp->GetCommonName(j);
+			fprintf(fp, "%s", (const char *) cn.m_strName);
+			if (cn.m_strLang != "" && cn.m_strLang != "en")
+				fprintf(fp, " (%s)", (const char *) cn.m_strLang);
+		}
+		fprintf(fp, "</li>\n");
+		fprintf(fp, "      <li>Appearances: %d images</li>\n", sp->NumAppearances());
+		fprintf(fp, "    </ul>\n");
+	}
+	fprintf(fp, "  </ul>\n  </li>\n");
+	fprintf(fp, "</ul>\n</body>\n</html>\n");
+	fclose(fp);
+	return true;
+}
 
 short vtSpeciesList::FindSpeciesId(vtPlantSpecies *ps)
 {

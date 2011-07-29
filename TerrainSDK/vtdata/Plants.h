@@ -1,7 +1,7 @@
 //
 // Plants.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -136,6 +136,7 @@ public:
 
 	bool ReadXML(const char *fname, vtString *msg = NULL);
 	bool WriteXML(const char *fname) const;
+	bool WriteHTML(const char *fname) const;
 
 	unsigned int NumSpecies() const { return m_Species.GetSize();  }
 	vtPlantSpecies *GetSpecies(unsigned int i) const
