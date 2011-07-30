@@ -17,7 +17,7 @@
 //
 // This callback function will receive points output from QuikGrid.
 //
-void ReceiveContourPoint(void *context, float x, float y, bool bStart)
+void ReceiveContourPoint2(void *context, float x, float y, bool bStart)
 {
 	vtContourConverter *cc = (vtContourConverter *) context;
 	cc->Coord(x, y, bStart);
@@ -186,7 +186,7 @@ bool vtContourConverter::Setup(vtTerrain *pTerr, vtFeatureSetLineString *fset)
  */
 void vtContourConverter::GenerateContour(float fAlt)
 {
-	SetQuikGridCallbackFunction(ReceiveContourPoint, this);
+	SetQuikGridCallbackFunction(ReceiveContourPoint2, this);
 	m_fAltitude = fAlt;
 	Contour(*m_pGrid, fAlt);
 }
@@ -213,7 +213,7 @@ void vtContourConverter::GenerateContours(float fInterval)
 	int start = (int) (fMin / fInterval) + 1;
 	int stop = (int) (fMax / fInterval);
 
-	SetQuikGridCallbackFunction(ReceiveContourPoint, this);
+	SetQuikGridCallbackFunction(ReceiveContourPoint2, this);
 	for (int i = start; i <= stop; i++)
 	{
 		m_fAltitude = i * fInterval;

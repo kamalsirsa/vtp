@@ -1,7 +1,7 @@
 //
 // Layer.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -132,6 +132,7 @@ class LayerArray : public vtArray<vtLayerPtr>
 public:
 	// don't need explicit destructor here because Empty() is always called
 	virtual void DestructItems(unsigned int first, unsigned int last);
+	vtLayer *FindByFilename(const wxString &name);
 };
 
 class DrawStyle

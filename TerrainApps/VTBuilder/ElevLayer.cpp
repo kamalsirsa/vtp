@@ -35,8 +35,8 @@
 #include "vtBitmap.h"
 
 #if SUPPORT_QUIKGRID
+  #include "vtdata/QuikGrid.h"
   // QuikGrid includes
-  #include "surfgrid.h"
   #include "scatdata.h"
   #include "xpand.h"
 #endif

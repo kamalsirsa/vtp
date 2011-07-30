@@ -1191,18 +1191,6 @@ void EnviroFrame::DoTestCode()
 			sa->ConstructStructure(bld);
 		}
 #endif
-#if SUPPORT_QUIKGRID && 0
-		// Create 500m contours
-		if (pTerr)
-		{
-			vtContourConverter cc;
-			if (cc.Setup(pTerr, RGBf(1,1,0), 10))
-			{
-				cc.GenerateContours(500);
-				cc.Finish();
-			}
-		}
-#endif
 #if 0
 		{
 			// Read points from a text file, create OBJ file with geometry at that locations
@@ -2581,13 +2569,12 @@ void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)
 void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 {
 #if SUPPORT_QUIKGRID
-
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr)
 		return;
 
 	EnableContinuousRendering(false);
-	ContourDlg dlg(this, -1, _("Add Contour"));
+	ContourDlg dlg(this, -1, _("Add Contours"));
 
 	dlg.LayerChoice()->Clear();
 	LayerSet &layers = pTerr->GetLayers();

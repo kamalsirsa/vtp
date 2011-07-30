@@ -21,12 +21,15 @@
 #include "vtdata/ChunkLOD.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/Icosa.h"
+#include "vtdata/QuikGrid.h"
 #include "vtdata/TripDub.h"
 #include "vtdata/Version.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/WFSClient.h"
+
 #include "vtui/Helper.h"
+#include "vtui/ContourDlg.h"
 #include "vtui/ProfileDlg.h"
 #include "vtui/ProjectionDlg.h"
 
@@ -2258,7 +2261,67 @@ void MainFrame::OnElevContours(wxCommandEvent& event)
 	vtElevLayer *pEL = GetActiveElevLayer();
 	vtElevationGrid *grid = pEL->GetGrid();
 
-	// TODO
+#if SUPPORT_QUIKGRID
+	ContourDlg dlg(this, -1, _("Add Contours"));
+
+	// Put any existing raw polyline layers in the drop-down choice
+	dlg.LayerChoice()->Clear();
+	int layers = m_Layers.GetSize();
+	for (int i = 0; i < layers; i++)
+	{
+		vtLayer *pL = m_Layers.GetAt(i);
+		if (pL->GetType() != LT_RAW) continue;
+		vtRawLayer *raw = (vtRawLayer*) pL;
+		if (raw->GetGeomType() == wkbLineString)
+			dlg.LayerChoice()->Append(raw->GetLayerFilename());
+	}
+	dlg.LayerChoice()->SetSelection(0);
+
+	bool bResult = (dlg.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+
+	vtRawLayer *raw;
+	if (dlg.m_bCreate)
+	{
+		// create new (abstract polyline) layer to receive contour lines
+		raw = new vtRawLayer;
+		raw->SetGeomType(wkbLineString);
+		raw->SetLayerFilename(_T("Untitled.shp"));
+
+		// We will add an elevation value to each contour
+		raw->GetFeatureSet()->AddField("Elevation", FT_Float);
+
+		// copy CRS
+		vtProjection proj;
+		pEL->GetProjection(proj);
+		raw->SetProjection(proj);
+
+		AddLayer(raw);
+		RefreshTreeView();
+	}
+	else
+	{
+		// get the existing layer from the dialog's choice, by name
+		raw = (vtRawLayer*) m_Layers.FindByFilename(dlg.m_strLayer);
+	}
+	if (!raw)
+		return;
+
+	vtFeatureSetLineString *fsls = (vtFeatureSetLineString *) raw->GetFeatureSet();
+
+	ContourConverter cc;
+	if (!cc.Setup(grid, fsls))
+		return;
+
+	if (dlg.m_bSingle)
+		cc.GenerateContour(dlg.m_fElevSingle);
+	else
+		cc.GenerateContours(dlg.m_fElevEvery);
+	cc.Finish();
+
+	m_pView->Refresh();
+#endif // SUPPORT_QUIKGRID
 }
 
 void MainFrame::OnElevMergeTin(wxCommandEvent& event)

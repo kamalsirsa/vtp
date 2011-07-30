@@ -1,7 +1,7 @@
 //
 // Layer.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -260,7 +260,6 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 
 ////////////////////////////////////////////////
 
-
 void LayerArray::DestructItems(unsigned int first, unsigned int last)
 {
 	for (unsigned int i = first; i <= last; ++i)
@@ -274,6 +273,15 @@ void LayerArray::DestructItems(unsigned int first, unsigned int last)
 	}
 }
 
+vtLayer *LayerArray::FindByFilename(const wxString &name)
+{
+	for (unsigned int i = 0; i < GetSize(); i++)
+	{
+		if (GetAt(i)->GetLayerFilename() == name)
+			return GetAt(i);
+	}
+	return NULL;
+}
 
 ///////////////////////////////////////////////////////////////////////
 

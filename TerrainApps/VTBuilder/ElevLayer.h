@@ -110,6 +110,8 @@ public:
 	bool NeedsDraw();
 
 protected:
+	// We can store either a grid or a TIN, so at most one of these two
+	//  pointers will be set:
 	vtElevationGrid	*m_pGrid;
 	vtTin2d *m_pTin;
 
