@@ -1,6 +1,6 @@
 // mfcSimpleView.cpp : implementation of the CSimpleView class
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,6 +18,7 @@ void CleanupScene();
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtdata/DataPath.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -190,6 +191,17 @@ int CSimpleView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	if (CreateViewGLContext(hDC)==FALSE)
 		return 0;
+
+	int dummy_argc = 1;
+	char *dummy_argv = "mfcSimple.exe";
+
+	// Get a handle to the vtScene - one is already created for you
+	vtScene *pScene = vtGetScene();
+	pScene->Init(dummy_argc, &dummy_argv);
+
+	pScene->getViewer()->setThreadingModel(osgViewer::Viewer::SingleThreaded);
+	pScene->SetGraphicsContext(new osgViewer::GraphicsWindowEmbedded(0, 0, 800, 600));
+
 	return CreateScene();
 }
 
@@ -220,11 +232,8 @@ vtTerrainScene *ts = NULL;
 //
 bool CreateScene()
 {
-	// Get a handle to the vtScene - one is already created for you
-	vtScene *pScene = vtGetScene();
-	pScene->Init();
-
 	// Look up the camera
+	vtScene *pScene = vtGetScene();
 	vtCamera *pCamera = pScene->GetCamera();
 	pCamera->SetHither(10);
 	pCamera->SetYon(150000);

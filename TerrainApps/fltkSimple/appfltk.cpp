@@ -4,7 +4,7 @@
 //   (tested only on Linux using FLTK 1.1.5)
 //   (tested only on Windows using FLTK 1.1.6)
 //
-// Copyright (c) 2004-2006 Virtual Terrain Project
+// Copyright (c) 2004-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Provided by Clark Borst (November 12, 2004)
@@ -82,36 +82,25 @@ VTPWindow::~VTPWindow()
 	//
 }
 
-// init OpenGL
-void VTPWindow::InitializeGL()
-{
-	glClearColor(.1f, .1f, .1f, 1);
-	glEnable(GL_DEPTH_TEST);
-}
-
 // the draw() function must be overridden by your own
 // drawing code. By invoking method redraw(), FLTK will
 // call this draw() method
 void VTPWindow::draw()
 {
 	static bool firstTime = true;
-	if (firstTime){
-		// create the VTerrain scene
-		CreateScene();
-		// init OpenGL
-		InitializeGL();
+	if (firstTime)
+	{
 		// get the window size with Fl::Widget (parent class of Fl_Gl_Window) methods w() and h()
 		screenwidth  = w();
 		screenheight = h();
 		// print the window size to the terminal
-		cout << screenwidth << endl << screenheight << endl;
+		VTLOG("screenwidth %d, screenheight %d\n", screenwidth, screenheight);
 		// adjust the scene's viewport to the FL window size
 		vtGetScene()->SetWindowSize(screenwidth, screenheight);
 		// prevent this sequence from being executed over and over again
 		firstTime = false;
 	};
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// update the terrain scene
 	vtGetScene()->DoUpdate();
 }
@@ -211,16 +200,7 @@ int VTPWindow::handle(int event)
 //
 bool VTPWindow::CreateScene()
 {
-	int argc = 0;
-	char **argv = 0;
-
-	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
-	pScene->Init(argc, argv);
-
-	// Log messages to make troubleshooting easier
-	VTSTARTLOG("debug.txt");
-	VTLOG("glutSimple\n");
 
 	// Look up the camera
 	vtCamera *pCamera = pScene->GetCamera();
@@ -232,8 +212,11 @@ bool VTPWindow::CreateScene()
 
 	// Set the global data path
 	vtStringArray paths;
-	paths.push_back(vtString("Data/"));
+	paths.push_back(vtString("G:/Data-Distro/"));
+	paths.push_back(vtString("../../../Data/"));
+	paths.push_back(vtString("../../Data/"));
 	paths.push_back(vtString("../Data/"));
+	paths.push_back(vtString("Data/"));
 	vtSetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
@@ -279,7 +262,7 @@ bool VTPWindow::CreateScene()
 //
 //  The works.
 //
-int main(int, char ** )
+int main(int argc, char **argv)
 {
 #ifdef __FreeBSD__
 	/*  FreeBSD is more stringent with FP ops by default, and OSG is doing  */
@@ -289,10 +272,23 @@ int main(int, char ** )
 	fpsetmask(0);
 #endif
 
-	// create an instance of the VTPWindow class
+	// Log messages to make troubleshooting easier
+	VTSTARTLOG("debug.txt");
+	VTLOG("glutSimple\n");
+
+	// Create an instance of the VTPWindow class, show it
 	VTPWindow MyWindow(800,600,"FLTK and VTP example");
-	// show it
 	MyWindow.show();
+
+	// Get a handle to the vtScene - one is already created for you
+	vtScene *pScene = vtGetScene();
+	pScene->Init(argc, argv);
+
+	pScene->getViewer()->setThreadingModel(osgViewer::Viewer::SingleThreaded);
+    pScene->SetGraphicsContext(new osgViewer::GraphicsWindowEmbedded(0, 0, 800, 600));
+
+	// create the VTP scene
+	MyWindow.CreateScene();
 
 	// Note: with FLTK you can create more instances of the same
 	// VTPWindow class. SDL and GLUT allow to have only one active

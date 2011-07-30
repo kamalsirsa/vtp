@@ -112,7 +112,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib osgShadowd.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib libjpeg.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgGAd.lib osgSimd.lib osgShadowd.lib osgTerraind.lib osgTextd.lib osgUtild.lib osgViewerd.lib opengl32.lib glu32.lib netcdf.lib libMinid.lib libjpeg.lib libpng15d-vc7.lib zlib1d-vc7.lib gdal_id-vc7.lib C:\APIs\bzip2-1.0.3-bin-vc7\bzip2d.lib C:\APIs\curl-7.21.3\vc71\lib\libcurl-staticd.lib"
 				OutputFile=".\Debug/mfcSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

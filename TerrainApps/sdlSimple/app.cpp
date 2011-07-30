@@ -39,87 +39,6 @@ public:
 	vtCamera *m_pCamera;
 };
 
-//
-// Initialize the SDL display.  This code originated from another project,
-// so i am not sure of the details, but it should work well on each
-// platform.
-//
-void App::videosettings(bool same_video_mode, bool fullscreen)
-{
-	int width, height;
-
-	if ( ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) == -1 ) )
-	{
-		std::cerr << "Could not initialize SDL: " << SDL_GetError() << std::endl;
-		exit( -1 );
-	}
-	atexit( SDL_Quit );
-
-	SDL_VideoInfo const * info = SDL_GetVideoInfo();
-	if( !info )
-	{
-		std::cerr << "Video query failed: " << SDL_GetError( ) << std::endl;
-		exit( -1 );
-	}
-/*
-	int num_modes;
-	SDL_Rect ** modes = SDL_ListModes(NULL, SDL_FULLSCREEN);
-	if ( (modes != NULL) && (modes != (SDL_Rect **)-1) )
-	{
-		for (num_modes = 0; modes[num_modes]; num_modes++);
-		if ( same_video_mode )
-		{
-			// EEERRR should get the surface and use its parameters
-			width = modes[0]->w;
-			height = modes[0]->h;
-		}
-		else
-		{
-			for ( int i=num_modes-1; i >= 0; i-- )
-			{
-				width = modes[i]->w;
-				height = modes[i]->h;
-				if ( (modes[i]->w >= 1024) && (modes[i]->h >= 768) ) {
-					break;
-				}
-			}
-		}
-	}
-	else
-	{
-		std::cerr << "Video list modes failed: " << SDL_GetError( ) << std::endl;
-		exit( -1 );
-	}
-*/
-	width = 800;
-	height = 600;
-
-	std::cerr << width << " " << height << std::endl;
-	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
-	int flags = SDL_OPENGL | SDL_DOUBLEBUF;
-
-	if (fullscreen)
-		flags |= SDL_FULLSCREEN;
-	if ( info->hw_available )
-		flags |= SDL_HWSURFACE;
-	else
-		flags |= SDL_SWSURFACE;
-
-	if ( info->blit_hw )
-		flags |= SDL_HWACCEL;
-
-	if( SDL_SetVideoMode( width, height, 16, flags ) == 0 )
-	{
-		std::cerr << "Video mode set failed: " << SDL_GetError( ) << std::endl;
-		exit( -1 );
-	}
-}
-
 //--------------------------------------------------------------------------
 
 //
@@ -189,12 +108,24 @@ bool App::CreateScene()
 
 void App::display()
 {
-	const GLubyte *ver = glGetString(GL_VERSION);
-//	VTLOG1((const char *)ver);
+	static int frame = 0;
+	if (frame < 10)
+	{
+		frame++;
+		VTLOG("Frame %d: ", frame);
+		const GLubyte *ver = glGetString(GL_VERSION);
+		if (ver != NULL)
+			VTLOG1("Has context\n");
+		else
+		{
+			VTLOG1("No context\n");
+			return;
+		}
+	}
 
-	vtGetScene()->DoUpdate();
+	vtGetScene()->DoUpdate();	// calls viewer->frame, etc.
 
-//	SDL_GL_SwapBuffers();
+	SDL_GL_SwapBuffers();
 }
 
 int App::process_modifiers()
@@ -297,6 +228,10 @@ void App::run()
 */
 int App::main(int argc, char **argv)
 {
+	// Log messages to make troubleshooting easier
+	VTSTARTLOG("debug.txt");
+	VTLOG("sdlSimple\n");
+
 #ifdef __FreeBSD__
 	/*  FreeBSD is more stringent with FP ops by default, and OSG is	*/
 	/*	doing silly things sqrt(Inf) (computing lengths of MAXFLOAT		*/
@@ -305,27 +240,60 @@ int App::main(int argc, char **argv)
 	fpsetmask(0);
 #endif
 
-	int width = 800, height = 600;
+    // init SDL
+ 	VTLOG("Initializing SDL..\n");
+   if ( SDL_Init(SDL_INIT_VIDEO) < 0 )
+    {
+        VTLOG("Unable to init SDL: %s\n", SDL_GetError());
+        exit(1);
+    }
+    atexit(SDL_Quit);
+    
+    // Starting with SDL 1.2.10, passing in 0 will use the system's current resolution.
+    unsigned int windowWidth = 0;
+    unsigned int windowHeight = 0;
 
-	printf("Initializing SDL..\n");
-	videosettings(true, true);
+    // Passing in 0 for bitdepth also uses the system's current bitdepth. This works before 1.2.10 too.
+    unsigned int bitDepth = 0;
 
-	printf("Initializing vtlib/OSG..\n");
+	//videosettings(true, true);
+    SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+
+    // set up the surface to render to
+    SDL_Surface* screen = SDL_SetVideoMode(windowWidth, windowHeight, bitDepth, SDL_OPENGL | SDL_FULLSCREEN | SDL_RESIZABLE);
+    if ( screen == NULL )
+    {
+        std::cerr<<"Unable to set "<<windowWidth<<"x"<<windowHeight<<" video: %s\n"<< SDL_GetError()<<std::endl;
+        exit(1);
+    }
+
+    SDL_EnableUNICODE(1);
+    
+    // If we used 0 to set the fields, query the values so we can pass it to osgViewer
+    windowWidth = screen->w;
+    windowHeight = screen->h;
+    
+	VTLOG("Initializing vtlib/OSG..\n");
 	vtGetScene()->Init(argc, argv);
     vtGetScene()->getViewer()->setThreadingModel(osgViewer::Viewer::SingleThreaded);
-    vtGetScene()->SetGraphicsContext(new osgViewer::GraphicsWindowEmbedded(0, 0, width, height));
+    vtGetScene()->getViewer()->setUpViewerAsEmbeddedInWindow(0,0,windowWidth,windowHeight);
+//    vtGetScene()->SetGraphicsContext(new osgViewer::GraphicsWindowEmbedded(0, 0, width, height));
 
-	// Tell the SDL output size to vtlib
-	vtGetScene()->SetWindowSize(width, height);
+	// Tell window size to vtlib
+	vtGetScene()->SetWindowSize(windowWidth, windowHeight);
 
-	printf("Creating the terrain..\n");
+	VTLOG("Creating the terrain..\n");
 	if (!CreateScene())
 		return 0;
 
-	printf("Running..\n");
+	VTLOG("Running..\n");
 	run();
 
-	printf("Cleaning up..\n");
+	VTLOG("Cleaning up..\n");
 	vtGetScene()->SetRoot(NULL);
 	if (m_ts)
 		m_ts->CleanupScene();
