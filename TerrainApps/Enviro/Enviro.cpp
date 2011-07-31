@@ -1877,8 +1877,8 @@ void Enviro::OnMouseLeftDownTerrainMove(vtMouseEvent &event)
 	// In move mode, always start dragging
 	m_bDragging = true;
 
-	// Press 'shift' key to drag vertically instead of horizontally
-	if ((event.flags & VT_SHIFT) != 0)
+	// Press 'alt' key to drag vertically instead of horizontally
+	if ((event.flags & VT_ALT) != 0)
 		m_bDragUpDown = true;
 }
 
