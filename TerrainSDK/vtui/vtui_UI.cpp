@@ -516,7 +516,6 @@ DistanceDlgBase::DistanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	bSizer351->Add( m_radio_line, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_radio_path = new wxRadioButton( this, ID_RADIO_PATH, _("Path"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_radio_path->SetValue( true ); 
 	bSizer351->Add( m_radio_path, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	
