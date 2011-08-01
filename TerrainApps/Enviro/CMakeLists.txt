@@ -30,6 +30,8 @@ else(MSVC)
 		${ENVIRO_HEADER_FILES_WX} ${ENVIRO_RC_FILES})
 endif(MSVC)
 
+install(TARGETS Enviro RUNTIME DESTINATION bin)
+
 # Internal dependencies for this target
 target_link_libraries(Enviro envdlg wxosg vtlib vtui minidata vtdata xmlhelper)
 

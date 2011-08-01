@@ -2,6 +2,8 @@ find_package(OpenGL)
 
 add_executable(Simple app.cpp)
 
+install(TARGETS Simple RUNTIME DESTINATION bin)
+
 # Internal library dependencies for this target
 target_link_libraries(Simple vtlib minidata vtdata xmlhelper)
 

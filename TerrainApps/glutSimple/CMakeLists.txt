@@ -4,6 +4,8 @@ find_package(OpenGL)
 if(GLUT_FOUND)
 	add_executable(glutSimple app.cpp)
 
+	install(TARGETS glutSimple RUNTIME DESTINATION bin)
+
 	# Internal library dependencies for this target
 	target_link_libraries(glutSimple vtlib minidata vtdata  xmlhelper)
 

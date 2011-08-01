@@ -18,6 +18,8 @@ else(MSVC)
 			${CMANAGER_RC_FILES})
 endif(MSVC)
 
+install(TARGETS CManager RUNTIME DESTINATION bin)
+
 # Internal library dependencies for this target
 target_link_libraries(CManager wxosg vtlib vtdata vtui xmlhelper minidata)
 

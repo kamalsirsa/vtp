@@ -9,6 +9,8 @@ else(MSVC)
 	add_executable(wxSimple WIN32 ${WXSIMPLE_SOURCE_FILES} ${WXSIMPLE_HEADER_FILES})
 endif(MSVC)
 
+install(TARGETS wxSimple RUNTIME DESTINATION bin)
+
 # Internal library dependencies for this target
 target_link_libraries(wxSimple wxosg vtlib minidata vtdata xmlhelper vtui)
 

@@ -52,6 +52,8 @@ else(MSVC)
 		${VTBUILDER_RC_FILES})
 endif(MSVC)
 
+install(TARGETS VTBuilder RUNTIME DESTINATION bin)
+
 # Internal dependencies for this target
 target_link_libraries(VTBuilder BuilderLib vtui vtdata xmlhelper minidata unzip)
 

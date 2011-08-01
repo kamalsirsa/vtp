@@ -59,3 +59,9 @@ endif(NVPERFSDK_INCLUDE_DIR)
 
 add_subdirectory(TerrainSDK)
 add_subdirectory(TerrainApps)
+
+option(USE_CPACK "Enable the CPack packager" OFF)
+if(USE_CPACK)
+	include(CPack)
+endif(USE_CPACK)
+
