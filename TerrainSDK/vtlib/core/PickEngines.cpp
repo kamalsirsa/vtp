@@ -9,7 +9,7 @@
 
 #include "vtlib/vtlib.h"
 #include "PickEngines.h"
-#include "vtdata/Heightfield.h"
+#include "vtdata/HeightField.h"
 #include "Globe.h"
 
 //////////////////////////////////////////////////////////////////////

@@ -49,7 +49,7 @@ void ScenarioParams::WriteOverridesToXML(FILE *fp) const
 	{
 		const vtString &str = m_ActiveLayers[i];
 		fprintf(fp, "\t\t<ActiveLayer>");
-		fprintf(fp, (const char*) str);
+		fputs(str, fp);
 		fprintf(fp, "</ActiveLayer>\n");
 	}
 }
@@ -402,7 +402,7 @@ void TParams::WriteOverridesToXML(FILE *fp) const
 	{
 		const vtString &str = m_AnimPaths[i];
 		fprintf(fp, "\t<AnimPath>");
-		fprintf(fp, (const char*) str);
+		fputs(str, fp);
 		fprintf(fp, "</AnimPath>\n");
 	}
 	for (i = 0; i < m_Scenarios.size(); i++)

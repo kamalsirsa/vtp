@@ -1028,7 +1028,6 @@ int vtFeatureSetPolygon::FixGeometry(double dEpsilon)
 	PolyChecker PolyChecker;
 
 	int removed = 0;
-	int clock = 0, not = 0;
 	int num = m_Poly.size();
 
 	for (int i = 0; i < num; i++)
