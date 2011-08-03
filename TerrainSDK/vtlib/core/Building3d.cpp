@@ -9,6 +9,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtlib/vtosg/GeometryUtils.h"
 #include "vtdata/DataPath.h"
 #include "vtdata/HeightField.h"
 #include "vtdata/PolyChecker.h"
@@ -165,6 +166,12 @@ void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FPolygon3 &polygon,
 
 bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 {
+#if USE_EXPERIMENTAL_BUILDING_GEOMETRY_GENERATOR
+	UpdateWorldLocation(pHeightField);
+
+	osg::ref_ptr<OSGGeometryUtils::GenerateBuildingGeometry> pGenerator = new OSGGeometryUtils::GenerateBuildingGeometry(*this);
+	m_pGeode = pGenerator->Generate();
+#else
 	PolyChecker PolyChecker;
 	int i;
 	unsigned int j, k;
@@ -269,6 +276,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		int index = m_Mesh[j].m_iMatIdx;
 		m_pGeode->AddMesh(mesh, index);
 	}
+#endif
 
 	// resize bounding box
 	if (m_pHighlight)

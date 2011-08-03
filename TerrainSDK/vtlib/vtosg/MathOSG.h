@@ -122,5 +122,27 @@ inline void ConvertMatrix4(const FMatrix4 *mat, osg::Matrix *mat_osg)
 		}
 }
 
+class vtVec3 : public osg::Vec3
+{
+public:
+	vtVec3() {}
+	vtVec3(const FPoint3& v) : osg::Vec3(v.x, v.y, v.z) {}
+	vtVec3(const osg::Vec3& v) : osg::Vec3(v) {}
+};
+
+class vtVec2 : public osg::Vec2
+{
+public:
+	vtVec2() {}
+	vtVec2(const FPoint2& v) : osg::Vec2(v.x, v.y) {}
+	vtVec2(const osg::Vec2& v) : osg::Vec2(v) {}
+	inline vtVec2& operator /= (const vtVec2& rhs)
+	{
+		_v[0] /= rhs._v[0];
+		_v[1]/= rhs._v[1];
+		return *this;
+	}
+};
+
 #endif	// VTOSG_MATHH
 

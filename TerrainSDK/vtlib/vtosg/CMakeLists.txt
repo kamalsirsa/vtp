@@ -1,8 +1,8 @@
 
-set(VTLIB_OSG_SOURCE_FILES ImageOSG.cpp Material.cpp Mesh.cpp NodeOSG.cpp NodeLog.cpp SceneOSG.cpp
+set(VTLIB_OSG_SOURCE_FILES ImageOSG.cpp Material.cpp Mesh.cpp GeometryUtils.cpp NodeOSG.cpp NodeLog.cpp SceneOSG.cpp
 		SimpleInterimShadowTechnique.cpp StructureShadowsOSG.cpp LightSpacePerspectiveShadowTechnique.cpp
 		ExternalHeightField3d.cpp OSGEventHandler.cpp ScreenCaptureHandler.cpp SaveImageOSG.cpp)
-set(VTLIB_OSG_HEADER_FILES ImageOSG.h MathOSG.h Material.h Mesh.h NodeOSG.h SceneOSG.h
+set(VTLIB_OSG_HEADER_FILES ImageOSG.h MathOSG.h Material.h Mesh.h GeometryUtils.h NodeOSG.h SceneOSG.h
 		SimpleInterimShadowTechnique.h StructureShadowsOSG.h LightSpacePerspectiveShadowTechnique.h
 		ExternalHeightField3d.h OSGEventHandler.h ScreenCaptureHandler.h SaveImageOSG.h)
 

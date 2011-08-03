@@ -306,7 +306,7 @@ void vtLevel::ResizeEdgesToMatchFootprint()
 	m_Edges.SetSize(curr);
 }
 
-bool vtLevel::HasSlopedEdges()
+bool vtLevel::HasSlopedEdges() const
 {
 	for (unsigned int i = 0; i < m_Edges.GetSize(); i++)
 	{
@@ -316,7 +316,7 @@ bool vtLevel::HasSlopedEdges()
 	return false;
 }
 
-bool vtLevel::IsHorizontal()
+bool vtLevel::IsHorizontal() const
 {
 	for (unsigned int i = 0; i < m_Edges.GetSize(); i++)
 	{
@@ -451,7 +451,7 @@ bool vtLevel::IsCornerConvex(int i)
  * Returns true if this level consists of edges with identical,
  * evenly spaced windows.
  */
-bool vtLevel::IsUniform()
+bool vtLevel::IsUniform() const
 {
 	int i, edges = NumEdges();
 	for (i = 0; i < edges; i++)

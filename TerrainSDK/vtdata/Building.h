@@ -145,11 +145,11 @@ public:
 	RoofType GuessRoofType();
 	void FlipFootprintDirection();
 
-	bool HasSlopedEdges();
-	bool IsHorizontal();
+	bool HasSlopedEdges() const;
+	bool IsHorizontal() const;
 	bool IsEdgeConvex(int i);
 	bool IsCornerConvex(int i);
-	bool IsUniform();
+	bool IsUniform() const;
 
 	void SetEdgeMaterial(const char *matname);
 	void SetEdgeColor(RGBi color);
@@ -171,7 +171,7 @@ public:
 	const DLine2 &GetOuterFootprint() const { return m_Foot[0]; }
 
 	void DetermineLocalFootprint(float fHeight);
-	const FPolygon3 &GetLocalFootprint() { return m_LocalFootprint; }
+	const FPolygon3 &GetLocalFootprint() const { return m_LocalFootprint; }
 
 private:
 	void RebuildEdges(unsigned int n);
@@ -249,7 +249,7 @@ public:
 	void WriteXML(GZOutput &out, bool bDegrees) const;
 	void AddDefaultDetails();
 	void DetermineLocalFootprints();
-	const FPolygon3 &GetLocalFootprint(int i) { return m_Levels[i]->GetLocalFootprint(); }
+	const FPolygon3 &GetLocalFootprint(int i) const { return m_Levels[i]->GetLocalFootprint(); }
 
 	static vtLocalConversion s_Conv;
 	static const char *GetEdgeFeatureString(int edgetype);
