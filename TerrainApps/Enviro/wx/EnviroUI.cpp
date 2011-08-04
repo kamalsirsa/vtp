@@ -1953,8 +1953,19 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	fgSizer5->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 	
 	m_stereo2 = new wxRadioButton( this, ID_STEREO2, _("Quad buffer (shutter glasses)"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_stereo2->SetValue( true ); 
 	fgSizer5->Add( m_stereo2, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	
+	fgSizer5->Add( 20, 20, 1, wxEXPAND, 5 );
+	
+	m_stereo3 = new wxRadioButton( this, ID_STEREO3, _("Horizontal split"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer5->Add( m_stereo3, 0, wxALL, 5 );
+	
+	
+	fgSizer5->Add( 20, 20, 1, wxEXPAND, 5 );
+	
+	m_stereo4 = new wxRadioButton( this, ID_STEREO4, _("Vertical split"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer5->Add( m_stereo4, 0, wxALL, 5 );
 	
 	sbSizer36->Add( fgSizer5, 0, wxALIGN_CENTER_VERTICAL, 5 );
 	

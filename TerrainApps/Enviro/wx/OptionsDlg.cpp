@@ -134,8 +134,10 @@ void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
 
 void OptionsDlg::UpdateEnabling()
 {
-	GetStereo1()->Enable(m_bStereo);
-	GetStereo2()->Enable(m_bStereo);
+	m_stereo1->Enable(m_bStereo);
+	m_stereo2->Enable(m_bStereo);
+	m_stereo3->Enable(m_bStereo);
+	m_stereo4->Enable(m_bStereo);
 
 	GetWinx()->Enable(!m_bFullscreen);
 	GetWiny()->Enable(!m_bFullscreen);
@@ -151,8 +153,10 @@ void OptionsDlg::UpdateEnabling()
 
 void OptionsDlg::OnOK(wxCommandEvent &event)
 {
-	if (GetStereo1()->GetValue()) m_iStereoMode = 0;
-	if (GetStereo2()->GetValue()) m_iStereoMode = 1;
+	if (m_stereo1->GetValue()) m_iStereoMode = 0;
+	if (m_stereo2->GetValue()) m_iStereoMode = 1;
+	if (m_stereo3->GetValue()) m_iStereoMode = 2;
+	if (m_stereo4->GetValue()) m_iStereoMode = 3;
 	event.Skip();
 }
 
@@ -178,8 +182,10 @@ void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	UpdateEnabling();
 
-	if (m_iStereoMode == 0) GetStereo1()->SetValue(true);
-	if (m_iStereoMode == 1) GetStereo2()->SetValue(true);
+	if (m_iStereoMode == 0) m_stereo1->SetValue(true);
+	if (m_iStereoMode == 1) m_stereo2->SetValue(true);
+	if (m_iStereoMode == 2) m_stereo3->SetValue(true);
+	if (m_iStereoMode == 3) m_stereo4->SetValue(true);
 
 	event.Skip();
 }

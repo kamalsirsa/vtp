@@ -37,8 +37,6 @@ public:
 	// WDR: method declarations for OptionsDlg
 	wxTextCtrl* GetSelectionRadius()  { return (wxTextCtrl*) FindWindow( ID_SELECTION_RADIUS ); }
 	wxTextCtrl* GetSelectionCutoff()  { return (wxTextCtrl*) FindWindow( ID_SELECTION_CUTOFF ); }
-	wxRadioButton* GetStereo2()  { return (wxRadioButton*) FindWindow( ID_STEREO2 ); }
-	wxRadioButton* GetStereo1()  { return (wxRadioButton*) FindWindow( ID_STEREO1 ); }
 	wxCheckBox* GetSizeInside()  { return (wxCheckBox*) FindWindow( ID_SIZE_INSIDE ); }
 	wxTextCtrl* GetWinYsize()  { return (wxTextCtrl*) FindWindow( ID_WIN_YSIZE ); }
 	wxTextCtrl* GetWinXsize()  { return (wxTextCtrl*) FindWindow( ID_WIN_XSIZE ); }

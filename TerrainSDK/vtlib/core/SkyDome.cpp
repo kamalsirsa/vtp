@@ -280,6 +280,7 @@ void vtSkyDome::CreateMarkers()
 
 void vtSkyDome::ShowMarkers(bool bShow)
 {
+	VTLOG("SkyDome ShowMarkers(%d)\n", bShow);
 	m_pTicks->SetEnabled(bShow);
 	m_pGreenMarker->SetEnabled(bShow);
 	m_pRedMarker->SetEnabled(bShow);

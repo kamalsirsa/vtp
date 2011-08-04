@@ -175,6 +175,8 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 		osg::DisplaySettings::StereoMode mode;
 		if (iStereoMode == 0) mode = osg::DisplaySettings::ANAGLYPHIC;
 		if (iStereoMode == 1) mode = osg::DisplaySettings::QUAD_BUFFER;
+		if (iStereoMode == 2) mode = osg::DisplaySettings::HORIZONTAL_SPLIT;
+		if (iStereoMode == 3) mode = osg::DisplaySettings::VERTICAL_SPLIT;
 		displaySettings->setStereoMode(mode);
 	}
 #ifdef __DARWIN_OSX__
@@ -437,6 +439,10 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	CalcCullPlanes();
 
 	m_pOsgViewer->getCamera()->setCullMask(0x3);
+	// Also set the mask for the case of split-screen stereo
+	m_pOsgViewer->getCamera()->setCullMaskLeft(0x3);
+	m_pOsgViewer->getCamera()->setCullMaskRight(0x3);
+
 	m_pOsgViewer->frame();
 }
 
