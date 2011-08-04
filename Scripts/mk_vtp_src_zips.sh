@@ -56,16 +56,12 @@ mv VTP/TerrainApps/Enviro/Enviro_dev.xml VTP/TerrainApps/Enviro/Enviro.xml
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/*.h
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/CMakeLists.txt
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfcEnviro*.vcproj
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfcEnviro*.sln
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/*.h
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/enviro-wx.rc
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/Enviro.fbp
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/bitmap/*
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/icons/*
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfc/*
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfc/res/*
 
 zip $DIST_FILE1 VTP/TerrainApps/fltkSimple/appfltk.cpp
 zip $DIST_FILE1 VTP/TerrainApps/fltkSimple/fltkSimple*.vcproj

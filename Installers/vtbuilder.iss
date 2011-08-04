@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTBuilder
-AppVerName=2011.05.16
+AppVerName=VTBuilder 1.1 (2011.08.04)
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -12,7 +12,7 @@ DefaultDirName={pf}\VTP
 DefaultGroupName=VTP
 AllowNoIcons=yes
 LicenseFile=C:\VTP\license.txt
-OutputBaseFilename=VTBuilder_110516
+OutputBaseFilename=VTBuilder_110804
 OutputDir=C:\Distrib
 ; We need the following because some Windows machines won't turn Registry settings into Environment variables w/o a reboot
 AlwaysRestart=yes
@@ -37,7 +37,7 @@ Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environmen
 [Files]
 Source: "C:\VTP\license.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: main
 
-Source: "C:\VTP\TerrainApps\VTBuilder\Release-Unicode-vc9\VTBuilder.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\vc9\TerrainApps\VTBuilder\Release\VTBuilder.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\Ship\VTBuilder.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs; Components: docs
 
@@ -53,14 +53,14 @@ Source: "G:\Data-Distro\WorldMap\gnv19.*"; DestDir: "{app}/Data/WorldMap"; Flags
 Source: "G:\Data-Distro\Culture\materials.xml"; DestDir: "{app}/Data/Culture"; Flags: ignoreversion; Components: data
 
 ; Projection Stuff
-Source: "C:\APIs\gdal-1.7.3\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
+Source: "C:\APIs\gdal-1.8.0\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
 Source: "C:\APIs\proj-4.6.1\nad\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
 
 ; DLLs
 Source: "C:\APIs\bzip2-1.0.3-bin-vc9\bzip2.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal-1.7.3\distro\bin\gdal17-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal-1.7.3\distro\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal-1.7.3\distro\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal-1.8.0\distro-vc9\bin\gdal18-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal-1.8.0\distro-vc9\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal-1.8.0\distro-vc9\bin\*.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 ;Source: "C:\APIs\libcurl-7.15.0\libcurl.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\lpng150\projects\visualc9\Win32_DLL_Release\libpng15-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\lpng150\projects\visualc9\Win32_DLL_Release\ZLib\zlib1-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
