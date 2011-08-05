@@ -137,10 +137,10 @@ namespace OSGGeometryUtils
 		osg::ref_ptr<PrimitiveCache> m_pPrimitiveCache;
 
 		// abstract memebers
-		osg::Node *vtStructure3d::GetContained(void) { return NULL; }
-		bool vtStructure3d::CreateNode(vtTerrain *) { return false; }
-		bool vtStructure3d::IsCreated(void) { return false; }
-		void vtStructure3d::DeleteNode(void) {}
+		osg::Node *GetContained(void) { return NULL; }
+		bool CreateNode(vtTerrain *) { return false; }
+		bool IsCreated(void) { return false; }
+		void DeleteNode(void) {}
 	};
 
 	class osg::Geometry* FindOrCreateGeometryObject(osg::Geode *pGeode, vtMaterial& Material, const int ArraysRequired);
