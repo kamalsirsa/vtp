@@ -1130,6 +1130,9 @@ vtLevel *vtBuilding::CreateLevel(const DPolygon2 &footprint)
 
 	m_Levels.Append(pLev);
 
+	// keep 2d and 3d in synch
+	DetermineLocalFootprints();
+	
 	return pLev;
 }
 

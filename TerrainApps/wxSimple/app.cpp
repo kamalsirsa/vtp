@@ -28,6 +28,10 @@
 #include "wxosg/GraphicsWindowWX.h"
 #include "canvas.h"
 
+#ifdef __WXMAC__
+#include <ApplicationServices/ApplicationServices.h>
+#endif
+
 IMPLEMENT_APP(vtApp);
 
 //
@@ -37,6 +41,12 @@ bool vtApp::OnInit(void)
 {
 	m_pTerrainScene = NULL;
 
+#ifdef __WXMAC__
+	ProcessSerialNumber PSN;
+	GetCurrentProcess(&PSN);
+	TransformProcessType(&PSN,kProcessTransformToForegroundApplication);
+#endif
+	
 	// Create the main frame window
 	m_pFrame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
 

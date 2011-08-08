@@ -32,8 +32,8 @@ void EnviroCanvas::OnAfterUpdate()
 {
 #ifndef __WXMAC__
 	if (m_bFirstPaint)
-#endif
 		VTLOG1("EnviroCanvas: update status bar\n");
+#endif
 
 	EnviroFrame *frame = (EnviroFrame*) GetParent();
 

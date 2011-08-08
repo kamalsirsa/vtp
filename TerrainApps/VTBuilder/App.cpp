@@ -19,6 +19,10 @@
 #include "gdal_priv.h"
 #include "App.h"
 
+#ifdef __WXMAC__
+#include <ApplicationServices/ApplicationServices.h>
+#endif
+
 #define HEAPBUSTER 0
 
 #if HEAPBUSTER
@@ -71,6 +75,14 @@ bool BuilderApp::OnInit()
 	VTLOG("_setmaxstdio to %d\n", newmax);
 #endif
 
+#include <ApplicationServices/ApplicationServices.h>
+	
+#ifdef __WXMAC__
+	ProcessSerialNumber PSN;
+	GetCurrentProcess(&PSN);
+	TransformProcessType(&PSN,kProcessTransformToForegroundApplication);
+#endif
+	
 	// Redirect the wxWindows log messages to our own logging stream
 	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);

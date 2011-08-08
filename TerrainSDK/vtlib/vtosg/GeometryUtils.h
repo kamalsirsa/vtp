@@ -53,7 +53,7 @@ namespace OSGGeometryUtils
 		~PrimitiveSetCacheEntry() {}
 	};
 
-	class PrimitiveSetCache : public std::vector<osg::ref_ptr<PrimitiveSetCacheEntry>>, public osg::Referenced
+	class PrimitiveSetCache : public std::vector<osg::ref_ptr<PrimitiveSetCacheEntry> >, public osg::Referenced
 	{
 	public:
 		osg::PrimitiveSet* FindOrCreatePrimitive(const int VertexType, const vtMaterial* pMaterial, const osg::PrimitiveSet::Type Type,
@@ -75,7 +75,7 @@ namespace OSGGeometryUtils
 		~StateSetCacheEntry() {}
 	};
 
-	class StateSetCache : public std::vector<osg::ref_ptr<StateSetCacheEntry>>, public osg::Referenced
+	class StateSetCache : public std::vector<osg::ref_ptr<StateSetCacheEntry> >, public osg::Referenced
 	{
 	public:
 		osg::PrimitiveSet* FindOrCreatePrimitive(const int VertexType, vtMaterial* pMaterial, const osg::PrimitiveSet::Type Type,
@@ -97,7 +97,7 @@ namespace OSGGeometryUtils
 		~VertexTypeCacheEntry() {}
 	};
 
-	class PrimitiveCache : public std::vector<osg::ref_ptr<VertexTypeCacheEntry>>, public osg::Referenced
+	class PrimitiveCache : public std::vector<osg::ref_ptr<VertexTypeCacheEntry> >, public osg::Referenced
 	{
 	public:
 		DrawArraysTriangles* FindOrCreateDrawArraysTriangles(const int VertexType, vtMaterial* pMaterial);
