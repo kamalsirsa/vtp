@@ -36,10 +36,6 @@
 #include "StartupDlg.h"
 #include "TParamsDlg.h"
 
-#ifdef __WXMAC__
-#include <ApplicationServices/ApplicationServices.h>
-#endif
-
 // Allow customized versions of Enviro to provide their own Frame
 #ifdef FRAME_NAME
   #include FRAME_INCLUDE
@@ -159,12 +155,6 @@ bool EnviroApp::OnInit()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-#ifdef __WXMAC__
-	ProcessSerialNumber PSN;
-	GetCurrentProcess(&PSN);
-	TransformProcessType(&PSN,kProcessTransformToForegroundApplication);
-#endif
-	
 	StartLog();
 	LoadOptions();
 

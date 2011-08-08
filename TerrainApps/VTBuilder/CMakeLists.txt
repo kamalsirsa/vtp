@@ -48,11 +48,12 @@ if(MSVC)
 	set_source_files_properties(${VTBUILDER_DIALOG_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	# already handled pre.cpp earlier on
 else(MSVC)
-	add_executable(VTBuilder WIN32 ${VTBUILDER_SOURCE_FILES} ${VTBUILDER_DIALOG_SOURCE_FILES} ${VTBUILDER_HEADER_FILES}
+	add_executable(VTBuilder WIN32 MACOSX_BUNDLE ${VTBUILDER_SOURCE_FILES} ${VTBUILDER_DIALOG_SOURCE_FILES} ${VTBUILDER_HEADER_FILES}
 		${VTBUILDER_RC_FILES})
 endif(MSVC)
 
-install(TARGETS VTBuilder RUNTIME DESTINATION bin)
+install(TARGETS VTBuilder RUNTIME DESTINATION bin
+                          BUNDLE DESTINATION bin)
 
 # Internal dependencies for this target
 target_link_libraries(VTBuilder BuilderLib vtui vtdata xmlhelper minidata unzip)

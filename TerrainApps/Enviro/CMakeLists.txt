@@ -26,11 +26,12 @@ if(MSVC)
 	set_source_files_properties(${ENVIRO_SOURCE_FILES_WX} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
 	set_source_files_properties(wx/wx_headers.cpp PROPERTIES COMPILE_FLAGS /Ycwx/wxprec.h)
 else(MSVC)
-	add_executable(Enviro WIN32 ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
+	add_executable(Enviro WIN32 MACOSX_BUNDLE ${ENVIRO_SOURCE_FILES} ${ENVIRO_SOURCE_FILES_WX} ${ENVIRO_HEADER_FILES}
 		${ENVIRO_HEADER_FILES_WX} ${ENVIRO_RC_FILES})
 endif(MSVC)
 
-install(TARGETS Enviro RUNTIME DESTINATION bin)
+install(TARGETS Enviro RUNTIME DESTINATION bin
+                       BUNDLE DESTINATION bin)
 
 # Internal dependencies for this target
 target_link_libraries(Enviro envdlg wxosg vtlib vtui minidata vtdata xmlhelper)

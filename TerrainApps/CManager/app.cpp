@@ -25,10 +25,6 @@
 #include "frame.h"
 #include "canvas.h"
 
-#ifdef __WXMAC__
-#include <ApplicationServices/ApplicationServices.h>
-#endif
-
 IMPLEMENT_APP(vtApp)
 
 
@@ -39,12 +35,6 @@ bool vtApp::OnInit(void)
 {
     m_pTrackball = NULL;
 
-#ifdef __WXMAC__
-	ProcessSerialNumber PSN;
-	GetCurrentProcess(&PSN);
-	TransformProcessType(&PSN,kProcessTransformToForegroundApplication);
-#endif
-	
 	// Redirect the wxWindows log messages to our own logging stream
 	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);
