@@ -1515,7 +1515,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		}
 	}
 	if (m_mode == MM_INSTANCES)
-		PlantInstance();
+		CreateInstance();
 
 	if (m_mode == MM_VEHICLES)
 		CreateGroundVehicle(m_VehicleOpt);
@@ -2516,7 +2516,7 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 
 //// Instances
 
-void Enviro::PlantInstance()
+void Enviro::CreateInstance()
 {
 #if 0	// test code
 	#include "CreateWedge.cpp"
@@ -2993,6 +2993,126 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain)
 	}
 }
 
+
+////////////////////////////////////////////////////////////////////////
+// Import
+
+class KMLVisitor : public XMLVisitor
+{
+public:
+	KMLVisitor()
+	{
+		bInPlacemark = false;
+	}
+	void startElement(const char *name, const XMLAttributes &atts)
+	{
+		m_data = "";
+		if (strcmp(name, "Placemark") == 0)
+			bInPlacemark = true;
+	}
+	void endElement (const char *name)
+	{
+		if (strcmp(name, "Placemark") == 0)
+			bInPlacemark = false;
+
+		if (bInPlacemark)
+		{
+			const char *str = m_data.c_str();
+			if (strcmp(name, "longitude") == 0)
+				m_pos.x = atof(str);
+			if (strcmp(name, "latitude") == 0)
+				m_pos.y = atof(str);
+			if (strcmp(name, "href") == 0)
+				m_href = str;
+		}
+	}
+	void data(const char *s, int length) { m_data.append(string(s, length)); }
+
+	DPoint2 m_pos;
+	bool bInPlacemark;
+	vtString m_href;
+protected:
+	std::string m_data;
+};
+
+bool Enviro::ImportModelFromKML(const char *kmlfile)
+{
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	VTLOG("Trying to import a model from KML file '%s'\n", kmlfile);
+
+	KMLVisitor visitor;
+	try
+	{
+		readXML(std::string(kmlfile), visitor);
+	}
+	catch (xh_io_exception &ex)
+	{
+		const string msg = ex.getFormattedMessage();
+		VTLOG(" XML problem: %s\n", msg.c_str());
+		return false;
+	}
+
+	// create a new Instance object
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return false;
+	vtStructureArray3d *structs = pTerr->GetStructureLayer();
+	if (!structs)
+	{
+		VTLOG(" No structure layer.\n");
+		return false;
+	}
+	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
+
+	vtProjection &tproj = pTerr->GetProjection();
+	DPoint2 p = visitor.m_pos;
+	if (tproj.IsGeographic() == false)
+	{
+		// Must transform from KML (geo) to the terrain's CRS
+		vtProjection wgs84_geo;
+		wgs84_geo.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+		OCT *trans = CreateCoordTransform(&wgs84_geo, &tproj);
+		if (!trans)
+		{
+			VTLOG1(" Couldn't transform coordinates\n");
+			return false;
+		}
+		trans->Transform(1, &p.x, &p.y);
+		delete trans;
+	}
+	inst->SetPoint(p);
+
+	// Beware the (common) case of a relative path, which will be relative
+	//  to where the kml file was
+	vtString pa = visitor.m_href;
+	if (!PathIsAbsolute(pa))
+	{
+		vtString local = PathLevelUp(kmlfile);
+		pa = local + "/" + pa;
+	}
+
+	inst->SetValueString("filename", pa, true);
+	VTLOG("  at %.7g, %.7g: ", p.x, p.y);
+
+	int index = structs->Append(inst);
+	bool success = pTerr->CreateStructure(structs, index);
+	if (success)
+	{
+		VTLOG(" succeeded.\n");
+		RefreshLayerView();
+	}
+	else
+	{
+		// creation failed
+		VTLOG(" failed.\n");
+		ShowMessage("Could not create instance.");
+		inst->Select(true);
+		structs->DeleteSelected();
+		return false;
+	}
+	return true;
+}
 
 ////////////////////////////////////////////////////////////////////////
 // Abstract Layers

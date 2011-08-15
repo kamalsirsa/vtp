@@ -268,11 +268,11 @@ protected:
 typedef osg::ref_ptr<vtShadow> vtShadowPtr;
 
 /**
- * A Light node is placed into the scene graph to illumninate all lit geometry
- * with vertex normals.
+ * A Light node is placed into the scene graph to illuminate all lit geometry
+ * (geometry that has lighting enabled and has vertex normals).
  *
  * If you want a light, you should create a vtLightSource node and add it to your
- * scene graph.  To move or orient the light, make it a child of a vtTransform
+ * scene graph.  To move or orient the lightsource, make it a child of a vtTransform
  * node.  The light will illuminate the entire scene.
  */
 class vtLightSource : public osg::LightSource, public NodeExtension

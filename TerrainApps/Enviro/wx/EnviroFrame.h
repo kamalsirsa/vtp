@@ -9,6 +9,7 @@
 #define FRAMEH
 
 #include "wx/aui/aui.h"
+#include "wx/dnd.h"
 
 #include "../EnviroEnum.h"
 #include "vtlib/core/Event.h"
@@ -73,6 +74,7 @@ public:
 	void SetTimeEngine(vtTimeEngine *pEngine);
 	void Snapshot(bool bNumbered);
 	void CameraChanged();
+	void OnDrop(const wxString &str);
 
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
 	virtual void EarthPosUpdated(const DPoint3 &pos);
@@ -344,6 +346,15 @@ protected:
 
 DECLARE_EVENT_TABLE()
 };
+
+#if wxUSE_DRAG_AND_DROP
+class DnDFile : public wxFileDropTarget
+{
+public:
+	virtual bool OnDropFiles(wxCoord x, wxCoord y,
+		const wxArrayString& filenames);
+};
+#endif
 
 // Helper
 EnviroFrame *GetFrame();

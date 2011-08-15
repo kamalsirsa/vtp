@@ -39,9 +39,9 @@
 #include "vtlib/vtosg/SaveImageOSG.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/TripDub.h"
-#include "vtdata/Version.h"
-#include "wxosg/GraphicsWindowWX.h"
+#include "vtdata/Version.h"	// for About box
 #include "vtui/Helper.h"	// for progress dialog
+#include "wxosg/GraphicsWindowWX.h"
 
 #include "EnviroFrame.h"
 #include "StatusBar.h"
@@ -404,6 +404,10 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	SetIcon(wxIcon(wxString(ICON_NAME, wxConvUTF8)));
 #else
 	SetIcon(wxICON(Enviro));
+#endif
+
+#if wxUSE_DRAG_AND_DROP
+	SetDropTarget(new DnDFile);
 #endif
 
 	m_bCulleveryframe = true;
@@ -2882,6 +2886,14 @@ void EnviroFrame::CameraChanged()
 		m_pCameraDlg->CameraChanged();
 }
 
+void EnviroFrame::OnDrop(const wxString &str)
+{
+	if (!str.Right(3).CmpNoCase(_T("kml")))
+	{
+		g_App.ImportModelFromKML((const char *) str.ToUTF8());
+	}
+}
+
 void EnviroFrame::UpdateStatus()
 {
 	if (m_pStatusBar)
@@ -3366,4 +3378,22 @@ void EnviroFrame::OnPopupURL(wxCommandEvent& event)
 	vtStructure *struc = sa->GetAt(sa->GetFirstSelected());
 	wxLaunchDefaultBrowser(wxString(struc->GetValueString("url"), wxConvUTF8));
 }
+
+
+#if wxUSE_DRAG_AND_DROP
+///////////////////////////////////////////////////////////////////////
+// Drag-and-drop functionality
+//
+bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
+{
+	size_t nFiles = filenames.GetCount();
+	EnviroFrame *frame = GetFrame();
+	for ( size_t n = 0; n < nFiles; n++ )
+	{
+		wxString str = filenames[n];
+		frame->OnDrop(str);
+	}
+	return TRUE;
+}
+#endif
 

@@ -171,7 +171,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	CreateToolbar();
 	CreateStatusBar();
 
-	SetDropTarget(new DnDFile());
+	SetDropTarget(new DnDFile);
 
 	// frame icon
 	SetIcon(wxICON(cmanager));

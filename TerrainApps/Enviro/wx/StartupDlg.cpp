@@ -77,6 +77,12 @@ static void ShowOGLInfo2(bool bLog)
 		msg += str;
 		str.Printf(_("Maximum Texture Dimension: %d\n"), value);
 		msg += str;
+#ifdef GL_SHADING_LANGUAGE_VERSION
+		msg += _("GLSL Version: ");
+		const char *glsl = (const char *) glGetString(GL_SHADING_LANGUAGE_VERSION);
+		msg += wxString(glsl, wxConvUTF8);
+		msg += _T("\n");
+#endif
 		msg += _("Extensions: ");
 		const char *ext = (const char *) glGetString(GL_EXTENSIONS);
 		msg += wxString(ext, wxConvUTF8);

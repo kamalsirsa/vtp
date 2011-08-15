@@ -1263,9 +1263,11 @@ vtLightSource::vtLightSource(int LightNumber)
 	getLight()->setLightNum(LightNumber);
 	SetOsgNode(this);
 
-	// Because lighting is also a 'state', we need to inform
-	// the whole scene graph that we will control lighting.
+	// What does this do, exactly?
 	setLocalStateSetModes(osg::StateAttribute::ON);
+
+	// Because lighting is also a 'state', we need to inform
+	// the whole scene graph that this light is enabled.
 	setStateSetModes(*(vtGetScene()->GetRootState()), osg::StateAttribute::ON);
 }
 

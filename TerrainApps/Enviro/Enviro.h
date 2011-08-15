@@ -201,6 +201,9 @@ public:
 	VehicleManager m_VehicleManager;
 	VehicleSet m_Vehicles;
 
+	// import
+	bool ImportModelFromKML(const char *kmlfile);
+
 	// abstract layers
 	vtAbstractLayer *GetLabelLayer();
 	int NumSelectedAbstractFeatures();
@@ -295,7 +298,7 @@ protected:
 	void SetupGlobe();
 	void LookUpTerrainLocations();
 	void SetupTerrain(vtTerrain *pTerr);
-	void PlantInstance();
+	void CreateInstance();
 	void SetupArcMesh();
 	void FreeArc();
 	void FreeArcMesh();
