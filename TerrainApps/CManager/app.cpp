@@ -25,7 +25,19 @@
 #include "frame.h"
 #include "canvas.h"
 
+#if defined(__WXGTK__) && !defined(NO_XINITTHREADS)
+IMPLEMENT_APP_NO_MAIN(vtApp)
+
+int main(int argc, char *argv[])
+{
+    if (sysconf (_SC_NPROCESSORS_ONLN) > 1)
+        XInitThreads();
+    return wxEntry(argc, argv);
+
+}
+#else
 IMPLEMENT_APP(vtApp)
+#endif
 
 
 //

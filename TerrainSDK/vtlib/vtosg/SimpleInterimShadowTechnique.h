@@ -83,6 +83,7 @@ protected :
 	vtHeightField3d					*m_pHeightField3d;
 	osg::Vec3						m_OldBoundingSphereCentre;
 	osg::Vec3						m_OldSunPos;
+	bool							m_UsingFrameBuffer;
 };
 
 #endif	// VTOSG_SIMPLEINTERIMSHADOWTECHNIQUEH

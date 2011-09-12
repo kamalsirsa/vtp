@@ -45,7 +45,19 @@
   #define LoadAppCatalog(locale)
 #endif
 
+#if defined(__WXGTK__) && !defined(NO_XINITTHREADS)
+IMPLEMENT_APP_NO_MAIN(EnviroApp)
+
+int main(int argc, char *argv[])
+{
+    if (sysconf (_SC_NPROCESSORS_ONLN) > 1)
+        XInitThreads();
+    return wxEntry(argc, argv);
+
+}
+#else
 IMPLEMENT_APP(EnviroApp)
+#endif
 
 
 EnviroApp::EnviroApp()
