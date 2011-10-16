@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 1.1 (2011.08.04)
+AppVerName=VTP Software 1.11 (2011.09.10)
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -96,7 +96,7 @@ Source: "C:\APIs\gdal-1.8.0\distro-vc9\bin\*.exe"; DestDir: "{app}\Apps"; Flags:
 Source: "C:\APIs\lpng150\projects\visualc9\Win32_DLL_Release\libpng15-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\lpng150\projects\visualc9\Win32_DLL_Release\ZLib\zlib1-vc9.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\OpenSceneGraph-2.8.3\vc9\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: dlls
+Source: "C:\APIs\OpenSceneGraph-3.0.1\vc9\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxbase28u_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxmsw28u_core_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.8.7\lib-vc9\vc_dll\wxmsw28u_gl_vc_custom.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls

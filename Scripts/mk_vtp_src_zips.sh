@@ -62,6 +62,7 @@ zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/enviro-wx.rc
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/Enviro.fbp
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/bitmap/*
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/icons/*
+zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/CMakeLists.txt
 
 zip $DIST_FILE1 VTP/TerrainApps/fltkSimple/appfltk.cpp
 zip $DIST_FILE1 VTP/TerrainApps/fltkSimple/fltkSimple*.vcproj
@@ -153,6 +154,7 @@ zip $DIST_FILE1 VTP/TerrainSDK/vtlib/core/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtlib/vtosg/*
 
 zip $DIST_FILE1 VTP/TerrainSDK/vtui/*
+zip $DIST_FILE1 VTP/TerrainSDK/vtui/bitmaps/*
 
 zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/*
 zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/include/*
