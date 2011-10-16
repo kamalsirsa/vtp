@@ -156,6 +156,9 @@ zip $DIST_FILE1 VTP/TerrainSDK/vtlib/vtosg/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtui/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtui/bitmaps/*
 
+zip $DIST_FILE1 VTP/TerrainSDK/wxosg/*
+zip $DIST_FILE1 VTP/TerrainSDK/wxosg/icons/*
+
 zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/*
 zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/include/*
 
