@@ -120,7 +120,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 		// If there is a .hdr file in the same place, it is most likely
 		//  a GTOPO30/SRTM30 file
 		vtString hdr_fname = ChangeFileExtension(szFileName, ".hdr");
-		if (FileExists(hdr_fname))
+		if (vtFileExists(hdr_fname))
 			Success = LoadFromGTOPO30(hdr_fname, progress_callback);
 		else
 		{

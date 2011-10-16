@@ -2128,7 +2128,7 @@ bool vtTerrain::CreateStep1()
 		// It's a URL, so we can't check for its validity yet; just pass it on
 		elev_path = elev_file;
 	}
-	else if (FileExists(elev_file))		// Might be an absolute path
+	else if (vtFileExists(elev_file))		// Might be an absolute path
 		elev_path = elev_file;
 	else
 	{

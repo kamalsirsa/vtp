@@ -316,11 +316,11 @@ void EnviroApp::LoadOptions()
 	SetupCustomOptions();
 #endif
 
-	bool bFound = FileExists(OptionsFile);
+	bool bFound = vtFileExists(OptionsFile);
 	if (!bFound && AppDataUser != "")
 	{
 		OptionsFile = AppDataUser + "/" + STRING_APPNAME ".xml";
-		bFound = FileExists(OptionsFile);
+		bFound = vtFileExists(OptionsFile);
 	}
 	if (bFound)
 	{

@@ -62,20 +62,20 @@ bool vtLoadDataPath(const char *user_config_dir, const char *config_dir)
 	vtString AppDataCommon(config_dir ? config_dir : "");
 
 	VTLOG("Looking for '%s'\n", (const char *) FileName);
-	bool bFound = FileExists(FileName);
+	bool bFound = vtFileExists(FileName);
 	if (!bFound)
 	{
 		VTLOG1("Not found.\n");
 		FileName = AppDataUser + "/" + BaseName;
 		VTLOG("Looking for '%s'\n", (const char *) FileName);
-		bFound = FileExists(FileName);
+		bFound = vtFileExists(FileName);
 	}
 	if (!bFound)
 	{
 		VTLOG1("Not found.\n");
 		FileName = AppDataCommon + "/" + BaseName;
 		VTLOG("Looking for '%s'\n", (const char *) FileName);
-		bFound = FileExists(FileName);
+		bFound = vtFileExists(FileName);
 	}
 
 	// Not found anywhere.  Default to default data path

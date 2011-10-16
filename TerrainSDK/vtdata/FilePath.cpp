@@ -514,7 +514,7 @@ vtString ChangeFileExtension(const char *input, const char *extension)
 	return result;
 }
 
-bool FileExists(const char *fname)
+bool vtFileExists(const char *fname)
 {
 #if VTDEBUG
 	VTLOG("FileExists(%s):", fname);

@@ -878,7 +878,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		// If there is a .hdr file in the same place, it is most likely
 		//  a GTOPO30/SRTM30 file
 		vtString hdr_fname = ChangeFileExtension(fname, ".hdr");
-		if (FileExists(hdr_fname))
+		if (vtFileExists(hdr_fname))
 			success = m_pGrid->LoadFromGTOPO30(hdr_fname, progress_callback);
 		else
 		{

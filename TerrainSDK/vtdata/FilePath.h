@@ -99,7 +99,7 @@ vtString get_line_from_stream(std::ifstream &input);
 void RemoveFileExtensions(vtString &fname, bool bAll = true);
 vtString GetExtension(const vtString &fname, bool bFull = true);
 vtString ChangeFileExtension(const char *input, const char *extension);
-bool FileExists(const char *fname);
+bool vtFileExists(const char *fname);
 int GetFileSize(const char *fname);
 
 void SetEnvironmentVar(const vtString &var, const vtString &value);
