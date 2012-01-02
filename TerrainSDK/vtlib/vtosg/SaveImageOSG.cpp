@@ -7,6 +7,7 @@
 
 #include "vtlib/vtlib.h"
 #include "SaveImageOSG.h"
+#include "core/TemporaryGraphicsContext.h"
 #include <osgDB/WriteFile>
 #include <osg/GLExtensions>
 #include "vtdata/vtLog.h"
@@ -63,7 +64,9 @@ bool CSaveImageOSG::SaveImage(std::string& FilePath, int Width, int Height)
 		return false;
 
 	GLint MaxRenderBufferSize = 3000;
-	
+
+    vtTemporaryGraphicsContext TempContext;
+
 	glGetIntegerv(MAX_RENDERBUFFER_SIZE_EXT, &MaxRenderBufferSize);
 
 	osgViewer::Viewer *pViewer = vtGetScene()->getViewer();
@@ -80,7 +83,7 @@ bool CSaveImageOSG::SaveImage(std::string& FilePath, int Width, int Height)
 	}
 
 	// Clone any global state
-	// I am only going to mess about with viewport so SHALLOW_COPY should be OK. 
+	// I am only going to mess about with viewport so SHALLOW_COPY should be OK.
 	pCamera->setStateSet((osg::StateSet*)pViewer->getCamera()->getOrCreateStateSet()->clone(osg::CopyOp::SHALLOW_COPY));
 
 	float AspectRatio = (float)Width / (float)Height;
