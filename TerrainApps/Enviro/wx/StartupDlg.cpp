@@ -18,6 +18,7 @@
 
 #include "vtlib/vtlib.h"	// mostly for gl.h
 #include "vtlib/core/TParams.h"
+#include "vtlib/core/TemporaryGraphicsContext.h"
 #include "vtdata/DataPath.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for AddFilenamesToComboBox
@@ -34,24 +35,7 @@ DECLARE_APP(EnviroApp);
 
 static void ShowOGLInfo2(bool bLog)
 {
-#if 1
-	wxFrame *frame = new wxFrame(NULL, wxID_ANY, wxT(""), wxPoint(0, 0), wxSize(0, 0), 0);
-	wxGLCanvas *canvas = new wxGLCanvas(frame, wxID_ANY, wxPoint(0, 0), wxSize(0, 0));
-#if defined(__WXMAC__) || defined(__WXGTK__)
-		frame->Show(true);
-		canvas->SetCurrent();
-		frame->Show(false);
-#else
-		canvas->GetContext()->SetCurrent(*canvas);
-#endif
-#else
-	wxFrame *frame = new wxFrame;
-	frame->Create(NULL, -1, _T("Test"));
-	wxGLCanvas *canvas = new wxGLCanvas(frame, wxID_ANY, wxDefaultPosition, wxDefaultSize);
-	frame->Show();
-	canvas->SetCurrent();	// This is necessary as of wx 2.8
-	frame->Show(false);		// Minimise the visibility of the opengl test window
-#endif
+    vtTemporaryGraphicsContext TemporaryContext;
 
 	GLint value;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &value);
@@ -87,8 +71,6 @@ static void ShowOGLInfo2(bool bLog)
 		const char *ext = (const char *) glGetString(GL_EXTENSIONS);
 		msg += wxString(ext, wxConvUTF8);
 	}
-	frame->Close();
-	delete frame;
 
 	if (!bLog)
 	{

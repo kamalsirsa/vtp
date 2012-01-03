@@ -21,11 +21,6 @@
 #include <unistd.h>
 #endif
 
-#if WIN32
-#include <GL/gl.h>
-#include <GL/glext.h>	// for high resolution snapshot
-#endif
-
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/Contours.h"

@@ -94,9 +94,14 @@ float vtGetFrameTime()
 
 int vtGetMaxTextureSize()
 {
-	GLint tmax = 0;	// TODO: cannot make direct GL calls in threaded environment
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &tmax);
-	return tmax;
+    // Do not try to create an Extensions object if one does not already exist
+    // as we cannot gaurantee a valid rendering context at this point.
+	osg::ref_ptr<osg::Texture::Extensions> pTextureExtensions =
+		osg::Texture::getExtensions(vtGetScene()->GetGraphicsContext()->getState()->getContextID(), false);
+    if (pTextureExtensions.valid())
+        return pTextureExtensions->maxTextureSize();
+    else
+        return 0;
 }
 
 #if 0
@@ -105,7 +110,7 @@ class MyCull : public osg::NodeCallback
 public:
     /** Callback method called by the NodeVisitor when visiting a node.*/
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
-    { 
+    {
 		const GLubyte *test = glGetString(GL_VERSION);
         traverse(node,nv);
     }
@@ -116,7 +121,7 @@ class MyUpdate : public osg::NodeCallback
 public:
     /** Callback method called by the NodeVisitor when visiting a node.*/
     virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
-    { 
+    {
 		const GLubyte *test = glGetString(GL_VERSION);
         traverse(node,nv);
     }
@@ -127,7 +132,7 @@ class MyEvent : public osg::NodeCallback
 public:
     /** Callback method called by the NodeVisitor when visiting a node.*/
     virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
-    { 
+    {
 		const GLubyte *test = glGetString(GL_VERSION);
         traverse(node,nv);
     }
