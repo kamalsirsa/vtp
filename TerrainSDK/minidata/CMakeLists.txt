@@ -1,5 +1,5 @@
 # Add a library target called minidata
-add_library(minidata jpegbase.cpp MiniDatabuf.cpp LocalDatabuf.cpp minidata.cpp pngbase.cpp jpegbase.h LocalDatabuf.h MiniDatabuf.h pngbase.h)
+add_library(minidata jpegbase.cpp MiniDatabuf.cpp LocalDatabuf.cpp minidata.cpp pngbase.cpp jpegbase.h LocalDatabuf.h MiniDatabuf.h pngbase.h zlibbase.h zlibbase.cpp)
 
 if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIR})

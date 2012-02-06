@@ -1,25 +1,33 @@
 //
 // minidata.cpp - interface to the data structures used by the 'mini' library
 //
-// Copyright (c) 2008 Virtual Terrain Project
+// Copyright (c) 2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
+//
+// jpeg/png/zlib*.cpp contributed as part the libMini library by Stefan Roettger
 //
 
 #include "jpegbase.h"
 #include "pngbase.h"
+#include "zlibbase.h"
 
 #include <mini/database.h> // for databuf
 
-//! parameters for converting external formats
-struct MINI_CONVERSION_PARAMS
+// parameters for converting external formats
+struct MINI_CONVERSION_HOOK_STRUCT
 {
 	float jpeg_quality;
+
+	float png_gamma;
+	int zlib_level;
 };
 
-// libMini conversion hook for external formats (JPEG/PNG)
+typedef MINI_CONVERSION_HOOK_STRUCT MINI_CONVERSION_PARAMS;
+
+// libMini conversion hook for external formats (JPEG/PNG/Z)
 int conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsigned int extformat,
-				   unsigned char **newdata,unsigned int *newbytes,
-				   databuf *obj,void *data)
+                   unsigned char **newdata,unsigned int *newbytes,
+                   databuf *obj,void *data)
 {
 	MINI_CONVERSION_PARAMS *conversion_params=(MINI_CONVERSION_PARAMS *)data;
 
@@ -33,8 +41,7 @@ int conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsig
 		{
 			int width,height,components;
 
-			*newdata=decompressJPEGimage(srcdata,bytes,&width,&height,&components);
-			if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
+			*newdata=jpegbase::decompressJPEGimage(srcdata,bytes,&width,&height,&components);
 
 			if (*newdata==NULL) return(0); // return failure
 
@@ -60,7 +67,7 @@ int conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsig
 			default: return(0); // return failure
 			}
 
-			compressJPEGimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->jpeg_quality/100.0f,newdata,newbytes);
+			jpegbase::compressJPEGimage(srcdata,obj->xsize,obj->ysize,components,conversion_params->jpeg_quality/100.0f,newdata,newbytes);
 
 			if (*newdata==NULL) return(0); // return failure
 		}
@@ -73,8 +80,7 @@ int conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsig
 		{
 			int width,height,components;
 
-			*newdata=decompressPNGimage(srcdata,bytes,&width,&height,&components);
-			if ((unsigned int)width!=obj->xsize || (unsigned int)height!=obj->ysize) return(0);
+			*newdata=pngbase::decompressPNGimage(srcdata,bytes,&width,&height,&components);
 
 			if (*newdata==NULL) return(0); // return failure
 
@@ -102,7 +108,24 @@ int conversionhook(int israwdata,unsigned char *srcdata,unsigned int bytes,unsig
 			default: return(0); // return failure
 			}
 
-			compressPNGimage(srcdata,obj->xsize,obj->ysize,components,newdata,newbytes);
+			pngbase::compressPNGimage(srcdata,obj->xsize,obj->ysize,components,newdata,newbytes,conversion_params->png_gamma,conversion_params->zlib_level);
+
+			if (*newdata==NULL) return(0); // return failure
+		}
+
+		break;
+
+	case databuf::DATABUF_EXTFMT_Z:
+
+		if (israwdata==0)
+		{
+			*newdata=zlibbase::decompressZLIB(srcdata,bytes,newbytes);
+
+			if (*newdata==NULL) return(0); // return failure
+		}
+		else
+		{
+			zlibbase::compressZLIB(srcdata,bytes,newdata,newbytes,conversion_params->zlib_level);
 
 			if (*newdata==NULL) return(0); // return failure
 		}
@@ -120,8 +143,9 @@ void InitMiniConvHook(int iJpegQuality)
 	// specify conversion parameters
 	static MINI_CONVERSION_PARAMS conversion_params;
 	conversion_params.jpeg_quality = (float) iJpegQuality; // jpeg quality in percent
+	conversion_params.png_gamma=0.0f; // png gamma (0.0=default 1.0=neutral)
+	conversion_params.zlib_level=9; // zlib compression level (0=none 6=standard 9=highest)
 
 	// register libMini conversion hook (JPEG/PNG)
 	databuf::setconversion(conversionhook,&conversion_params);
 }
-

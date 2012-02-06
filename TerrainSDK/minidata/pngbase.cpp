@@ -20,6 +20,8 @@ extern "C"
 
 #include "pngbase.h"
 
+namespace pngbase {
+
 struct PNG_USER_READ_STRUCT
    {
    unsigned char *data;
@@ -332,3 +334,5 @@ void compressPNGimage(unsigned char *image,int width,int height,int components,u
    *data=png_user_write_params.data;
    *bytes=png_user_write_params.bytes;
    }
+
+}

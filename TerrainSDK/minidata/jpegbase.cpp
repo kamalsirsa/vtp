@@ -11,6 +11,8 @@ extern "C"
 
 #include "jpegbase.h"
 
+namespace jpegbase {
+
 typedef struct
    {
    struct jpeg_source_mgr pub;
@@ -203,3 +205,5 @@ void compressJPEGimage(unsigned char *image,int width,int height,int components,
 
    free(ptr);
    }
+
+}
