@@ -121,6 +121,10 @@ if(OPENGL_gl_LIBRARY)
 	target_link_libraries(VTBuilder ${OPENGL_gl_LIBRARY})
 endif(OPENGL_gl_LIBRARY)
 
+if(OPENGL_glu_LIBRARY)
+	target_link_libraries(VTBuilder ${OPENGL_glu_LIBRARY})
+endif(OPENGL_glu_LIBRARY)
+
 find_library(NETCDF_LIBRARY netcdf DOC "Path to netcdf library")
 if(NETCDF_LIBRARY)
 	target_link_libraries(VTBuilder ${NETCDF_LIBRARY})
