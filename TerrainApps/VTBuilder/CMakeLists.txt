@@ -1,3 +1,5 @@
+find_package(OpenGL) # for S3TC compression via the opengl driver
+
 # Add a library target called BuilderLib
 set(BUILDERLIB_SOURCE_FILES
 	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp Helper.cpp ImageLayer.cpp
@@ -173,4 +175,3 @@ if (GLEXT_INCLUDE_DIR)
 	# Add the glext include directory to the compilers search path 
 	include_directories(${GLEXT_INCLUDE_DIR})
 endif (GLEXT_INCLUDE_DIR)
-
