@@ -1,5 +1,3 @@
-find_package(OpenGL) # for S3TC compression via the opengl driver
-
 # Add a library target called BuilderLib
 set(BUILDERLIB_SOURCE_FILES
 	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp Helper.cpp ImageLayer.cpp
@@ -119,13 +117,13 @@ if(MINI_FOUND)
 	target_link_libraries(VTBuilder ${MINI_LIBRARIES})
 endif(MINI_FOUND)
 
-if(OPENGL_gl_LIBRARY)
+if(OPENGL_FOUND)
 	target_link_libraries(VTBuilder ${OPENGL_gl_LIBRARY})
-endif(OPENGL_gl_LIBRARY)
+endif(OPENGL_FOUND)
 
-if(OPENGL_glu_LIBRARY)
+if(OPENGL_GLU_FOUND)
 	target_link_libraries(VTBuilder ${OPENGL_glu_LIBRARY})
-endif(OPENGL_glu_LIBRARY)
+endif(OPENGL_GLU_FOUND)
 
 find_library(NETCDF_LIBRARY netcdf DOC "Path to netcdf library")
 if(NETCDF_LIBRARY)

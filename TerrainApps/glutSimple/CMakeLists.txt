@@ -1,5 +1,4 @@
 find_package(GLUT)
-find_package(OpenGL)
 
 if(GLUT_FOUND)
 	add_executable(glutSimple app.cpp)

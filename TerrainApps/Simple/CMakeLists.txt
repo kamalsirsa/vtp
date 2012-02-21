@@ -1,5 +1,3 @@
-find_package(OpenGL)
-
 add_executable(Simple app.cpp)
 
 install(TARGETS Simple RUNTIME DESTINATION bin)
