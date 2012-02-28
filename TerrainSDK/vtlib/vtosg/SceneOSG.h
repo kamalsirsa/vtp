@@ -14,6 +14,8 @@
 
 #include "../core/Engine.h"
 
+#include "VisualImpactCalculatorOSG.h"
+
 #if OLD_OSG_SHADOWS
 class CStructureShadowsOSG;
 #endif
@@ -198,6 +200,9 @@ public:
 	// for culling
 	void CalcCullPlanes();
 
+    // Visual Impact Calculation
+	virtual CVisualImpactCalculatorOSG& GetVisualImpactCalculator() { return m_VisualImpactCalculator; }
+
 protected:
 	void DoEngines(vtEngine *eng);
 
@@ -233,6 +238,7 @@ protected:
 #if OLD_OSG_SHADOWS
 	osg::ref_ptr<CStructureShadowsOSG> m_pStructureShadowsOSG;
 #endif
+	CVisualImpactCalculatorOSG m_VisualImpactCalculator;
 };
 
 // global
