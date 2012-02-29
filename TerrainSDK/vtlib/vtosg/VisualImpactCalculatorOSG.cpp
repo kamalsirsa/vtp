@@ -23,9 +23,18 @@
 #include <gdal_priv.h>
 #include "vtdata/vtLog.h"
 
-// !!!!!!!!! I think this may need more work in a multiprocessor environment
-// !!!!!!!!! If threading is not CullDrawThreadPerContext then pViewer->frame may return before
-// !!!!!!!!! drawing has finished.
+// I think this may need more work in a multiprocessor environment
+// If threading is not CullDrawThreadPerContext then pViewer->frame may return before
+// drawing has finished. I have put in a clumsy fix to prevent this.
+
+// TBD
+// This code is very clunky. It may be better to do the solid angle calculation in a fragment shader.
+// However OpenGL does not guarantee that the depth value given to the fragment shader is consistent
+// with the depth value computed in the fixed pipeline, only that it is consistent with other depth values
+// passed to fragment shaders. The other problem is accessing the current depth buffer from a shader. My best
+// guess on this at the moment is to use a FBO and capture the depth buffer in a similar way to that which I do
+// at the moment.
+// RFJ February 2012
 
 static const char VISUAL_IMPACT_BIN_NAME[] = "Visual Impact Bin";
 static const int VISUAL_IMPACT_BIN_NUMBER = 9999; // Set this number sufficiently high so that this bin will be rendered after everything else
