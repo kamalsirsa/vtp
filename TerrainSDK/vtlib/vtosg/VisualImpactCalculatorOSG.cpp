@@ -32,8 +32,8 @@
 // However OpenGL does not guarantee that the depth value given to the fragment shader is consistent
 // with the depth value computed in the fixed pipeline, only that it is consistent with other depth values
 // passed to fragment shaders. The other problem is accessing the current depth buffer from a shader. My best
-// guess on this at the moment is to use a FBO and capture the depth buffer in a similar way to that which I do
-// at the moment.
+// guess on this at the moment is to map the depth buffer object in the draw callback and use memcpy to copy into another
+// mapped buffer object attached to a texture which can then be read in the fragment shader.
 // RFJ February 2012
 
 static const char VISUAL_IMPACT_BIN_NAME[] = "Visual Impact Bin";
