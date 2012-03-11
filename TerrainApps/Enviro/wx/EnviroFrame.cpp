@@ -56,6 +56,8 @@
 #include "TextureDlg.h"
 #include "UtilDlg.h"
 #include "VehicleDlg.h"
+#include "VIADlg.h"
+#include "VIAGDALOptionsDlg.h"
 
 #include "vtui/ContourDlg.h"
 #include "vtui/InstanceDlg.h"
@@ -122,6 +124,9 @@
 #include <osg/Version>
 #include <osgDB/Registry>	// for "scene save"
 
+#include <gdal_priv.h>
+#include <cpl_csv.h>
+
 DECLARE_APP(EnviroApp);
 
 BEGIN_EVENT_TABLE(EnviroFrame, wxFrame)
@@ -166,6 +171,13 @@ EVT_MENU(ID_TOOLS_MEASURE,			EnviroFrame::OnToolsMeasure)
 EVT_UPDATE_UI(ID_TOOLS_MEASURE,		EnviroFrame::OnUpdateToolsMeasure)
 EVT_MENU(ID_TOOLS_CONSTRAIN,		EnviroFrame::OnToolsConstrain)
 EVT_UPDATE_UI(ID_TOOLS_CONSTRAIN,	EnviroFrame::OnUpdateToolsConstrain)
+// Visual impact submenu
+EVT_MENU(ID_VIA_CALCULATE, EnviroFrame::OnVIACalculate)
+EVT_UPDATE_UI(ID_VIA_CALCULATE, EnviroFrame::OnUpdateVIACalculate)
+EVT_MENU(ID_VIA_PLOT, EnviroFrame::OnVIAPlot)
+EVT_UPDATE_UI(ID_VIA_PLOT, EnviroFrame::OnUpdateVIAPlot)
+EVT_MENU(ID_VIA_CLEAR, EnviroFrame::OnVIAClear)
+EVT_UPDATE_UI(ID_VIA_CLEAR, EnviroFrame::OnUpdateVIAClear)
 
 EVT_MENU(ID_VIEW_MAINTAIN,			EnviroFrame::OnViewMaintain)
 EVT_UPDATE_UI(ID_VIEW_MAINTAIN,		EnviroFrame::OnUpdateViewMaintain)
@@ -302,6 +314,10 @@ EVT_MENU(ID_POPUP_ADJUST, EnviroFrame::OnPopupAdjust)
 EVT_MENU(ID_POPUP_START, EnviroFrame::OnPopupStart)
 EVT_MENU(ID_POPUP_DELETE, EnviroFrame::OnPopupDelete)
 EVT_MENU(ID_POPUP_URL, EnviroFrame::OnPopupURL)
+EVT_MENU(ID_POPUP_VIA, EnviroFrame::OnPopupVIA)
+EVT_UPDATE_UI(ID_POPUP_VIA, EnviroFrame::OnUpdatePopupVIA)
+EVT_MENU(ID_POPUP_VIA_TARGET, EnviroFrame::OnPopupVIATarget)
+EVT_UPDATE_UI(ID_POPUP_VIA_TARGET, EnviroFrame::OnUpdatePopupVIATarget)
 END_EVENT_TABLE()
 
 wxBitmap ToolsFunc( size_t index )
@@ -489,6 +505,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	#ifdef NVIDIA_PERFORMANCE_MONITORING
     m_pPerformanceMonitorDlg = new CPerformanceMonitorDialog(this, wxID_ANY, _("Performance Monitor"));
     #endif
+	m_pVIADlg = new VIADlg(this);
 
 	if (m_canvas)
 		m_canvas->SetCurrent();
@@ -528,6 +545,7 @@ EnviroFrame::~EnviroFrame()
 	#ifdef NVIDIA_PERFORMANCE_MONITORING
     delete m_pPerformanceMonitorDlg;
     #endif
+	delete m_pVIADlg;
 
 	delete m_pStatusBar;
 	delete m_pToolbar;
@@ -569,6 +587,14 @@ void EnviroFrame::CreateMenus()
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances\tCtrl+D"));
 	m_pToolsMenu->AppendSeparator();
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_CONSTRAIN, _("Constrain building angles"));
+#ifdef VISUAL_IMPACT_CALCULATOR
+	wxMenu *pVIAMenu = new wxMenu;
+	pVIAMenu->Append(ID_VIA_CALCULATE, _("&Calculate\tCtrl+C"), _("Calculate visual impact factor"));
+	pVIAMenu->Append(ID_VIA_PLOT, _("&Plot\tCtrl+P"), _("Produce visual impact plot"));
+	pVIAMenu->Append(ID_VIA_CLEAR, _("C&lear"), _("Clear visual impact target and all contributors"));
+	m_pToolsMenu->AppendSeparator();
+	m_pToolsMenu->Append(ID_VIA_MENU, _("Visual Impact.."), pVIAMenu);
+#endif
 	m_pMenuBar->Append(m_pToolsMenu, _("&Tools"));
 
 	// shortcuts:
@@ -2071,6 +2097,382 @@ void EnviroFrame::OnUpdateToolsConstrain(wxUpdateUIEvent& event)
 	event.Check(g_App.m_bConstrainAngles);
 }
 
+// Visual impact submenu
+void EnviroFrame::OnVIACalculate(wxCommandEvent& event)
+{
+	wxString Message = _("Your 3d driver does not support off screen rendering.\n");
+	Message += _("If the main 3d window is obscured by any other windows\n");
+	Message += _("(including popup dialogs). The accuracy of the visual impact\n");
+	Message += _("calculation will be impaired.");
+
+	if (vtGetScene()->GetVisualImpactCalculator().UsingLiveFrameBuffer())
+		wxMessageBox(Message);
+	m_pVIADlg->Show(true);
+}
+
+void EnviroFrame::OnUpdateVIACalculate(wxUpdateUIEvent& event)
+{
+	bool bFound = false;
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (NULL != pTerr)
+	{
+		LayerSet& Layers = pTerr->GetLayers();
+
+		int iNumberOfLayers = Layers.size();
+
+		for (int i = 0; i < iNumberOfLayers; i++)
+		{
+			vtStructureArray3d *pStructures = dynamic_cast<vtStructureArray3d*>(Layers[i].get());
+			if (NULL != pStructures)
+			{
+				int iNumberOfStructures = pStructures->GetSize();
+				for (int j = 0; (j < iNumberOfStructures) && !bFound; j++)
+				{
+					vtStructure3d *pStructure3d = pStructures->GetStructure3d(j);
+					if (pStructure3d->GetVIAContributor())
+						bFound = true;
+				}
+			}
+		}
+	}
+	event.Enable(bFound);
+}
+
+void EnviroFrame::OnVIAPlot(wxCommandEvent& event)
+{
+	wxFileDialog RasterFileDialog(this,
+								_T("Output raster file"),
+								_T(""), _T("viaplot.tif"),
+								_T(""), wxSAVE);
+	CVIAGDALOptionsDlg OptionsDlg(this);
+	GDALDriverManager *pDriverManager;
+	int iNumDrivers;
+	int i;
+	bool bFirst = true;
+	wxString Filter;
+	int *pDriverIndices = NULL;
+	int iDriverIndexOffset = 0;
+	int iDriverIndex;
+	int iDefaultFilter = 0;
+
+	g_GDALWrapper.RequestGDALFormats();
+
+	pDriverManager = GetGDALDriverManager();
+	iNumDrivers = pDriverManager->GetDriverCount();
+	if (NULL == (pDriverIndices = new int[iNumDrivers]))
+		return;
+	for (i = 0; i < iNumDrivers; i++)
+	{
+		GDALDriver* pDriver = pDriverManager->GetDriver(i);
+		char ** ppMetaData = pDriver->GetMetadata();
+		const char *pExtension;
+		const char *pLongname;
+
+		if (CSLFetchBoolean(ppMetaData, GDAL_DCAP_CREATE, FALSE)
+			&& (NULL != (pLongname = CSLFetchNameValue(ppMetaData, GDAL_DMD_LONGNAME))))
+		{
+			pExtension = CSLFetchNameValue(ppMetaData, GDAL_DMD_EXTENSION);
+			if (bFirst)
+				bFirst = false;
+			else
+				Filter += wxT("|");
+			Filter += wxString(pLongname, wxConvUTF8);
+			Filter += wxT("|*.");
+			Filter += wxString(pExtension, wxConvUTF8);
+			pDriverIndices[iDriverIndexOffset] = i;
+#ifdef WIN32
+			if (0 == strnicmp(pLongname, "GeoTIFF", 7))
+#else
+			if (0 == strncasecmp(pLongname, "GeoTIFF", 7))
+#endif
+				iDefaultFilter = i;
+			iDriverIndexOffset++;
+		}
+	}
+
+	RasterFileDialog.SetWildcard(Filter);
+	RasterFileDialog.SetFilterIndex(iDefaultFilter);
+
+	if (wxID_OK != RasterFileDialog.ShowModal())
+	{
+		delete pDriverIndices;
+		return;
+	}
+
+	iDriverIndex = pDriverIndices[RasterFileDialog.GetFilterIndex()];
+	delete pDriverIndices;
+
+	OptionsDlg.Setup(iDriverIndex);
+
+	if (wxID_OK != OptionsDlg.ShowModal())
+		return;
+
+	GDALDriver *pDriver = GetGDALDriverManager()->GetDriver(iDriverIndex);
+	if (NULL == pDriver)
+		return;
+
+	int iNumArgs;
+	int iNumChars;
+	char **ppArgv = NULL;
+	char *pArgs = NULL;
+	int iType;
+
+	float fXSampleInterval, fYSampleInterval, fScaleFactor;
+	double Temp;
+	OptionsDlg.m_XSampleInterval.ToDouble(&Temp);
+	fXSampleInterval = Temp;
+	OptionsDlg.m_YSampleInterval.ToDouble(&Temp);
+	fYSampleInterval = Temp;
+	OptionsDlg.m_ScaleFactor.ToDouble(&Temp);
+	fScaleFactor = Temp;
+
+	ParseCommandLine((const char *)OptionsDlg.m_CreationOptions.mb_str(wxConvUTF8), NULL, NULL, &iNumArgs, &iNumChars);
+	ppArgv = new char*[iNumArgs];
+	pArgs = new char[iNumChars];
+	ParseCommandLine((const char *)OptionsDlg.m_CreationOptions.mb_str(wxConvUTF8), ppArgv, pArgs, &iNumArgs, &iNumChars);
+
+	for (iType = 1; iType < GDT_TypeCount; iType++)
+		if (GDALGetDataTypeName((GDALDataType)iType) != NULL
+				&& EQUAL(GDALGetDataTypeName((GDALDataType)iType), (const char *)OptionsDlg.m_DataType.mb_str(wxConvUTF8)))
+			break;
+
+	DRECT EarthExtents = vtGetTS()->GetCurrentTerrain()->GetHeightField()->GetEarthExtents();
+
+	int iXSize = (int)((EarthExtents.right - EarthExtents.left)/fXSampleInterval);
+	int iYSize = (int)((EarthExtents.top - EarthExtents.bottom)/fYSampleInterval);
+
+	GDALDataset *pDataset = pDriver->Create((const char *)RasterFileDialog.GetPath().mb_str(wxConvUTF8), iXSize, iYSize, 1, (GDALDataType)iType, ppArgv);
+	if (NULL != ppArgv)
+		delete ppArgv;
+	if (NULL != pArgs)
+		delete pArgs;
+	if (NULL == pDataset)
+		return;
+
+	// Set up geo stuff;
+	char *pWKT;
+	double Transform[6] = {0.0};
+	Transform[0] = EarthExtents.left;
+	Transform[1] = fXSampleInterval;
+	Transform[3] = EarthExtents.top;
+	Transform[5] = -fYSampleInterval;
+	pDataset->SetGeoTransform(Transform);
+	GetCurrentTerrain()->GetProjection().exportToWkt(&pWKT);
+	pDataset->SetProjection(pWKT);
+	CPLFree(pWKT);
+	GDALRasterBand *pRasterBand = pDataset->GetRasterBand(1);
+	if (NULL == pRasterBand)
+		return;
+
+	EnableContinuousRendering(false);
+	OpenProgressDialog(_T("Plotting Visual Impact Factor"), true);
+	bool bRet = vtGetScene()->GetVisualImpactCalculator().Plot(pRasterBand,
+													fScaleFactor,
+													fXSampleInterval,
+													fYSampleInterval,
+													progress_callback);
+	CloseProgressDialog();
+	if (bRet)
+		wxMessageBox(_("Visual Impact Plot successful"));
+	else
+		wxMessageBox(_("Visual Impact Plot unsuccessful"));
+
+	EnableContinuousRendering(true);
+	delete pDataset; // This flushes and closes the dataset
+}
+
+void EnviroFrame::ParseCommandLine(const char *cmdstart, char **argv, char *args, int *numargs, int *numchars)
+{
+	static const char NULCHAR = '\0';
+	static const char SPACECHAR = ' ';
+	static const char TABCHAR = '\t';
+	static const char DQUOTECHAR = '\"';
+	static const char SLASHCHAR = '\\';
+	const char *p;
+	int inquote;                    // 1 = inside quotes
+	int copychar;                   // 1 = copy char to *args
+	unsigned numslash;              // num of backslashes seen
+
+	*numchars = 0;
+	*numargs = 0;
+
+	p = cmdstart;
+
+	inquote = 0;
+
+	/* loop on each argument */
+	for(;;)
+	{
+
+		if ( *p )
+		{
+			while (*p == SPACECHAR || *p == TABCHAR)
+				++p;
+		}
+
+		if (*p == NULCHAR)
+			break;              // end of args
+
+		// scan an argument
+		if (argv)
+			*argv++ = args;     // store ptr to arg
+		++*numargs;
+
+		// loop through scanning one argument
+		for (;;)
+		{
+			copychar = 1;
+			// Rules: 2N backslashes + " ==> N backslashes and begin/end quote
+			// 2N+1 backslashes + " ==> N backslashes + literal "
+			// N backslashes ==> N backslashes
+			numslash = 0;
+			while (*p == SLASHCHAR)
+			{
+				// count number of backslashes for use below
+				++p;
+				++numslash;
+			}
+			if (*p == DQUOTECHAR)
+			{
+				// if 2N backslashes before, start/end quote, otherwise
+				// copy literally
+				if (numslash % 2 == 0)
+				{
+					if (inquote)
+					{
+						if (p[1] == DQUOTECHAR)
+							p++;    // Double quote inside quoted string
+						else        // skip first quote char and copy second
+							copychar = 0;
+					}
+					else
+						copychar = 0;       // don't copy quote
+
+					inquote = !inquote;
+				}
+				numslash /= 2;          // divide numslash by two
+			}
+
+			// copy slashes
+			while (numslash--)
+			{
+				if (args)
+					*args++ = SLASHCHAR;
+				++*numchars;
+			}
+
+			// if at end of arg, break loop
+			if (*p == NULCHAR || (!inquote && (*p == SPACECHAR || *p == TABCHAR)))
+				break;
+
+			// copy character into argument
+			if (copychar)
+			{
+				if (args)
+					*args++ = *p;
+				++*numchars;
+			}
+			++p;
+		}
+
+		// null-terminate the argument
+
+		if (args)
+			*args++ = NULCHAR;          // terminate string
+		++*numchars;
+	}
+
+	/* We put one last argument in -- a null ptr */
+	if (argv)
+		*argv++ = NULL;
+	++*numargs;
+}
+
+void EnviroFrame::OnUpdateVIAPlot(wxUpdateUIEvent& event)
+{
+	bool bFoundContributor = false;
+	bool bFoundTarget = false;
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (NULL != pTerr)
+	{
+		LayerSet &Layers = pTerr->GetLayers();
+		int iNumberOfLayers = Layers.size();
+
+		for (int i = 0; i < iNumberOfLayers; i++)
+		{
+			vtStructureArray3d *pStructures = dynamic_cast<vtStructureArray3d*>(Layers[i].get());
+			if (NULL != pStructures)
+			{
+				int iNumberOfStructures = pStructures->GetSize();
+				for (int j = 0; (j < iNumberOfStructures) && !(bFoundContributor && bFoundTarget); j++)
+				{
+					vtStructure3d *pStructure3d = pStructures->GetStructure3d(j);
+					if (pStructure3d->GetVIAContributor())
+						bFoundContributor = true;
+					if (pStructure3d->GetVIATarget())
+						bFoundTarget = true;
+				}
+			}
+		}
+	}
+	event.Enable(bFoundContributor && bFoundTarget);
+}
+
+void EnviroFrame::OnVIAClear(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (NULL != pTerr)
+	{
+		LayerSet &Layers = pTerr->GetLayers();
+		int iNumberOfLayers = Layers.size();
+
+		for (int i = 0; i < iNumberOfLayers; i++)
+		{
+			vtStructureArray3d *pStructures = dynamic_cast<vtStructureArray3d*>(Layers[i].get());
+			if (NULL != pStructures)
+			{
+				int iNumberOfStructures = pStructures->GetSize();
+				for (int j = 0; j < iNumberOfStructures; j++)
+				{
+					vtStructure3d *pStructure3d = pStructures->GetStructure3d(j);
+					pStructure3d->SetVIATarget(false);
+					pStructure3d->SetVIAContributor(false);
+				}
+			}
+		}
+	}
+}
+
+void EnviroFrame::OnUpdateVIAClear(wxUpdateUIEvent& event)
+{
+	bool bFoundContributor = false;
+	bool bFoundTarget = false;
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (NULL != pTerr)
+	{
+		LayerSet &Layers = pTerr->GetLayers();
+		int iNumberOfLayers = Layers.size();
+
+		for (int i = 0; i < iNumberOfLayers; i++)
+		{
+			vtStructureArray3d *pStructures = dynamic_cast<vtStructureArray3d*>(Layers[i].get());
+			if (NULL != pStructures)
+			{
+				int iNumberOfStructures = pStructures->GetSize();
+				for (int j = 0; (j < iNumberOfStructures) && !(bFoundContributor || bFoundTarget); j++)
+				{
+					vtStructure3d *pStructure3d = pStructures->GetStructure3d(j);
+					if (pStructure3d->GetVIAContributor())
+						bFoundContributor = true;
+					if (pStructure3d->GetVIATarget())
+						bFoundTarget = true;
+				}
+			}
+		}
+	}
+	event.Enable(bFoundContributor || bFoundTarget);
+}
+
 
 /////////////////////// Scene menu ///////////////////////////
 
@@ -3106,6 +3508,11 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 				popmenu->AppendSeparator();
 				popmenu->Append(ID_POPUP_URL, _("URL"));
 			}
+#ifdef VISUAL_IMPACT_CALCULATOR
+			// Visual Impact Assessment
+            popmenu->AppendCheckItem(ID_POPUP_VIA, _("&Visual Impact Contributor\tCtrl+V"), _("Set this structure as a contributor to the VIA calculation"));
+            popmenu->AppendCheckItem(ID_POPUP_VIA_TARGET, _("Visual Impact &Target\tCtrl+T"), _("Set this structure as the viewer target for VIA plots"));
+#endif
 		}
 	}
 	else if (plants.NumSelected() != 0)
@@ -3370,6 +3777,147 @@ void EnviroFrame::OnPopupURL(wxCommandEvent& event)
 	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructureLayer();
 	vtStructure *struc = sa->GetAt(sa->GetFirstSelected());
 	wxLaunchDefaultBrowser(wxString(struc->GetValueString("url"), wxConvUTF8));
+}
+
+void EnviroFrame::OnPopupVIA(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
+	vtStructure3d *pStructure3d;
+
+	if (pStructures->NumSelected() != 1)
+		return;
+
+	pStructure3d = pStructures->GetStructure3d(pStructures->GetFirstSelected());
+	if (NULL == pStructure3d)
+        return;
+	if (pStructure3d->GetVIAContributor())
+	{
+		pStructure3d->SetVIAContributor(false);
+		vtGetScene()->GetVisualImpactCalculator().RemoveVisualImpactContributor(pStructure3d->GetContainer());
+	}
+	else
+	{
+		pStructure3d->SetVIAContributor(true);
+		vtGetScene()->GetVisualImpactCalculator().AddVisualImpactContributor(pStructure3d->GetContainer());
+	}
+}
+
+void EnviroFrame::OnUpdatePopupVIA(wxUpdateUIEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+
+	if (NULL == pTerr)
+		event.Enable(false);
+	else
+	{
+		vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
+
+		if (NULL == pStructures)
+			event.Enable(false);
+		else
+		{
+            vtStructure3d *pStructure3d;
+
+			if (pStructures->NumSelected() != 1)
+				event.Enable(false);
+			else
+			{
+                pStructure3d = pStructures->GetStructure3d(pStructures->GetFirstSelected());
+				if ((NULL != pStructure3d) && pStructure3d->GetVIAContributor())
+					event.Check(true);
+				else
+					event.Check(false);
+/* Need to work out why this is in my original code
+				if ((NULL == dynamic_cast<vtStructure3d*>(pStr)) || (NULL == dynamic_cast<vtStructure3d*>(pStr)->GetContainer()))
+					event.Enable(false);
+				else
+					event.Enable(true);
+*/
+			}
+		}
+	}
+}
+
+void EnviroFrame::OnPopupVIATarget(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
+	int count = pStructures->GetSize();
+	vtStructure3d *pStructure3d;
+	vtTransform *pTransform;
+	FSphere sphere;
+
+	if (pStructures->NumSelected() != 1)
+		return;
+
+	pStructure3d = pStructures->GetStructure3d(pStructures->GetFirstSelected());
+
+	if (NULL == pStructure3d)
+        return;
+
+	if (pStructure3d->GetVIATarget())
+	{
+		pStructure3d->SetVIATarget(false);
+		return;
+	}
+
+	for (int i = 0; i < count; i++)
+	{
+        vtStructure3d *pStructure3d = pStructures->GetStructure3d(i);
+        if (NULL != pStructure3d)
+            pStructure3d->SetVIATarget(false);
+	}
+
+	pTransform = pStructure3d->GetContainer();
+	if (pTransform)
+	{
+		// Get the model centre
+		pTransform->GetBoundSphere(sphere);
+		vtGetScene()->GetVisualImpactCalculator().SetVisualImpactTarget(sphere.center + pTransform->GetTrans());
+		pStructure3d->SetVIATarget(true);
+	}
+}
+
+void EnviroFrame::OnUpdatePopupVIATarget(wxUpdateUIEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+
+	if (NULL == pTerr)
+		event.Enable(false);
+	else
+	{
+		vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
+
+		if (NULL == pStructures)
+			event.Enable(false);
+		else
+		{
+			vtStructure3d *pStructure3d;
+
+			if (pStructures->NumSelected() != 1)
+				event.Enable(false);
+			else
+			{
+				pStructure3d = pStructures->GetStructure3d(pStructures->GetFirstSelected());
+				if (NULL == pStructure3d)
+					event.Enable(false);
+				else
+				{
+					if (pStructure3d->GetVIATarget())
+						event.Check(true);
+					else
+						event.Check(false);
+/* Need to work out why this is in my original code
+					if ((NULL == dynamic_cast<vtStructure3d*>(pStr)) || (NULL == dynamic_cast<vtStructure3d*>(pStr)->GetContainer()))
+						event.Enable(false);
+					else
+						event.Enable(true);
+*/
+				}
+			}
+		}
+	}
 }
 
 

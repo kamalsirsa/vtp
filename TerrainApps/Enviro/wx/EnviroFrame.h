@@ -41,6 +41,7 @@ class vtTimeEngine;
 #ifdef NVIDIA_PERFORMANCE_MONITORING
 class CPerformanceMonitorDialog;
 #endif
+class VIADlg;
 
 // some shortcuts
 #define ADD_TOOL2(bar, id, bmp, label, type) \
@@ -199,6 +200,14 @@ protected:
 	void OnUpdateToolsMeasure(wxUpdateUIEvent& event);
 	void OnToolsConstrain(wxCommandEvent& event);
 	void OnUpdateToolsConstrain(wxUpdateUIEvent& event);
+	// Visual impact submenu
+	void OnVIACalculate(wxCommandEvent& event);
+	void OnUpdateVIACalculate(wxUpdateUIEvent& event);
+	void OnVIAPlot(wxCommandEvent& event);
+	void OnUpdateVIAPlot(wxUpdateUIEvent& event);
+	void OnVIAClear(wxCommandEvent& event);
+	void OnUpdateVIAClear(wxUpdateUIEvent& event);
+
 
 	void OnSceneGraph(wxCommandEvent& event);
 	#ifdef NVIDIA_PERFORMANCE_MONITORING
@@ -281,10 +290,16 @@ protected:
 	void OnPopupStart(wxCommandEvent& event);
 	void OnPopupDelete(wxCommandEvent& event);
 	void OnPopupURL(wxCommandEvent& event);
+	void OnPopupVIA(wxCommandEvent& event);
+	void OnUpdatePopupVIA(wxUpdateUIEvent& event);
+	void OnPopupVIATarget(wxCommandEvent& event);
+	void OnUpdatePopupVIATarget(wxUpdateUIEvent& event);
 
 	void DoTestCode();
 	void LoadClouds(const char *fname);
 	void CarveTerrainToFitNode(osg::Node *node);
+
+	void ParseCommandLine(const char *cmdstart, char **argv, char *args, int *numargs, int *numchars);
 
 public:
 	class vtGLCanvas	*m_canvas;
@@ -322,6 +337,8 @@ public:
 	#ifdef NVIDIA_PERFORMANCE_MONITORING
     CPerformanceMonitorDialog *m_pPerformanceMonitorDlg;
     #endif
+	VIADlg				*m_pVIADlg;
+
 	MouseMode			m_ToggledMode;
 
 	// There can be any number of feature dialogs, one for each abstract layer

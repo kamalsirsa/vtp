@@ -17,6 +17,11 @@ if(AVOID_OSG_INDICES)
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS AVOID_OSG_INDICES)
 endif(AVOID_OSG_INDICES)
 
+option(VISUAL_IMPACT_CALCULATOR "Enable experimental visual impact calculator" OFF)
+if(VISUAL_IMPACT_CALCULATOR)
+	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS VISUAL_IMPACT_CALCULATOR)
+endif(VISUAL_IMPACT_CALCULATOR)
+
 set(TERRAIN_SDK_ROOT "${CMAKE_SOURCE_DIR}/TerrainSDK")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 
@@ -31,7 +36,7 @@ endif(APPLE)
 
 # Find packages - most of these modules hide their include and library properties behind the advanced flag
 set(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
-find_package(wxWidgets COMPONENTS base core net gl aui adv)
+find_package(wxWidgets COMPONENTS base core net gl aui adv html)
 find_package(GDAL)
 find_package(BZip2)
 find_package(CURL)

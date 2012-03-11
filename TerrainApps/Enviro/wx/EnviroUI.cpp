@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Sep  8 2010)
+// C++ code generated with wxFormBuilder (version Oct 12 2011)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -3417,4 +3417,153 @@ DriveDlgBase::~DriveDlgBase()
 	m_area->Disconnect( wxEVT_MOTION, wxMouseEventHandler( DriveDlgBase::OnMotion ), NULL, this );
 	m_area->Disconnect( wxEVT_PAINT, wxPaintEventHandler( DriveDlgBase::OnAreaPaint ), NULL, this );
 	
+}
+
+VIADlgBase::VIADlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxBoxSizer* bSizer197;
+	bSizer197 = new wxBoxSizer( wxVERTICAL );
+	
+	wxBoxSizer* bSizer198;
+	bSizer198 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_VIFCtl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_CENTRE|wxTE_READONLY );
+	m_VIFCtl->SetValidator( wxTextValidator( wxFILTER_NUMERIC, &m_VIF ) );
+	
+	bSizer198->Add( m_VIFCtl, 1, wxALL, 5 );
+	
+	bSizer197->Add( bSizer198, 1, wxEXPAND, 5 );
+	
+	wxBoxSizer* bSizer199;
+	bSizer199 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_button64 = new wxButton( this, ID_VIF_RECALCULATE, _("Recalculate"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer199->Add( m_button64, 0, wxALL, 5 );
+	
+	m_button65 = new wxButton( this, wxID_OK, _("Done"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer199->Add( m_button65, 0, wxALL, 5 );
+	
+	bSizer197->Add( bSizer199, 1, wxEXPAND, 5 );
+	
+	this->SetSizer( bSizer197 );
+	this->Layout();
+	
+	this->Centre( wxBOTH );
+	
+	// Connect Events
+	this->Connect( wxEVT_INIT_DIALOG, wxInitDialogEventHandler( VIADlgBase::OnInitDialog ) );
+	m_button64->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( VIADlgBase::OnRecalculate ), NULL, this );
+}
+
+VIADlgBase::~VIADlgBase()
+{
+	// Disconnect Events
+	this->Disconnect( wxEVT_INIT_DIALOG, wxInitDialogEventHandler( VIADlgBase::OnInitDialog ) );
+	m_button64->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( VIADlgBase::OnRecalculate ), NULL, this );
+	
+}
+
+VIAGDALOptionsDlgBase::VIAGDALOptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxBoxSizer* bSizer200;
+	bSizer200 = new wxBoxSizer( wxVERTICAL );
+	
+	wxStaticBoxSizer* sbSizer33;
+	sbSizer33 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Raster Creation Options") ), wxVERTICAL );
+	
+	wxStaticBoxSizer* sbSizer34;
+	sbSizer34 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Help") ), wxVERTICAL );
+	
+	m_pHtmlWindow = new wxHtmlWindow(this, wxID_ANY, wxDefaultPosition, wxSize(600, 300));
+	sbSizer34->Add( m_pHtmlWindow, 0, wxALL, 5 );
+	
+	sbSizer33->Add( sbSizer34, 1, wxEXPAND, 5 );
+	
+	wxStaticBoxSizer* sbSizer35;
+	sbSizer35 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Creation Options") ), wxHORIZONTAL );
+	
+	m_textCtrl80 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), 0 );
+	m_textCtrl80->SetValidator( wxTextValidator( wxFILTER_NONE, &m_CreationOptions ) );
+	
+	sbSizer35->Add( m_textCtrl80, 1, wxALL, 5 );
+	
+	sbSizer33->Add( sbSizer35, 0, wxEXPAND, 5 );
+	
+	wxStaticBoxSizer* sbSizer36;
+	sbSizer36 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Sample Grid") ), wxHORIZONTAL );
+	
+	m_staticText138 = new wxStaticText( this, wxID_ANY, _("X(E-W) sample interval"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText138->Wrap( -1 );
+	sbSizer36->Add( m_staticText138, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_textCtrl81 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl81->SetValidator( wxTextValidator( wxFILTER_NUMERIC, &m_XSampleInterval ) );
+	
+	sbSizer36->Add( m_textCtrl81, 0, wxALL, 5 );
+	
+	m_staticText139 = new wxStaticText( this, wxID_ANY, _("Y(N-S) sample interval"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText139->Wrap( -1 );
+	sbSizer36->Add( m_staticText139, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_textCtrl82 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl82->SetValidator( wxTextValidator( wxFILTER_NUMERIC, &m_YSampleInterval ) );
+	
+	sbSizer36->Add( m_textCtrl82, 0, wxALL, 5 );
+	
+	sbSizer33->Add( sbSizer36, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+	
+	wxStaticBoxSizer* sbSizer37;
+	sbSizer37 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Data conversion options") ), wxHORIZONTAL );
+	
+	m_staticText140 = new wxStaticText( this, wxID_ANY, _("Data Type"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText140->Wrap( -1 );
+	sbSizer37->Add( m_staticText140, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_pDataTypeChoice = new wxComboBox( this, wxID_ANY, _("Combo!"), wxDefaultPosition, wxDefaultSize, 0, NULL, 0 ); 
+	m_pDataTypeChoice->SetValidator( wxTextValidator( wxFILTER_NONE, &m_DataType ) );
+	
+	sbSizer37->Add( m_pDataTypeChoice, 0, wxALL, 5 );
+	
+	
+	sbSizer37->Add( 200, 20, 1, wxEXPAND, 5 );
+	
+	m_staticText141 = new wxStaticText( this, wxID_ANY, _("Scale Factor"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText141->Wrap( -1 );
+	sbSizer37->Add( m_staticText141, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_textCtrl83 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_textCtrl83->SetValidator( wxTextValidator( wxFILTER_NUMERIC, &m_ScaleFactor ) );
+	
+	sbSizer37->Add( m_textCtrl83, 0, wxALL, 5 );
+	
+	sbSizer33->Add( sbSizer37, 0, wxEXPAND, 5 );
+	
+	wxBoxSizer* bSizer201;
+	bSizer201 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_button66 = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer201->Add( m_button66, 0, wxALL, 5 );
+	
+	
+	bSizer201->Add( 80, 20, 1, wxEXPAND, 5 );
+	
+	m_button67 = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer201->Add( m_button67, 0, wxALL, 5 );
+	
+	sbSizer33->Add( bSizer201, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+	
+	bSizer200->Add( sbSizer33, 1, 0, 5 );
+	
+	this->SetSizer( bSizer200 );
+	this->Layout();
+	
+	this->Centre( wxBOTH );
+}
+
+VIAGDALOptionsDlgBase::~VIAGDALOptionsDlgBase()
+{
 }

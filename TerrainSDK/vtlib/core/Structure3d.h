@@ -70,7 +70,7 @@ protected:
 class vtStructure3d
 {
 public:
-	vtStructure3d() { m_pContainer = NULL; }
+	vtStructure3d() { m_pContainer = NULL; m_bIsVIAContributor = false; m_bIsVIATarget = false; }
 
 	vtTransform *GetContainer() { return m_pContainer; }
 	virtual osg::Node *GetContained() = 0;
@@ -100,6 +100,12 @@ public:
 	// all fences share the same set of materials
 	static void CreateSharedMaterials();
 
+	// Visual Impact
+	const bool GetVIAContributor() const { return m_bIsVIAContributor; }
+	const bool GetVIATarget() const { return m_bIsVIATarget; }
+	void SetVIAContributor(const bool bVIAContributor) { m_bIsVIAContributor = bVIAContributor; }
+	void SetVIATarget(const bool bVIATarget) { m_bIsVIATarget = bVIATarget; }
+
 protected:
 	// material
 	int FindMatIndex(const vtString &Material, const RGBf &inputColor = RGBf(), int iType = -1)
@@ -117,6 +123,11 @@ protected:
 
 	static vtMaterialDescriptorArray3d s_MaterialDescriptors;
 	static bool s_bMaterialsLoaded;
+
+	// Visual Impact
+    bool m_bIsVIAContributor;
+	bool m_bIsVIATarget;
+
 };
 
 
