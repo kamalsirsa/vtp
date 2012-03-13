@@ -52,16 +52,22 @@ static const unsigned int DEFAULT_GRAPHICS_CONTEXT = 0;
 class MyRenderBinDrawCallback : public osgUtil::RenderBin::DrawCallback
 {
 public:
-	MyRenderBinDrawCallback(osg::Image *pImage) : m_pImage(pImage) {}
+	MyRenderBinDrawCallback(osg::Image *pIntermediateImage, bool bUsingLiveFrameBuffer, osg::Image *pBufferImage) : m_pIntermediateImage(pIntermediateImage),
+                                                                                                        m_bUsingLiveFrameBuffer(bUsingLiveFrameBuffer),
+                                                                                                        m_pBufferImage(pBufferImage) {}
 	virtual void drawImplementation(osgUtil::RenderBin *pBin, osg::RenderInfo& renderInfo, osgUtil::RenderLeaf* &Previous);
 protected:
-	osg::ref_ptr<osg::Image> m_pImage;
+	osg::ref_ptr<osg::Image> m_pIntermediateImage;
+	bool m_bUsingLiveFrameBuffer;
+	osg::ref_ptr<osg::Image> m_pBufferImage;
 };
 
 class MyCullCallback : public osg::NodeCallback
 {
 public:
-	MyCullCallback(osg::Image *pImage) : m_pImage(pImage) {}
+	MyCullCallback(osg::Image *pIntermediateImage, bool bUsingLiveFrameBuffer, osg::Image *pBufferImage) : m_pIntermediateImage(pIntermediateImage),
+                                                                                                m_bUsingLiveFrameBuffer(bUsingLiveFrameBuffer),
+                                                                                                m_pBufferImage(pBufferImage) {}
 	virtual void operator()(osg::Node* pNode, osg::NodeVisitor* pNodeVisitor)
 	{
 		pNode->traverse(*pNodeVisitor);
@@ -70,11 +76,13 @@ public:
 			(NULL != pCullVisitor->getCurrentRenderBin()) &&
 			(NULL == pCullVisitor->getCurrentRenderBin()->getDrawCallback()))
 		{
-			pCullVisitor->getCurrentRenderBin()->setDrawCallback(new MyRenderBinDrawCallback(m_pImage.get()));
+			pCullVisitor->getCurrentRenderBin()->setDrawCallback(new MyRenderBinDrawCallback(m_pIntermediateImage.get(), m_bUsingLiveFrameBuffer, m_pBufferImage.get()));
 		}
 	}
 protected:
-	osg::ref_ptr<osg::Image> m_pImage;
+	osg::ref_ptr<osg::Image> m_pIntermediateImage;
+	bool m_bUsingLiveFrameBuffer;
+	osg::ref_ptr<osg::Image> m_pBufferImage;
 };
 
 void CVisualImpactCalculatorOSG::Initialise()
@@ -92,6 +100,21 @@ void CVisualImpactCalculatorOSG::Initialise()
 		m_bUsingLiveFrameBuffer = true;
 
 	m_pIntermediateImage = new osg::Image;
+	m_pBufferImage= new osg::Image;
+
+	m_pIntermediateImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
+							DEFAULT_VISUAL_IMPACT_RESOLUTION,
+							1,
+							GL_DEPTH_COMPONENT,
+							GL_FLOAT);
+	// Even though the camera node knows that you have attached the image to the depth buffer
+	// it does not set this up correctly for you. There is no way to set the dataType, so
+	// preallocation of the data is easiest
+	m_pBufferImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
+							DEFAULT_VISUAL_IMPACT_RESOLUTION,
+							1,
+							GL_DEPTH_COMPONENT,
+							GL_FLOAT);
 
 	m_bInitialised = true;
 }
@@ -105,7 +128,7 @@ void CVisualImpactCalculatorOSG::AddVisualImpactContributor(osg::Node *pOsgNode)
 	if (NULL != pOsgNode)
 	{
 		pOsgNode->getOrCreateStateSet()->setRenderBinDetails(VISUAL_IMPACT_BIN_NUMBER, VISUAL_IMPACT_BIN_NAME);
-		pOsgNode->setCullCallback(new MyCullCallback(m_pIntermediateImage.get()));
+		pOsgNode->setCullCallback(new MyCullCallback(m_pIntermediateImage.get(), m_bUsingLiveFrameBuffer, m_pBufferImage.get()));
 	}
 }
 
@@ -163,28 +186,18 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 
 	// Create a new image to capture the current scene
 	osg::ref_ptr<osg::Camera> pCamera = new osg::Camera;
-	osg::ref_ptr<osg::Image> pImage = new osg::Image;
-	if (!pCamera.valid() || !pImage.valid())
+	if (!pCamera.valid() || !m_pBufferImage.valid())
 	{
 		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot create camera node or image\n");
 		return -1.0f;
 	}
-
-	// Even though the camera node knows that you have attached the image to the depth buffer
-	// it does not set this up correctly for you. There is no way to set the dataType, so
-	// preallocation of the data is easiest
-	pImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
-							DEFAULT_VISUAL_IMPACT_RESOLUTION,
-							1,
-							GL_DEPTH_COMPONENT,
-							GL_FLOAT);
 
 	pCamera->setName("Visual impact calculator camera");
 	pCamera->setClearColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	pCamera->setViewport(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION);
 	pCamera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER_OBJECT, osg::Camera::FRAME_BUFFER);
 	pCamera->setRenderOrder(osg::Camera::PRE_RENDER);
-	pCamera->attach(osg::Camera::DEPTH_BUFFER, pImage.get());
+	pCamera->attach(osg::Camera::DEPTH_BUFFER, m_pBufferImage.get());
 	pCamera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
 	pCamera->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
 	pCamera->setProjectionMatrix(m_ProjectionMatrix);
@@ -209,7 +222,9 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 
 	if (bOneOffMode)
 	{
-		pViewer->frame();
+        float debug3 = *(float*)m_pBufferImage->data();
+        pViewer->frame();
+        debug3 = *(float*)m_pBufferImage->data();
 
 		pViewer->removeSlave(pViewer->findSlaveIndexForCamera(pCamera.get()));
 
@@ -220,7 +235,7 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 			pViewer->startThreading();
 		}
 
-		return InnerImplementation(pCamera.get(), pImage.get());
+		return InnerImplementation(pCamera.get());
 	}
 	else
 	{
@@ -253,9 +268,11 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 				pHeightField->ConvertEarthToSurfacePoint(CurrentCamera, CameraTranslate);
 				pCamera->setViewMatrixAsLookAt(v2s(CameraTranslate), v2s(m_Target), osg::Vec3(0.0, 1.0, 0.0));
 
+                float debug3 = *(float*)m_pBufferImage->data();
 				pViewer->frame();
+                debug3 = *(float*)m_pBufferImage->data();
 
-				float fFactor = InnerImplementation(pCamera.get(), pImage.get());
+				float fFactor = InnerImplementation(pCamera.get());
 
 				pRasterBand->RasterIO(GF_Write, iCurrentX, iYsize - iCurrentY - 1, 1, 1, &fFactor, 1, 1, GDT_Float32, 0, 0);
 
@@ -282,7 +299,7 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 	}
 }
 
-float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode, osg::Image *pImage) const
+float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) const
 {
 	float fSolidAngle = 0.0f;
 	// Compute the PW matrix
@@ -304,12 +321,14 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode, 
 	// Every pixel that has been written to by a contributing geometry should have a different depth value to
 	// the one in the intermediate buffer.
 	// For each one I find compute the solid angle of that patch using Gauss Bonnett and add to the sum
-	float* pFinalBuffer = (float*)pImage->data();
+	float* pFinalBuffer = (float*)m_pBufferImage->data();
 	float* pIntermediateBuffer = (float*)m_pIntermediateImage->data();
 	int x, y;
 #ifdef _DEBUG
 	unsigned int Hits = 0;
 #endif
+    float debug1 = *pFinalBuffer;
+    float debug2 = *pIntermediateBuffer;
 	if (NULL != pIntermediateBuffer) // Buffer will be NULL if our bin has not been rendered
 	{
 		for (x = 0; x < DEFAULT_VISUAL_IMPACT_RESOLUTION; x++)
@@ -366,8 +385,20 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode, 
 
 void MyRenderBinDrawCallback::drawImplementation(osgUtil::RenderBin *pBin, osg::RenderInfo& renderInfo, osgUtil::RenderLeaf* &Previous)
 {
-	// Read the current depth buffer
-	m_pImage->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
+    float debug3;
+    float debug4;
+	// Read the current depth buffer or buffer object
+	if (m_bUsingLiveFrameBuffer)
+        m_pIntermediateImage->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
+    else
+    {
+        if ((NULL != m_pIntermediateImage->data()) && (NULL !=  m_pBufferImage->data()))
+        {
+            memcpy(m_pIntermediateImage->data(), m_pBufferImage->data(), m_pIntermediateImage->getTotalSizeInBytes());
+            debug3 = *(float*)m_pBufferImage->data();
+            debug4 = *(float*)m_pIntermediateImage->data();
+        }
+    }
 	// Draw all the visual impact contributors
 	pBin->drawImplementation(renderInfo, Previous);
 }

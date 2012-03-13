@@ -33,11 +33,12 @@ public:
 protected:
 	void Initialise();
 	float Implementation(bool bOneOffMode, GDALRasterBand *pRasterBand = NULL, float fScaleFactor = 1.0f, double dXSampleInterval = 1.0f, double dYSampleInterval = 1.0f, bool progress_callback(int) = NULL);
-	float InnerImplementation(osg::Camera *pCameraNode, osg::Image *pImage) const;
+	float InnerImplementation(osg::Camera *pCameraNode) const;
 	FPoint3 m_Target;
 	osg::Matrix m_ViewMatrix;
 	mutable osg::Matrix m_ProjectionMatrix;
 	mutable bool m_bUsingLiveFrameBuffer;
 	mutable bool m_bInitialised;
 	osg::ref_ptr<osg::Image> m_pIntermediateImage;
+	osg::ref_ptr<osg::Image> m_pBufferImage;
 };
