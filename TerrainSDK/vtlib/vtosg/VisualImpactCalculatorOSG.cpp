@@ -17,6 +17,7 @@
 #include "vtlib/vtlib.h"
 #include "VisualImpactCalculatorOSG.h"
 #include <osg/GLExtensions>
+#include <osgDB/WriteFile>
 #include "vtdata/HeightField.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/Terrain.h"
@@ -184,7 +185,18 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 
 	osgViewer::Viewer *pViewer = vtGetScene()->getViewer();
 
-	// Create a new image to capture the current scene
+	osgViewer::Viewer::Cameras ActiveCameras;
+	std::deque<osg::Node::NodeMask> NodeMasks;
+
+    pViewer->getCameras(ActiveCameras, true);
+
+    // Stop any other cameras rendering the scene
+    for(osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
+    {
+        NodeMasks.push_back((*itr)->getNodeMask());
+        (*itr)->setNodeMask(0);
+    }
+
 	osg::ref_ptr<osg::Camera> pCamera = new osg::Camera;
 	if (!pCamera.valid() || !m_pBufferImage.valid())
 	{
@@ -197,7 +209,7 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 	pCamera->setViewport(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION);
 	pCamera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER_OBJECT, osg::Camera::FRAME_BUFFER);
 	pCamera->setRenderOrder(osg::Camera::PRE_RENDER);
-	pCamera->attach(osg::Camera::DEPTH_BUFFER, m_pBufferImage.get());
+	pCamera->attach(osg::Camera::DEPTH_BUFFER, GL_FLOAT); // Force a renderBuffer
 	pCamera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
 	pCamera->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
 	pCamera->setProjectionMatrix(m_ProjectionMatrix);
@@ -222,9 +234,7 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 
 	if (bOneOffMode)
 	{
-        float debug3 = *(float*)m_pBufferImage->data();
         pViewer->frame();
-        debug3 = *(float*)m_pBufferImage->data();
 
 		pViewer->removeSlave(pViewer->findSlaveIndexForCamera(pCamera.get()));
 
@@ -235,6 +245,11 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 			pViewer->startThreading();
 		}
 
+        for(osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
+        {
+            (*itr)->setNodeMask(NodeMasks[0]);
+            NodeMasks.pop_front();
+        }
 		return InnerImplementation(pCamera.get());
 	}
 	else
@@ -280,6 +295,20 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 				if ((*progress_callback)(100 * (iCurrentY * iXsize + iCurrentX) / iTotalProgress))
 				{
 					pViewer->removeSlave(pViewer->findSlaveIndexForCamera(pCamera.get()));
+
+                    if (ThreadingModel != pViewer->getThreadingModel())
+                    {
+                        pViewer->stopThreading();
+                        pViewer->setThreadingModel(ThreadingModel);
+                        pViewer->startThreading();
+                    }
+
+                    for(osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
+                    {
+                        (*itr)->setNodeMask(NodeMasks[0]);
+                        NodeMasks.pop_front();
+                    }
+
 					VTLOG("CVisualImpactCalculatorOSG::Implementation - Cancelled by user\n");
 					return -1.0f;
 				}
@@ -294,6 +323,12 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 			pViewer->setThreadingModel(ThreadingModel);
 			pViewer->startThreading();
 		}
+
+        for(osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
+        {
+            (*itr)->setNodeMask(NodeMasks[0]);
+            NodeMasks.pop_front();
+        }
 
 		return 0.0f;
 	}
@@ -318,6 +353,15 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 	// Normals for solid angle computation
 	osg::Vec3d BLBR, BLTR, BRTR, BRBL, TRBL, TRBR, BLTL, TRTL, TLBL, TLTR;
 
+#if 0
+	osg::ref_ptr<osg::Image> pDebugImage = new osg::Image;
+	pDebugImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
+							DEFAULT_VISUAL_IMPACT_RESOLUTION,
+							1,
+							GL_RGB,
+							GL_UNSIGNED_BYTE);
+#endif
+
 	// Every pixel that has been written to by a contributing geometry should have a different depth value to
 	// the one in the intermediate buffer.
 	// For each one I find compute the solid angle of that patch using Gauss Bonnett and add to the sum
@@ -327,14 +371,17 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 #ifdef _DEBUG
 	unsigned int Hits = 0;
 #endif
-    float debug1 = *pFinalBuffer;
-    float debug2 = *pIntermediateBuffer;
 	if (NULL != pIntermediateBuffer) // Buffer will be NULL if our bin has not been rendered
 	{
 		for (x = 0; x < DEFAULT_VISUAL_IMPACT_RESOLUTION; x++)
 			for (y = 0; y < DEFAULT_VISUAL_IMPACT_RESOLUTION; y++)
-				if (*(pFinalBuffer + (y * DEFAULT_VISUAL_IMPACT_RESOLUTION) + x) != *(pIntermediateBuffer + (y * DEFAULT_VISUAL_IMPACT_RESOLUTION) + x))
+				if (*(GLfloat*)m_pBufferImage->data(x, y) != *(GLfloat*)m_pIntermediateImage->data(x, y))
 			{
+#if 0
+			    *pDebugImage->data(x, y) = 0xff;
+			    *(pDebugImage->data(x, y) + 1) = 0x00;
+			    *(pDebugImage->data(x, y) + 2) = 0x00;
+#endif
 				// Get patch corners in eye coordinates
 				BottomLeft = osg::Vec3d(x, y, 0.0f) * InversePWmatrix;
 				BottomRight = osg::Vec3d(x + 1, y, 0.0f) * InversePWmatrix;
@@ -375,19 +422,31 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 				Hits++;
 #endif
 			}
+#if 0
+			else
+			{
+			    *pDebugImage->data(x, y) = 0xff;
+			    *(pDebugImage->data(x, y) + 1) = 0xff;
+			    *(pDebugImage->data(x, y) + 2) = 0xff;
+			}
+#endif
 	}
+
+#if 0
+	osgDB::writeImageFile(*pDebugImage, "DebugDepthBufferImage.jpeg");
+#endif
+
 #ifdef _DEBUG
 	float HitPercentage;
 	HitPercentage = (float)Hits * 100.0f / (float)(DEFAULT_VISUAL_IMPACT_RESOLUTION * DEFAULT_VISUAL_IMPACT_RESOLUTION);
 #endif
+
 	return 100 * fSolidAngle / DEFAULT_HUMAN_FOV_SOLID_ANGLE;
 }
 
 void MyRenderBinDrawCallback::drawImplementation(osgUtil::RenderBin *pBin, osg::RenderInfo& renderInfo, osgUtil::RenderLeaf* &Previous)
 {
-    float debug3;
-    float debug4;
-	// Read the current depth buffer or buffer object
+/*	// Read the current depth buffer or buffer object
 	if (m_bUsingLiveFrameBuffer)
         m_pIntermediateImage->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
     else
@@ -395,12 +454,14 @@ void MyRenderBinDrawCallback::drawImplementation(osgUtil::RenderBin *pBin, osg::
         if ((NULL != m_pIntermediateImage->data()) && (NULL !=  m_pBufferImage->data()))
         {
             memcpy(m_pIntermediateImage->data(), m_pBufferImage->data(), m_pIntermediateImage->getTotalSizeInBytes());
-            debug3 = *(float*)m_pBufferImage->data();
-            debug4 = *(float*)m_pIntermediateImage->data();
         }
     }
 	// Draw all the visual impact contributors
 	pBin->drawImplementation(renderInfo, Previous);
+*/
+    m_pIntermediateImage->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
+	pBin->drawImplementation(renderInfo, Previous);
+    m_pBufferImage->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
 }
 
 
