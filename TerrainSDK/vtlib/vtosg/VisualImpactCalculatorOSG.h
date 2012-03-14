@@ -26,6 +26,8 @@ public:
 	void RemoveVisualImpactContributor(osg::Node *pOsgNode);
 	void SetVisualImpactTarget(const FPoint3 Target);
 	const FPoint3& GetVisualImpactTarget() const;
+	osg::Image* GetIntermediateImage() { return m_pIntermediateImage.get(); }
+	osg::Image* GetFinalImage() { return m_pFinalImage.get(); }
 	bool UsingLiveFrameBuffer();
 	float Calculate();
 	bool Plot(GDALRasterBand *pRasterBand, float fScaleFactor, double dXSampleInterval, double dYSampleInterval, bool progress_callback(int));
@@ -40,5 +42,7 @@ protected:
 	mutable bool m_bUsingLiveFrameBuffer;
 	mutable bool m_bInitialised;
 	osg::ref_ptr<osg::Image> m_pIntermediateImage;
-	osg::ref_ptr<osg::Image> m_pBufferImage;
+	osg::ref_ptr<osg::Image> m_pFinalImage;
+	typedef std::set<osg::Node*> VisualImpactContributors;
+	VisualImpactContributors m_VisualImpactContributors;
 };

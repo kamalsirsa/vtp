@@ -53,42 +53,27 @@ static const unsigned int DEFAULT_GRAPHICS_CONTEXT = 0;
 class MyRenderBinDrawCallback : public osgUtil::RenderBin::DrawCallback
 {
 public:
-	MyRenderBinDrawCallback(osg::Image *pIntermediateImage, bool bUsingLiveFrameBuffer, osg::Image *pBufferImage) : m_pIntermediateImage(pIntermediateImage),
-                                                                                                        m_bUsingLiveFrameBuffer(bUsingLiveFrameBuffer),
-                                                                                                        m_pBufferImage(pBufferImage) {}
+	MyRenderBinDrawCallback(CVisualImpactCalculatorOSG* pVisualImpactCalculator) :m_pVisualImpactCalculator(pVisualImpactCalculator) {}
 	virtual void drawImplementation(osgUtil::RenderBin *pBin, osg::RenderInfo& renderInfo, osgUtil::RenderLeaf* &Previous);
 protected:
-	osg::ref_ptr<osg::Image> m_pIntermediateImage;
-	bool m_bUsingLiveFrameBuffer;
-	osg::ref_ptr<osg::Image> m_pBufferImage;
+    CVisualImpactCalculatorOSG* m_pVisualImpactCalculator;
 };
 
-class MyCullCallback : public osg::NodeCallback
+class VisualImpactBin : public osgUtil::RenderBin
 {
 public:
-	MyCullCallback(osg::Image *pIntermediateImage, bool bUsingLiveFrameBuffer, osg::Image *pBufferImage) : m_pIntermediateImage(pIntermediateImage),
-                                                                                                m_bUsingLiveFrameBuffer(bUsingLiveFrameBuffer),
-                                                                                                m_pBufferImage(pBufferImage) {}
-	virtual void operator()(osg::Node* pNode, osg::NodeVisitor* pNodeVisitor)
-	{
-		pNode->traverse(*pNodeVisitor);
-		osgUtil::CullVisitor *pCullVisitor = dynamic_cast<osgUtil::CullVisitor*>(pNodeVisitor);
-		if ((NULL != pCullVisitor) &&
-			(NULL != pCullVisitor->getCurrentRenderBin()) &&
-			(NULL == pCullVisitor->getCurrentRenderBin()->getDrawCallback()))
-		{
-			pCullVisitor->getCurrentRenderBin()->setDrawCallback(new MyRenderBinDrawCallback(m_pIntermediateImage.get(), m_bUsingLiveFrameBuffer, m_pBufferImage.get()));
-		}
-	}
-protected:
-	osg::ref_ptr<osg::Image> m_pIntermediateImage;
-	bool m_bUsingLiveFrameBuffer;
-	osg::ref_ptr<osg::Image> m_pBufferImage;
+    VisualImpactBin(CVisualImpactCalculatorOSG* pVisualImpactCalculator) : m_pVisualImpactCalculator(pVisualImpactCalculator)
+    {
+        setDrawCallback(new MyRenderBinDrawCallback(m_pVisualImpactCalculator));
+    }
+    virtual osg::Object* clone(const osg::CopyOp& copyop) const{ return new VisualImpactBin(m_pVisualImpactCalculator); }
+private:
+    CVisualImpactCalculatorOSG* m_pVisualImpactCalculator;
 };
 
 void CVisualImpactCalculatorOSG::Initialise()
 {
-    osgUtil::RenderBin::addRenderBinPrototype(VISUAL_IMPACT_BIN_NAME, new osgUtil::RenderBin(osgUtil::RenderBin::getDefaultRenderBinSortMode()));
+    osgUtil::RenderBin::addRenderBinPrototype(VISUAL_IMPACT_BIN_NAME, new VisualImpactBin(this));
 	vtCamera *pCamera = vtGetScene()->GetCamera();
 
 	m_ProjectionMatrix.makePerspective(DEFAULT_HUMAN_FOV_DEGREES, DEFAULT_HUMAN_FOV_ASPECT_RATIO, pCamera->GetHither(), pCamera->GetYon());
@@ -101,7 +86,7 @@ void CVisualImpactCalculatorOSG::Initialise()
 		m_bUsingLiveFrameBuffer = true;
 
 	m_pIntermediateImage = new osg::Image;
-	m_pBufferImage= new osg::Image;
+	m_pFinalImage= new osg::Image;
 
 	m_pIntermediateImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							DEFAULT_VISUAL_IMPACT_RESOLUTION,
@@ -111,7 +96,7 @@ void CVisualImpactCalculatorOSG::Initialise()
 	// Even though the camera node knows that you have attached the image to the depth buffer
 	// it does not set this up correctly for you. There is no way to set the dataType, so
 	// preallocation of the data is easiest
-	m_pBufferImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
+	m_pFinalImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							1,
 							GL_DEPTH_COMPONENT,
@@ -128,8 +113,9 @@ void CVisualImpactCalculatorOSG::AddVisualImpactContributor(osg::Node *pOsgNode)
 		Initialise();
 	if (NULL != pOsgNode)
 	{
-		pOsgNode->getOrCreateStateSet()->setRenderBinDetails(VISUAL_IMPACT_BIN_NUMBER, VISUAL_IMPACT_BIN_NAME);
-		pOsgNode->setCullCallback(new MyCullCallback(m_pIntermediateImage.get(), m_bUsingLiveFrameBuffer, m_pBufferImage.get()));
+	    m_VisualImpactContributors.insert(m_VisualImpactContributors.begin(), pOsgNode);
+//		pOsgNode->getOrCreateStateSet()->setRenderBinDetails(VISUAL_IMPACT_BIN_NUMBER, VISUAL_IMPACT_BIN_NAME);
+//		pOsgNode->setCullCallback(new MyCullCallback(m_pIntermediateImage.get(), m_bUsingLiveFrameBuffer, m_pFinalImage.get()));
 	}
 }
 
@@ -139,10 +125,11 @@ void CVisualImpactCalculatorOSG::RemoveVisualImpactContributor(osg::Node *pOsgNo
 		Initialise();
 	if (NULL != pOsgNode)
 	{
-		osg::StateSet *pStateSet = pOsgNode->getOrCreateStateSet();
-		pStateSet->setRenderBinMode(osg::StateSet::INHERIT_RENDERBIN_DETAILS);
-		pStateSet->setRenderingHint(osg::StateSet::DEFAULT_BIN);
-		pOsgNode->setCullCallback(NULL);
+	    m_VisualImpactContributors.erase(pOsgNode);
+//		osg::StateSet *pStateSet = pOsgNode->getOrCreateStateSet();
+//		pStateSet->setRenderBinMode(osg::StateSet::INHERIT_RENDERBIN_DETAILS);
+//		pStateSet->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+//		pOsgNode->setCullCallback(NULL);
 	}
 }
 
@@ -190,15 +177,8 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 
     pViewer->getCameras(ActiveCameras, true);
 
-    // Stop any other cameras rendering the scene
-    for(osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
-    {
-        NodeMasks.push_back((*itr)->getNodeMask());
-        (*itr)->setNodeMask(0);
-    }
-
 	osg::ref_ptr<osg::Camera> pCamera = new osg::Camera;
-	if (!pCamera.valid() || !m_pBufferImage.valid())
+	if (!pCamera.valid() || !m_pFinalImage.valid())
 	{
 		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot create camera node or image\n");
 		return -1.0f;
@@ -221,6 +201,17 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot create intermediate image\n");
 		return -1.0f;
 	}
+
+    // Stop any other cameras rendering the scene
+    for (osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
+    {
+        NodeMasks.push_back((*itr)->getNodeMask());
+        (*itr)->setNodeMask(0);
+    }
+
+    // Set up the render bins
+    for (VisualImpactContributors::iterator itr = m_VisualImpactContributors.begin(); itr != m_VisualImpactContributors.end(); itr++)
+		(*itr)->getOrCreateStateSet()->setRenderBinDetails(VISUAL_IMPACT_BIN_NUMBER, VISUAL_IMPACT_BIN_NAME);
 
 	pViewer->addSlave(pCamera.get());
 
@@ -250,6 +241,14 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
             (*itr)->setNodeMask(NodeMasks[0]);
             NodeMasks.pop_front();
         }
+
+        for (VisualImpactContributors::iterator itr = m_VisualImpactContributors.begin(); itr != m_VisualImpactContributors.end(); itr++)
+        {
+            osg::StateSet *pStateSet = (*itr)->getOrCreateStateSet();
+            pStateSet->setRenderBinMode(osg::StateSet::INHERIT_RENDERBIN_DETAILS);
+            pStateSet->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+        }
+
 		return InnerImplementation(pCamera.get());
 	}
 	else
@@ -283,9 +282,7 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 				pHeightField->ConvertEarthToSurfacePoint(CurrentCamera, CameraTranslate);
 				pCamera->setViewMatrixAsLookAt(v2s(CameraTranslate), v2s(m_Target), osg::Vec3(0.0, 1.0, 0.0));
 
-                float debug3 = *(float*)m_pBufferImage->data();
 				pViewer->frame();
-                debug3 = *(float*)m_pBufferImage->data();
 
 				float fFactor = InnerImplementation(pCamera.get());
 
@@ -309,6 +306,13 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
                         NodeMasks.pop_front();
                     }
 
+                    for (VisualImpactContributors::iterator itr = m_VisualImpactContributors.begin(); itr != m_VisualImpactContributors.end(); itr++)
+                    {
+                        osg::StateSet *pStateSet = (*itr)->getOrCreateStateSet();
+                        pStateSet->setRenderBinMode(osg::StateSet::INHERIT_RENDERBIN_DETAILS);
+                        pStateSet->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+                    }
+
 					VTLOG("CVisualImpactCalculatorOSG::Implementation - Cancelled by user\n");
 					return -1.0f;
 				}
@@ -328,6 +332,13 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
         {
             (*itr)->setNodeMask(NodeMasks[0]);
             NodeMasks.pop_front();
+        }
+
+        for (VisualImpactContributors::iterator itr = m_VisualImpactContributors.begin(); itr != m_VisualImpactContributors.end(); itr++)
+        {
+            osg::StateSet *pStateSet = (*itr)->getOrCreateStateSet();
+            pStateSet->setRenderBinMode(osg::StateSet::INHERIT_RENDERBIN_DETAILS);
+            pStateSet->setRenderingHint(osg::StateSet::DEFAULT_BIN);
         }
 
 		return 0.0f;
@@ -353,7 +364,8 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 	// Normals for solid angle computation
 	osg::Vec3d BLBR, BLTR, BRTR, BRBL, TRBL, TRBR, BLTL, TRTL, TLBL, TLTR;
 
-#if 0
+//#define DUMP_VIA_IMAGE
+#ifdef DUMP_VIA_IMAGE
 	osg::ref_ptr<osg::Image> pDebugImage = new osg::Image;
 	pDebugImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							DEFAULT_VISUAL_IMPACT_RESOLUTION,
@@ -365,7 +377,7 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 	// Every pixel that has been written to by a contributing geometry should have a different depth value to
 	// the one in the intermediate buffer.
 	// For each one I find compute the solid angle of that patch using Gauss Bonnett and add to the sum
-	float* pFinalBuffer = (float*)m_pBufferImage->data();
+	float* pFinalBuffer = (float*)m_pFinalImage->data();
 	float* pIntermediateBuffer = (float*)m_pIntermediateImage->data();
 	int x, y;
 #ifdef _DEBUG
@@ -375,9 +387,9 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 	{
 		for (x = 0; x < DEFAULT_VISUAL_IMPACT_RESOLUTION; x++)
 			for (y = 0; y < DEFAULT_VISUAL_IMPACT_RESOLUTION; y++)
-				if (*(GLfloat*)m_pBufferImage->data(x, y) != *(GLfloat*)m_pIntermediateImage->data(x, y))
+				if (*(GLfloat*)m_pFinalImage->data(x, y) != *(GLfloat*)m_pIntermediateImage->data(x, y))
 			{
-#if 0
+#ifdef DUMP_VIA_IMAGE
 			    *pDebugImage->data(x, y) = 0xff;
 			    *(pDebugImage->data(x, y) + 1) = 0x00;
 			    *(pDebugImage->data(x, y) + 2) = 0x00;
@@ -422,7 +434,7 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 				Hits++;
 #endif
 			}
-#if 0
+#ifdef DUMP_VIA_IMAGE
 			else
 			{
 			    *pDebugImage->data(x, y) = 0xff;
@@ -432,7 +444,7 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 #endif
 	}
 
-#if 0
+#ifdef DUMP_VIA_IMAGE
 	osgDB::writeImageFile(*pDebugImage, "DebugDepthBufferImage.jpeg");
 #endif
 
@@ -446,22 +458,9 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 
 void MyRenderBinDrawCallback::drawImplementation(osgUtil::RenderBin *pBin, osg::RenderInfo& renderInfo, osgUtil::RenderLeaf* &Previous)
 {
-/*	// Read the current depth buffer or buffer object
-	if (m_bUsingLiveFrameBuffer)
-        m_pIntermediateImage->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
-    else
-    {
-        if ((NULL != m_pIntermediateImage->data()) && (NULL !=  m_pBufferImage->data()))
-        {
-            memcpy(m_pIntermediateImage->data(), m_pBufferImage->data(), m_pIntermediateImage->getTotalSizeInBytes());
-        }
-    }
-	// Draw all the visual impact contributors
+    m_pVisualImpactCalculator->GetIntermediateImage()->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
 	pBin->drawImplementation(renderInfo, Previous);
-*/
-    m_pIntermediateImage->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
-	pBin->drawImplementation(renderInfo, Previous);
-    m_pBufferImage->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
+	m_pVisualImpactCalculator->GetFinalImage()->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
 }
 
 
