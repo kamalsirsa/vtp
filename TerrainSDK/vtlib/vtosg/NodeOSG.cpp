@@ -1646,13 +1646,77 @@ void OsgDynMesh::drawImplementation(osg::RenderInfo& renderInfo) const
 	//  disabling the arrays seems to make things work!
 	cthis->m_pDrawState->disableAllVertexArrays();
 
-	vtScene *pScene = vtGetScene();
-	vtCamera *pCam = pScene->GetCamera();
+
+    // For the time being convert the osg camera into a vtCamera.
+    // In the longer term it would probably be better to convert all
+    // the implementations vtDynGeon::DocCull to using an osg camera directlty
+	osg::ref_ptr<osg::Camera> pOsgCamera = renderInfo.getCurrentCamera();
+	osg::ref_ptr<vtCamera> pVtCamera = new vtCamera;
+
+	// Set up the vtCamera transform
+	const osg::Matrix &mat2 = pOsgCamera->getViewMatrix();
+	osg::Matrix imat;
+	imat.invert(mat2);
+	pVtCamera->setMatrix(imat);
+
+	// Perspective only
+	double fovy, aspectRatio;
+	// Both
+	double zNear, zFar;
+	// Ortho only
+	double left, right, bottom, top;
+
+    if (pOsgCamera->getProjectionMatrixAsPerspective(fovy, aspectRatio, zNear, zFar))
+    {
+        pVtCamera->SetOrtho(false);
+ 		double a = tan(osg::DegreesToRadians(fovy/2));
+		double b = a * aspectRatio;
+		double fovx = atan(b) * 2;
+		pVtCamera->SetFOV(fovx);
+    }
+    else if(pOsgCamera->getProjectionMatrixAsOrtho(left, right, bottom, top, zNear, zFar))
+    {
+        pVtCamera->SetOrtho(true);
+        pVtCamera->SetWidth(right - left);
+    }
+    else
+    {
+        VTLOG("OsgDynMesh::drawImplementation - Cannot set up vtCamera\n");
+        return;
+    }
+
+    pVtCamera->SetHither(zNear);
+    pVtCamera->SetYon(zFar);
+
 
 	// setup the culling planes
-	m_pDynGeom->m_pPlanes = pScene->GetCullPlanes();
+	// Get the view frustum clipping planes directly from OSG.
+	// We can't get the planes from the state, because the state
+	//  includes the funny modelview matrix used to scale the
+	//  heightfield.  We must get it from the camera instead.
 
-	m_pDynGeom->DoCull(pCam);
+	const osg::Matrixd &_projection = renderInfo.getCurrentCamera()->getProjectionMatrix();
+	const osg::Matrixd &_modelView = renderInfo.getCurrentCamera()->getViewMatrix();
+
+	osg::Polytope tope;
+	tope.setToUnitFrustum();
+	tope.transformProvidingInverse((_modelView)*(_projection));
+
+	const osg::Polytope::PlaneList &planes = tope.getPlaneList();
+
+	int i = 0;
+	for (osg::Polytope::PlaneList::const_iterator itr=planes.begin();
+		itr!=planes.end(); ++itr)
+	{
+		// make a copy of the clipping plane
+		osg::Plane plane = *itr;
+
+		// extract the OSG plane to our own structure
+		osg::Vec4 pvec = plane.asVec4();
+		m_pDynGeom->m_cullPlanes[i++].Set(-pvec.x(), -pvec.y(), -pvec.z(), -pvec.w());
+	}
+
+	m_pDynGeom->DoCull(pVtCamera.get());
 	m_pDynGeom->DoRender();
 }
 
@@ -1692,7 +1756,7 @@ int vtDynGeom::IsVisible(const FSphere &sphere) const
 	int i;
 	for (i = 0; i < 4; i++)
 	{
-		float dist = m_pPlanes[i].Distance(sphere.center);
+		float dist = m_cullPlanes[i].Distance(sphere.center);
 		if (dist >= sphere.radius)
 			return 0;
 		if ((dist < 0) &&
@@ -1718,7 +1782,7 @@ bool vtDynGeom::IsVisible(const FPoint3& point) const
 	// cull against standard frustum
 	for (unsigned i = 0; i < 4; i++)
 	{
-		float dist = m_pPlanes[i].Distance(point);
+		float dist = m_cullPlanes[i].Distance(point);
 		if (dist > 0.0f)
 			return false;
 	}
@@ -1745,15 +1809,15 @@ int vtDynGeom::IsVisible(const FPoint3& point0,
 	int i;
 	for (i = 0; i < 4; i++)
 	{
-		dist = m_pPlanes[i].Distance(point0);
+		dist = m_cullPlanes[i].Distance(point0);
 		if (dist > fTolerance)
 			outcode0 |= (1 << i);
 
-		dist = m_pPlanes[i].Distance(point1);
+		dist = m_cullPlanes[i].Distance(point1);
 		if (dist > fTolerance)
 			outcode1 |= (1 << i);
 
-		dist = m_pPlanes[i].Distance(point2);
+		dist = m_cullPlanes[i].Distance(point2);
 		if (dist > fTolerance)
 			outcode2 |= (1 << i);
 	}
@@ -1787,7 +1851,7 @@ int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 	// cull against standard frustum
 	for (int i = 0; i < 4; i++)
 	{
-		float dist = m_pPlanes[i].Distance(point);
+		float dist = m_cullPlanes[i].Distance(point);
 		if (dist > radius)
 			return 0;			// entirely outside this plane
 		if (dist < -radius)

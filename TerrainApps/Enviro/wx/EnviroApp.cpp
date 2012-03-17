@@ -415,6 +415,9 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
 	vtGetScene()->Init(MyArgc, MyArgv, g_Options.m_bStereo, g_Options.m_iStereoMode);
 	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
+    // Initialise Visual Impact Calculator - this can only be done after the graphics context is initialised
+    vtGetScene()->GetVisualImpactCalculator().Initialise();
+
 
 	switch(vtGetScene()->getViewer()->getThreadingModel() == osgViewer::Viewer::AutomaticSelection
 		? vtGetScene()->getViewer()->suggestBestThreadingModel() : vtGetScene()->getViewer()->getThreadingModel())

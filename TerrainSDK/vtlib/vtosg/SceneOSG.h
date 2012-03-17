@@ -109,7 +109,6 @@ public:
 	// View methods
 	bool CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow *pWindow = NULL);
 	void WorldToScreen(const FPoint3 &point, IPoint2 &result);
-	FPlane *GetCullPlanes() { return m_cullPlanes; }
 
 	/// Set the top engine in the Engine graph
 	void SetRootEngine(vtEngine *ptr) { m_pRootEngine = ptr; }
@@ -197,9 +196,6 @@ public:
 	// OSG access
 	osgViewer::Viewer *getViewer() { return m_pOsgViewer.get(); }
 
-	// for culling
-	void CalcCullPlanes();
-
     // Visual Impact Calculation
 	virtual CVisualImpactCalculatorOSG& GetVisualImpactCalculator() { return m_VisualImpactCalculator; }
 
@@ -219,9 +215,6 @@ protected:
 
 	osg::ref_ptr<osgViewer::Viewer>	m_pOsgViewer;
 	osg::ref_ptr<osg::GraphicsContext>	m_pGraphicsContext;
-
-	// for culling
-	FPlane		m_cullPlanes[6];
 
 	osg::ref_ptr<osg::Group>	m_StateRoot;
 

@@ -31,11 +31,11 @@ public:
 	bool UsingLiveFrameBuffer();
 	float Calculate();
 	bool Plot(GDALRasterBand *pRasterBand, float fScaleFactor, double dXSampleInterval, double dYSampleInterval, bool progress_callback(int));
+	bool Initialise();
 
 protected:
-	void Initialise();
 	float Implementation(bool bOneOffMode, GDALRasterBand *pRasterBand = NULL, float fScaleFactor = 1.0f, double dXSampleInterval = 1.0f, double dYSampleInterval = 1.0f, bool progress_callback(int) = NULL);
-	float InnerImplementation(osg::Camera *pCameraNode) const;
+	float InnerImplementation() const;
 	FPoint3 m_Target;
 	osg::Matrix m_ViewMatrix;
 	mutable osg::Matrix m_ProjectionMatrix;
@@ -43,6 +43,7 @@ protected:
 	mutable bool m_bInitialised;
 	osg::ref_ptr<osg::Image> m_pIntermediateImage;
 	osg::ref_ptr<osg::Image> m_pFinalImage;
+	osg::ref_ptr<osg::Camera> m_pVisualImpactCamera;
 	typedef std::set<osg::Node*> VisualImpactContributors;
 	VisualImpactContributors m_VisualImpactContributors;
 };

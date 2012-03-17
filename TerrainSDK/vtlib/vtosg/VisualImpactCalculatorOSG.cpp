@@ -49,6 +49,12 @@ static const float DEFAULT_HUMAN_FOV_SOLID_ANGLE = PIf; // 2pi(1 - cos(120/2)) =
 // horizontal but vision is very limited at the extremes.)
 static const unsigned int DEFAULT_GRAPHICS_CONTEXT = 0;
 
+typedef struct CameraMask
+{
+    CameraMask(osg::Camera *pCamera, osg::Node::NodeMask NodeMask) : m_pCamera(pCamera), m_NodeMask(NodeMask) {}
+    osg::Camera* m_pCamera;
+    osg::Node::NodeMask m_NodeMask;
+} CameraMask;
 
 class MyRenderBinDrawCallback : public osgUtil::RenderBin::DrawCallback
 {
@@ -71,12 +77,13 @@ private:
     CVisualImpactCalculatorOSG* m_pVisualImpactCalculator;
 };
 
-void CVisualImpactCalculatorOSG::Initialise()
+bool CVisualImpactCalculatorOSG::Initialise()
 {
-    osgUtil::RenderBin::addRenderBinPrototype(VISUAL_IMPACT_BIN_NAME, new VisualImpactBin(this));
-	vtCamera *pCamera = vtGetScene()->GetCamera();
+	osgViewer::Viewer *pViewer = vtGetScene()->getViewer();
 
-	m_ProjectionMatrix.makePerspective(DEFAULT_HUMAN_FOV_DEGREES, DEFAULT_HUMAN_FOV_ASPECT_RATIO, pCamera->GetHither(), pCamera->GetYon());
+    osgUtil::RenderBin::addRenderBinPrototype(VISUAL_IMPACT_BIN_NAME, new VisualImpactBin(this));
+
+	m_ProjectionMatrix.makePerspective(DEFAULT_HUMAN_FOV_DEGREES, DEFAULT_HUMAN_FOV_ASPECT_RATIO, 10.0, 40000.0);
 
 	osg::FBOExtensions* fbo_ext = osg::FBOExtensions::instance(DEFAULT_GRAPHICS_CONTEXT, true);
 //	if ((fbo_ext && fbo_ext->isSupported()) || osg::isGLExtensionSupported(DEFAULT_GRAPHICS_CONTEXT, "ARB_render_texture"))
@@ -86,51 +93,77 @@ void CVisualImpactCalculatorOSG::Initialise()
 		m_bUsingLiveFrameBuffer = true;
 
 	m_pIntermediateImage = new osg::Image;
-	m_pFinalImage= new osg::Image;
-
+	if (!m_pIntermediateImage.valid())
+	{
+		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot create intermediate image\n");
+		return false;
+	}
 	m_pIntermediateImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							1,
 							GL_DEPTH_COMPONENT,
 							GL_FLOAT);
+	if (!m_pIntermediateImage->valid())
+	{
+		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot allocate intermediate image\n");
+		return false;
+	}
+
 	// Even though the camera node knows that you have attached the image to the depth buffer
 	// it does not set this up correctly for you. There is no way to set the dataType, so
 	// preallocation of the data is easiest
+	m_pFinalImage= new osg::Image;
+	if (!m_pFinalImage.valid())
+	{
+		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot create final image\n");
+		return false;
+	}
 	m_pFinalImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							1,
 							GL_DEPTH_COMPONENT,
 							GL_FLOAT);
+	if (!m_pFinalImage->valid())
+	{
+		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot allocate final image\n");
+		return false;
+	}
+
+	m_pVisualImpactCamera = new osg::Camera;
+	if (!m_pVisualImpactCamera.valid())
+	{
+		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot create visual impact camera\n");
+		return false;
+	}
+	m_pVisualImpactCamera->setName("Visual impact calculator camera");
+	m_pVisualImpactCamera->setViewport(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION);
+	m_pVisualImpactCamera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER_OBJECT, osg::Camera::FRAME_BUFFER);
+	m_pVisualImpactCamera->setRenderOrder(osg::Camera::PRE_RENDER);
+	m_pVisualImpactCamera->attach(osg::Camera::DEPTH_BUFFER, GL_FLOAT); // Force a renderBuffer
+	m_pVisualImpactCamera->attach(osg::Camera::COLOR_BUFFER, GL_UNSIGNED_BYTE); // Force a renderBuffer
+	m_pVisualImpactCamera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
+	m_pVisualImpactCamera->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
+	m_pVisualImpactCamera->setProjectionMatrix(m_ProjectionMatrix);
+	m_pVisualImpactCamera->setGraphicsContext(pViewer->getCamera()->getGraphicsContext());
+	m_pVisualImpactCamera->setNodeMask(0); // Initially disabled
+	pViewer->addSlave(m_pVisualImpactCamera.get());
 
 	m_bInitialised = true;
+	return true;
 }
 
 
 // The following pair of functions assume that the existing RenderBinMode is INHERIT_RENDERBIN_DETAILS (default)
 void CVisualImpactCalculatorOSG::AddVisualImpactContributor(osg::Node *pOsgNode)
 {
-	if (!m_bInitialised)
-		Initialise();
 	if (NULL != pOsgNode)
-	{
 	    m_VisualImpactContributors.insert(m_VisualImpactContributors.begin(), pOsgNode);
-//		pOsgNode->getOrCreateStateSet()->setRenderBinDetails(VISUAL_IMPACT_BIN_NUMBER, VISUAL_IMPACT_BIN_NAME);
-//		pOsgNode->setCullCallback(new MyCullCallback(m_pIntermediateImage.get(), m_bUsingLiveFrameBuffer, m_pFinalImage.get()));
-	}
 }
 
 void CVisualImpactCalculatorOSG::RemoveVisualImpactContributor(osg::Node *pOsgNode)
 {
-	if (!m_bInitialised)
-		Initialise();
 	if (NULL != pOsgNode)
-	{
 	    m_VisualImpactContributors.erase(pOsgNode);
-//		osg::StateSet *pStateSet = pOsgNode->getOrCreateStateSet();
-//		pStateSet->setRenderBinMode(osg::StateSet::INHERIT_RENDERBIN_DETAILS);
-//		pStateSet->setRenderingHint(osg::StateSet::DEFAULT_BIN);
-//		pOsgNode->setCullCallback(NULL);
-	}
 }
 
 void CVisualImpactCalculatorOSG::SetVisualImpactTarget(const FPoint3 Target)
@@ -146,8 +179,6 @@ const FPoint3& CVisualImpactCalculatorOSG::GetVisualImpactTarget() const
 
 bool CVisualImpactCalculatorOSG::UsingLiveFrameBuffer()
 {
-	if (!m_bInitialised)
-		Initialise();
 	return m_bUsingLiveFrameBuffer;
 }
 
@@ -168,79 +199,49 @@ bool CVisualImpactCalculatorOSG::Plot(GDALRasterBand *pRasterBand, float fScaleF
 float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBand *pRasterBand, float fScaleFactor, double dXSampleInterval, double dYSampleInterval, bool progress_callback(int))
 {
 	if (!m_bInitialised)
-		Initialise();
+		return 0.0;
 
 	osgViewer::Viewer *pViewer = vtGetScene()->getViewer();
 
 	osgViewer::Viewer::Cameras ActiveCameras;
-	std::deque<osg::Node::NodeMask> NodeMasks;
+	std::vector<CameraMask> NodeMasks;
 
     pViewer->getCameras(ActiveCameras, true);
 
-	osg::ref_ptr<osg::Camera> pCamera = new osg::Camera;
-	if (!pCamera.valid() || !m_pFinalImage.valid())
-	{
-		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot create camera node or image\n");
-		return -1.0f;
-	}
-
-	pCamera->setName("Visual impact calculator camera");
-	pCamera->setClearColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	pCamera->setViewport(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION);
-	pCamera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER_OBJECT, osg::Camera::FRAME_BUFFER);
-	pCamera->setRenderOrder(osg::Camera::PRE_RENDER);
-	pCamera->attach(osg::Camera::DEPTH_BUFFER, GL_FLOAT); // Force a renderBuffer
-	pCamera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
-	pCamera->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
-	pCamera->setProjectionMatrix(m_ProjectionMatrix);
-	pCamera->setViewMatrix(m_ViewMatrix);
-	pCamera->setGraphicsContext(pViewer->getCamera()->getGraphicsContext());
-
-	if (!m_pIntermediateImage.valid())
-	{
-		VTLOG("CVisualImpactCalculatorOSG::Implementation - Cannot create intermediate image\n");
-		return -1.0f;
-	}
 
     // Stop any other cameras rendering the scene
     for (osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
     {
-        NodeMasks.push_back((*itr)->getNodeMask());
-        (*itr)->setNodeMask(0);
+        if (*itr != m_pVisualImpactCamera.get())
+        {
+            NodeMasks.push_back(CameraMask(*itr, (*itr)->getNodeMask()));
+            (*itr)->setNodeMask(0);
+        }
     }
 
-    // Set up the render bins
+   // Set up the render bins
     for (VisualImpactContributors::iterator itr = m_VisualImpactContributors.begin(); itr != m_VisualImpactContributors.end(); itr++)
 		(*itr)->getOrCreateStateSet()->setRenderBinDetails(VISUAL_IMPACT_BIN_NUMBER, VISUAL_IMPACT_BIN_NAME);
 
-	pViewer->addSlave(pCamera.get());
-
-	osgViewer::Viewer::ThreadingModel ThreadingModel = pViewer->getThreadingModel();
-	if (ThreadingModel > osgViewer::Viewer::CullDrawThreadPerContext)
-	{
-		pViewer->stopThreading();
-		pViewer->setThreadingModel(osgViewer::Viewer::CullDrawThreadPerContext);
-		pViewer->startThreading();
-	}
+    // Pick up the current main scene camera state
+    osg::StateSet* pStateSet = new osg::StateSet(*ActiveCameras[0]->getOrCreateStateSet(), osg::CopyOp::DEEP_COPY_ALL);
+    pStateSet->setAttribute(m_pVisualImpactCamera->getViewport());
+    m_pVisualImpactCamera->setStateSet(pStateSet);
+    m_pVisualImpactCamera->setClearColor(ActiveCameras[0]->getClearColor());
+    // Enable the visual impact camera
+    m_pVisualImpactCamera->setNodeMask(0xffffffff);
 
 	if (bOneOffMode)
 	{
+        m_pVisualImpactCamera->setViewMatrix(m_ViewMatrix);
+
         pViewer->frame();
 
-		pViewer->removeSlave(pViewer->findSlaveIndexForCamera(pCamera.get()));
+        // Disable the visual impact camera
+        m_pVisualImpactCamera->setNodeMask(0);
 
-		if (ThreadingModel != pViewer->getThreadingModel())
-		{
-			pViewer->stopThreading();
-			pViewer->setThreadingModel(ThreadingModel);
-			pViewer->startThreading();
-		}
-
-        for(osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
-        {
-            (*itr)->setNodeMask(NodeMasks[0]);
-            NodeMasks.pop_front();
-        }
+        for(std::vector<CameraMask>::iterator itr = NodeMasks.begin(); itr != NodeMasks.end(); ++itr)
+            itr->m_pCamera->setNodeMask(itr->m_NodeMask);
 
         for (VisualImpactContributors::iterator itr = m_VisualImpactContributors.begin(); itr != m_VisualImpactContributors.end(); itr++)
         {
@@ -249,7 +250,7 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
             pStateSet->setRenderingHint(osg::StateSet::DEFAULT_BIN);
         }
 
-		return InnerImplementation(pCamera.get());
+		return InnerImplementation();
 	}
 	else
 	{
@@ -280,31 +281,22 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 				FPoint3 CameraTranslate;
 
 				pHeightField->ConvertEarthToSurfacePoint(CurrentCamera, CameraTranslate);
-				pCamera->setViewMatrixAsLookAt(v2s(CameraTranslate), v2s(m_Target), osg::Vec3(0.0, 1.0, 0.0));
+				m_pVisualImpactCamera->setViewMatrixAsLookAt(v2s(CameraTranslate), v2s(m_Target), osg::Vec3(0.0, 1.0, 0.0));
 
 				pViewer->frame();
 
-				float fFactor = InnerImplementation(pCamera.get());
+				float fFactor = InnerImplementation();
 
 				pRasterBand->RasterIO(GF_Write, iCurrentX, iYsize - iCurrentY - 1, 1, 1, &fFactor, 1, 1, GDT_Float32, 0, 0);
 
 				iCurrentX++;
 				if ((*progress_callback)(100 * (iCurrentY * iXsize + iCurrentX) / iTotalProgress))
 				{
-					pViewer->removeSlave(pViewer->findSlaveIndexForCamera(pCamera.get()));
+                    // Disable the visual impact camera
+                    m_pVisualImpactCamera->setNodeMask(0);
 
-                    if (ThreadingModel != pViewer->getThreadingModel())
-                    {
-                        pViewer->stopThreading();
-                        pViewer->setThreadingModel(ThreadingModel);
-                        pViewer->startThreading();
-                    }
-
-                    for(osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
-                    {
-                        (*itr)->setNodeMask(NodeMasks[0]);
-                        NodeMasks.pop_front();
-                    }
+                    for(std::vector<CameraMask>::iterator itr = NodeMasks.begin(); itr != NodeMasks.end(); ++itr)
+                        itr->m_pCamera->setNodeMask(itr->m_NodeMask);
 
                     for (VisualImpactContributors::iterator itr = m_VisualImpactContributors.begin(); itr != m_VisualImpactContributors.end(); itr++)
                     {
@@ -319,20 +311,11 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 			}
 			iCurrentY++;
 		}
-		pViewer->removeSlave(pViewer->findSlaveIndexForCamera(pCamera.get()));
+        // Disable the visual impact camera
+        m_pVisualImpactCamera->setNodeMask(0);
 
-		if (ThreadingModel != pViewer->getThreadingModel())
-		{
-			pViewer->stopThreading();
-			pViewer->setThreadingModel(ThreadingModel);
-			pViewer->startThreading();
-		}
-
-        for(osgViewer::Viewer::Cameras::iterator itr = ActiveCameras.begin(); itr != ActiveCameras.end(); ++itr)
-        {
-            (*itr)->setNodeMask(NodeMasks[0]);
-            NodeMasks.pop_front();
-        }
+        for(std::vector<CameraMask>::iterator itr = NodeMasks.begin(); itr != NodeMasks.end(); ++itr)
+            itr->m_pCamera->setNodeMask(itr->m_NodeMask);
 
         for (VisualImpactContributors::iterator itr = m_VisualImpactContributors.begin(); itr != m_VisualImpactContributors.end(); itr++)
         {
@@ -345,12 +328,12 @@ float CVisualImpactCalculatorOSG::Implementation(bool bOneOffMode, GDALRasterBan
 	}
 }
 
-float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) const
+float CVisualImpactCalculatorOSG::InnerImplementation() const
 {
 	float fSolidAngle = 0.0f;
 	// Compute the PW matrix
-	osg::Matrixd PWmatrix(osg::Matrixd(pCameraNode->getProjectionMatrix()));
-	PWmatrix.postMult(osg::Matrixd(pCameraNode->getViewport()->computeWindowMatrix()));
+	osg::Matrixd PWmatrix(osg::Matrixd(m_pVisualImpactCamera->getProjectionMatrix()));
+	PWmatrix.postMult(osg::Matrixd(m_pVisualImpactCamera->getViewport()->computeWindowMatrix()));
 
 	// Compute the inverse PW matrix
 	osg::Matrixd InversePWmatrix;
@@ -364,7 +347,7 @@ float CVisualImpactCalculatorOSG::InnerImplementation(osg::Camera *pCameraNode) 
 	// Normals for solid angle computation
 	osg::Vec3d BLBR, BLTR, BRTR, BRBL, TRBL, TRBR, BLTL, TRTL, TLBL, TLTR;
 
-//#define DUMP_VIA_IMAGE
+#define DUMP_VIA_IMAGE
 #ifdef DUMP_VIA_IMAGE
 	osg::ref_ptr<osg::Image> pDebugImage = new osg::Image;
 	pDebugImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,

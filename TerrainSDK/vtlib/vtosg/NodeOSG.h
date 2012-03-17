@@ -529,8 +529,8 @@ public:
 	virtual void DoCalcBoundBox(FBox3 &box) = 0;
 	virtual void DoCull(const vtCamera *pCam) = 0;
 
-	// A handy shortcut to the current clipping planes
-	FPlane		*m_pPlanes;
+	// The current clipping planes
+	FPlane		m_cullPlanes[6];
 
 protected:
 	OsgDynMesh	*m_pDynMesh;

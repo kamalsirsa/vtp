@@ -441,8 +441,6 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 	imat.invert(mat2);
 	m_pOsgViewer->getCamera()->setViewMatrix(imat);
 
-	CalcCullPlanes();
-
 	m_pOsgViewer->getCamera()->setCullMask(0x3);
 	// Also set the mask for the case of split-screen stereo
 	m_pOsgViewer->getCamera()->setCullMaskLeft(0x3);
@@ -586,102 +584,6 @@ void vtScene::WorldToScreen(const FPoint3 &point, IPoint2 &result)
 
 	result.x = (int) window.x();
 	result.y = (int) window.y();
-}
-
-
-// Debugging helper
-void LogCullPlanes(FPlane *planes)
-{
-	for (int i = 0; i < 4; i++)
-		VTLOG(" plane %d: %.3f %.3f %.3f %.3f\n", i, planes[i].x, planes[i].y, planes[i].z, planes[i].w);
-	VTLOG("\n");
-}
-
-void vtScene::CalcCullPlanes()
-{
-#if 0
-	// Non-API-Specific code - will work correctly as long as the Camera
-	// methods are fully functional.
-	FMatrix4 mat;
-	m_pCamera->GetTransform1(mat);
-
-	assert(( m_WindowSize.x > 0 ) && ( m_WindowSize.y > 0 ));
-
-	double fov = m_pCamera->GetFOV();
-
-	double aspect = (float)m_WindowSize.y / m_WindowSize.x;
-	double hither = m_pCamera->GetHither();
-
-	double a = hither * tan(fov / 2);
-	double b = a * aspect;
-
-	FPoint3 vec_l(-a, 0, -hither);
-	FPoint3 vec_r(a, 0, -hither);
-	FPoint3 vec_t(0, b, -hither);
-	FPoint3 vec_b(0, -b, -hither);
-
-	vec_l.Normalize();
-	vec_r.Normalize();
-	vec_t.Normalize();
-	vec_b.Normalize();
-
-	FPoint3 up(0.0f, 1.0f, 0.0f);
-	FPoint3 right(1.0f, 0.0f, 0.0f);
-
-	FPoint3 temp;
-
-	FPoint3 center;
-	FPoint3 norm_l, norm_r, norm_t, norm_b;
-
-	temp = up.Cross(vec_l);
-	mat.TransformVector(temp, norm_l);
-
-	temp = vec_r.Cross(up);
-	mat.TransformVector(temp, norm_r);
-
-	temp = right.Cross(vec_t);
-	mat.TransformVector(temp, norm_t);
-
-	temp = vec_b.Cross(right);
-	mat.TransformVector(temp, norm_b);
-
-	mat.Transform(FPoint3(0.0f, 0.0f, 0.0f), center);
-
-	// set up m_cullPlanes in world coordinates!
-	m_cullPlanes[0].Set(center, norm_l);
-	m_cullPlanes[1].Set(center, norm_r);
-	m_cullPlanes[2].Set(center, norm_t);
-	m_cullPlanes[3].Set(center, norm_b);
-#else
-	// Get the view frustum clipping planes directly from OSG.
-	// We can't get the planes from the state, because the state
-	//  includes the funny modelview matrix used to scale the
-	//  heightfield.  We must get it from the 'scene' instead.
-
-	const osg::Matrixd &_projection = m_pOsgViewer->getCamera()->getProjectionMatrix();
-	const osg::Matrixd &_modelView = m_pOsgViewer->getCamera()->getViewMatrix();
-
-	osg::Polytope tope;
-	tope.setToUnitFrustum();
-	tope.transformProvidingInverse((_modelView)*(_projection));
-
-	const osg::Polytope::PlaneList &planes = tope.getPlaneList();
-
-	int i = 0;
-	for (osg::Polytope::PlaneList::const_iterator itr=planes.begin();
-		itr!=planes.end(); ++itr)
-	{
-		// make a copy of the clipping plane
-		osg::Plane plane = *itr;
-
-		// extract the OSG plane to our own structure
-		osg::Vec4 pvec = plane.asVec4();
-		m_cullPlanes[i++].Set(-pvec.x(), -pvec.y(), -pvec.z(), -pvec.w());
-	}
-#endif
-
-	// For debugging
-//	LogCullPlanes(m_cullPlanes);
 }
 
 void vtScene::SetGlobalWireframe(bool bWire)
