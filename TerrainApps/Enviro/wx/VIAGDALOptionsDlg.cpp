@@ -43,7 +43,7 @@ void CVIAGDALOptionsDlg::Setup(int iDriverIndex)
 #ifdef __WXMSW__
 	HelpTopic.RemoveLastDir(); // Strip off the app name appended by wxWindows
 #endif
-	HelpTopic.AppendDir(wxT("VirtualOutlooks"));
+	HelpTopic.AppendDir(wxT("VTP"));
 	HelpTopic.AppendDir(wxT("CommonData"));
     HelpTopic.AppendDir(wxT("frmts"));
     HelpTopic.SetFullName(wxString(pDriver->GetMetadataItem(GDAL_DMD_HELPTOPIC), wxConvUTF8));
