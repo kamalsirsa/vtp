@@ -139,8 +139,8 @@ bool CVisualImpactCalculatorOSG::Initialise()
 	m_pVisualImpactCamera->setViewport(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION);
 	m_pVisualImpactCamera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER_OBJECT, osg::Camera::FRAME_BUFFER);
 	m_pVisualImpactCamera->setRenderOrder(osg::Camera::PRE_RENDER);
-	m_pVisualImpactCamera->attach(osg::Camera::DEPTH_BUFFER, GL_FLOAT); // Force a renderBuffer
-	m_pVisualImpactCamera->attach(osg::Camera::COLOR_BUFFER, GL_UNSIGNED_BYTE); // Force a renderBuffer
+	m_pVisualImpactCamera->attach(osg::Camera::DEPTH_BUFFER, GL_DEPTH_COMPONENT); // Force a renderBuffer
+//	m_pVisualImpactCamera->attach(osg::Camera::COLOR_BUFFER, GL_UNSIGNED_BYTE); // Force a renderBuffer
 	m_pVisualImpactCamera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
 	m_pVisualImpactCamera->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
 	m_pVisualImpactCamera->setProjectionMatrix(m_ProjectionMatrix);
