@@ -3427,28 +3427,42 @@ VIADlgBase::VIADlgBase( wxWindow* parent, wxWindowID id, const wxString& title, 
 	bSizer197 = new wxBoxSizer( wxVERTICAL );
 	
 	wxBoxSizer* bSizer198;
-	bSizer198 = new wxBoxSizer( wxHORIZONTAL );
+	bSizer198 = new wxBoxSizer( wxVERTICAL );
+	
+	m_staticText142 = new wxStaticText( this, wxID_ANY, _("Percentage of human binocular field of view"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText142->Wrap( -1 );
+	bSizer198->Add( m_staticText142, 0, wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_CENTER_HORIZONTAL, 5 );
 	
 	m_VIFCtl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_CENTRE|wxTE_READONLY );
 	m_VIFCtl->SetValidator( wxTextValidator( wxFILTER_NUMERIC, &m_VIF ) );
 	
-	bSizer198->Add( m_VIFCtl, 1, wxALL, 5 );
+	bSizer198->Add( m_VIFCtl, 1, wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_CENTER_HORIZONTAL, 5 );
 	
 	bSizer197->Add( bSizer198, 1, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer199;
 	bSizer199 = new wxBoxSizer( wxHORIZONTAL );
 	
+	
+	bSizer199->Add( 0, 0, 1, wxEXPAND, 5 );
+	
 	m_button64 = new wxButton( this, ID_VIF_RECALCULATE, _("Recalculate"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer199->Add( m_button64, 0, wxALL, 5 );
+	bSizer199->Add( m_button64, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	
+	bSizer199->Add( 0, 0, 1, wxEXPAND, 5 );
 	
 	m_button65 = new wxButton( this, wxID_OK, _("Done"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer199->Add( m_button65, 0, wxALL, 5 );
+	bSizer199->Add( m_button65, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	
+	bSizer199->Add( 0, 0, 1, wxEXPAND, 5 );
 	
 	bSizer197->Add( bSizer199, 1, wxEXPAND, 5 );
 	
 	this->SetSizer( bSizer197 );
 	this->Layout();
+	bSizer197->Fit( this );
 	
 	this->Centre( wxBOTH );
 	

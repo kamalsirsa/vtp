@@ -1165,9 +1165,13 @@ class VIADlgBase : public wxDialog
 	private:
 	
 	protected:
+		wxStaticText* m_staticText142;
 		wxTextCtrl* m_VIFCtl;
+		
 		wxButton* m_button64;
+		
 		wxButton* m_button65;
+		
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnInitDialog( wxInitDialogEvent& event ) { event.Skip(); }
@@ -1177,7 +1181,7 @@ class VIADlgBase : public wxDialog
 	public:
 		wxString m_VIF; 
 		
-		VIADlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Visual Impact Calculation"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 215,112 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		VIADlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Visual Impact Calculation"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~VIADlgBase();
 	
 };
