@@ -19,6 +19,7 @@
 #include "VIAGDALOptionsDlg.h"
 #include <gdal_priv.h>
 #include "vtlib/vtlib.h"
+#include "vtdata/vtLog.h"
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
 
@@ -53,6 +54,8 @@ void CVIAGDALOptionsDlg::Setup(int iDriverIndex)
 
 	if (HelpTopic.FileExists())
 		m_pHtmlWindow->LoadPage(HelpTopic.GetFullPath());
+    else
+        VTLOG(_("Cannot open gdal help file %s\n"), (const char *)HelpTopic.GetFullPath().mb_str(wxConvUTF8));
 
     pToken = strtok((char *)DataTypes.GetData(), " ");
     while( pToken != NULL )
