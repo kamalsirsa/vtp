@@ -17,7 +17,7 @@ endif(MINI_FIND_DEBUG)
 
 find_path(MINI_INCLUDE_DIR mini/mini.h PATHS .. ../deps DOC "Directory containing mini/mini.h")
 
-find_library(MINI_LIBRARY NAMES libMini PATHS .. ../mini ../deps/mini DOC "Path to Mini library")
+find_library(MINI_LIBRARY NAMES Mini libMini PATHS .. ../mini ../deps/mini DOC "Path to Mini library")
 if(MINI_FIND_DEBUG)
 	find_library(MINI_LIBRARY_DEBUG NAMES libMinid PATHS .. ../mini ../deps/mini DOC "Path to Mini debug library")
 endif(MINI_FIND_DEBUG)
