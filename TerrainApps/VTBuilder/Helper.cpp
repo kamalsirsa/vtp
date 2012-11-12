@@ -261,13 +261,12 @@ END_EVENT_TABLE()
 
 ImageGLCanvas::ImageGLCanvas(wxWindow *parent, const wxWindowID id, const wxPoint& pos,
 	const wxSize& size, long style, const wxString &name,
-	int* gl_attrib) : wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+	int* gl_attrib) : wxGLCanvas(parent, id, gl_attrib, pos, size, style, name)
 {
 	m_iTex = 9999;
 
 	// These two lines are needed for wxGTK (and possibly other platforms, but not wxMSW)
 	parent->Show(TRUE);
-	SetCurrent();
 }
 
 void ImageGLCanvas::OnPaint(wxPaintEvent& event)

@@ -492,7 +492,16 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 			srcRect.height -= diff_source;
 		}
 
-#if WIN32
+#if (wxVERSION_NUMBER > 2900)
+		wxMemoryDC temp_dc;
+		temp_dc.SelectObject(*pBitmap->m_pBitmap);
+		pDC->StretchBlit(destRect.x, destRect.y,
+			destRect.width, destRect.height,
+			&temp_dc,
+			srcRect.x, srcRect.y,
+			srcRect.width, srcRect.height,
+			wxCOPY);
+#elif WIN32
 		// Using StretchBlit is much faster and has less scaling/roundoff
 		//  problems than using the wx method DrawBitmap
 		::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );

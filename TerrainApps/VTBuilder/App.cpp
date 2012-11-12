@@ -156,13 +156,13 @@ void BuilderApp::SetupLocale()
 			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n", lang,
 				(const char *) info->CanonicalName.mb_str(wxConvUTF8),
 				(const char *) info->Description.mb_str(wxConvUTF8));
-			bSuccess = m_locale.Init(lang, wxLOCALE_CONV_ENCODING);
+			bSuccess = m_locale.Init(lang, wxLOCALE_LOAD_DEFAULT);
 		}
 	}
 	if (lang == wxLANGUAGE_DEFAULT)
 	{
 		VTLOG("Initializing locale to default language:\n");
-		bSuccess = m_locale.Init(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
+		bSuccess = m_locale.Init(wxLANGUAGE_DEFAULT, wxLOCALE_LOAD_DEFAULT);
 		if (bSuccess)
 			lang = default_lang;
 	}

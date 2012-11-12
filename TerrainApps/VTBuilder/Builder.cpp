@@ -1569,7 +1569,7 @@ void Builder::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	str.Printf(_("  Total: %d\n"), pia.GetNumEntities());
 	msg += str;
 
-	DisplayAndLog(msg.mb_str(wxConvUTF8));
+	DisplayAndLog(msg);
 
 	if (unplanted > 0)
 	{

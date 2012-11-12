@@ -1154,8 +1154,14 @@ void Builder::ImportFromMapSource(const char *fname)
 		choices[i] += _T(")");
 	}
 
+#if wxVERSION_NUMBER > 2900		// 2.9.0
+	int nsel = wxGetSelectedChoices(selections, _("Which layers to import?"),
+		_("Import Tracks"), n, choices);
+#else
+	// Older API
 	int nsel = (int)wxGetMultipleChoices(selections, _("Which layers to import?"),
 		_("Import Tracks"), n, choices);
+#endif
 
 	// for each of the layers the user wants, add them to our project
 	for (i = 0; i < nsel; i++)

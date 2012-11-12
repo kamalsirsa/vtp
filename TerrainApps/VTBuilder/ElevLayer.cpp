@@ -422,7 +422,17 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 #endif
 
 	bool bDrawNormal = true;
-#if WIN32
+#if (wxVERSION_NUMBER > 2900)
+	wxMemoryDC temp_dc;
+    temp_dc.SelectObject(*m_pBitmap->m_pBitmap);
+	pDC->StretchBlit(destRect.x, destRect.y,
+		destRect.width, destRect.height,
+		&temp_dc,
+		srcRect.x, srcRect.y,
+		srcRect.width, srcRect.height,
+		wxCOPY, m_bHasMask);
+	bDrawNormal = false;
+#elif WIN32
 	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
 
 	if (!m_bHasMask)
