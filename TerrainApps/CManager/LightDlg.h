@@ -9,6 +9,7 @@
 #define __LightDlg_H__
 
 #include "CManager_UI.h"
+#include "wx/colourdata.h"
 
 // WDR: class declarations
 

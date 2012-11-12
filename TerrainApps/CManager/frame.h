@@ -44,11 +44,6 @@ public:
 	int m_last;
 };
 
-
-// some shortcuts
-#define ADD_TOOL(id, bmp, tooltip, tog)	 \
-	m_pToolbar->AddTool(id, bmp, wxNullBitmap, tog, -1, -1, (wxObject *)0, tooltip, tooltip)
-
 class vtFrame: public wxFrame
 {
 public:
@@ -99,6 +94,10 @@ protected:
 	void FreeContents();
 
 	void DisplayMessageBox(const wxString &str);
+	void AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog) {
+		m_pToolbar->AddTool(id, wxEmptyString, bmp, wxNullBitmap,
+			tog ? wxITEM_CHECK : wxITEM_NORMAL, tooltip, tooltip, NULL);
+	}
 
 public:
 	class vtGLCanvas *m_canvas;

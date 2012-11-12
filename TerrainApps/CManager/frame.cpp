@@ -350,18 +350,18 @@ void vtFrame::CreateToolbar()
 	m_pToolbar->SetMargins(2, 2);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
 
-	ADD_TOOL(wxID_OPEN, wxBITMAP(contents_open), _("Open Contents File"), false);
+	AddTool(wxID_OPEN, wxBITMAP(contents_open), _("Open Contents File"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_ITEM_NEW, wxBITMAP(item_new), _("New Item"), false);
-	ADD_TOOL(ID_ITEM_DEL, wxBITMAP(item_remove), _("Delete Item"), false);
+	AddTool(ID_ITEM_NEW, wxBITMAP(item_new), _("New Item"), false);
+	AddTool(ID_ITEM_DEL, wxBITMAP(item_remove), _("Delete Item"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_ITEM_ADDMODEL, wxBITMAP(model_add), _("Add Model"), false);
-	ADD_TOOL(ID_ITEM_REMOVEMODEL, wxBITMAP(model_remove), _("Remove Model"), false);
-	ADD_TOOL(ID_ITEM_MODELPROPS, wxBITMAP(properties), _("Model Properties"), false);
+	AddTool(ID_ITEM_ADDMODEL, wxBITMAP(model_add), _("Add Model"), false);
+	AddTool(ID_ITEM_REMOVEMODEL, wxBITMAP(model_remove), _("Remove Model"), false);
+	AddTool(ID_ITEM_MODELPROPS, wxBITMAP(properties), _("Model Properties"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_VIEW_ORIGIN, wxBITMAP(axes), _("Show Axes"), true);
-	ADD_TOOL(ID_VIEW_RULERS, wxBITMAP(rulers), _("Show Rulers"), true);
-	ADD_TOOL(ID_VIEW_WIREFRAME, wxBITMAP(wireframe), _("Wireframe"), true);
+	AddTool(ID_VIEW_ORIGIN, wxBITMAP(axes), _("Show Axes"), true);
+	AddTool(ID_VIEW_RULERS, wxBITMAP(rulers), _("Show Rulers"), true);
+	AddTool(ID_VIEW_WIREFRAME, wxBITMAP(wireframe), _("Wireframe"), true);
 
 	m_pToolbar->Realize();
 }
