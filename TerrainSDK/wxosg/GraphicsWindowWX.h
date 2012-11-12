@@ -3,6 +3,7 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/GraphicsWindow>
 #include "wx/glcanvas.h"
+#include "vtdata/vtLog.h"
 
 
 class LocalGLContext;
@@ -64,6 +65,7 @@ public:
 
 	~GraphicsWindowWX()
 	{
+		VTLOG1("5. ~GraphicsWindowWX()\n");
 #ifndef __WXMAC__
 		delete m_pGLContext;
 #endif
@@ -71,6 +73,7 @@ public:
 
 	void CloseOsgContext()
 	{
+		VTLOG1("1. CloseOsgContext()\n");
 		getEventQueue()->closeWindow(0);
 		// Force handling of event before the idle loop can call frame();
 		dynamic_cast<osgViewer::View*>(getCameras().front()->getView())->getViewerBase()->eventTraversal();
@@ -78,6 +81,7 @@ public:
 
     bool makeCurrentImplementation()
 	{
+		VTLOG("3. makeCurrentImplementation(%p)\n", m_pGLContext);
 #ifdef __WXMAC__
 		m_pCanvas->SetCurrent();
 #else
@@ -93,6 +97,7 @@ public:
 
     virtual bool releaseContextImplementation()
 	{
+		VTLOG("2. releaseContextImplementation(%p)\n", m_pCanvas);
 #ifndef __WXMAC__
 		m_pGLContext->ReleaseContext(*m_pCanvas);
 #endif
@@ -101,9 +106,9 @@ public:
 	
     virtual void closeImplementation()
 	{
+		VTLOG1("4. closeImplementation()\n");
 		m_bValid = false;
 	}
-
 
     virtual bool realizeImplementation()
 	{
@@ -113,7 +118,6 @@ public:
 		m_bIsRealized = true;
 		return true;
 	}
-
 
 	virtual bool valid() const
 	{
