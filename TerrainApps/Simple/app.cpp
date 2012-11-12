@@ -29,7 +29,7 @@ bool CreateScene()
 
 	// Log messages to make troubleshooting easier
 	VTSTARTLOG("debug.txt");
-	VTLOG("glutSimple\n");
+	VTLOG("osgViewerSimple\n");
 
 	// Look up the camera
 	vtCamera *pCamera = pScene->GetCamera();
@@ -105,18 +105,21 @@ int main(int argc, char ** argv)
 	vtGetScene()->Init(argc, argv);
 	osgViewer::Viewer *viewer = vtGetScene()->getViewer();
 
-	// Add a handler for GUI events
+	// Add a handler for GUI events.
 	osg::ref_ptr<vtOSGEventHandler> pHandler = new vtOSGEventHandler;
 	viewer->addEventHandler(pHandler);
 
-	printf("Creating the terrain..\n");
-	CreateScene();
-
-	// We must call realize to be certain that a display/context is set up
+	// We must call realize to be certain that a display/context is set up.
 	viewer->realize();
 
-	// Only then can we safely get window size
+	// Tell our scene about OSG's context.
+	vtGetScene()->SetGraphicsContext(viewer->getCamera()->getGraphicsContext());
+
+	// Only then can we safely get window size.
 	vtGetScene()->GetWindowSizeFromOSG();
+
+	printf("Creating the terrain..\n");
+	CreateScene();
 
 	printf("Running..\n");
 	while (!viewer->done())

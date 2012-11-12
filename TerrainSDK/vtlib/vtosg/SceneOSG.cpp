@@ -94,10 +94,16 @@ float vtGetFrameTime()
 
 int vtGetMaxTextureSize()
 {
+	osg::GraphicsContext *context = vtGetScene()->GetGraphicsContext();
+	if (!context) {
+		VTLOG1("Error: Called vtGetMaxTextureSize without a known context\n");
+		return 0;
+	}
+
     // Do not try to create an Extensions object if one does not already exist
     // as we cannot gaurantee a valid rendering context at this point.
 	osg::ref_ptr<osg::Texture::Extensions> pTextureExtensions =
-		osg::Texture::getExtensions(vtGetScene()->GetGraphicsContext()->getState()->getContextID(), false);
+		osg::Texture::getExtensions(context->getState()->getContextID(), false);
     if (pTextureExtensions.valid())
         return pTextureExtensions->maxTextureSize();
     else

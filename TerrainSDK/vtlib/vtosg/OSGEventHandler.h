@@ -11,8 +11,12 @@
 class vtOSGEventHandler : public osgGA::GUIEventHandler 
 {
 public: 
+	vtOSGEventHandler() : last_x(-1), last_y(-1) {}
 	virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+	void handleResize(const osgGA::GUIEventAdapter& ea);
 	void handleKeyEvent(const osgGA::GUIEventAdapter& ea);
 	void handleMouseEvent(const osgGA::GUIEventAdapter& ea);
+
+	int last_x, last_y;
 };
 

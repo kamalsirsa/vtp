@@ -37,8 +37,7 @@ bool vtOSGEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActio
 	case GEA::FRAME:
 		break;
 	case GEA::RESIZE:
-		VTLOG("RESIZE %d %d\n", ea.getWindowWidth(), ea.getWindowHeight());
-		vtGetScene()->SetWindowSize(ea.getWindowWidth(), ea.getWindowHeight());
+		handleResize(ea);
 		break;
 	case GEA::SCROLL:
 		VTLOG("SCROLL\n");
@@ -50,7 +49,21 @@ bool vtOSGEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActio
 		VTLOG("QUIT_APPLICATION\n");
 		break;
 	}
-	return false;
+	return true;	// We "handled" the event.
+}
+
+void vtOSGEventHandler::handleResize(const osgGA::GUIEventAdapter& ea)
+{
+	// With OSG 3.0.1, it seems in some cases we can get a continuous stream 
+	// of RESIZE events even though the size is not changing.  Check for that.
+	int x = ea.getWindowWidth(), y = ea.getWindowHeight();
+	if (x != last_x || y != last_y)
+	{
+		last_x = x;
+		last_y = y;
+		VTLOG("RESIZE %d %d\n", x,y );
+		vtGetScene()->SetWindowSize(x, y);
+	}
 }
 
 void vtOSGEventHandler::handleKeyEvent(const osgGA::GUIEventAdapter& ea)

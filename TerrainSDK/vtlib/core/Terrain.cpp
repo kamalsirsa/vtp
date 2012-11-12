@@ -314,14 +314,17 @@ void vtTerrain::_CreateRoads()
 
 void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback(int))
 {
-	// measure total texture processing time
-	clock_t c1 = clock();
-
 	TextureEnum eTex = m_Params.GetTextureEnum();
 
 	bool bRetain = m_Params.GetValueBool(STR_TEXTURE_RETAIN);
 	bool bFirstTime = !m_bTextureInitialized;
 	bool bLoadSingle = (bFirstTime || !bRetain) && (eTex == TE_SINGLE);
+
+	VTLOG("_CreateTextures(%d, first %d, retain %d)\n", eTex,
+		bFirstTime, bRetain);
+
+	// measure total texture processing time
+	clock_t c1 = clock();
 
 	vtString texture_path;
 	if (bLoadSingle)	// look for texture
