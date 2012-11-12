@@ -8,6 +8,8 @@
 #ifndef __VehicleDlg_H__
 #define __VehicleDlg_H__
 
+#include "wx/colourdata.h"
+
 #include "EnviroUI.h"
 #include "../PlantingOptions.h"
 

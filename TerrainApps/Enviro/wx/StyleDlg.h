@@ -8,6 +8,8 @@
 #ifndef __StyleDlg_H__
 #define __StyleDlg_H__
 
+#include "wx/colourdata.h"
+
 #include "EnviroUI.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/Features.h"

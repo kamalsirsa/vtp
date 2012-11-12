@@ -148,13 +148,13 @@ void EnviroApp::SetupLocale()
 				lang,
 				(const char *) info->CanonicalName.mb_str(wxConvUTF8),
 				(const char *) info->Description.mb_str(wxConvUTF8));
-			bSuccess = m_locale.Init(lang, wxLOCALE_CONV_ENCODING);
+			bSuccess = m_locale.Init(lang);
 		}
 	}
 	if (lang == wxLANGUAGE_DEFAULT)
 	{
 		VTLOG("Initializing locale to default language:\n");
-		bSuccess = m_locale.Init(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
+		bSuccess = m_locale.Init(wxLANGUAGE_DEFAULT);
 		if (bSuccess)
 			lang = default_lang;
 	}

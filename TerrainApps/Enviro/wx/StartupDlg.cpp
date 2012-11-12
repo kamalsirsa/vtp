@@ -55,10 +55,15 @@ static void ShowOGLInfo2(bool bLog)
 	else
 	{
 		// show the information in a popup dialog
-		str.Printf(_("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n"),
-			glGetString(GL_VERSION), glGetString(GL_VENDOR),
-			glGetString(GL_RENDERER));
-		msg += str;
+		msg = _("OpenGL Version: ");
+		msg += glGetString(GL_VERSION);
+		msg += "\n";
+		msg += _("Vendor: ");
+		msg += glGetString(GL_VENDOR);
+		msg += "\n";
+		msg += _("Renderer: "),
+		msg += glGetString(GL_RENDERER);
+		msg += "\n";
 		str.Printf(_("Maximum Texture Dimension: %d\n"), value);
 		msg += str;
 #ifdef GL_SHADING_LANGUAGE_VERSION

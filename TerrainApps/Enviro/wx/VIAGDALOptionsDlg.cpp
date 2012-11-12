@@ -51,13 +51,14 @@ void CVIAGDALOptionsDlg::Setup(int iDriverIndex)
     char *pToken;
 	int iPos;
 
-
 	if (HelpTopic.FileExists())
 		m_pHtmlWindow->LoadPage(HelpTopic.GetFullPath());
     else
-        VTLOG(_("Cannot open gdal help file %s\n"), (const char *)HelpTopic.GetFullPath().mb_str(wxConvUTF8));
+        VTLOG(_T("Cannot open gdal help file %s\n"), (const char *)HelpTopic.GetFullPath().mb_str(wxConvUTF8));
 
-    pToken = strtok((char *)DataTypes.GetData(), " ");
+	char *datatypes = strdup((const char *) DataTypes.To8BitData());
+    pToken = strtok(datatypes, " ");
+	free(datatypes);
     while( pToken != NULL )
     {
         m_pDataTypeChoice->Append(wxString(pToken, wxConvUTF8));

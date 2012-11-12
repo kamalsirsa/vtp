@@ -779,7 +779,7 @@ void LocationDlg::OnStoreAs( wxCommandEvent &event )
 
 	str = dlg.GetValue();
 #if SUPPORT_WSTRING
-	bool success = m_pSaver->StoreTo(num, str.c_str());
+	bool success = m_pSaver->StoreTo(num, str.wc_str());
 #else
 	bool success = m_pSaver->StoreTo(num, (const char *) str.ToUTF8());
 #endif

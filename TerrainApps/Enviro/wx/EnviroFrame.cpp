@@ -507,8 +507,13 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
     #endif
 	m_pVIADlg = new VIADlg(this);
 
+#if wxVERSION_NUMBER < 2900		// before 2.9.0
 	if (m_canvas)
 		m_canvas->SetCurrent();
+#else
+	// Still need to do a "SetCurrent" here? It's more complicated now in wx 2.9.x,
+	//  and it's probably already taken care of by GraphicsWindowWX?
+#endif
 
 	m_mgr.AddPane(m_canvas, wxAuiPaneInfo().
 				  Name(wxT("canvas")).Caption(wxT("Canvas")).
@@ -2143,7 +2148,7 @@ void EnviroFrame::OnVIAPlot(wxCommandEvent& event)
 	wxFileDialog RasterFileDialog(this,
 								_T("Output raster file"),
 								_T(""), _T("viaplot.tif"),
-								_T(""), wxSAVE);
+								_T(""), wxFD_SAVE);
 	CVIAGDALOptionsDlg OptionsDlg(this);
 	GDALDriverManager *pDriverManager;
 	int iNumDrivers;
