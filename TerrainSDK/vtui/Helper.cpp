@@ -314,7 +314,7 @@ void DrawRectangle(wxDC *pDC, const wxRect &rect, bool bCrossed)
 
 //////////////////////////////////////
 
-#if WIN32
+#if WIN32 && (wxVERSION_NUMBER < 2900)
 
 //
 // Win32 allows us to do a real StrectBlt operation, although it still won't
@@ -964,6 +964,29 @@ void DisplayAndLog(const wchar_t *pFormat, ...)
 
 	VTLOG1(msg.ToUTF8());
 	VTLOG1("\n");
+}
+
+//
+// Also a wxString-taking version of the function, to make it perfectly clear
+//  to the compiler which overloaded function to use.
+//
+void DisplayAndLog(const wxString &format, ...)
+{
+	va_list va;
+	va_start(va, format);
+
+	char ach[2048];
+	vsprintf(ach, format, va);
+
+	wxString msg(ach, wxConvUTF8);
+
+	// Careful here: Don't try to pop up a message box if called within a
+	//  wx console app.  wxMessageBox only works if it is a full wxApp.
+	if (IsGUIApp())
+		wxMessageBox(msg);
+
+	strcat(ach, "\n");
+	VTLOG1(ach);
 }
 
 /**

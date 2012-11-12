@@ -49,7 +49,7 @@ void DrawRectangle(wxDC *pDC, const wxRect &rect, bool bCrossed = false);
 
 /////
 
-#if WIN32
+#if WIN32 && (wxVERSION_NUMBER < 2900)
 /**
  * Win32 allows us to do a real StretchBlt operation, although it still won't
  * do a StretchBlt with a mask.
@@ -111,6 +111,7 @@ void CheckForGDALAndWarn();
 // Display a message to the user, and also send it to the log file.
 void DisplayAndLog(const char *pFormat, ...);
 void DisplayAndLog(const wchar_t *pFormat, ...);
+void DisplayAndLog(const wxString &Format, ...);
 
 void LaunchAppDocumentation(const vtString &appname,
 							const vtString &local_lang_code);

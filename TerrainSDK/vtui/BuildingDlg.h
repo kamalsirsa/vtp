@@ -8,6 +8,8 @@
 #ifndef __BuildingDlg_H__
 #define __BuildingDlg_H__
 
+#include "wx/colourdata.h"
+
 #include "vtui_UI.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/Building.h"

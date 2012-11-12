@@ -13,6 +13,7 @@
 #endif
 
 #include "wx/imaglist.h"
+#include "wx/colourdata.h"
 
 #include "vtui_UI.h"
 #include "AutoDialog.h"
