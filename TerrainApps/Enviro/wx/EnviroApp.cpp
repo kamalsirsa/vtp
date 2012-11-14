@@ -415,24 +415,29 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
 	vtGetScene()->Init(MyArgc, MyArgv, g_Options.m_bStereo, g_Options.m_iStereoMode);
 	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
-    // Initialise Visual Impact Calculator - this can only be done after the graphics context is initialised
+
+#if VISUAL_IMPACT_CALCULATOR
+	// Initialise Visual Impact Calculator - this can only be done after the
+	// graphics context is initialised.
     vtGetScene()->GetVisualImpactCalculator().Initialise();
+#endif
 
-
-	switch(vtGetScene()->getViewer()->getThreadingModel() == osgViewer::Viewer::AutomaticSelection
-		? vtGetScene()->getViewer()->suggestBestThreadingModel() : vtGetScene()->getViewer()->getThreadingModel())
+	VTLOG("OSG threading model is: ");
+	osgViewer::Viewer *vw = vtGetScene()->getViewer();
+	switch(vw->getThreadingModel() == osgViewer::Viewer::AutomaticSelection
+		? vw->suggestBestThreadingModel() : vw->getThreadingModel())
 	{
 		case osgViewer::Viewer::SingleThreaded:
-			VTLOG("OSG threading model is - singleThreaded\n");
+			VTLOG("singleThreaded\n");
 			break;
 		case osgViewer::Viewer::CullDrawThreadPerContext:
-			VTLOG("OSG threading model is - CullDrawThreadPerContext\n");
+			VTLOG("CullDrawThreadPerContext\n");
 			break;
 		case osgViewer::Viewer::DrawThreadPerContext:
-			VTLOG("OSG threading model is - DrawThreadPerContext\n");
+			VTLOG("DrawThreadPerContext\n");
 			break;
 		case osgViewer::Viewer::CullThreadPerCameraDrawThreadPerContext:
-			VTLOG("OSG threading model is - CullThreadPerCameraDrawThreadPerContext\n");
+			VTLOG("CullThreadPerCameraDrawThreadPerContext\n");
 			break;
 	}
 

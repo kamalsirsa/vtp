@@ -537,7 +537,8 @@ EnviroFrame::~EnviroFrame()
 
 	m_mgr.UnInit();
 
-	delete m_canvas;
+	DeleteCanvas();
+
 	delete m_pSceneGraphDlg;
 	delete m_pPlantDlg;
 	delete m_pFenceDlg;
@@ -557,6 +558,21 @@ EnviroFrame::~EnviroFrame()
 	SetStatusBar(NULL);
 }
 
+void EnviroFrame::DeleteCanvas()
+{
+	// Tell our graphics context that there is no canvas.
+	GraphicsWindowWX *pGW = (GraphicsWindowWX*)vtGetScene()->GetGraphicsContext();
+	if (pGW) {
+		pGW->CloseOsgContext();
+		pGW->SetCanvas(NULL);
+	}
+	if (m_canvas)
+	{
+		m_canvas->m_bRunning = false;
+		delete m_canvas;
+		m_canvas = NULL;
+	}
+}
 
 void EnviroFrame::CreateMenus()
 {
@@ -1429,24 +1445,14 @@ void EnviroFrame::SetFullScreen(bool bFull)
 void EnviroFrame::OnExit(wxCommandEvent& event)
 {
 	VTLOG("Got Exit event, shutting down.\n");
-	if (m_canvas)
-	{
-		m_canvas->m_bRunning = false;
-		delete m_canvas;
-		m_canvas = NULL;
-	}
+	DeleteCanvas();
 	Destroy();
 }
 
 void EnviroFrame::OnClose(wxCloseEvent &event)
 {
 	VTLOG("Got Close event, shutting down.\n");
-	if (m_canvas)
-	{
-		m_canvas->m_bRunning = false;
-		delete m_canvas;
-		m_canvas = NULL;
-	}
+	DeleteCanvas();
 	event.Skip();
 }
 
@@ -2105,6 +2111,7 @@ void EnviroFrame::OnUpdateToolsConstrain(wxUpdateUIEvent& event)
 // Visual impact submenu
 void EnviroFrame::OnVIACalculate(wxCommandEvent& event)
 {
+#if VISUAL_IMPACT_CALCULATOR
 	wxString Message = _("Your 3d driver does not support off screen rendering.\n");
 	Message += _("If the main 3d window is obscured by any other windows\n");
 	Message += _("(including popup dialogs). The accuracy of the visual impact\n");
@@ -2113,6 +2120,9 @@ void EnviroFrame::OnVIACalculate(wxCommandEvent& event)
 	if (vtGetScene()->GetVisualImpactCalculator().UsingLiveFrameBuffer())
 		wxMessageBox(Message);
 	m_pVIADlg->Show(true);
+#else
+	wxMessageBox(_("Not available."));
+#endif
 }
 
 void EnviroFrame::OnUpdateVIACalculate(wxUpdateUIEvent& event)
@@ -2145,6 +2155,7 @@ void EnviroFrame::OnUpdateVIACalculate(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnVIAPlot(wxCommandEvent& event)
 {
+#if VISUAL_IMPACT_CALCULATOR
 	wxFileDialog RasterFileDialog(this,
 								_T("Output raster file"),
 								_T(""), _T("viaplot.tif"),
@@ -2284,6 +2295,7 @@ void EnviroFrame::OnVIAPlot(wxCommandEvent& event)
 
 	EnableContinuousRendering(true);
 	delete pDataset; // This flushes and closes the dataset
+#endif  // VISUAL_IMPACT_CALCULATOR
 }
 
 void EnviroFrame::ParseCommandLine(const char *cmdstart, char **argv, char *args, int *numargs, int *numchars)
@@ -3786,6 +3798,7 @@ void EnviroFrame::OnPopupURL(wxCommandEvent& event)
 
 void EnviroFrame::OnPopupVIA(wxCommandEvent& event)
 {
+#if VISUAL_IMPACT_CALCULATOR
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
 	vtStructure3d *pStructure3d;
@@ -3806,10 +3819,12 @@ void EnviroFrame::OnPopupVIA(wxCommandEvent& event)
 		pStructure3d->SetVIAContributor(true);
 		vtGetScene()->GetVisualImpactCalculator().AddVisualImpactContributor(pStructure3d->GetContainer());
 	}
+#endif
 }
 
 void EnviroFrame::OnUpdatePopupVIA(wxUpdateUIEvent& event)
 {
+#if VISUAL_IMPACT_CALCULATOR
 	vtTerrain *pTerr = GetCurrentTerrain();
 
 	if (NULL == pTerr)
@@ -3842,10 +3857,12 @@ void EnviroFrame::OnUpdatePopupVIA(wxUpdateUIEvent& event)
 			}
 		}
 	}
+#endif
 }
 
 void EnviroFrame::OnPopupVIATarget(wxCommandEvent& event)
 {
+#if VISUAL_IMPACT_CALCULATOR
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
 	int count = pStructures->GetSize();
@@ -3882,10 +3899,12 @@ void EnviroFrame::OnPopupVIATarget(wxCommandEvent& event)
 		vtGetScene()->GetVisualImpactCalculator().SetVisualImpactTarget(sphere.center + pTransform->GetTrans());
 		pStructure3d->SetVIATarget(true);
 	}
+#endif
 }
 
 void EnviroFrame::OnUpdatePopupVIATarget(wxUpdateUIEvent& event)
 {
+#if VISUAL_IMPACT_CALCULATOR
 	vtTerrain *pTerr = GetCurrentTerrain();
 
 	if (NULL == pTerr)
@@ -3923,6 +3942,7 @@ void EnviroFrame::OnUpdatePopupVIATarget(wxUpdateUIEvent& event)
 			}
 		}
 	}
+#endif
 }
 
 

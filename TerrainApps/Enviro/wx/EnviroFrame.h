@@ -109,6 +109,8 @@ public:
 #endif
 
 protected:
+	void DeleteCanvas();
+
 	void OnFileLayers(wxCommandEvent& event);
 
 	void OnLayerCreate(wxCommandEvent& event);

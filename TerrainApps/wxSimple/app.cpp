@@ -70,6 +70,8 @@ IMPLEMENT_APP(vtApp)
 //
 bool vtApp::OnInit(void)
 {
+	VTSTARTLOG("debug.txt");
+
 	m_pTerrainScene = NULL;
 
 	// Create the main frame window
@@ -95,8 +97,6 @@ bool vtApp::OnInit(void)
 //
 bool vtApp::CreateScene()
 {
-	VTSTARTLOG("debug.txt");
-
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
 
