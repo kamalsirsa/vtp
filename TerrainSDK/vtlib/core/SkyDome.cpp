@@ -187,44 +187,47 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 
 	if (sun_texture && *sun_texture)
 	{
-		VTLOG("   Loading Sun Image\n");
+		VTLOG1("   Loading Sun Image.. ");
 		m_pSunImage = osgDB::readImageFile(sun_texture);
-		if (!m_pSunImage.valid())
-			return;		// could not load texture, cannot have sun
+		if (m_pSunImage.valid()) {
+			VTLOG("succeeded.\n");
 
-		int idx = m_pMats->AddTextureMaterial(m_pSunImage,
-							 false, false,	// culling, lighting
-							 true, true,	// transp, additive
-							 1.0f,			// diffuse
-							 1.0f, 1.0f);	// alpha, emmisive
+			int idx = m_pMats->AddTextureMaterial(m_pSunImage,
+								 false, false,	// culling, lighting
+								 true, true,	// transp, additive
+								 1.0f,			// diffuse
+								 1.0f, 1.0f);	// alpha, emmisive
 
-		// Create sun
-		m_pSunMat = m_pMats->at(idx);
+			// Create sun
+			m_pSunMat = m_pMats->at(idx);
 
-		VTLOG("   Creating Sun Geom\n");
-		vtGeode *pGeode = new vtGeode;
-		pGeode->setName("Sun geom");
-		m_pSunGeom = new vtMovGeode(pGeode);
-		m_pSunGeom->setName("Sun xform");
+			VTLOG("   Creating Sun Geom\n");
+			vtGeode *pGeode = new vtGeode;
+			pGeode->setName("Sun geom");
+			m_pSunGeom = new vtMovGeode(pGeode);
+			m_pSunGeom->setName("Sun xform");
 
-		VTLOG("   Creating Sun Mesh\n");
-		vtMesh *SunMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
+			VTLOG("   Creating Sun Mesh\n");
+			vtMesh *SunMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, 4);
 
-		SunMesh->AddRectangleXZ(0.50f, 0.50f);
-		pGeode->SetMaterials(m_pMats);
-		pGeode->AddMesh(SunMesh, idx);
+			SunMesh->AddRectangleXZ(0.50f, 0.50f);
+			pGeode->SetMaterials(m_pMats);
+			pGeode->AddMesh(SunMesh, idx);
 
-		// Z translation, to face us at the topographic north (horizon)
-		FMatrix4 trans;
-		trans.Identity();
-		trans.Translate(FPoint3(0.0f, 0.90f, 0.0f));
-		SunMesh->TransformVertices(trans);
-		trans.Identity();
-		trans.AxisAngle(FPoint3(1,0,0), -PID2f);
-		SunMesh->TransformVertices(trans);
+			// Z translation, to face us at the topographic north (horizon)
+			FMatrix4 trans;
+			trans.Identity();
+			trans.Translate(FPoint3(0.0f, 0.90f, 0.0f));
+			SunMesh->TransformVertices(trans);
+			trans.Identity();
+			trans.AxisAngle(FPoint3(1,0,0), -PID2f);
+			SunMesh->TransformVertices(trans);
 
-		// The sun is attached to the celestial sphere which rotates
-		m_pCelestial->addChild(m_pSunGeom);
+			// The sun is attached to the celestial sphere which rotates
+			m_pCelestial->addChild(m_pSunGeom);
+		}
+		else
+			VTLOG("failed.\n");
 	}
 
 	// Create the vtStarDome

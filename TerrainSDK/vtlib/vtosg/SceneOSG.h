@@ -196,8 +196,10 @@ public:
 	// OSG access
 	osgViewer::Viewer *getViewer() { return m_pOsgViewer.get(); }
 
+#if VISUAL_IMPACT_CALCULATOR
     // Visual Impact Calculation
 	virtual CVisualImpactCalculatorOSG& GetVisualImpactCalculator() { return m_VisualImpactCalculator; }
+#endif
 
 protected:
 	void DoEngines(vtEngine *eng);
@@ -231,7 +233,9 @@ protected:
 #if OLD_OSG_SHADOWS
 	osg::ref_ptr<CStructureShadowsOSG> m_pStructureShadowsOSG;
 #endif
+#if VISUAL_IMPACT_CALCULATOR
 	CVisualImpactCalculatorOSG m_VisualImpactCalculator;
+#endif
 };
 
 // global
