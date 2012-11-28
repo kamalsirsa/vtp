@@ -1,7 +1,7 @@
 //
 // Name:		LocationDlg.cpp
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,6 +17,7 @@
 #endif
 
 #include "vtlib/vtlib.h"
+#include "vtlib/vtosg/ScreenCaptureHandler.h"
 #include "vtui/Helper.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
@@ -553,19 +554,13 @@ public:
 				return;
 			}
 
-			// We must wait a frame until the next render, for the view to update
+			// We can't grab the screen directly, we must use an OSG callback
+			// to capture after the next draw.
 			vtString fname;
-			fname.Format("image_%04d.jpg", step-1);
+			fname.Format("image_%04d.png", step-1);
 
-			// Read image from window
-			IPoint2 size = scene->GetWindowSize();
-			vtImagePtr pImage = new vtImage;
-			pImage->Create(size.x, size.y, 24);
-			glPixelStorei(GL_PACK_ALIGNMENT, 1);
-			glReadPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE, pImage->GetData());
-
-			// Write to disk
-			pImage->WriteJPEG((const char *)(directory+fname), 98);
+			std::string Filename = (const char *)(directory+fname);
+			CScreenCaptureHandler::SetupScreenCapture(Filename);
 		}
 		// Show the next frame time
 		engine->SetTime(fStep * step);
