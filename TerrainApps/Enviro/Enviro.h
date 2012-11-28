@@ -219,6 +219,7 @@ public:
 
 	// UI
 	void UpdateCompass();
+	void SetHUDMessageText(const char *message);
 
 	// global state
 	AppState	m_state;

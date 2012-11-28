@@ -396,17 +396,14 @@ void Enviro::DoControlTerrain()
 	if (pslg)
 	{
 		int remaining = terr->DoStructurePaging();
-		if (m_pHUDMessage)
+		if (remaining != 0)
 		{
-			if (remaining != 0)
-			{
-				vtString msg;
-				msg.Format("Structure queue: %d\n", remaining);
-				m_pHUDMessage->SetText(msg);
-			}
-			else
-				m_pHUDMessage->SetText("");
+			vtString msg;
+			msg.Format("Structure queue: %d\n", remaining);
+			SetHUDMessageText(msg);
 		}
+		else
+			SetHUDMessageText("");
 	}
 	if (plg)
 	{
@@ -873,19 +870,8 @@ void Enviro::SetupScene2()
 	m_pRoot->addChild(m_pHUD);
 	m_pHUDMaterials = new vtMaterialArray;
 
-	// The HUD always has a place to put status messages to the user
+	// A font is need by the HUD message text, and the elevation legend.
 	m_pArial = osgText::readFontFile("Arial.ttf");
-
-	vtGeode *geode = new vtGeode;
-	geode->setName("Message");
-	m_pHUD->GetContainer()->addChild(geode);
-	if (m_pArial)
-	{
-		m_pHUDMessage = new vtTextMesh(m_pArial, 18);
-		m_pHUDMessage->SetText("");
-		m_pHUDMessage->SetPosition(FPoint3(3,3,0));
-		geode->AddTextMesh(m_pHUDMessage, 0);
-	}
 }
 
 //
@@ -1734,6 +1720,8 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	if (result1)
 		VTLOG("structure at dist %lf, ", dist1);
 	m_bSelectedStruct = false;
+
+  VTLOG("|XY= %lf, %lf, %lf|\n",m_EarthPos.x, m_EarthPos.y, m_EarthPos.z); // BobMaX
 
 	// Check Plants
 	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
@@ -2762,6 +2750,22 @@ void Enviro::UpdateCompass()
 		IPoint2 size = vtGetScene()->GetWindowSize();
 		m_pCompassSizer->OnWindowSize(size.x, size.y);
 	}
+}
+
+void Enviro::SetHUDMessageText(const char *message)
+{
+	// The HUD always has a place to put status messages to the user.
+	if (!m_pHUDMessage && m_pArial)
+	{
+		vtGeode *geode = new vtGeode;
+		geode->setName("Message");
+		m_pHUD->GetContainer()->addChild(geode);
+		m_pHUDMessage = new vtTextMesh(m_pArial, 18);
+		m_pHUDMessage->SetPosition(FPoint3(3,3,0));
+		geode->AddTextMesh(m_pHUDMessage, 0);
+	}
+	if (m_pHUDMessage)
+		m_pHUDMessage->SetText(message);
 }
 
 void Enviro::CreateElevationLegend()
