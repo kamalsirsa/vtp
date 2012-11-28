@@ -245,7 +245,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	if (pNode->getName() != "")
 	{
 		str += _T(" \"");
-		str += wxString::FromAscii(pNode->getName().c_str());
+		str += wxString::FromUTF8(pNode->getName().c_str());
 		str += _T("\"");
 	}
 
