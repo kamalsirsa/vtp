@@ -874,6 +874,12 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		success = m_pTin->ReadGMS(fname, progress_callback);
 	}
 	else
+	if (!strFileName.Right(4).CmpNoCase(_T(".ply")))
+	{
+		m_pTin = new vtTin2d;
+		success = m_pTin->ReadPLY(fname, progress_callback);
+	}	
+	else
 	{
 		if (m_pGrid == NULL)
 			m_pGrid = new vtElevationGrid;
