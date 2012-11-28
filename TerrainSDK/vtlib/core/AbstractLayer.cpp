@@ -661,14 +661,13 @@ void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
 		text->SetColor(rgb);
 	}
 
+	// Labels will automatically turn to face the user because that's vtlib's
+	// default behavior now.
 	geode->AddTextMesh(text, -1);
 
-	// Add to a billboarding transform so that the labels turn
-	// toward the viewer
+	// Transform to position it, add to the label group.
 	vtTransform *bb = new vtTransform;
 	bb->addChild(geode);
-	m_pTerr->GetBillboardEngine()->AddTarget(bb);
-
 	bb->SetTrans(fp3);
 	pLabelGroup->addChild(bb);
 
@@ -770,14 +769,7 @@ void vtAbstractLayer::ReleaseFeatureGeometry(vtFeature *f)
 		pGeodeLine->RemoveMesh(mesh);
 	}
 	if (v->m_xform)
-	{
 		pLabelGroup->removeChild(v->m_xform);
-
-		// labels might be targets of the billboard engine
-		vtEngine *bbe = m_pTerr->GetBillboardEngine();
-		if (bbe)
-			bbe->RemoveTarget(v->m_xform);
-	}
 	delete v;
 	m_Map.erase(f);
 }

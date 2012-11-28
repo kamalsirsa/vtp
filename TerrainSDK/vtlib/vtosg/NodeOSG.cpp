@@ -1501,6 +1501,15 @@ void vtGeode::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 	sset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 	// also not useful to see the back of text (mirror writing)
 	sset->setMode(GL_CULL_FACE, osg::StateAttribute::ON);
+
+	// A black outline around the font makes it easier to read against
+	// most backgrounds.
+	// TODO: expose a method to disable this behavior for special cases.
+	pTextMesh->setBackdropType(osgText::Text::OUTLINE);
+
+	// In most cases, it is very helpful for text to face the user.
+	// TODO: expose a method to disable this behavior for special cases.
+	pTextMesh->setAutoRotateToScreen(true);
 }
 
 void vtGeode::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
@@ -1645,7 +1654,6 @@ void OsgDynMesh::drawImplementation(osg::RenderInfo& renderInfo) const
 	//  but i don't understand how to use osg::State that way, and just
 	//  disabling the arrays seems to make things work!
 	cthis->m_pDrawState->disableAllVertexArrays();
-
 
     // For the time being convert the osg camera into a vtCamera.
     // In the longer term it would probably be better to convert all

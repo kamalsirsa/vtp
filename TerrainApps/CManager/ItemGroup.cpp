@@ -257,12 +257,6 @@ vtGeode *CreateRulers(osgText::Font *font, float fSize)
 				str.Format("%g", j * interval);
 				vtTextMesh *text = new vtTextMesh(font, interval/2, false);
 				text->SetPosition(p);
-				if (i == 0)
-					text->SetAlignment(0);
-				if (i == 1)
-					text->SetAlignment(2);
-				if (i == 3)
-					text->SetAlignment(0);
 				text->SetText(str);
 				pGeode->AddTextMesh(text, 0);
 			}

@@ -36,6 +36,7 @@ class ProfileDlg;
 class VehicleDlg;
 class vtAbstractLayer;
 class vtFeatureSet;
+class vtStructInstance;
 class vtTerrain;
 class vtTimeEngine;
 #ifdef NVIDIA_PERFORMANCE_MONITORING

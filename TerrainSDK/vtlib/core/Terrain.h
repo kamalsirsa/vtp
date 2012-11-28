@@ -34,7 +34,6 @@ class vtFeatureSet;
 class vtFence3d;
 class vtLodGrid;
 class vtPagedStructureLodGrid;
-class vtSimpleBillboardEngine;
 class vtSimpleLodGrid;
 class vtExternalHeightField3d;
 
@@ -283,7 +282,6 @@ public:
 	void AddEngine(vtEngine *pE);
 	void ActivateEngines(bool bActive);
 	vtEngine *GetEngineGroup() { return m_pEngineGroup; }
-	vtEngine *GetBillboardEngine() { return m_pBBEngine; }
 
 	// reports world coordinates
 	FPoint3 GetCenter();
@@ -497,7 +495,6 @@ protected:
 
 	// contain the engines specific to this terrain
 	vtEnginePtr		m_pEngineGroup;
-	vtEnginePtr		m_pBBEngine;
 
 	// only used during initialization
 	auto_ptr<vtElevationGrid>	m_pElevGrid;

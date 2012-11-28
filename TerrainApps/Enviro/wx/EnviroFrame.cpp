@@ -1827,7 +1827,6 @@ void EnviroFrame::Snapshot(bool bNumbered)
 
 	std::string Filename(use_name.mb_str(wxConvUTF8));
 	CScreenCaptureHandler::SetupScreenCapture(Filename);
-
 }
 
 void EnviroFrame::OnViewSnapshot(wxCommandEvent& event)

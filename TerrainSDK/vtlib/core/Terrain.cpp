@@ -1349,10 +1349,6 @@ void vtTerrain::_CreateCulture()
 	if (m_Params.GetValueBool(STR_ROADS))
 		_CreateRoads();
 
-	m_pBBEngine = new vtSimpleBillboardEngine(PID2f);
-	m_pBBEngine->setName("Billboard Engine");
-	m_pEngineGroup->AddChild(m_pBBEngine);
-
 	_CreateVegetation();
 	_CreateStructures();
 
@@ -3333,13 +3329,6 @@ vtAbstractLayer *vtTerrain::GetAbstractLayer()
 
 void vtTerrain::RemoveFeatureGeometries(vtAbstractLayer *alay)
 {
-	// labels might be targets of the billboard engine
-	vtGroup *labels = alay->GetLabelGroup();
-	if (labels)
-	{
-		for (unsigned int i = 0; i < labels->getNumChildren(); i++)
-			GetBillboardEngine()->RemoveTarget(labels->getChild(i));
-	}
 	alay->ReleaseGeometry();
 }
 
