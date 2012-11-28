@@ -464,7 +464,6 @@ bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 
 				// First three are X, Y, Z.  Optional fourth is "ID" or "locked".
 				sscanf(buf, "%lf %lf %f %d", &p.x, &p.y, &z, &optional);
-
 #if 0
 				// Some files have Y/-Z flipped (but they are non-standard)
 				double temp = p.y; p.y = -z; z = temp;
@@ -504,18 +503,12 @@ bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 			}
 		}
 	}
-
 	fclose(fp);
-
-	// Test each triangle for clockwisdom, fix if needed
-	//CleanupClockwisdom();
-
 	ComputeExtents();
-
 	return true;
 }
 
-bool vtTin::WriteGMS(const char *fname, bool progress_callback(int))
+bool vtTin::WriteGMS(const char *fname, bool progress_callback(int)) const
 {
 	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
@@ -525,7 +518,7 @@ bool vtTin::WriteGMS(const char *fname, bool progress_callback(int))
 	fprintf(fp, "TIN\n");
 	fprintf(fp, "BEGT\n");
 	fprintf(fp, "ID 1\n");			// Indices start at 1
-	//fprintf(fp, "TNAM tin\n");	// "name" of the TIN
+	//fprintf(fp, "TNAM tin\n");	// "name" of the TIN; optional
 	//fprintf(fp, "MAT 1\n");		// "TIN material ID"; optional
 
 	int i, count = 0;
@@ -537,7 +530,7 @@ bool vtTin::WriteGMS(const char *fname, bool progress_callback(int))
 	fprintf(fp, "VERT %d\n", verts);
 	for (i = 0; i < verts; i++)
 	{
-		fprintf(fp, "%lf %lf %lf\n", m_vert[i].x, m_vert[i].y, m_z[i]);
+		fprintf(fp, "%lf %lf %f\n", m_vert[i].x, m_vert[i].y, m_z[i]);
 
 		if (progress_callback && (++count % 200) == 0)
 			progress_callback(count * 99 / total);
@@ -557,6 +550,453 @@ bool vtTin::WriteGMS(const char *fname, bool progress_callback(int))
 	return true;
 }
 
+bool vtTin::ReadPLY(const char *fname, bool progress_callback(int))
+{
+	FILE *fp = vtFileOpen(fname, "rb");
+	if (!fp)
+		return false;
+
+	VTLOG("ReadPLY '%s'\n", fname);
+
+	char buf[256];
+	vtString tin_name;
+	int material_id;
+	int num_points;
+	int num_faces;
+	int inu = 0, a, b, c;
+
+	// first line is file identifier
+	if (fgets(buf, 256, fp) == NULL)
+		return false;
+
+	if (strncmp(buf, "ply", 3) != 0)
+		return false;
+
+	while (1)
+	{
+		if (fgets(buf, 256, fp) == NULL)
+			break;
+
+		// trim trailing EOL characters
+		vtString vstr = buf;
+		vstr.Remove('\r');
+		vstr.Remove('\n');
+		const char *str = (const char *)vstr;
+
+		if (!strncmp(str, "format", 6))	// beginning of TIN block
+			continue;
+
+		if (!strncmp(str, "ID", 2))	// material ID
+		{
+			sscanf(str, "ID %d", &material_id);
+		}
+		else if (!strncmp(str, "MAT", 3))	// material ID
+		{
+			sscanf(str, "MAT %d", &material_id);
+		}
+		else if (!strncmp(str, "TCOL", 4))	// material ID
+		{
+			sscanf(str, "TCOL %d", &material_id);
+		}
+ 		else if (!strncmp(str, "element vertex", 14))	// Number of vertices
+		{
+			sscanf(buf, "element vertex %d\n", &num_points);
+		}
+ 		else if (!strncmp(str, "element face", 12))	// Number of triangles
+		{
+			sscanf(buf, "element face %d\n", &num_faces);
+		}		
+		else if (!strncmp(str, "end_header", 10))	// TIN name
+		{
+			DPoint2 p;
+			float z;
+			int optional;
+			
+			VTLOG("ReadPLY num_points %d\n", num_points);
+  			
+			for (int i = 0; i < num_points; i++)
+			{
+				if (fgets(buf, 256, fp) == NULL)
+					break;
+
+				// First three are X, Y, Z.  Optional fourth is "ID" or "locked".
+				sscanf(buf, "%lf %lf %f %d", &p.x, &p.y, &z, &optional);
+#if 0
+				// Some files have Y/-Z flipped (but they are non-standard)
+				double temp = p.y; p.y = -z; z = temp;
+#endif
+				AddVert(p, z);
+
+				if ((i%200) == 0 && progress_callback != NULL)
+				{
+					if (progress_callback(i * 49 / num_points))
+					{
+						fclose(fp);
+						return false;	// user cancelled
+					}
+				}
+			}
+			
+			// Leggo anche i triangoli
+			VTLOG("ReadPLY num_faces %d\n", num_faces);
+
+			for (int i = 0; i < num_faces; i++)
+			{
+				if (fgets(buf, 256, fp) == NULL)
+					break;
+
+				sscanf(buf, "%d %d %d %d\n", &inu, &a, &b, &c);
+				AddTri(a, b, c);
+
+				if ((i%200) == 0 && progress_callback != NULL)
+				{
+					if (progress_callback(49 + i * 50 / num_faces))
+					{
+						fclose(fp);
+						return false;	// user cancelled
+					}
+				}
+			}
+		}
+	}
+	fclose(fp);
+	ComputeExtents();
+	return true;
+}
+
+/**
+ * Write the TIN to a Collada (.dae) file.  Note that we write X and Y as
+ * geographic coordinates, but DAE only supports single-precision floating
+ * point values, so it may lose some precision.
+ */
+bool vtTin::WriteDAE(const char *fname, bool progress_callback(int)) const
+{
+	FILE *fp = vtFileOpen(fname, "wb");
+	if (!fp)
+		return false;
+
+	// first line is file identifier
+	fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
+	fprintf(fp, "<COLLADA xmlns=\"http://www.collada.org/2005/11/COLLADASchema\" version=\"1.4.1\">\n");
+	fprintf(fp, "  <asset>\n");
+	fprintf(fp, "    <contributor>\n");
+	fprintf(fp, "      <authoring_tool>VTBuilder</authoring_tool>\n");
+	fprintf(fp, "    </contributor>\n");
+//	fprintf(fp, "    <created>2012-01-09T14:26:45Z</created>\n");
+//	fprintf(fp, "    <modified>2012-01-09T14:26:45Z</modified>\n");
+//	fprintf(fp, "    <unit meter=\"0.02539999969303608\" name=\"inch\" />\n");
+	fprintf(fp, "    <up_axis>Z_UP</up_axis>\n");
+	fprintf(fp, "  </asset>\n");
+	fprintf(fp, "  <library_visual_scenes>\n");
+	fprintf(fp, "    <visual_scene id=\"ID1\">\n");
+	fprintf(fp, "      <node name=\"VTBuilder\">\n");
+	fprintf(fp, "        <node id=\"ID2\" name=\"Earth_Terrain\">\n");
+	fprintf(fp, "          <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>\n");
+	fprintf(fp, "          <instance_geometry url=\"#ID3\">\n");
+	fprintf(fp, "            <bind_material>\n");
+	fprintf(fp, "              <technique_common>\n");
+	fprintf(fp, "                <instance_material symbol=\"Material2\" target=\"#ID4\">\n");
+	fprintf(fp, "                  <bind_vertex_input semantic=\"UVSET0\" input_semantic=\"TEXCOORD\" input_set=\"0\" />\n");
+	fprintf(fp, "                </instance_material>\n");
+	fprintf(fp, "              </technique_common>\n");
+	fprintf(fp, "            </bind_material>\n");
+	fprintf(fp, "          </instance_geometry>\n");
+	fprintf(fp, "        </node>\n");
+	fprintf(fp, "      </node>\n");
+	fprintf(fp, "    </visual_scene>\n");
+	fprintf(fp, "  </library_visual_scenes>\n");
+	fprintf(fp, "  <library_geometries>\n");
+	fprintf(fp, "    <geometry id=\"ID3\">\n");
+	fprintf(fp, "      <mesh>\n");
+	fprintf(fp, "        <source id=\"ID6\">\n");
+
+	int i, count = 0;
+	int verts = NumVerts();
+	int tris = NumTris();
+	int total = verts + tris;
+
+	// Here are:   Count   and   Coordinates X Y Z...
+	fprintf(fp, "          <float_array id=\"ID10\" count=\"%d\">\n",verts);
+
+	// write verts
+	for (i = 0; i < verts; i++)
+	{
+		fprintf(fp, "%lf %lf %f\n", m_vert[i].x, m_vert[i].y, m_z[i]);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}
+	fprintf(fp, "          </float_array>\n");
+
+	fprintf(fp, "          <technique_common>\n");
+	fprintf(fp, "            <accessor count=\"222\" source=\"#ID10\" stride=\"3\">\n");
+	fprintf(fp, "              <param name=\"X\" type=\"float\" />\n");
+	fprintf(fp, "              <param name=\"Y\" type=\"float\" />\n");
+	fprintf(fp, "              <param name=\"Z\" type=\"float\" />\n");
+	fprintf(fp, "            </accessor>\n");
+	fprintf(fp, "          </technique_common>\n");
+	fprintf(fp, "        </source>\n");
+	fprintf(fp, "\n");
+	fprintf(fp, "        <source id=\"ID8\">\n");
+	fprintf(fp, "          <Name_array id=\"ID12\" count=\"0\" />\n");
+	fprintf(fp, "          <technique_common>\n");
+	fprintf(fp, "            <accessor count=\"0\" source=\"#ID12\" stride=\"1\">\n");
+	fprintf(fp, "              <param name=\"skp_material\" type=\"Name\" />\n");
+	fprintf(fp, "            </accessor>\n");
+	fprintf(fp, "          </technique_common>\n");
+	fprintf(fp, "        </source>\n");
+	fprintf(fp, "        <vertices id=\"ID9\">\n");
+	fprintf(fp, "          <input semantic=\"POSITION\" source=\"#ID6\" />\n");
+	fprintf(fp, "          <input semantic=\"NORMAL\" source=\"#ID7\" />\n");
+	fprintf(fp, "        </vertices>\n");
+
+	// Here is triangles Count
+	fprintf(fp, "        <triangles count=\"%d\" material=\"Material2\">\n", tris);
+	fprintf(fp, "          <input offset=\"0\" semantic=\"VERTEX\" source=\"#ID9\" />\n");
+	fprintf(fp, "          <p>\n");
+
+	// write tris
+	//	fprintf(fp, "TRI %d\n", tris);
+	for (i = 0; i < tris; i++)
+	{
+		// Here is     triangle definition (zero based)  A B C ...
+		// the indices in the file are 1-based, so add 1
+		fprintf(fp, "%d %d %d\n", m_tri[i*3+0], m_tri[i*3+1], m_tri[i*3+2]);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}
+
+	fprintf(fp, "</p>\n");
+
+	fprintf(fp, "        </triangles>\n");
+	fprintf(fp, "      </mesh>\n");
+	fprintf(fp, "    </geometry>\n");
+	fprintf(fp, "  </library_geometries>\n");
+	fprintf(fp, "  <library_materials>\n");
+	fprintf(fp, "    <material id=\"ID4\" name=\"Google_Earth_Snapshot\">\n");
+	fprintf(fp, "      <instance_effect url=\"#ID5\" />\n");
+	fprintf(fp, "    </material>\n");
+	fprintf(fp, "  </library_materials>\n");
+	fprintf(fp, "  <library_effects>\n");
+	fprintf(fp, "    <effect id=\"ID5\">\n");
+	fprintf(fp, "      <profile_COMMON>\n");
+	fprintf(fp, "        <technique sid=\"COMMON\">\n");
+	fprintf(fp, "          <lambert>\n");
+	fprintf(fp, "            <diffuse>\n");
+
+	// Here is the color definition of the surface
+	fprintf(fp, "              <color>0.3411764705882353 0.392156862745098 0.3411764705882353 1</color>\n");
+
+	fprintf(fp, "            </diffuse>\n");
+	fprintf(fp, "          </lambert>\n");
+	fprintf(fp, "        </technique>\n");
+	fprintf(fp, "      </profile_COMMON>\n");
+	fprintf(fp, "    </effect>\n");
+	fprintf(fp, "  </library_effects>\n");
+	fprintf(fp, "  <scene>\n");
+	fprintf(fp, "    <instance_visual_scene url=\"#ID1\" />\n");
+	fprintf(fp, "  </scene>\n");
+	fprintf(fp, "</COLLADA>\n");
+
+	fclose(fp);
+	return true;
+}
+
+/**
+ * Write the TIN to a VRML (.wrl) file as an IndexedFaceSet.  Note that we
+ * write X and Y as geographic coordinates, but VRML only supports
+ * single-precision floating point values, so it may lose some precision.
+ */
+bool vtTin::WriteWRL(const char *fname, bool progress_callback(int)) const
+{
+	FILE *fp = vtFileOpen(fname, "wb");
+	if (!fp)
+		return false;
+
+	fprintf(fp, "#VRML V2.0 utf8\n");
+	fprintf(fp, "\n");
+	fprintf(fp, "WorldInfo\n"); 
+	fprintf(fp, "  {\n");
+	fprintf(fp, "  info\n"); 
+	fprintf(fp, "    [\n");
+	fprintf(fp, "    \"Generated by VTBuilder\"\n");
+	fprintf(fp, "    ]\n");
+	fprintf(fp, "  title \"TIN VRML Model\"\n");
+	fprintf(fp, "  }\n");
+	fprintf(fp, "\n");
+	fprintf(fp, "# TIN---------\n"); 
+	fprintf(fp, "Transform\n"); 
+	fprintf(fp, "  {\n");
+	fprintf(fp, "  children\n"); 
+	fprintf(fp, "    [\n");
+	fprintf(fp, "    Shape\n"); 
+	fprintf(fp, "      {\n");
+	fprintf(fp, "      appearance Appearance\n"); 
+	fprintf(fp, "	{\n");
+	fprintf(fp, "	material Material\n"); 
+	fprintf(fp, "	  {\n");
+	fprintf(fp, "	  }\n");
+	fprintf(fp, "	texture ImageTexture\n"); 
+	fprintf(fp, "	  {\n");
+	fprintf(fp, "	  url\n"); 
+	fprintf(fp, "	    [\n");
+	fprintf(fp, "	    \"OrtoImage.jpg\"\n");
+	fprintf(fp, "	    ]\n");
+	fprintf(fp, "	  }\n");
+	fprintf(fp, "	}\n");
+	fprintf(fp, "      geometry      IndexedFaceSet {\n");
+	fprintf(fp, "              ccw FALSE\n");
+	fprintf(fp, "              solid FALSE\n");
+	fprintf(fp, "              creaseAngle 1.396263\n");
+	fprintf(fp, "coord DEF Kxzy Coordinate {\n");
+	fprintf(fp, "                                     point [\n");
+
+	int i, count = 0;
+	int verts = NumVerts();
+	int tris = NumTris();
+	int total = verts + tris;
+
+	// write verts
+	//	fprintf(fp, "VERT %d\n", verts);
+	for (i = 0; i < verts; i++)
+	{
+		fprintf(fp, "%lf %lf %f\n", m_vert[i].x, m_vert[i].y, m_z[i]);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}
+
+	fprintf(fp, "	    ]\n");
+	fprintf(fp, "	  }\n");
+	fprintf(fp, "      	coordIndex \n");
+	fprintf(fp, "                  [\n");	
+
+	// write tris
+	for (i = 0; i < tris; i++)
+	{
+		// Here is  triangle definition (zero based)  A B C -1...
+		// the indices in the file are 1-based, so add 1
+		fprintf(fp, "%d %d %d -1\n", m_tri[i*3+0], m_tri[i*3+1], m_tri[i*3+2]);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}
+	fprintf(fp, "				  ]\n");	
+	fprintf(fp, "				}\n");	
+	fprintf(fp, "			      }\n");	
+	fprintf(fp, "			    ]\n");	
+	fprintf(fp, "			  }\n");	
+	fclose(fp);
+	return true;
+}
+
+/**
+ * Write the TIN to a Wavefront OBJ file.  Note that we write X and Y as
+ * geographic coordinates, but OBJ only supports single-precision floating
+ * point values, so it may lose some precision.
+ */
+bool vtTin::WriteOBJ(const char *fname, bool progress_callback(int)) const
+{
+	FILE *fp = vtFileOpen(fname, "wb");
+	if (!fp)
+		return false;
+
+	int i, count = 0;
+	int verts = NumVerts();
+	int tris = NumTris();
+	int total = verts + tris;
+
+	fprintf(fp, "####\n");
+	fprintf(fp, "#\n");
+	fprintf(fp, "# OBJ File Generated by VTBuilder\n");
+	fprintf(fp, "#\n");
+	fprintf(fp, "####\n");
+	fprintf(fp, "# Object %s\n", fname);
+	fprintf(fp, "#\n");
+	fprintf(fp, "# Vertices: %d\n", verts);
+	fprintf(fp, "# Faces: %d\n", tris);
+	fprintf(fp, "#\n");
+	fprintf(fp, "####\n");
+
+	// write verts
+	for (i = 0; i < verts; i++)
+	{
+		fprintf(fp, "v %lf %lf %f\n", m_vert[i].x, m_vert[i].y, m_z[i]);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}
+	
+	fprintf(fp, "# %d vertices, 0 vertices normals\n", verts);
+	fprintf(fp, "\n");
+
+	// write tris
+	for (i = 0; i < tris; i++)
+	{
+		// Here is     triangle definition (zero based)  A B C ...
+		// the indices in the file are 1-based, so add 1
+		fprintf(fp, "f %d %d %d\n", m_tri[i*3+0]+1, m_tri[i*3+1]+1, m_tri[i*3+2]+1);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}
+	fprintf(fp, "# %d faces, 0 coords texture\n", tris);	
+	fprintf(fp, "\n");	
+	fprintf(fp, "# End of File\n");	
+	fclose(fp);
+	return true;
+}
+
+/**
+ * Write the TIN to a Stanford Polygon File Format (PLY),
+ * http://en.wikipedia.org/wiki/PLY_(file_format)
+ */
+bool vtTin::WritePLY(const char *fname, bool progress_callback(int)) const
+{
+	FILE *fp = vtFileOpen(fname, "wb");
+	if (!fp)
+		return false;
+
+	int i, count = 0;
+	int verts = NumVerts();
+	int tris = NumTris();
+	int total = verts + tris;
+
+	fprintf(fp, "ply\n");
+	fprintf(fp, "format ascii 1.0\n");
+	fprintf(fp, "comment VTBuilder generated\n");
+	fprintf(fp, "element vertex %d\n", verts);
+	fprintf(fp, "property float x\n");
+	fprintf(fp, "property float y\n");
+	fprintf(fp, "property float z\n");
+	fprintf(fp, "element face %d\n", tris);
+	fprintf(fp, "property list uchar int vertex_indices\n");
+	fprintf(fp, "end_header\n");
+
+	// write verts
+	for (i = 0; i < verts; i++)
+	{
+		fprintf(fp, "%lf %lf %f\n", m_vert[i].x, m_vert[i].y, m_z[i]);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}
+
+	// write tris
+	for (i = 0; i < tris; i++)
+	{
+		// Here is  triangle definition (zero based)  A B C ...
+		fprintf(fp, "3 %d %d %d\n", m_tri[i*3+0], m_tri[i*3+1], m_tri[i*3+2]);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}    	
+
+	fclose(fp);
+	return true;
+}
+
 void vtTin::FreeData()
 {
 	m_vert.FreeData();
@@ -571,7 +1011,7 @@ void vtTin::FreeData()
 }
 
 /**
- * Write the TIN to a new-style .tin file (custom VTP format).
+ * Write the TIN to a TIN (.itf) file (VTP-defined format).
  */
 bool vtTin::Write(const char *fname, bool progress_callback(int)) const
 {
@@ -681,26 +1121,30 @@ void vtTin::VertOffset(float fAmount)
 	ComputeExtents();
 }
 
+/**
+ * Test if a given 2D point (x, y) is inside a triangle of this TIN (given
+ * by index).  If so, return true and give the elevation value by reference.
+ */
 bool vtTin::TestTriangle(int tri, const DPoint2 &p, float &fAltitude) const
 {
 	// get points
-	int v0 = m_tri[tri*3];
-	int v1 = m_tri[tri*3+1];
-	int v2 = m_tri[tri*3+2];
-	DPoint2 p1 = m_vert.GetAt(v0);
-	DPoint2 p2 = m_vert.GetAt(v1);
-	DPoint2 p3 = m_vert.GetAt(v2);
+	const int v0 = m_tri[tri*3];
+	const int v1 = m_tri[tri*3+1];
+	const int v2 = m_tri[tri*3+2];
+	const DPoint2 &p1 = m_vert.GetAt(v0);
+	const DPoint2 &p2 = m_vert.GetAt(v1);
+	const DPoint2 &p3 = m_vert.GetAt(v2);
 
 	// First try to identify which triangle
 	if (PointInTriangle(p, p1, p2, p3))
 	{
-		double bary[3], val;
+		double bary[3];
 		if (BarycentricCoords(p1, p2, p3, p, bary))
 		{
 			// compute barycentric combination of function values at vertices
-			val = bary[0] * m_z[v0] +
-				bary[1] * m_z[v1] +
-				bary[2] * m_z[v2];
+			const double val = bary[0] * m_z[v0] +
+							   bary[1] * m_z[v1] +
+							   bary[2] * m_z[v2];
 			fAltitude = (float) val;
 			return true;
 		}
@@ -711,7 +1155,7 @@ bool vtTin::TestTriangle(int tri, const DPoint2 &p, float &fAltitude) const
 /**
  * If you are going to do a large number of height-testing of this TIN
  * (with FindAltitudeOnEarth), call this method once first to set up a
- * series of bins which greatly speed up testing.
+ * series of indexing bins which greatly speed up testing.
  *
  * \param bins Number of bins per dimension, e.g. a value of 50 produces
  *		50*50=2500 bins.  More bins produces faster height-testing with
@@ -799,7 +1243,7 @@ bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) 
 		// If it was not in any of these bins, then it did not hit anything
 		return false;
 	}
-
+	// If no bins, we do a naive slow search.
 	for (unsigned int i = 0; i < tris; i++)
 	{
 		if (TestTriangle(i, p, fAltitude))
@@ -817,7 +1261,6 @@ bool vtTin::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 
 	return FindAltitudeOnEarth(DPoint2(earth.x, earth.y), fAltitude, bTrue);
 }
-
 
 bool vtTin::ConvertProjection(const vtProjection &proj_new)
 {
@@ -839,7 +1282,6 @@ bool vtTin::ConvertProjection(const vtProjection &proj_new)
 
 	return true;
 }
-
 
 /**
  * Test each triangle for clockwisdom, fix if needed.  The result should

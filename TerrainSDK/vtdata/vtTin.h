@@ -70,14 +70,22 @@ public:
 	void RemVert(int v);
 	void RemTri(int t);
 
+	// Native file I/O.
 	bool Read(const char *fname);
 	bool ReadHeader(const char *fname);
 	bool ReadBody(const char *fname);
 	bool Write(const char *fname, bool progress_callback(int) = NULL) const;
+
+	// Import/Export.
 	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadADF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadGMS(const char *fname, bool progress_callback(int) = NULL);
-	bool WriteGMS(const char *fname, bool progress_callback(int));
+	bool ReadPLY(const char *fname, bool progress_callback(int) = NULL);	
+	bool WriteGMS(const char *fname, bool progress_callback(int) = NULL) const;
+	bool WriteDAE(const char *fname, bool progress_callback(int) = NULL) const;
+	bool WriteWRL(const char *fname, bool progress_callback(int) = NULL) const;
+	bool WriteOBJ(const char *fname, bool progress_callback(int) = NULL) const;  
+	bool WritePLY(const char *fname, bool progress_callback(int) = NULL) const;
 	void FreeData();
 
 	unsigned int AddSurfaceType(const vtString &surface_texture, bool bTiled = false);
