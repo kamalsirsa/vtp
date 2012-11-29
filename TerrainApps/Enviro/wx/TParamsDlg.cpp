@@ -1446,7 +1446,7 @@ void TParamsDlg::OnMoveUpScenario( wxCommandEvent &event )
 		ScenarioParams TempParams = m_Scenarios[iSelected];
 		wxString TempString = m_pScenarioList->GetString(iSelected);
 		m_pScenarioList->Delete(iSelected);
-// Bug in wxWindows
+// Bug in wxWidgets
 //		m_pScenarioList->SetSelection(m_pScenarioList->Insert(TempString, iSelected - 1));
 		m_pScenarioList->Insert(TempString, iSelected - 1);
 		m_pScenarioList->SetSelection(iSelected - 1);
@@ -1465,7 +1465,7 @@ void TParamsDlg::OnMoveDownSceanario( wxCommandEvent &event )
 		ScenarioParams TempParams = m_Scenarios[iSelected];
 		wxString TempString = m_pScenarioList->GetString(iSelected);
 		m_pScenarioList->Delete(iSelected);
-// Bug in wxWindows
+// Bug in wxWidgets
 //		m_pScenarioList->SetSelection(m_pScenarioList->Insert(TempString, iSelected + 1));
 		m_pScenarioList->Insert(TempString, iSelected + 1);
 		m_pScenarioList->SetSelection(iSelected + 1);

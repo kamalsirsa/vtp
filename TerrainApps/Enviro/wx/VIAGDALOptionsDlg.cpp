@@ -42,7 +42,7 @@ void CVIAGDALOptionsDlg::Setup(int iDriverIndex)
     wxString DataTypes(pDriver->GetMetadataItem(GDAL_DMD_CREATIONDATATYPES), wxConvUTF8);
 	wxFileName HelpTopic(wxStandardPaths::Get().GetConfigDir(), wxEmptyString);
 #ifdef __WXMSW__
-	HelpTopic.RemoveLastDir(); // Strip off the app name appended by wxWindows
+	HelpTopic.RemoveLastDir(); // Strip off the app name appended by wxWidgets
 #endif
 	HelpTopic.AppendDir(wxT("VTP"));
 	HelpTopic.AppendDir(wxT("CommonData"));

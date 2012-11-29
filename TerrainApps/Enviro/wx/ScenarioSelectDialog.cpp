@@ -184,7 +184,7 @@ void ScenarioSelectDialog::OnMoveDownScenario( wxCommandEvent &event )
 		ScenarioParams TempParams = m_Scenarios[iSelected];
 		wxString TempString = pScenarioList->GetString(iSelected);
 		pScenarioList->Delete(iSelected);
-// Bug in wxWindows
+// Bug in wxWidgets
 //	  pScenarioList->SetSelection(pScenarioList->Insert(TempString, iSelected + 1));
 		pScenarioList->Insert(TempString, iSelected + 1);
 		pScenarioList->SetSelection(iSelected + 1);
@@ -205,7 +205,7 @@ void ScenarioSelectDialog::OnMoveUpScenario( wxCommandEvent &event )
 		ScenarioParams TempParams = m_Scenarios[iSelected];
 		wxString TempString = pScenarioList->GetString(iSelected);
 		pScenarioList->Delete(iSelected);
-// Bug in wxWindows
+// Bug in wxWidgets
 //	  pScenarioList->SetSelection(pScenarioList->Insert(TempString, iSelected - 1));
 		pScenarioList->Insert(TempString, iSelected - 1);
 		pScenarioList->SetSelection(iSelected - 1);

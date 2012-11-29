@@ -1,6 +1,6 @@
 //
 // Name:     app.cpp
-// Purpose:  The application class for a wxWindows application.
+// Purpose:  The application class for a wxWidgets application.
 //
 // Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.

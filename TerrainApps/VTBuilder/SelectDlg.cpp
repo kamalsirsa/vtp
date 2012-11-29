@@ -164,7 +164,7 @@ void SelectDlg::OnChoiceField( wxCommandEvent &event )
 void SelectDlg::OnOK( wxCommandEvent &event )
 {
 	// Using a validator for Combo Box doesn't work perfectly in last version
-	// of wxWindows.  Get the value directly instead.
+	// of wxWidgets.  Get the value directly instead.
 	m_strValue = GetComboValue()->GetValue();
 
 	event.Skip();

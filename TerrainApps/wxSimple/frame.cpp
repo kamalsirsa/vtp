@@ -1,6 +1,6 @@
 //
 // Name:	frame.cpp
-// Purpose: The frame class for a wxWindows application.
+// Purpose: The frame class for a wxWidgets application.
 //
 // Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.

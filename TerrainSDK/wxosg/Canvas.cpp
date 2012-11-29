@@ -253,7 +253,7 @@ void vtGLCanvas::OnChar(wxKeyEvent& event)
 	// pass the char to the vtlib Scene
 	vtGetScene()->OnKey(key, flags);
 
-	// Allow wxWindows to pass the event along to other code
+	// Allow wxWidgets to pass the event along to other code
 	event.Skip();
 }
 

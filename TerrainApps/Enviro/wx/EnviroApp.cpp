@@ -1,6 +1,6 @@
 //
 // Name:	 EnviroApp.cpp
-// Purpose:  The application class for our wxWindows application.
+// Purpose:  The application class for our wxWidgets application.
 //
 // Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -193,7 +193,7 @@ bool EnviroApp::OnInit()
 	StartLog();
 	LoadOptions();
 
-	// Redirect the wxWindows log messages to our own logging stream
+	// Redirect the wxWidgets log messages to our own logging stream
 	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);
 
@@ -284,7 +284,7 @@ void EnviroApp::StartLog()
 	g_App.Startup();	// starts log
 
 	VTLOG("Specific application name: %s\n", STRING_APPNAME);
-	VTLOG("Application framework: wxWindows v" wxVERSION_NUM_DOT_STRING "\n");
+	VTLOG("Application framework: wxWidgets v" wxVERSION_NUM_DOT_STRING "\n");
 #if WIN32
 	VTLOG1(" Running on: ");
 	LogWindowsVersion();

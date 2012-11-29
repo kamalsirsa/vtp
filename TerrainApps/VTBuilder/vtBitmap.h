@@ -16,7 +16,7 @@
 
 /**
  * This class provides an encapsulation of "bitmap" behavior, which can
- * either use the Win32 DIBSection methods, or the wxWindows Bitmap methods.
+ * either use the Win32 DIBSection methods, or the wxWidgets Bitmap methods.
  *
  * Set USE_DIBSECTIONS to 1 to get the DIBSection functionality.
  */

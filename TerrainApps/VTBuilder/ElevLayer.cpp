@@ -450,7 +450,7 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 	if (bDrawNormal)
 	{
 		// scale and draw the bitmap
-		// must use SetUserScale since wxWindows doesn't provide StretchBlt
+		// must use SetUserScale since wxWidgets doesn't provide StretchBlt
 		double scale_x = 1.0/ratio_x;
 		double scale_y = 1.0/ratio_y;
 		pDC->SetUserScale(scale_x, scale_y);
@@ -1400,7 +1400,7 @@ wxString vtElevLayer::GetFileExtension()
 //
 // Elevations are slightly more complicated than other layers, because there
 // are two formats allowed for saving.  This gets a bit messy, especially since
-// wxWindows does not support our double extension (.bt.gz) syntax.
+// wxWidgets does not support our double extension (.bt.gz) syntax.
 //
 bool vtElevLayer::AskForSaveFilename()
 {

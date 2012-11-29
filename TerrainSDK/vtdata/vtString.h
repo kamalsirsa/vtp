@@ -49,7 +49,7 @@ struct vtStringData
 
 /**
  * This class encapsulates a simple string, much like the 'CString' of MFC,
- * or the 'wxString' of wxWindows.
+ * or the 'wxString' of wxWidgets.
  */
 class vtString
 {
@@ -371,7 +371,7 @@ vtString UTF8ToLocal(const char *string_utf8);
  *
  * Unlike wxString, this class always uses wide characters, so it does not
  * need to be compiled in two flavors.  It also avoids a dependency on all
- * of wxWindows as well..
+ * of wxWidgets as well..
  *
  * Unlike MFC's CString, this class actually stores wide characters rather
  * than messy, multi-byte variable encodings.

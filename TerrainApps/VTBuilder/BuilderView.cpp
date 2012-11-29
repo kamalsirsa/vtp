@@ -1536,7 +1536,7 @@ void BuilderView::OnLeftDown(wxMouseEvent& event)
 	if (pL)
 		pL->OnLeftDown(this, m_ui);
 
-	// Allow wxWindows to pass the event along.  This is important because
+	// Allow wxWidgets to pass the event along.  This is important because
 	//  otherwise (with wx>2.4) we may not receive keyboard focus.
 	event.Skip();
 }

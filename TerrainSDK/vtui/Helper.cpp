@@ -1,5 +1,5 @@
 //
-// vtui Helper.cpp: Some useful standalone functions for use with wxWindows.
+// vtui Helper.cpp: Some useful standalone functions for use with wxWidgets.
 //
 // Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.

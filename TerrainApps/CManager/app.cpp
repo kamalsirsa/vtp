@@ -70,7 +70,7 @@ bool vtApp::OnInit(void)
 {
     m_pTrackball = NULL;
 
-	// Redirect the wxWindows log messages to our own logging stream
+	// Redirect the wxWidgets log messages to our own logging stream
 	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);
 

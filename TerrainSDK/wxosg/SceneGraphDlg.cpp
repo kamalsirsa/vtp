@@ -478,7 +478,7 @@ void SceneGraphDlg::OnChar(wxKeyEvent& event)
 	if (key == 'd' && m_pSelectedNode)
 		vtLogGraph(m_pSelectedNode);
 
-	// Allow wxWindows to pass the event along to other code
+	// Allow wxWidgets to pass the event along to other code
 	event.Skip();
 }
 
