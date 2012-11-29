@@ -46,7 +46,7 @@ bool DxfParser::RetrieveEntities(bool progress_callback(int))
 			return false;
 
 		m_iLine = 0;
-		m_pFile = vtFileOpen(m_sFileName, "r");
+		m_pFile = vtFileOpen(m_sFileName, "rb");
 		if (m_pFile == NULL)
 		{
 			return false;
@@ -133,6 +133,8 @@ inline bool DxfParser::ReadCodeValue(DxfCodeValue & pair)
 	sVal.TrimRight();
 	sVal.TrimLeft();
 	pair.m_sValue = sVal;
+
+	m_iLine += 2;
 
 	return true;
 }

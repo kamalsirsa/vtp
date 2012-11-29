@@ -2164,9 +2164,10 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 		choices.Add(_T("VRML ElevationGrid"));
 		choices.Add(_T("XYZ ASCII Points"));
 	}
-	else
+	else	// is a TIN
 	{
 		choices.Add(_T("GMS (Aquaveo) .tin"));
+		choices.Add(_T("DXF (AutoCAD) .dxf"));
 		choices.Add(_T("DAE (Collada) .dae"));
 		choices.Add(_T("WRL (VRML) .wrl"));
 		choices.Add(_T("OBJ (Alias Wavefront OBJ) .obj"));
@@ -2199,72 +2200,58 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	}
 	else	// is a TIN
 	{
-        bool success;
+		bool success;
 		vtString fname;
 		switch (dlg.GetSelection())
 		{
 		case 0:
-		   fname = pEL->GetExportFilename(FSTRING_GMS);
-		   if (fname == "")
-			   return;
-		   OpenProgressDialog(_T("Writing TIN"), false, this);
-		   success = pEL->GetTin()->WriteGMS(fname, progress_callback);
-		   CloseProgressDialog();
-		   if (success)
-			   DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
-		   else
-			   DisplayAndLog("Error writing file.");     
-       ; break;
+			fname = pEL->GetExportFilename(FSTRING_GMS);
+			if (fname == "")
+				return;
+			OpenProgressDialog(_T("Writing TIN"), false, this);
+			success = pEL->GetTin()->WriteGMS(fname, progress_callback);
+			break;
 		case 1:
-		   fname = pEL->GetExportFilename(FSTRING_DAE);
-		   if (fname == "")
-			   return;
-		   OpenProgressDialog(_T("Writing DAE"), false, this);
-		   success = pEL->GetTin()->WriteDAE(fname, progress_callback);
-		   CloseProgressDialog();
-		   if (success)
-			   DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
-		   else
-			   DisplayAndLog("Error writing file.");     
-       ; break;
+			fname = pEL->GetExportFilename(FSTRING_DXF);
+			if (fname == "")
+				return;
+			OpenProgressDialog(_T("Writing DXF"), false, this);
+			success = pEL->GetTin()->WriteDXF(fname, progress_callback);
+			break;
 		case 2:
-		   fname = pEL->GetExportFilename(FSTRING_WRL);
-		   if (fname == "")
-			   return;
-		   OpenProgressDialog(_T("Writing WRL"), false, this);
-		   success = pEL->GetTin()->WriteWRL(fname, progress_callback);
-		   CloseProgressDialog();
-		   if (success)
-			   DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
-		   else
-			   DisplayAndLog("Error writing file.");     
-       ; break;
+			fname = pEL->GetExportFilename(FSTRING_DAE);
+			if (fname == "")
+				return;
+			OpenProgressDialog(_T("Writing DAE"), false, this);
+			success = pEL->GetTin()->WriteDAE(fname, progress_callback);
+			break;
 		case 3:
-		   fname = pEL->GetExportFilename(FSTRING_OBJ);
-		   if (fname == "")
-			   return;
-		   OpenProgressDialog(_T("Writing OBJ"), false, this);
-		   success = pEL->GetTin()->WriteOBJ(fname, progress_callback);
-		   CloseProgressDialog();
-		   if (success)
-			   DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
-		   else
-			   DisplayAndLog("Error writing file.");     
-       ; break;  
+			fname = pEL->GetExportFilename(FSTRING_WRL);
+			if (fname == "")
+				return;
+			OpenProgressDialog(_T("Writing WRL"), false, this);
+			success = pEL->GetTin()->WriteWRL(fname, progress_callback);
+			break;
 		case 4:
-		   fname = pEL->GetExportFilename(FSTRING_PLY);
-		   if (fname == "")
-			   return;
-		   OpenProgressDialog(_T("Writing PLY"), false, this);
-		   success = pEL->GetTin()->WritePLY(fname, progress_callback);
-		   CloseProgressDialog();
-		   if (success)
-			   DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
-		   else
-			   DisplayAndLog("Error writing file.");     
-       ; break;                        
+			fname = pEL->GetExportFilename(FSTRING_OBJ);
+			if (fname == "")
+				return;
+			OpenProgressDialog(_T("Writing OBJ"), false, this);
+			success = pEL->GetTin()->WriteOBJ(fname, progress_callback);
+			break;  
+		case 5:
+			fname = pEL->GetExportFilename(FSTRING_PLY);
+			if (fname == "")
+				return;
+			OpenProgressDialog(_T("Writing PLY"), false, this);
+			success = pEL->GetTin()->WritePLY(fname, progress_callback);
+			break;                        
 		}	
-
+		CloseProgressDialog();
+		if (success)
+			DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+		else
+			DisplayAndLog("Error writing file.");     
 	}
 }
 

@@ -86,6 +86,7 @@ public:
 	bool WriteWRL(const char *fname, bool progress_callback(int) = NULL) const;
 	bool WriteOBJ(const char *fname, bool progress_callback(int) = NULL) const;  
 	bool WritePLY(const char *fname, bool progress_callback(int) = NULL) const;
+	bool WriteDXF(const char *fname, bool progress_callback(int) = NULL) const;
 	void FreeData();
 
 	uint AddSurfaceType(const vtString &surface_texture, bool bTiled = false);

@@ -855,9 +855,9 @@ bool vtTin::WriteWRL(const char *fname, bool progress_callback(int)) const
 	fprintf(fp, "                                     point [\n");
 
 	int i, count = 0;
-	int verts = NumVerts();
-	int tris = NumTris();
-	int total = verts + tris;
+	const int verts = NumVerts();
+	const int tris = NumTris();
+	const int total = verts + tris;
 
 	// write verts
 	//	fprintf(fp, "VERT %d\n", verts);
@@ -905,9 +905,9 @@ bool vtTin::WriteOBJ(const char *fname, bool progress_callback(int)) const
 		return false;
 
 	int i, count = 0;
-	int verts = NumVerts();
-	int tris = NumTris();
-	int total = verts + tris;
+	const int verts = NumVerts();
+	const int tris = NumTris();
+	const int total = verts + tris;
 
 	fprintf(fp, "####\n");
 	fprintf(fp, "#\n");
@@ -999,6 +999,92 @@ bool vtTin::WritePLY(const char *fname, bool progress_callback(int)) const
 	return true;
 }
 
+/**
+ * Write the TIN to a AutoCAD DXF file using 3DFACE entities.
+ */
+bool vtTin::WriteDXF(const char *fname, bool progress_callback(int)) const
+{
+	FILE *fp = vtFileOpen(fname, "wb");
+	if (!fp)
+		return false;
+
+	// Header
+	fprintf(fp, "  0\nSECTION\n");
+	fprintf(fp, "  2\nHEADER\n  9\n$ACADVER\n  1\nAC1006\n");
+	fprintf(fp, "  9\n$EXTMIN\n");
+	fprintf(fp, " 10\n%lf\n", m_EarthExtents.left);
+	fprintf(fp, " 20\n%lf\n", m_EarthExtents.bottom);
+	fprintf(fp, "  9\n$EXTMAX\n");
+	fprintf(fp, " 10\n%lf\n", m_EarthExtents.right);
+	fprintf(fp, " 20\n%lf\n", m_EarthExtents.top);
+	fprintf(fp, "  0\nENDSEC\n");
+
+	// Tables section
+	fprintf(fp, "  0\nSECTION\n");
+	fprintf(fp, "  2\nTABLES\n");
+
+	// ------------------------------------
+	// Table of Layers
+	fprintf(fp, "  0\nTABLE\n");
+	fprintf(fp, "  2\nLAYER\n");
+	fprintf(fp, " 70\n1\n");	// max number of layers which follow
+
+	// A layer
+	fprintf(fp, "  0\nLAYER\n");
+	fprintf(fp, "  2\nPEN1\n");	// layer name
+	fprintf(fp, " 70\n0\n");	// layer flags
+	fprintf(fp, " 62\n3\n");	// color number 3 = green
+	fprintf(fp, "  6\nCONTINUOUS\n");	// linetype name
+
+	// end tables layer
+	fprintf(fp, "  0\nENDTAB\n");
+
+	// ------------------------------------
+	// end tables section
+	fprintf(fp, "  0\nENDSEC\n");
+
+	// Entities
+	fprintf(fp, "  0\nSECTION\n");
+	fprintf(fp, "  2\nENTITIES\n");
+
+	// write tris
+	int i, count = 0;
+	int verts = NumVerts();
+	int tris = NumTris();
+	int total = verts + tris;
+	const char *layer = "PEN1";
+	for (i = 0; i < tris; i++)
+	{
+		const int v0 = m_tri[i*3+0];
+		const int v1 = m_tri[i*3+1];
+		const int v2 = m_tri[i*3+2];
+
+		fprintf(fp, "  0\n3DFACE\n");
+		fprintf(fp, "  8\n%s\n", layer);
+		fprintf(fp, " 62\n     3\n");	// color number
+		fprintf(fp, " 10\n%lf\n", m_vert[v0].x);
+		fprintf(fp, " 20\n%lf\n", m_vert[v0].y);
+		fprintf(fp, " 30\n%f\n", m_z[v0]);
+		fprintf(fp, " 11\n%lf\n", m_vert[v1].x);
+		fprintf(fp, " 21\n%lf\n", m_vert[v1].y);
+		fprintf(fp, " 31\n%f\n", m_z[v1]);
+		fprintf(fp, " 12\n%lf\n", m_vert[v2].x);
+		fprintf(fp, " 22\n%lf\n", m_vert[v2].y);
+		fprintf(fp, " 32\n%f\n", m_z[v2]);
+		// DXF wants the last point duplicated to make 4 points.
+		fprintf(fp, " 12\n%lf\n", m_vert[v2].x);
+		fprintf(fp, " 22\n%lf\n", m_vert[v2].y);
+		fprintf(fp, " 32\n%f\n", m_z[v2]);
+
+		if (progress_callback && (++count % 200) == 0)
+			progress_callback(count * 99 / total);
+	}    	
+	fprintf(fp, "  0\nENDSEC\n");
+	fprintf(fp, "  0\nEOF\n");
+	fclose(fp);
+	return true;
+}
+
 void vtTin::FreeData()
 {
 	m_vert.FreeData();
@@ -1078,7 +1164,7 @@ bool vtTin::Write(const char *fname, bool progress_callback(int)) const
 
 bool vtTin::ComputeExtents()
 {
-	int size = NumVerts();
+	const int size = NumVerts();
 	if (size == 0)
 		return false;
 
@@ -1101,7 +1187,7 @@ bool vtTin::ComputeExtents()
 
 void vtTin::Offset(const DPoint2 &p)
 {
-	uint size = m_vert.GetSize();
+	const uint size = m_vert.GetSize();
 	for (uint j = 0; j < size; j++)
 		m_vert[j] += p;
 	ComputeExtents();
@@ -1109,7 +1195,7 @@ void vtTin::Offset(const DPoint2 &p)
 
 void vtTin::Scale(float fFactor)
 {
-	uint size = m_z.GetSize();
+	const uint size = m_z.GetSize();
 	for (uint j = 0; j < size; j++)
 		m_z[j] *= fFactor;
 	ComputeExtents();
@@ -1117,7 +1203,7 @@ void vtTin::Scale(float fFactor)
 
 void vtTin::VertOffset(float fAmount)
 {
-	uint size = m_z.GetSize();
+	const uint size = m_z.GetSize();
 	for (uint j = 0; j < size; j++)
 		m_z[j] += fAmount;
 	ComputeExtents();
