@@ -71,9 +71,12 @@ bool BuilderApp::OnInit()
 	VTLOG("_setmaxstdio to %d\n", newmax);
 #endif
 
-	// Redirect the wxWindows log messages to our own logging stream
+	// Redirect the wxWidgets log messages to our own logging stream
 	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);
+	wxLog::SetLogLevel(wxLOG_User);
+	wxLog::SetVerbose();
+	wxLogVerbose("wxWidgets logging enabled");
 
 	Args(argc, argv);
 
