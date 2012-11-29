@@ -10,7 +10,7 @@
 /** Catch wxWidgets logging message, direct them to the vtLog */
 class LogCatcher : public wxLog
 {
-	void DoLogString(const wxChar *szString, time_t t)
+	void DoLogText(const wxChar *szString, time_t t)
 	{
 		VTLOG1(" wxLog: ");
 		wxString str(szString);
