@@ -54,9 +54,9 @@ public:
 	CLightSpacePerspectiveShadowTechnique();
 
 	void InitJittering(osg::StateSet *pStateSet);
-	unsigned int m_JitterTextureUnit;
-	void AddAdditionalTerrainTextureUnit(const unsigned int Unit, const unsigned int Mode);
-	void RemoveAdditionalTerrainTextureUnit(const unsigned int Unit);
+	uint m_JitterTextureUnit;
+	void AddAdditionalTerrainTextureUnit(const uint Unit, const uint Mode);
+	void RemoveAdditionalTerrainTextureUnit(const uint Unit);
 	void RemoveAllAdditionalTerrainTextureUnits();
 
 protected:
@@ -66,7 +66,7 @@ protected:
 	{
 		virtual void init( ThisClass * st, osgUtil::CullVisitor * cv );           
 	};
-	std::map<unsigned int, unsigned int>	m_AdditionalTerrainTextureUnits;
+	std::map<uint, uint>	m_AdditionalTerrainTextureUnits;
 
 	// This macro is required if you override ViewData and ViewData::init
 	// It generates virtual stub function in the Base class which 

@@ -243,12 +243,12 @@ public:
 	/// Get the darkness, from 0 to 1.
 	float GetDarkness();
 
-	void AddAdditionalTerrainTextureUnit(const unsigned int Unit, const unsigned int Mode);
-	void RemoveAdditionalTerrainTextureUnit(const unsigned int Unit);
+	void AddAdditionalTerrainTextureUnit(const uint Unit, const uint Mode);
+	void RemoveAdditionalTerrainTextureUnit(const uint Unit);
 	void RemoveAllAdditionalTerrainTextureUnits();
 
 	/// A single texture is used for the shadow.  It's resolution defaults to 1024.
-	void SetShadowTextureResolution(const unsigned int ShadowTextureResolution);
+	void SetShadowTextureResolution(const uint ShadowTextureResolution);
 
 	/// The shadow may be recalculated every frame, or for improved performance, only when desired
 	void SetRecalculateEveryFrame(const bool RecalculateEveryFrame);
@@ -328,7 +328,7 @@ public:
 	void AddTextMesh(vtTextMesh *pMesh, int iMatIdx);
 
 	/** Return the number of contained meshes. */
-	unsigned int GetNumMeshes() const;
+	uint GetNumMeshes() const;
 
 	/** Return a contained vtMesh by index. */
 	vtMesh *GetMesh(int i) const;

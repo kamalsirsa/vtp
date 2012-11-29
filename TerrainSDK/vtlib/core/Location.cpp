@@ -213,7 +213,7 @@ void vtLocationSaver::SetProjection(const vtProjection &proj)
 	m_pConvertFromWGS = CreateCoordTransform(&global_proj, &m_proj, true);
 }
 
-bool vtLocationSaver::StoreTo(unsigned int num, const LocNameString &name)
+bool vtLocationSaver::StoreTo(uint num, const LocNameString &name)
 {
 	if (!m_pTransform)
 		return false;

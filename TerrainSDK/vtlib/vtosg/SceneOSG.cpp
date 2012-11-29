@@ -277,7 +277,7 @@ void vtScene::OnMouse(vtMouseEvent &event, vtWindow *pWindow)
 {
 	// Pass event to Engines
 	vtEngineArray list(m_pRootEngine);
-	for (unsigned int i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.GetSize(); i++)
 	{
 		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled() &&
@@ -290,7 +290,7 @@ void vtScene::OnKey(int key, int flags, vtWindow *pWindow)
 {
 	// Pass event to Engines
 	vtEngineArray list(m_pRootEngine);
-	for (unsigned int i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.GetSize(); i++)
 	{
 		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled() &&
@@ -318,7 +318,7 @@ void vtScene::DoEngines(vtEngine *eng)
 {
 	// Evaluate Engines
 	vtEngineArray list(eng);
-	for (unsigned int i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.GetSize(); i++)
 	{
 		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled())
@@ -339,11 +339,11 @@ void vtScene::TargetRemoved(osg::Referenced *tar)
 {
 	// Look at all Engines
 	vtEngineArray list(m_pRootEngine);
-	for (unsigned int i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.GetSize(); i++)
 	{
 		// If this engine targets something that is no longer there
 		vtEngine *pEng = list[i];
-		for (unsigned int j = 0; j < pEng->NumTargets(); j++)
+		for (uint j = 0; j < pEng->NumTargets(); j++)
 		{
 			// Then remove it
 			if (pEng->GetTarget(j) == tar)
@@ -624,7 +624,7 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 
 	// Pass event to Engines
 	vtEngineArray list(m_pRootEngine);
-	for (unsigned int i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.GetSize(); i++)
 	{
 		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled() &&
@@ -760,7 +760,7 @@ void printnode(osg::Node *node, int tab)
 	osg::notify(osg::WARN) << node->className() << " - " << node->getName() << " @ " << node << std::endl;
 	osg::Group *group = node->asGroup();
 	if (group) {
-		for (unsigned int i = 0; i < group->getNumChildren(); i++) {
+		for (uint i = 0; i < group->getNumChildren(); i++) {
 			printnode(group->getChild(i), tab+1);
 		}
 	}

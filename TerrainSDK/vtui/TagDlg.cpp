@@ -44,7 +44,7 @@ void TagDlg::SetTags(vtTagArray *tags)
 {
 	m_pList->DeleteAllItems();
 	vtTag *tag;
-	for (unsigned int i = 0; i < tags->NumTags(); i++)
+	for (uint i = 0; i < tags->NumTags(); i++)
 	{
 		tag = tags->GetTag(i);
 		int item = m_pList->InsertItem(i, wxString(tag->name, wxConvUTF8));

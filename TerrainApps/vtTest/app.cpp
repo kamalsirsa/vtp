@@ -21,7 +21,7 @@ public:
 		theta += 0.006f;
 		if (theta > PI2f)
 			theta -= PI2f;
-		for (unsigned int i = 0; i < NumTargets(); i++)
+		for (uint i = 0; i < NumTargets(); i++)
 		{
 			osg::Referenced *t = GetTarget(i);
 			vtTransform *x = dynamic_cast<vtTransform*>(t);
@@ -354,7 +354,7 @@ void print_engine_tree(vtEngine *eng, int indent = 0)
 {
 	for (int i = 0; i < indent; i++) VTLOG1(" ");
 	VTLOG("eng %lx\n", eng);
-	for (unsigned int i = 0; i < eng->NumChildren(); i++)
+	for (uint i = 0; i < eng->NumChildren(); i++)
 		print_engine_tree(eng->GetChild(i), indent+1);
 }
 

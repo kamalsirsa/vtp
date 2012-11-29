@@ -13,6 +13,8 @@
 #include <locale.h>
 #include <vector>
 #include <string>
+
+#include "vtdata/config_vtdata.h"
 #include "Array.h"
 
 // willemsn: this was taken from OSG's Math include file.
@@ -419,7 +421,7 @@ public:
 
 	// Query
 	bool ContainsPoint(const DPoint2 &p) const;
-	double SegmentLength(unsigned int i) const;
+	double SegmentLength(uint i) const;
 	void NearestPoint(const DPoint2 &Point, int &iIndex, double &dist) const;
 	bool NearestSegment(const DPoint2 &Point, int &iIndex, double &dist, DPoint2 &Intersection) const;
 	bool IsConvex() const;
@@ -455,7 +457,7 @@ public:
 	FLine2 &operator=(const DLine2 &v);
 
 	float Area() const;
-	float SegmentLength(unsigned int i) const;
+	float SegmentLength(uint i) const;
 	void NearestPoint(const FPoint2 &Point, int &iIndex, float &dist) const;
 	void NearestPoint(const FPoint2 &Point, int &iIndex) const;
 	bool NearestSegment(const FPoint2 &Point, int &iIndex, float &dist, FPoint2 &Intersection) const;
@@ -675,7 +677,7 @@ public:
 	}
 	void GrowToContainLine(const FLine3 &line)
 	{
-		for (unsigned int i = 0; i < line.GetSize(); i++)
+		for (uint i = 0; i < line.GetSize(); i++)
 			GrowToContainPoint(line[i]);
 	}
 	void GrowToContainBox(const FBox3 &box)
@@ -760,7 +762,7 @@ class DPolygon2 : public DLine2Array
 {
 public:
 	// Query
-	unsigned int NumTotalVertices() const;
+	uint NumTotalVertices() const;
 	bool ComputeExtents(DRECT &rect) const;
 	bool ContainsPoint(const DPoint2 &p) const;
 	void GetAsDLine2(DLine2 &dline) const;
@@ -807,7 +809,7 @@ public:
 	void Add(const FPoint3 &p);
 	void Mult(float factor);
 	void ReverseOrder();
-	unsigned int NumTotalVertices() const;
+	uint NumTotalVertices() const;
 	int WhichRing(int &iVtxNum) const;
 };
 

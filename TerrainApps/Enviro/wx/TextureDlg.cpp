@@ -102,7 +102,7 @@ void TextureDlg::UpdateColorMapChoice()
 {
 	m_pColorMap->Clear();
 	vtStringArray &paths = vtGetDataPath();
-	for (unsigned int i = 0; i < paths.size(); i++)
+	for (uint i = 0; i < paths.size(); i++)
 	{
 		// fill the "colormap" control with available colormap files
 		AddFilenamesToChoice(m_pColorMap, paths[i] + "GeoTypical", "*.cmt");
@@ -162,7 +162,7 @@ void TextureDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	m_bSetting = true;
 
-	unsigned int i;
+	uint i;
 	int sel;
 
 	vtStringArray &paths = vtGetDataPath();

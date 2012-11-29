@@ -95,16 +95,16 @@ public:
 
 	// Create for a single feature
 	void CreateStyledFeature(int iIndex);
-	void CreateObjectGeometry(unsigned int iIndex);
-	void CreateLineGeometry(unsigned int iIndex);
-	void CreateFeatureLabel(unsigned int iIndex);
+	void CreateObjectGeometry(uint iIndex);
+	void CreateLineGeometry(uint iIndex);
+	void CreateFeatureLabel(uint iIndex);
 
 	void ReleaseGeometry();
 	void ReleaseFeatureGeometry(vtFeature *f);
 
 	// When the underlying feature changes, we need to rebuild the visual
 	void Rebuild();
-	void RebuildFeature(unsigned int iIndex);
+	void RebuildFeature(uint iIndex);
 	void UpdateVisualSelection();
 	void Reload();
 
@@ -122,7 +122,7 @@ public:
 protected:
 	void CreateGeomGroup();
 	void CreateLabelGroup();
-	int GetObjectMaterialIndex(vtTagArray &style, unsigned int iIndex);
+	int GetObjectMaterialIndex(vtTagArray &style, uint iIndex);
 
 	// A set of properties that can provide additional information, such as
 	//  style information for visual display.

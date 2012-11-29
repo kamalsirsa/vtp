@@ -212,7 +212,7 @@ void BuilderView::DrawDymaxionOutline(wxDC *pDC)
 
 	m_icosa.GetDymaxEdges(polys);
 
-	for (unsigned int i = 0; i < polys.size(); i++)
+	for (uint i = 0; i < polys.size(); i++)
 	{
 		DrawPolyLine(pDC, polys[i], true);
 	}
@@ -348,7 +348,7 @@ bool BuilderView::ImportWorldMap()
 {
 	SHPHandle	hSHP;
 	int			nShapeType, nShapeCount;
-	unsigned int i;
+	uint i;
 	int j, k;
 
 	vtString fname = FindFileOnPaths(vtGetDataPath(), "WorldMap/gnv19.shp");
@@ -367,7 +367,7 @@ bool BuilderView::ImportWorldMap()
 	SHPGetInfo(hSHP, &nShapeCount, &nShapeType, NULL, NULL);
 	if (nShapeType != SHPT_POLYGON)
 		return false;
-	unsigned int iShapeCount = nShapeCount;
+	uint iShapeCount = nShapeCount;
 
 	// Copy SHP data into World Map Poly data
 	WMPoly.reserve(iShapeCount * 11 / 10);
@@ -411,7 +411,7 @@ bool BuilderView::ImportWorldMap()
 	SHPClose(hSHP);
 
 	// Initialize the drawn World Map WMPolyDraw to original (latlon)
-	m_iEntities = (unsigned int)WMPoly.size();
+	m_iEntities = (uint)WMPoly.size();
 	WMPolyDraw.resize(m_iEntities);
 	for (i = 0; i < m_iEntities; i++)
 		WMPolyDraw[i] = WMPoly[i];
@@ -421,7 +421,7 @@ bool BuilderView::ImportWorldMap()
 
 void BuilderView::SetWMProj(const vtProjection &proj)
 {
-	unsigned int i, j;
+	uint i, j;
 
 	if (WMPoly.size() == 0)
 		return;
@@ -560,7 +560,7 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 
 #if 1
 	// Draw each poly in WMPolyDraw
-	for (unsigned int i = 0; i < m_iEntities; i++)
+	for (uint i = 0; i < m_iEntities; i++)
 	{
 		if (bHaveBounds)
 		{
@@ -571,7 +571,7 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 	}
 #else
 	// Draw each poly in WMPolyDraw
-	for (unsigned int i = 0; i < m_iEntities; i++)
+	for (uint i = 0; i < m_iEntities; i++)
 	{
 		if (bHaveBounds)
 		{
@@ -985,7 +985,7 @@ void BuilderView::DrawDistanceTool(wxDC *pDC)
 		DrawPolyLine(pDC, m_distance_path, false);
 
 		// draw small crosshairs
-		unsigned int i, len = m_distance_path.GetSize();
+		uint i, len = m_distance_path.GetSize();
 		for (i = 0; i < len; i++)
 		{
 			wxPoint p1 = g_screenbuf[i];

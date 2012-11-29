@@ -27,7 +27,7 @@ public:
 	virtual void OnModified();
 	virtual void RefreshViz();
 	virtual void OnFeatureDelete(vtFeature *f);
-	virtual void OnFieldEdited(unsigned int iIndex);
+	virtual void OnFieldEdited(uint iIndex);
 	virtual void OnEditEnd();
 
 protected:

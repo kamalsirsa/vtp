@@ -1672,9 +1672,9 @@ bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
 					output_buf.SetBounds(proj, tile_area);
 
 					int iUncompressedSize = tilesize * tilesize * 3;
-					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
+					uchar *rgb_bytes = (uchar *) malloc(iUncompressedSize);
 
-					unsigned char *dst = rgb_bytes;
+					uchar *dst = rgb_bytes;
 					RGBi rgb;
 					for (int ro = 0; ro < base_tilesize; ro += (1<<k))
 						for (int co = 0; co < base_tilesize; co += (1<<k))

@@ -115,13 +115,13 @@ void vtLogGraph(osg::Node *node, bool bExtents, bool bRefCounts, int indent)
 	osg::Group *grp = dynamic_cast<osg::Group*>(node);
 	if (grp)
 	{
-		for (unsigned int i = 0; i < grp->getNumChildren(); i++)
+		for (uint i = 0; i < grp->getNumChildren(); i++)
 			vtLogGraph(grp->getChild(i), bExtents, bRefCounts, indent+2);
 	}
 	osg::Geode *geode = dynamic_cast<osg::Geode*>(node);
 	if (geode)
 	{
-		for (unsigned int i = 0; i < geode->getNumDrawables(); i++)
+		for (uint i = 0; i < geode->getNumDrawables(); i++)
 		{
 			osg::Geometry *geo = dynamic_cast<osg::Geometry *>(geode->getDrawable(i));
 			if (!geo) continue;

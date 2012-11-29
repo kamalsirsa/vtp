@@ -101,7 +101,7 @@ void LineBufferGDAL::Setup(GDALDataset *pDataset)
 		else
 			throw "Unsupported color interpretation.";
 
-		if (NULL == (m_pBlock = new unsigned char[m_MaxBlockSize]))
+		if (NULL == (m_pBlock = new uchar[m_MaxBlockSize]))
 			throw "Couldnt allocate scan line.";
 	}
 
@@ -149,9 +149,9 @@ void LineBufferGDAL::Setup(GDALDataset *pDataset)
 		//m_nxBlocks = (m_iXSize + m_xBlockSize - 1) / m_xBlockSize;
 		//m_nyBlocks = (m_iYSize + m_yBlockSize - 1) / m_yBlockSize;
 
-		m_pRedBlock = new unsigned char[m_MaxBlockSize];
-		m_pGreenBlock = new unsigned char[m_MaxBlockSize];
-		m_pBlueBlock = new unsigned char[m_MaxBlockSize];
+		m_pRedBlock = new uchar[m_MaxBlockSize];
+		m_pGreenBlock = new uchar[m_MaxBlockSize];
+		m_pBlueBlock = new uchar[m_MaxBlockSize];
 	}
 }
 
@@ -377,7 +377,7 @@ vtImage::vtImage(const DRECT &area, int xsize, int ysize,
 
 vtImage::~vtImage()
 {
-	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
+	for (uint i = 0; i < m_Bitmaps.size(); i++)
 	{
 		if (m_Bitmaps[i].m_pBitmap != NULL)
 			delete m_Bitmaps[i].m_pBitmap;
@@ -410,7 +410,7 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 	double dRes = 1.0 / pView->GetScale();
 	DPoint2 spacing = GetSpacing();
 	double diff = 1E9;
-	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
+	for (uint i = 0; i < m_Bitmaps.size(); i++)
 	{
 		double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
 		if (d2 < diff && m_Bitmaps[i].m_pBitmap)
@@ -659,7 +659,7 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 
 			count = 0;
 			sum.Set(0,0,0);
-			for (unsigned int k = 0; k < offsets.GetSize(); k++)
+			for (uint k = 0; k < offsets.GetSize(); k++)
 			{
 				mp = p + offsets[k];
 
@@ -769,12 +769,12 @@ bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes)
 	return true;
 }
 
-void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets)
+void MakeSampleOffsets(const DPoint2 cellsize, uint N, DLine2 &offsets)
 {
 	DPoint2 spacing = cellsize / N;
 	DPoint2 base = spacing * -((float) (N-1) / 2);
-	for (unsigned int i = 0; i < N; i++)
-		for (unsigned int j = 0; j < N; j++)
+	for (uint i = 0; i < N; i++)
+		for (uint j = 0; j < N; j++)
 			offsets.Append(DPoint2(base.x + (i*spacing.x), base.y + (j*spacing.y)));
 }
 
@@ -788,7 +788,7 @@ bool vtImage::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb,
 	RGBi color;
 	rgb.Set(0,0,0);
 	int count = 0;
-	for (unsigned int i = 0; i < offsets.GetSize(); i++)
+	for (uint i = 0; i < offsets.GetSize(); i++)
 	{
 		if (GetColorSolid(p+offsets[i], color, dRes))
 		{
@@ -807,7 +807,7 @@ bool vtImage::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb,
 int vtImage::NumBitmapsInMemory()
 {
 	int count = 0;
-	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
+	for (uint i = 0; i < m_Bitmaps.size(); i++)
 		if (m_Bitmaps[i].m_pBitmap != NULL)
 			count++;
 	return count;
@@ -816,7 +816,7 @@ int vtImage::NumBitmapsInMemory()
 int vtImage::NumBitmapsOnDisk()
 {
 	int count = 0;
-	for (unsigned int i = 0; i < m_Bitmaps.size(); i++)
+	for (uint i = 0; i < m_Bitmaps.size(); i++)
 		if (m_Bitmaps[i].m_bOnDisk)
 			count++;
 	return count;
@@ -887,7 +887,7 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 	}
 }
 
-void vtImage::SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b)
+void vtImage::SetRGB(int x, int y, uchar r, uchar g, uchar b)
 {
 	// this method clearly only works for in-memory images
 	if (m_Bitmaps[0].m_pBitmap)
@@ -1123,7 +1123,7 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 	int data_size = data_length / (iXSize*iYSize);
 
 	int line_length = 3 * iXSize;
-	unsigned char *line = new unsigned char[line_length];
+	uchar *line = new uchar[line_length];
 
 	for (int j = 0; j < iYSize; j++)
 	{
@@ -1156,12 +1156,12 @@ bool vtImage::WritePPM(const char *fname) const
 	fprintf(fp, "255\n");		// PGM standard value
 
 	int line_length = 3 * bm->GetWidth();
-	unsigned char *line = new unsigned char[line_length];
+	uchar *line = new uchar[line_length];
 
 	RGBi rgb;
-	for (unsigned int j = 0; j < bm->GetHeight(); j++)
+	for (uint j = 0; j < bm->GetHeight(); j++)
 	{
-		for (unsigned int i = 0; i < bm->GetWidth(); i++)
+		for (uint i = 0; i < bm->GetWidth(); i++)
 		{
 			bm->GetPixel24(i, j, rgb);
 			line[i*3+0] = rgb.r;
@@ -1278,7 +1278,7 @@ bool vtImage::SaveToFile(const char *fname) const
 	return true;
 }
 
-bool vtImage::ReadPNGFromMemory(unsigned char *buf, int len)
+bool vtImage::ReadPNGFromMemory(uchar *buf, int len)
 {
 	vtBitmap *pBitmap = new vtBitmap;
 	if (pBitmap->ReadPNGFromMemory(buf, len))
@@ -1940,7 +1940,7 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 		pView->ShowGridMarks(m_Extents, opts.cols, opts.rows, col, opts.rows-1-row);
 
 	// First, fill a buffer with the uncompressed texels
-	unsigned char *rgb_bytes = (unsigned char *) malloc(tilesize * tilesize * 3);
+	uchar *rgb_bytes = (uchar *) malloc(tilesize * tilesize * 3);
 	int cb = 0;	// count bytes
 
 	DPoint2 p;

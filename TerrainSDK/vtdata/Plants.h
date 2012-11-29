@@ -56,7 +56,7 @@ public:
 	void AddCommonName(const char *Name, const char *Lang = NULL);
 	size_t NumCommonNames() const { return m_CommonNames.size(); }
 	CommonName GetCommonName(int n = 0) const { return m_CommonNames[n]; }
-	unsigned int CommonNamesOfLanguage(const char *lang);
+	uint CommonNamesOfLanguage(const char *lang);
 
 	void SetSciName(const char *szSciName);
 	const char *GetSciName() const { return m_szSciName; }
@@ -72,7 +72,7 @@ public:
 		m_Apps.Append(pApp);
 	}
 
-	unsigned int NumAppearances() const { return m_Apps.GetSize(); }
+	uint NumAppearances() const { return m_Apps.GetSize(); }
 	vtPlantAppearance *GetAppearance(int i) const { return m_Apps[i]; }
 
 protected:
@@ -138,8 +138,8 @@ public:
 	bool WriteXML(const char *fname) const;
 	bool WriteHTML(const char *fname) const;
 
-	unsigned int NumSpecies() const { return m_Species.GetSize();  }
-	vtPlantSpecies *GetSpecies(unsigned int i) const
+	uint NumSpecies() const { return m_Species.GetSize();  }
+	vtPlantSpecies *GetSpecies(uint i) const
 	{
 		if (i < m_Species.GetSize())
 			return m_Species[i];
@@ -204,7 +204,7 @@ public:
 	int AddPlant(const DPoint2 &pos, float size, vtPlantSpecies *ps);
 	void SetPlant(int iNum, float size, short species_id);
 	void GetPlant(int iNum, float &size, short &species_id) const;
-	unsigned int InstancesOfSpecies(short species_id);
+	uint InstancesOfSpecies(short species_id);
 
 	bool ReadVF_version11(const char *fname);
 	bool ReadVF(const char *fname);

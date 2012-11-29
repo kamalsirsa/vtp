@@ -82,7 +82,7 @@ void ColorMapDlg::UpdateItems()
 {
 	GetList()->DeleteAllItems();
 
-	unsigned int i, num = m_cmap.Num();
+	uint i, num = m_cmap.Num();
 
 	// First refresh the color bitmaps
 	m_imlist.RemoveAll();

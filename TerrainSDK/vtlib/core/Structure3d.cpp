@@ -321,7 +321,7 @@ bool vtStructureArray3d::ConstructStructure(int index)
 void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 {
 	vtStructure *str;
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		str = GetAt(i);
 		if (!str->IsSelected())
@@ -353,7 +353,7 @@ void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 void vtStructureArray3d::OffsetSelectedStructuresVertical(float offset)
 {
 	vtStructure *str;
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		str = GetAt(i);
 		if (!str->IsSelected())
@@ -375,7 +375,7 @@ void vtStructureArray3d::OffsetSelectedStructuresVertical(float offset)
 
 void vtStructureArray3d::VisualDeselectAll()
 {
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = (vtStructure *) GetAt(i);
 		vtStructure3d *str3d = GetStructure3d(i);
@@ -387,7 +387,7 @@ void vtStructureArray3d::VisualDeselectAll()
 
 void vtStructureArray3d::SetEnabled(bool bTrue)
 {
-	for (unsigned int j = 0; j < GetSize(); j++)
+	for (uint j = 0; j < GetSize(); j++)
 	{
 		vtStructure3d *str3d = GetStructure3d(j);
 		if (str3d)
@@ -423,7 +423,7 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 
 void vtStructureArray3d::SetShadows(bool bTrue)
 {
-	for (unsigned int j = 0; j < GetSize(); j++)
+	for (uint j = 0; j < GetSize(); j++)
 	{
 		vtStructure3d *str3d = GetStructure3d(j);
 		if (str3d)

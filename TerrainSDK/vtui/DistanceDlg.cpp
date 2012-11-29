@@ -186,7 +186,7 @@ void DistanceDlg::ShowValues()
 	{
 		DLine2 geo_line;
 
-		unsigned int i, len = m_path.GetSize();
+		uint i, len = m_path.GetSize();
 		if (bIsGeo)
 			geo_line = m_path;
 		else

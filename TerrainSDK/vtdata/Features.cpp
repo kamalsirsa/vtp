@@ -22,7 +22,7 @@ vtFeatureSet::~vtFeatureSet()
 {
 	DeleteFields();
 
-	for (unsigned int i = 0; i < m_Features.size(); i++)
+	for (uint i = 0; i < m_Features.size(); i++)
 		delete m_Features[i];
 }
 
@@ -52,7 +52,7 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 		return false;
 	}
 
-	unsigned int i, j;
+	uint i, j;
 
 	SaveGeomToSHP(hSHP, progress_callback);
 	SHPClose(hSHP);
@@ -81,7 +81,7 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 		}
 
 		// Write DBF Attributes, one record per entity
-		unsigned int entities = GetNumEntities();
+		uint entities = GetNumEntities();
 		for (i = 0; i < entities; i++)
 		{
 			if (progress_callback && ((i%16)==0))
@@ -345,7 +345,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromDXF(const char *filename,
 		VTLOG(parser.GetLastError());
 		return NULL;
 	}
-	unsigned int iNumEntities = entities.size();
+	uint iNumEntities = entities.size();
 	if (iNumEntities == 0)
 		return NULL;
 
@@ -361,7 +361,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromDXF(const char *filename,
 
 	int vtx = 0;
 	int polylines = 0;
-	for (unsigned int i = 0; i < iNumEntities; i++)
+	for (uint i = 0; i < iNumEntities; i++)
 	{
 		const DxfEntity &ent = entities[i];
 		if (ent.m_iType == DET_Polyline)
@@ -974,14 +974,14 @@ void vtFeatureSet::ParseDBFRecords(DBFHandle db, bool progress_callback(int))
 
 	// safety check
 	// i have seen some DBF to have more records than the SHP has entities
-	if ((unsigned int) iRecords > GetNumEntities())
+	if ((uint) iRecords > GetNumEntities())
 		iRecords = GetNumEntities();
 
 	for (int i = 0; i < iRecords; i++)
 	{
 		if (progress_callback && ((i%16)==0))
 			progress_callback(i*100/iRecords);
-		unsigned int iField;
+		uint iField;
 		for (iField = 0; iField < GetNumFields(); iField++)
 		{
 			Field *field = m_fields[iField];
@@ -1088,20 +1088,20 @@ bool vtFeatureSet::LoadDataFromCSV(const char *filename, bool progress_callback(
 	// parse first line: field names
 	vtStringArray words;
 	ParseQuotedCSV(buf, words);
-	unsigned int iFields = words.size();
+	uint iFields = words.size();
 	if (iFields == 0)
 	{
 		// no fields
 		fclose(fp);
 		return false;
 	}
-	unsigned int f;
+	uint f;
 	for (f = 0; f < iFields; f++)
 	{
 		// 1 is dummy value replaced later when we know max field width
 		AddField(words[f], FT_String, 1);
 	}
-	unsigned int iEntities = 0;
+	uint iEntities = 0;
 	char buf2[4096];
 	while (fgets(buf, 4096, fp) != NULL)
 	{
@@ -1180,8 +1180,8 @@ bool vtFeatureSet::SaveToKML(const char *filename, bool progress_callback(int)) 
 		// Write entities
 		DPoint2 p2;
 		DPoint3 p3;
-		unsigned int entities = GetNumEntities();
-		for (unsigned int i = 0; i < entities; i++)
+		uint entities = GetNumEntities();
+		for (uint i = 0; i < entities; i++)
 		{
 			if (progress_callback && ((i%16)==0))
 				progress_callback(i * 100 / entities);
@@ -1189,7 +1189,7 @@ bool vtFeatureSet::SaveToKML(const char *filename, bool progress_callback(int)) 
 			fprintf(fp, "\t<Placemark>\n");
 
 			vtString str;
-			for (unsigned int j = 0; j < m_fields.GetSize(); j++)
+			for (uint j = 0; j < m_fields.GetSize(); j++)
 			{
 				GetValueAsString(i, j, str);
 				Field *field = m_fields[j];
@@ -1235,7 +1235,7 @@ void vtFeatureSet::SetNumEntities(int iNum)
 	SetNumGeometries(iNum);
 
 	// Then set the number of records for each field
-	for (unsigned int iField = 0; iField < GetNumFields(); iField++)
+	for (uint iField = 0; iField < GetNumFields(); iField++)
 		m_fields[iField]->SetNumRecords(iNum);
 
 	// Also keep size of flag array in synch
@@ -1251,7 +1251,7 @@ void vtFeatureSet::SetNumEntities(int iNum)
 void vtFeatureSet::AllocateFeatures()
 {
 	// Set up Features array
-	for (unsigned int i = 0; i < GetNumEntities(); i++)
+	for (uint i = 0; i < GetNumEntities(); i++)
 	{
 		vtFeature *f = new vtFeature;
 		f->flags = 0;
@@ -1309,11 +1309,11 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 
 	// copy entities
 	vtString str;
-	unsigned int i, num = pFromSet->GetNumEntities();
+	uint i, num = pFromSet->GetNumEntities();
 	for (i = 0; i < num; i++)
 	{
 		// copy record data for all field names which match
-		for (unsigned int f = 0; f < pFromSet->GetNumFields(); f++)
+		for (uint f = 0; f < pFromSet->GetNumFields(); f++)
 		{
 			Field *field1 = pFromSet->GetField(f);
 			Field *field2 = GetField((const char *) field1->m_name);
@@ -1338,11 +1338,11 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 /////////////////////////////////////////////////////////////////////////////
 // Selection of Entities
 
-unsigned int vtFeatureSet::NumSelected() const
+uint vtFeatureSet::NumSelected() const
 {
-	unsigned int count = 0;
-	unsigned int size = m_Features.size();
-	for (unsigned int i = 0; i < size; i++)
+	uint count = 0;
+	uint size = m_Features.size();
+	for (uint i = 0; i < size; i++)
 		if (m_Features[i]->flags & FF_SELECTED)
 			count++;
 	return count;
@@ -1350,13 +1350,13 @@ unsigned int vtFeatureSet::NumSelected() const
 
 void vtFeatureSet::DeselectAll()
 {
-	for (unsigned int i = 0; i < m_Features.size(); i++)
+	for (uint i = 0; i < m_Features.size(); i++)
 		m_Features[i]->flags &= ~FF_SELECTED;
 }
 
 void vtFeatureSet::InvertSelection()
 {
-	for (unsigned int i = 0; i < m_Features.size(); i++)
+	for (uint i = 0; i < m_Features.size(); i++)
 		m_Features[i]->flags ^= FF_SELECTED;
 }
 
@@ -1594,13 +1594,13 @@ void vtFeatureSet::ApplyDeletion()
 	SetNumEntities(newtotal);
 }
 
-void vtFeatureSet::CopyEntity(unsigned int from, unsigned int to)
+void vtFeatureSet::CopyEntity(uint from, uint to)
 {
 	// copy geometry
 	CopyGeometry(from, to);
 
 	// copy record fields
-	for (unsigned int i = 0; i < m_fields.GetSize(); i++)
+	for (uint i = 0; i < m_fields.GetSize(); i++)
 		m_fields[i]->CopyValue(from, to);
 }
 
@@ -1632,7 +1632,7 @@ Field *vtFeatureSet::GetField(const char *name)
  */
 int vtFeatureSet::GetFieldIndex(const char *name) const
 {
-	unsigned int i, num = m_fields.GetSize();
+	uint i, num = m_fields.GetSize();
 	for (i = 0; i < num; i++)
 	{
 		if (!m_fields[i]->m_name.CompareNoCase(name))
@@ -1704,7 +1704,7 @@ int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 int vtFeatureSet::AddRecord()
 {
 	int recs=-1;
-	for (unsigned int i = 0; i < m_fields.GetSize(); i++)
+	for (uint i = 0; i < m_fields.GetSize(); i++)
 	{
 		recs = m_fields[i]->AddRecord();
 	}
@@ -1727,27 +1727,27 @@ void vtFeatureSet::DeleteFields()
 	m_fields.SetSize(0);
 }
 
-void vtFeatureSet::SetValue(unsigned int record, unsigned int field, const char *value)
+void vtFeatureSet::SetValue(uint record, uint field, const char *value)
 {
 	m_fields[field]->SetValue(record, value);
 }
 
-void vtFeatureSet::SetValue(unsigned int record, unsigned int field, int value)
+void vtFeatureSet::SetValue(uint record, uint field, int value)
 {
 	m_fields[field]->SetValue(record, value);
 }
 
-void vtFeatureSet::SetValue(unsigned int record, unsigned int field, double value)
+void vtFeatureSet::SetValue(uint record, uint field, double value)
 {
 	m_fields[field]->SetValue(record, value);
 }
 
-void vtFeatureSet::SetValue(unsigned int record, unsigned int field, bool value)
+void vtFeatureSet::SetValue(uint record, uint field, bool value)
 {
 	m_fields[field]->SetValue(record, value);
 }
 
-void vtFeatureSet::GetValueAsString(unsigned int iRecord, unsigned int iField, vtString &str) const
+void vtFeatureSet::GetValueAsString(uint iRecord, uint iField, vtString &str) const
 {
 	if (iField < 0 || iField >= m_fields.GetSize())
 	{
@@ -1758,25 +1758,25 @@ void vtFeatureSet::GetValueAsString(unsigned int iRecord, unsigned int iField, v
 	field->GetValueAsString(iRecord, str);
 }
 
-void vtFeatureSet::SetValueFromString(unsigned int iRecord, unsigned int iField, const vtString &str)
+void vtFeatureSet::SetValueFromString(uint iRecord, uint iField, const vtString &str)
 {
 	Field *field = m_fields[iField];
 	field->SetValueFromString(iRecord, str);
 }
 
-void vtFeatureSet::SetValueFromString(unsigned int iRecord, unsigned int iField, const char *str)
+void vtFeatureSet::SetValueFromString(uint iRecord, uint iField, const char *str)
 {
 	Field *field = m_fields[iField];
 	field->SetValueFromString(iRecord, str);
 }
 
-int vtFeatureSet::GetIntegerValue(unsigned int iRecord, unsigned int iField) const
+int vtFeatureSet::GetIntegerValue(uint iRecord, uint iField) const
 {
 	Field *field = m_fields[iField];
 	return field->m_int[iRecord];
 }
 
-short vtFeatureSet::GetShortValue(unsigned int iRecord, unsigned int iField) const
+short vtFeatureSet::GetShortValue(uint iRecord, uint iField) const
 {
 	Field *field = m_fields[iField];
 	short val;
@@ -1784,7 +1784,7 @@ short vtFeatureSet::GetShortValue(unsigned int iRecord, unsigned int iField) con
 	return val;
 }
 
-float vtFeatureSet::GetFloatValue(unsigned int iRecord, unsigned int iField) const
+float vtFeatureSet::GetFloatValue(uint iRecord, uint iField) const
 {
 	Field *field = m_fields[iField];
 	float val;
@@ -1792,7 +1792,7 @@ float vtFeatureSet::GetFloatValue(unsigned int iRecord, unsigned int iField) con
 	return val;
 }
 
-double vtFeatureSet::GetDoubleValue(unsigned int iRecord, unsigned int iField) const
+double vtFeatureSet::GetDoubleValue(uint iRecord, uint iField) const
 {
 	Field *field = m_fields[iField];
 	double val;
@@ -1800,7 +1800,7 @@ double vtFeatureSet::GetDoubleValue(unsigned int iRecord, unsigned int iField) c
 	return val;
 }
 
-bool vtFeatureSet::GetBoolValue(unsigned int iRecord, unsigned int iField) const
+bool vtFeatureSet::GetBoolValue(uint iRecord, uint iField) const
 {
 	Field *field = m_fields[iField];
 	return field->m_bool[iRecord];
@@ -1852,14 +1852,14 @@ int Field::AddRecord()
 	return -1;
 }
 
-void Field::SetValue(unsigned int record, const char *value)
+void Field::SetValue(uint record, const char *value)
 {
 	if (m_type != FT_String)
 		return;
 	m_string[record] = value;
 }
 
-void Field::SetValue(unsigned int record, int value)
+void Field::SetValue(uint record, int value)
 {
 	if (m_type == FT_Integer)
 		m_int[record] = value;
@@ -1871,7 +1871,7 @@ void Field::SetValue(unsigned int record, int value)
 		m_float[record] = (float) value;
 }
 
-void Field::SetValue(unsigned int record, double value)
+void Field::SetValue(uint record, double value)
 {
 	if (m_type == FT_Double)
 		m_double[record] = value;
@@ -1883,7 +1883,7 @@ void Field::SetValue(unsigned int record, double value)
 		m_short[record] = (short) value;
 }
 
-void Field::SetValue(unsigned int record, bool value)
+void Field::SetValue(uint record, bool value)
 {
 	if (m_type == FT_Boolean)
 		m_bool[record] = value;
@@ -1893,14 +1893,14 @@ void Field::SetValue(unsigned int record, bool value)
 		m_short[record] = (short) value;
 }
 
-void Field::GetValue(unsigned int record, vtString &string)
+void Field::GetValue(uint record, vtString &string)
 {
 	if (m_type != FT_String)
 		return;
 	string = m_string[record];
 }
 
-void Field::GetValue(unsigned int record, short &value)
+void Field::GetValue(uint record, short &value)
 {
 	if (m_type == FT_Short)
 		value = m_short[record];
@@ -1912,7 +1912,7 @@ void Field::GetValue(unsigned int record, short &value)
 		value = (short) m_bool[record];
 }
 
-void Field::GetValue(unsigned int record, int &value)
+void Field::GetValue(uint record, int &value)
 {
 	if (m_type == FT_Integer)
 		value = m_int[record];
@@ -1924,7 +1924,7 @@ void Field::GetValue(unsigned int record, int &value)
 		value = (int) m_bool[record];
 }
 
-void Field::GetValue(unsigned int record, float &value)
+void Field::GetValue(uint record, float &value)
 {
 	if (m_type == FT_Float)
 		value = m_float[record];
@@ -1936,7 +1936,7 @@ void Field::GetValue(unsigned int record, float &value)
 		value = (float) m_short[record];
 }
 
-void Field::GetValue(unsigned int record, double &value)
+void Field::GetValue(uint record, double &value)
 {
 	if (m_type == FT_Double)
 		value = m_double[record];
@@ -1948,7 +1948,7 @@ void Field::GetValue(unsigned int record, double &value)
 		value = (double) m_short[record];
 }
 
-void Field::GetValue(unsigned int record, bool &value)
+void Field::GetValue(uint record, bool &value)
 {
 	if (m_type == FT_Boolean)
 		value = m_bool[record];
@@ -1958,7 +1958,7 @@ void Field::GetValue(unsigned int record, bool &value)
 		value = (m_short[record] != 0);
 }
 
-void Field::CopyValue(unsigned int FromRecord, int ToRecord)
+void Field::CopyValue(uint FromRecord, int ToRecord)
 {
 	if (m_type == FT_Integer)
 		m_int[ToRecord] = m_int[FromRecord];
@@ -1978,7 +1978,7 @@ void Field::CopyValue(unsigned int FromRecord, int ToRecord)
 		m_bool[ToRecord] = m_bool[FromRecord];
 }
 
-void Field::GetValueAsString(unsigned int iRecord, vtString &str)
+void Field::GetValueAsString(uint iRecord, vtString &str)
 {
 	switch (m_type)
 	{
@@ -2003,13 +2003,13 @@ void Field::GetValueAsString(unsigned int iRecord, vtString &str)
 	}
 }
 
-void Field::SetValueFromString(unsigned int iRecord, const vtString &str)
+void Field::SetValueFromString(uint iRecord, const vtString &str)
 {
 	const char *cstr = str;
 	SetValueFromString(iRecord, cstr);
 }
 
-void Field::SetValueFromString(unsigned int iRecord, const char *str)
+void Field::SetValueFromString(uint iRecord, const char *str)
 {
 	int i;
 	double d;
@@ -2293,16 +2293,16 @@ bool SHPToDPolygon2(SHPObject *pObj, DPolygon2 &dpoly)
 void DPolygon2ToOGR(const DPolygon2 &dp, OGRPolygon &op)
 {
 	op.empty();
-	for (unsigned int ringnum = 0; ringnum < dp.size(); ringnum++)
+	for (uint ringnum = 0; ringnum < dp.size(); ringnum++)
 	{
 		const DLine2 &ring = dp.at(ringnum);
 		OGRLinearRing *poNewRing = new OGRLinearRing;
 
-		unsigned int numpoints = ring.GetSize();
+		uint numpoints = ring.GetSize();
 		poNewRing->setNumPoints(numpoints);
 
 		OGRPoint p;
-		for (unsigned int i = 0; i < numpoints; i++)
+		for (uint i = 0; i < numpoints; i++)
 		{
 			p.setX(ring[i].x);
 			p.setY(ring[i].y);

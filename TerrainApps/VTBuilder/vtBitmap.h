@@ -28,7 +28,7 @@ public:
 
 	bool Allocate(int iXSize, int iYSize, int iDepth = 24);
 	bool IsAllocated() const;
-	void SetPixel24(int x, int y, unsigned char r, unsigned char g, unsigned char b);
+	void SetPixel24(int x, int y, uchar r, uchar g, uchar b);
 	void SetPixel24(int x, int y, const RGBi &rgb)
 	{
 		SetPixel24(x, y, rgb.r, rgb.g, rgb.b);
@@ -38,16 +38,16 @@ public:
 	void SetPixel32(int x, int y, const RGBAi &rgba);
 	void GetPixel32(int x, int y, RGBAi &rgba) const;
 
-	unsigned char GetPixel8(int x, int y) const;
-	void SetPixel8(int x, int y, unsigned char color);
+	uchar GetPixel8(int x, int y) const;
+	void SetPixel8(int x, int y, uchar color);
 
-	unsigned int GetWidth() const;
-	unsigned int GetHeight() const;
-	unsigned int GetDepth() const;
+	uint GetWidth() const;
+	uint GetHeight() const;
+	uint GetDepth() const;
 
 	void ContentsChanged();
 
-	bool ReadPNGFromMemory(unsigned char *buf, int len);
+	bool ReadPNGFromMemory(uchar *buf, int len);
 	bool WriteJPEG(const char *fname, int quality);
 
 	wxBitmap	*m_pBitmap;
@@ -60,7 +60,7 @@ protected:
 	// A DIBSection is a special kind of bitmap, handled as a HBITMAP,
 	//  created with special methods, and accessed as a giant raw
 	//  memory array.
-	unsigned char *m_pScanline;
+	uchar *m_pScanline;
 	int m_iScanlineWidth;
 #else
 	// For non-Windows platforms, or Windows platforms if we're being more

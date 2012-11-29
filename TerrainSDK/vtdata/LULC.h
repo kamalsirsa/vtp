@@ -69,11 +69,11 @@ public:
 	LULCSection() {};
 	~LULCSection();
 
-	unsigned int m_iNumArcs;
-	unsigned int m_iNumCoords;
-	unsigned int m_iNumPolys;
-	unsigned int m_iLengthOfFAP;
-	unsigned int m_iNumNodes;
+	uint m_iNumArcs;
+	uint m_iNumCoords;
+	uint m_iNumPolys;
+	uint m_iLengthOfFAP;
+	uint m_iNumNodes;
 
 	LULCArc *m_pArc;
 	Coord *m_pCoord;
@@ -132,7 +132,7 @@ public:
 	DPoint2 m_Corners[6];
 
 	/// access sections
-	unsigned int NumSections() { return m_iNumSections; };
+	uint NumSections() { return m_iNumSections; };
 	/// access sections
 	LULCSection *GetSection(int i) { return m_pSection+i; };
 
@@ -146,7 +146,7 @@ private:
 	vtLULCFile( const vtLULCFile & );
 	vtLULCFile &operator=( const vtLULCFile & );
 
-	unsigned int m_iNumSections;
+	uint m_iNumSections;
 	LULCSection *m_pSection;
 	DMatrix3 m_transform;
 //	DMatrix3 m_forwards;

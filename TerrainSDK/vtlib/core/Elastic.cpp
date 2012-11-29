@@ -120,7 +120,7 @@ void ElasticPolyline::Realize()
 	m_Container->removeChildren(0, m_Container->getNumChildren());
 
 	// Make markers
-	for (unsigned int i = 0; i < m_Line.GetSize(); i++)
+	for (uint i = 0; i < m_Line.GetSize(); i++)
 	{
 		vtTransform *xform = new vtTransform;
 		m_pTerr->PlantModelAtPoint(xform, m_Line[i]);

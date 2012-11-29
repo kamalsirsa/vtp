@@ -138,7 +138,7 @@ void ProfileDlg::SetPath(const DLine2 &path)
 	m_bHaveGeoidSurface = false;
 
 	m_fGeodesicDistance = 0.0f;
-	unsigned int i, len = m_path.GetSize();
+	uint i, len = m_path.GetSize();
 	if (len > 1)
 	{
 		DLine2 m_path_geo = m_path;		// path in geographic CS
@@ -217,7 +217,7 @@ void ProfileDlg::GetValues()
 	m_bHaveValues = false;
 	m_bMouseOnLine = false;
 
-	unsigned int len = m_path.GetSize();
+	uint len = m_path.GetSize();
 	if (len < 2)
 	{
 		// Need more points
@@ -226,7 +226,7 @@ void ProfileDlg::GetValues()
 
 	// Iterate over the polyline (linearly in map coordinates)
 	double fTotalDistance = 0.0;
-	unsigned int seg = 0, total_segments = len-1;
+	uint seg = 0, total_segments = len-1;
 	for (seg = 0; seg < total_segments; seg++)
 		fTotalDistance += (m_path[seg+1] - m_path[seg]).Length();
 	double fStep = fTotalDistance / (m_xrange - 1);
@@ -792,14 +792,14 @@ void ProfileDlg::DrawChart(wxDC& dc)
 	}
 
 	// Draw vertical lines for multi-point paths
-	unsigned int len = m_path.GetSize();
+	uint len = m_path.GetSize();
 	if (len > 2)
 	{
 		dc.SetPen(pen7);
 
 		// Iterate over the polyline (linearly in map coordinates)
 		double fTotalDistance = 0.0;
-		unsigned int seg = 0, total_segments = len-1;
+		uint seg = 0, total_segments = len-1;
 		for (seg = 0; seg < total_segments; seg++)
 			fTotalDistance += (m_path[seg+1] - m_path[seg]).Length();
 		double fStep = fTotalDistance / (m_xrange - 1);
@@ -1792,7 +1792,7 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 	DPoint2 p1, p2;
 	layer = "PEN3";
 	double dist = 0.0f;
-	for (unsigned int i = 0; i < m_path.GetSize(); i++)
+	for (uint i = 0; i < m_path.GetSize(); i++)
 	{
 		MakePoint(m_path[i], p1);
 		WriteLine(fp, layer, p1.x - 5, p1.y, p1.x + 5, p1.y);
@@ -1812,7 +1812,7 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 
 	// Draw path
 	layer = "PEN1";
-	for (unsigned int i = 0; i < m_path.GetSize()-1; i++)
+	for (uint i = 0; i < m_path.GetSize()-1; i++)
 	{
 		MakePoint(m_path[i], p1);
 		MakePoint(m_path[i+1], p2);

@@ -156,7 +156,7 @@ void StartupDlg::RefreshTerrainChoices()
 
 	EnviroApp &app = wxGetApp();
 
-	for (unsigned int i = 0; i < app.terrain_files.size(); i++)
+	for (uint i = 0; i < app.terrain_files.size(); i++)
 	{
 		vtString &name = app.terrain_names[i];
 		wxString ws(name, wxConvUTF8);
@@ -176,7 +176,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Populate Earth Image files choices
 	vtStringArray &paths = vtGetDataPath();
-	for (unsigned int i = 0; i < paths.size(); i++)
+	for (uint i = 0; i < paths.size(); i++)
 	{
 		vtString path = paths[i];
 		path += "WholeEarth/";

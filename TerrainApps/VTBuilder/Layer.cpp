@@ -260,9 +260,9 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 
 ////////////////////////////////////////////////
 
-void LayerArray::DestructItems(unsigned int first, unsigned int last)
+void LayerArray::DestructItems(uint first, uint last)
 {
-	for (unsigned int i = first; i <= last; ++i)
+	for (uint i = first; i <= last; ++i)
 	{
 		vtLayerPtr lp = GetAt(i);
 
@@ -275,7 +275,7 @@ void LayerArray::DestructItems(unsigned int first, unsigned int last)
 
 vtLayer *LayerArray::FindByFilename(const wxString &name)
 {
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		if (GetAt(i)->GetLayerFilename() == name)
 			return GetAt(i);

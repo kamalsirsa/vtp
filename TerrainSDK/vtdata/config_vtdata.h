@@ -66,5 +66,10 @@
 #define SUPPORT_WSTRING	1
 #endif
 
+// Put these useful typedefs here so that they can be used throughout the
+// VTP codebase.
+typedef unsigned int uint;
+typedef unsigned char uchar;
+
 #endif // CONFIG_VTDATA_H
 

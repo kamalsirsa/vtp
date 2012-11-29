@@ -645,7 +645,7 @@ void Builder::ExportAreaOptimizedImageTileset(BuilderView *pView)
 	m_tileopts.numlods = 3;
 
 	DPoint2 spacing(0, 0);
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+	for (uint i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() == LT_IMAGE)
@@ -751,10 +751,10 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 	// Form an array of pointers to the existing elevation layers
 	std::vector<vtElevLayer*> elevs;
-	unsigned int elev_layers = ElevLayerArray(elevs);
+	uint elev_layers = ElevLayerArray(elevs);
 
 	// Setup TINs for speedy picking
-	unsigned int e;
+	uint e;
 	for (e = 0; e < elev_layers; e++)
 	{
 		vtElevLayer *el = elevs[e];
@@ -995,9 +995,9 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 
 					int depth = dib.GetDepth() / 8;
 					int iUncompressedSize = tilesize * tilesize * depth;
-					unsigned char *rgb_bytes = (unsigned char *) malloc(iUncompressedSize);
+					uchar *rgb_bytes = (uchar *) malloc(iUncompressedSize);
 
-					unsigned char *dst = rgb_bytes;
+					uchar *dst = rgb_bytes;
 					if (opts.bMaskUnknownAreas)
 					{
 						RGBAi rgba;
@@ -1122,7 +1122,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
 
 	// Gather array of existing image layers we will sample from
-	unsigned int l, layers = m_Layers.GetSize(), num_image = 0;
+	uint l, layers = m_Layers.GetSize(), num_image = 0;
 	vtImageLayer **images = new vtImageLayer *[LayersOfType(LT_IMAGE)];
 	for (l = 0; l < layers; l++)
 	{
@@ -1162,7 +1162,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	int tiles_written = 0;
 
 	int i, j;
-	unsigned int im;
+	uint im;
 	int total = opts.rows * opts.cols, done = 0;
 	for (j = 0; j < opts.rows; j++)
 	{
@@ -1272,7 +1272,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 
 						// find some data for this point
 						rgb.Set(0,0,0);
-						for (unsigned int im = 0; im < overlapping_images.size(); im++)
+						for (uint im = 0; im < overlapping_images.size(); im++)
 							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel, dRes)) rgb = pixel;
 
 						Target.SetPixel24(x, y, rgb);
@@ -1289,7 +1289,7 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 				if (bCancel)
 					return false;
 
-				unsigned char *rgb_bytes = (unsigned char *) malloc(tilesize * tilesize * 3);
+				uchar *rgb_bytes = (uchar *) malloc(tilesize * tilesize * 3);
 				int cb = 0;	// count bytes
 
 				// Copy whole image directly from Target to rgb_bytes

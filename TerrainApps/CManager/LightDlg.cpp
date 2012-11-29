@@ -52,18 +52,18 @@ void LightDlg::UseLight(vtTransform *pMovLight)
 	m_pMovLight = pMovLight;
 	m_pLight = (vtLightSource *) pMovLight->getChild(0);
 
-	unsigned char r, g, b;
+	uchar r, g, b;
 	RGBf col;
 	col = m_pLight->GetAmbient();
-	r = (unsigned char) col.r * 255;
-	g = (unsigned char) col.g * 255;
-	b = (unsigned char) col.b * 255;
+	r = (uchar) col.r * 255;
+	g = (uchar) col.g * 255;
+	b = (uchar) col.b * 255;
 	m_ambient.Set(r, g, b);
 
 	col = m_pLight->GetDiffuse();
-	r = (unsigned char) col.r * 255;
-	g = (unsigned char) col.g * 255;
-	b = (unsigned char) col.b * 255;
+	r = (uchar) col.r * 255;
+	g = (uchar) col.g * 255;
+	b = (uchar) col.b * 255;
 	m_diffuse.Set(r, g, b);
 
 	UpdateColorBitmaps();

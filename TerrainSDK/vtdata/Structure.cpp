@@ -128,7 +128,7 @@ void vtStructure::CopyFrom(const vtStructure &v)
 void vtStructure::WriteTags(GZOutput &out) const
 {
 	// now write all extra tags (attributes) for this structure
-	for (unsigned int i = 0; i < NumTags(); i++)
+	for (uint i = 0; i < NumTags(); i++)
 	{
 		const vtTag *tag = GetTag(i);
 		gfprintf(out, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
@@ -351,8 +351,8 @@ bool vtMaterialDescriptorArray::Save(const char *szFileName)
 
 	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	fprintf(fp, "<MaterialDescriptorArray>\n");
-	unsigned int iSize = GetSize();
-	for (unsigned int i = 0; i < iSize; i++)
+	uint iSize = GetSize();
+	for (uint i = 0; i < iSize; i++)
 		GetAt(i)->WriteToFile(fp);
 	fprintf(fp, "</MaterialDescriptorArray>\n");
 	fclose(fp);

@@ -42,7 +42,7 @@ void FeatureTableDlg3d::OnFeatureDelete(vtFeature *f)
 	m_pLayer->DeleteFeature(f);
 }
 
-void FeatureTableDlg3d::OnFieldEdited(unsigned int iIndex)
+void FeatureTableDlg3d::OnFieldEdited(uint iIndex)
 {
 	m_pLayer->RebuildFeature(iIndex);
 }

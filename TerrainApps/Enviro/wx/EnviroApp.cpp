@@ -351,7 +351,7 @@ void EnviroApp::LoadOptions()
 	}
 
 	// Supply the special symbols {appdata} and {appdatacommon}
-	for (unsigned int i = 0; i < dp.size(); i++)
+	for (uint i = 0; i < dp.size(); i++)
 	{
 		dp[i].Replace("{appdata}", AppDataUser);
 		dp[i].Replace("{appdatacommon}", AppDataCommon);
@@ -475,7 +475,7 @@ void EnviroApp::RefreshTerrainList()
 	bool bShowProgess = paths.size() > 1;
 	if (bShowProgess)
 		OpenProgressDialog(_("Scanning data paths for terrains"), false, NULL);
-	for (unsigned int i = 0; i < paths.size(); i++)
+	for (uint i = 0; i < paths.size(); i++)
 	{
 		vtString directory = paths[i] + "Terrains";
 
@@ -519,7 +519,7 @@ bool EnviroApp::AskForTerrainName(wxWindow *pParent, wxString &strTerrainName)
 	int num = 0, first_idx = 0;
 	std::vector<wxString> choices;
 
-	for (unsigned int i = 0; i < ts->NumTerrains(); i++)
+	for (uint i = 0; i < ts->NumTerrains(); i++)
 	{
 		vtTerrain *terr = ts->GetTerrain(i);
 		wxString wstr(terr->GetName(), wxConvUTF8);
@@ -550,7 +550,7 @@ bool EnviroApp::AskForTerrainName(wxWindow *pParent, wxString &strTerrainName)
 
 vtString EnviroApp::GetIniFileForTerrain(const vtString &name)
 {
-	for (unsigned int i = 0; i < terrain_files.size(); i++)
+	for (uint i = 0; i < terrain_files.size(); i++)
 	{
 		if (name == terrain_names[i])
 			return terrain_paths[i];

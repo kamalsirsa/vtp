@@ -381,7 +381,7 @@ void Enviro::MakeOverlayGlobe(vtImage *input, bool progress_callback(int))
 
 	DymaxIcosa ico;
 
-	unsigned char value;
+	uchar value;
 	RGBi rgb;
 	RGBAi rgba;
 	double u, v;
@@ -523,7 +523,7 @@ void Enviro::LookUpTerrainLocations()
 	VTLOG("LookUpTerrainLocations\n");
 
 	// look up the earth location of each known terrain
-	for (unsigned int i = 0; i < NumTerrains(); i++)
+	for (uint i = 0; i < NumTerrains(); i++)
 	{
 		vtTerrain *pTerr = GetTerrain(i);
 		VTLOG("looking up: %s\n  ", (const char *) pTerr->GetName());
@@ -663,7 +663,7 @@ vtTerrain *Enviro::FindTerrainOnEarth(const DPoint2 &p)
 	vtTerrain *t, *smallest = NULL;
 	double diag, smallest_diag = 1E7;
 
-	for (unsigned int i = 0; i < NumTerrains(); i++)
+	for (uint i = 0; i < NumTerrains(); i++)
 	{
 		t = GetTerrain(i);
 		if (t->m_Corners_geo.ContainsPoint(p))
@@ -801,7 +801,7 @@ void Enviro::UpdateEarthArc()
 	if (m_bMeasurePath)
 	{
 		DPoint2 g2(m_EarthPos.x, m_EarthPos.y);
-		unsigned int len = m_distance_path.GetSize();
+		uint len = m_distance_path.GetSize();
 		if (len > 1)
 			m_distance_path[len-1] = g2;
 

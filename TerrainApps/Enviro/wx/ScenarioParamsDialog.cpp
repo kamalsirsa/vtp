@@ -100,7 +100,7 @@ void ScenarioParamsDialog::OnInitDialog(wxInitDialogEvent& event)
 	wxString str(m_Params.GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
 	pScenarioName->SetValue(str);
 
-	for (unsigned int i = 0; i < m_Layers.size(); i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
 		wxFileName FileName;
 		wxString fname(m_Layers[i], wxConvUTF8);

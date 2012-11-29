@@ -154,7 +154,7 @@ public:
 	void AddWindow(vtWindow *pWindow) {
 		m_Windows.Append(pWindow);
 	}
-	vtWindow *GetWindow(unsigned int i) {
+	vtWindow *GetWindow(uint i) {
 		if (m_Windows.GetSize() > i)
 			return m_Windows[i];
 		else

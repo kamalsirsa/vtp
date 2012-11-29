@@ -44,7 +44,7 @@ ScenarioParams &ScenarioParams::operator = (const ScenarioParams &rhs)
 
 void ScenarioParams::WriteOverridesToXML(FILE *fp) const
 {
-	unsigned int i;
+	uint i;
 	for (i = 0; i < m_ActiveLayers.size(); i++)
 	{
 		const vtString &str = m_ActiveLayers[i];
@@ -390,7 +390,7 @@ bool TParams::GetOverlay(vtString &fname, int &x, int &y) const
 
 void TParams::WriteOverridesToXML(FILE *fp) const
 {
-	unsigned int i;
+	uint i;
 	for (i = 0; i < m_Layers.size(); i++)
 	{
 		const vtTagArray &lay = m_Layers[i];

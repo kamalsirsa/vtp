@@ -95,7 +95,7 @@ void FeatureTableDlg::SetFeatureSet(vtFeatureSet *pFeatures)
 	GetTextVertical()->Enable(type == SHPT_POINTZ);
 	GetChoiceVertical()->Enable(type == SHPT_POINTZ);
 
-	unsigned int i;
+	uint i;
 	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		Field *pField = m_pFeatures->GetField(i);
@@ -254,7 +254,7 @@ void FeatureTableDlg::UpdateFeatureText(int iItem, int iFeat)
 		GetList()->SetItem(iItem, field++, str);
 	}
 
-	for (unsigned int i = 0; i < m_pFeatures->GetNumFields(); i++)
+	for (uint i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeat, i, vs);
@@ -349,7 +349,7 @@ void FeatureTableDlg::OnDeleteHighlighted( wxCommandEvent &event )
 		VTLOG("Set %d items to delete, removing visuals..\n", iDeleted);
 
 		// Delete high-level features first
-		for (unsigned int i = 0; i < m_pFeatures->GetNumEntities(); i++)
+		for (uint i = 0; i < m_pFeatures->GetNumEntities(); i++)
 		{
 			if (m_pFeatures->IsDeleted(i))
 			{

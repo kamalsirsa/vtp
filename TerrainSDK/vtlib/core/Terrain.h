@@ -238,7 +238,7 @@ public:
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
 	int DeleteSelectedStructures();
-	void DeleteLayer(unsigned int index);
+	void DeleteLayer(uint index);
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 							  int &structure, double &closest, float fMaxInstRadius,
 							  float fLinearWidthBuffer);

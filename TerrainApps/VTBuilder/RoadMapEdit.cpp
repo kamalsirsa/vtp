@@ -180,12 +180,12 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 	m_fWidth = EstimateWidth();
 	double half_width = (m_fWidth / 2);
 
-	unsigned int size = GetSize();
+	uint size = GetSize();
 	m_WidthOffset.SetSize(size);
 
 	DPoint2 norm, prev, offset;
 
-	for (unsigned int i = 0; i < size; i++)
+	for (uint i = 0; i < size; i++)
 	{
 		prev = norm;
 
@@ -281,7 +281,7 @@ bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 	}
 
 	//simple correct case:
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		DPoint2 point = GetAt(i);
 		if (point.x > bound.left && point.x < bound.right &&

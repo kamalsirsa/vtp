@@ -16,8 +16,6 @@
 /** \addtogroup terrain */
 /*@{*/
 
-typedef unsigned int unint;
-
 enum TextureEnum {
 	TE_NONE,
 	TE_SINGLE,

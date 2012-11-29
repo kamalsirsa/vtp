@@ -134,10 +134,10 @@ void vtWaterLayer::SetProjection(const vtProjection &proj)
 
 void vtWaterLayer::Offset(const DPoint2 &p)
 {
-	unsigned int size = (unsigned int)m_Lines.size();
-	for (unsigned int i = 0; i < size; i++)
+	uint size = (uint)m_Lines.size();
+	for (uint i = 0; i < size; i++)
 	{
-		for (unsigned int c = 0; c < m_Lines[i].GetSize(); c++)
+		for (uint c = 0; c < m_Lines[i].GetSize(); c++)
 			m_Lines[i].GetAt(c) += p;
 	}
 }
@@ -148,7 +148,7 @@ void vtWaterLayer::GetPropertyText(wxString &strIn)
 	str.Printf(_("Features: %d\n"), m_Lines.size());
 	strIn += str;
 
-	unsigned int i;
+	uint i;
 	int count = 0;
 	for (i = 0; i < m_Lines.size(); i++)
 		if (m_IsBody[i]) count++;

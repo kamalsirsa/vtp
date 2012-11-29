@@ -22,11 +22,11 @@ inline float	fclamp(float f, float Min, float Max) {
 
 inline int	iabs(int i) { if (i < 0) return -i; else return i; }
 
-int  WriteUint32(FILE *fp, unsigned int val);
+int  WriteUint32(FILE *fp, uint val);
 int  WriteUint16(FILE *fp, unsigned short val);
 int  WriteFloat32(FILE *fp, float val);
-void WriteByte(FILE* dst, unsigned char b);
-unsigned int ReadUint32(FILE *fp);
+void WriteByte(FILE* dst, uchar b);
+uint ReadUint32(FILE *fp);
 unsigned short ReadUint16(FILE *fp);
 double ReadDouble64(FILE *fp);
 
@@ -178,7 +178,7 @@ class fixed_size_hash
 public:
 	static int	compute(const T& data)
 	{
-		unsigned char*	p = (unsigned char*) &data;
+		uchar*	p = (uchar*) &data;
 		int	size = sizeof(T);
 
 		// Hash function suggested by http://www.cs.yorku.ca/~oz/hash.html

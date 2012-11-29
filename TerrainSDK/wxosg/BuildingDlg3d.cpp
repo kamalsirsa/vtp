@@ -62,14 +62,14 @@ void BuildingDlg3d::Modified()
 
 	// We might also have to rebuild any linear structures around or on it
 	const DLine2 &foot = m_pBuilding3d->GetOuterFootprint(0);
-	for (unsigned int i = 0; i < slay->GetSize(); i++)
+	for (uint i = 0; i < slay->GetSize(); i++)
 	{
 		vtFence3d *fen = slay->GetFence(i);
 		if (fen)
 		{
 			bool bInside = false;
 			const DLine2 &pts = fen->GetFencePoints();
-			for (unsigned int j = 0; j < pts.GetSize(); j++)
+			for (uint j = 0; j < pts.GetSize(); j++)
 				if (foot.ContainsPoint(pts[j]))
 					bInside = true;
 			if (bInside)

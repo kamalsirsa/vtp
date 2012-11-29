@@ -184,7 +184,7 @@ void EphemDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_bSetting = true;
 
 	vtStringArray &paths = vtGetDataPath();
-	unsigned int i;
+	uint i;
 	int sel;
 
 	for (i = 0; i < paths.size(); i++)

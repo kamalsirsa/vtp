@@ -111,7 +111,7 @@ void VehicleDlg::OnInitDialog(wxInitDialogEvent& event)
 	wxString prev = GetChoice()->GetStringSelection();
 	wxArrayString names;
 	vtContentManager3d &con = vtGetContent();
-	for (unsigned int i = 0; i < con.NumItems(); i++)
+	for (uint i = 0; i < con.NumItems(); i++)
 	{
 		vtItem *item = con.GetItem(i);
 		const char *type = item->GetValueString("type");

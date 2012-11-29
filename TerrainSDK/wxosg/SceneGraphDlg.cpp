@@ -396,7 +396,7 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 	hNewItem = m_pTree->AppendItem(hParentItem, str, 1, 1);
 	m_pTree->SetItemData(hNewItem, new MyTreeItemData(NULL, pEng));
 
-	for (unsigned int i = 0; i < pEng->NumChildren(); i++)
+	for (uint i = 0; i < pEng->NumChildren(); i++)
 	{
 		vtEngine *pChild = pEng->GetChild(i);
 		AddEnginesRecursively(hNewItem, pChild, depth+1);

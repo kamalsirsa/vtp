@@ -49,7 +49,7 @@ Seumas says:
 #if INTEGER_HEIGHT
   typedef short HeightType;
   #if USE_FP8
-	typedef unsigned char VarianceType;
+	typedef uchar VarianceType;
   #else
 	typedef unsigned short VarianceType;
   #endif

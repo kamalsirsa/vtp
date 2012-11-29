@@ -238,7 +238,7 @@ vtString FindFileOnPaths(const vtStringArray &paths, const char *filename)
 		return vtString(filename);
 	}
 
-	for (unsigned int i = 0; i < paths.size(); i++)
+	for (uint i = 0; i < paths.size(); i++)
 	{
 		vtString fname = paths[i];
 		LOGFIND("... looking in '%s'\n", (const char*) fname);
@@ -338,7 +338,7 @@ void vtDestroyDir(const char *dirname)
 		con.push_back(vtString(name1.c_str()));
 	}
 
-	for (unsigned int i = 0; i < con.size(); i++)
+	for (uint i = 0; i < con.size(); i++)
 	{
 		vtString item = con[i];
 
@@ -681,7 +681,7 @@ bool VTCompress::open(const char *fname)
 		fp = NULL;
 		return false;
 	}
-	unsigned char buf[3];
+	uchar buf[3];
 	if (fread(buf, 3, 1, fp) != 1)
 	{
 		fp = NULL;

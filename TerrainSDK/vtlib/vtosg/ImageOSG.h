@@ -39,20 +39,20 @@ public:
 	std::string GetFilename() const { return getFileName(); }
 
 	// Provide vtBitmapBase methods
-	unsigned char GetPixel8(int x, int y) const;
+	uchar GetPixel8(int x, int y) const;
 	void GetPixel24(int x, int y, RGBi &rgb) const;
 	void GetPixel32(int x, int y, RGBAi &rgba) const;
 
-	void SetPixel8(int x, int y, unsigned char color);
+	void SetPixel8(int x, int y, uchar color);
 	void SetPixel24(int x, int y, const RGBi &rgb);
 	void SetPixel32(int x, int y, const RGBAi &rgba);
 
-	unsigned int GetWidth() const;
-	unsigned int GetHeight() const;
-	unsigned int GetDepth() const;
+	uint GetWidth() const;
+	uint GetHeight() const;
+	uint GetDepth() const;
 
-	unsigned char *GetData() { return data(); }
-	unsigned char *GetRowData(int row) { return data(0, row); }
+	uchar *GetData() { return data(); }
+	uchar *GetRowData(int row) { return data(0, row); }
 
 protected:
 //	bool _Read(const char *fname, bool bAllowCache = true, bool progress_callback(int) = NULL);
@@ -74,34 +74,34 @@ public:
 	vtImageWrapper(osg::Image *image) { m_image = image; }
 
 	// Provide vtBitmapBase methods
-	unsigned char GetPixel8(int x, int y) const;
+	uchar GetPixel8(int x, int y) const;
 	void GetPixel24(int x, int y, RGBi &rgb) const;
 	void GetPixel32(int x, int y, RGBAi &rgba) const;
 
-	void SetPixel8(int x, int y, unsigned char color);
+	void SetPixel8(int x, int y, uchar color);
 	void SetPixel24(int x, int y, const RGBi &rgb);
 	void SetPixel32(int x, int y, const RGBAi &rgba);
 
-	unsigned int GetWidth() const { return m_image->s(); } 
-	unsigned int GetHeight() const { return m_image->t(); }
-	unsigned int GetDepth() const { return m_image->getPixelSizeInBits(); }
+	uint GetWidth() const { return m_image->s(); } 
+	uint GetHeight() const { return m_image->t(); }
+	uint GetDepth() const { return m_image->getPixelSizeInBits(); }
 
-	unsigned char *GetData() { return m_image->data(); }
-	unsigned char *GetRowData(int row) { return m_image->data(0, row); }
+	uchar *GetData() { return m_image->data(); }
+	uchar *GetRowData(int row) { return m_image->data(0, row); }
 
 	osg::Image *m_image;
 };
 
 // To ease the transition from vtImage to osg::Image, some helpers:
-unsigned char GetPixel8(const osg::Image *image, int x, int y);
+uchar GetPixel8(const osg::Image *image, int x, int y);
 void GetPixel24(const osg::Image *image, int x, int y, RGBi &rgb);
 void GetPixel32(const osg::Image *image, int x, int y, RGBAi &rgba);
-void SetPixel8(osg::Image *image, int x, int y, unsigned char color);
+void SetPixel8(osg::Image *image, int x, int y, uchar color);
 void SetPixel24(osg::Image *image, int x, int y, const RGBi &rgb);
 void SetPixel32(osg::Image *image, int x, int y, const RGBAi &rgba);
-unsigned int GetWidth(const osg::Image *image);
-unsigned int GetHeight(const osg::Image *image);
-unsigned int GetDepth(const osg::Image *image);
+uint GetWidth(const osg::Image *image);
+uint GetHeight(const osg::Image *image);
+uint GetDepth(const osg::Image *image);
 void Set16BitInternal(osg::Image *image, bool bFlag);
 
 

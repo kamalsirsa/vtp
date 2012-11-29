@@ -116,7 +116,7 @@ void ProjectionDlg::RefreshDatums()
 	m_pDatumCtrl->Clear();
 
 	m_pDatumCtrl->Append(_("Unknown"), (void *) (-1+CHOICE_OFFSET));
-	for (unsigned int i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (uint i = 0; i < g_EPSGDatums.GetSize(); i++)
 	{
 		int code = g_EPSGDatums[i].iCode;
 		wxString str(g_EPSGDatums[i].szName, wxConvUTF8);
@@ -214,7 +214,7 @@ void ProjectionDlg::UpdateControlStatus()
 	if (m_eProj == PT_DYMAX)
 		m_pHorizCtrl->Append(_("Unit Edges"), (void *) LU_UNITEDGE);
 	// manually transfer value
-	for (unsigned int j = 0; j < m_pHorizCtrl->GetCount(); j++)
+	for (uint j = 0; j < m_pHorizCtrl->GetCount(); j++)
 	{
 		if ((long int) m_pHorizCtrl->GetClientData(j) == m_proj.GetUnits())
 			m_pHorizCtrl->SetSelection(j);
@@ -228,7 +228,7 @@ void ProjectionDlg::UpdateControlStatus()
 void ProjectionDlg::UpdateDatumStatus()
 {
 	bool bIsCommon = false;
-	for (unsigned int i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (uint i = 0; i < g_EPSGDatums.GetSize(); i++)
 	{
 		if (g_EPSGDatums[i].iCode == m_iDatum)
 			bIsCommon = g_EPSGDatums[i].bCommon;

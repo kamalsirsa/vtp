@@ -123,7 +123,7 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
 	char *pGreenline = NULL;
 	char *pBlueline = NULL;
 	int iX, iY, flipY;
-	unsigned char *pGdalBuffer = NULL;
+	uchar *pGdalBuffer = NULL;
 	RGBQUAD q;
 
 	m_hdd = hdd;
@@ -187,7 +187,7 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
 
 			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
 
-			if (NULL == (pGdalBuffer = new unsigned char[xBlockSize * yBlockSize]))
+			if (NULL == (pGdalBuffer = new uchar[xBlockSize * yBlockSize]))
 				throw "Couldnt allocate buffer for GDAL.";
 
 			nxBlocks = (iPixelWidth + xBlockSize - 1) / xBlockSize;
@@ -227,9 +227,9 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
 						{
 							pTable->GetColorEntryAsRGB(pGdalBuffer[iY * xBlockSize + iX], &Ent);
 							// DIBs are bottom-up, not top-down
-							q.rgbRed = (unsigned char) Ent.c1;
-							q.rgbGreen = (unsigned char) Ent.c2;
-							q.rgbBlue = (unsigned char) Ent.c3;
+							q.rgbRed = (uchar) Ent.c1;
+							q.rgbGreen = (uchar) Ent.c2;
+							q.rgbBlue = (uchar) Ent.c3;
 							SetPixel24(x + iX, flipY - y, q);
 						}
 					}

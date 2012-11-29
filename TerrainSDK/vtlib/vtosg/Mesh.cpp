@@ -1140,7 +1140,7 @@ void vtMesh::AddQuad(int p0, int p1, int p2, int p3)
 #endif
 }
 
-unsigned int vtMesh::GetNumVertices() const
+uint vtMesh::GetNumVertices() const
 {
 	return getVerts()->size();
 }
@@ -1150,7 +1150,7 @@ unsigned int vtMesh::GetNumVertices() const
  *	\param i	Index of the vertex.
  *	\param p	The position.
  */
-void vtMesh::SetVtxPos(unsigned int i, const FPoint3 &p)
+void vtMesh::SetVtxPos(uint i, const FPoint3 &p)
 {
 	osg::Vec3 s;
 	v2s(p, s);
@@ -1182,7 +1182,7 @@ void vtMesh::SetVtxPos(unsigned int i, const FPoint3 &p)
 /**
  * Get the position of a vertex.
  */
-FPoint3 vtMesh::GetVtxPos(unsigned int i) const
+FPoint3 vtMesh::GetVtxPos(uint i) const
 {
 	FPoint3 p;
 	s2v(getVerts()->at(i), p);
@@ -1197,7 +1197,7 @@ FPoint3 vtMesh::GetVtxPos(unsigned int i) const
  *	\param i	Index of the vertex.
  *	\param norm	The normal vector.
  */
-void vtMesh::SetVtxNormal(unsigned int i, const FPoint3 &norm)
+void vtMesh::SetVtxNormal(uint i, const FPoint3 &norm)
 {
 	osg::Vec3 s;
 	v2s(norm, s);
@@ -1214,7 +1214,7 @@ void vtMesh::SetVtxNormal(unsigned int i, const FPoint3 &norm)
 /**
  * Get the normal of a vertex.
  */
-FPoint3 vtMesh::GetVtxNormal(unsigned int i) const
+FPoint3 vtMesh::GetVtxNormal(uint i) const
 {
 	FPoint3 p;
 	s2v(getNormals()->at(i), p);
@@ -1229,7 +1229,7 @@ FPoint3 vtMesh::GetVtxNormal(unsigned int i) const
  *	\param i		Index of the vertex.
  *	\param color	The color.
  */
-void vtMesh::SetVtxColor(unsigned int i, const RGBAf &color)
+void vtMesh::SetVtxColor(uint i, const RGBAf &color)
 {
 	if (!hasVertexColors())
 		return;
@@ -1249,7 +1249,7 @@ void vtMesh::SetVtxColor(unsigned int i, const RGBAf &color)
 /**
  * Get the color of a vertex.
  */
-RGBAf vtMesh::GetVtxColor(unsigned int i) const
+RGBAf vtMesh::GetVtxColor(uint i) const
 {
 	if (hasVertexColors())
 	{
@@ -1269,7 +1269,7 @@ RGBAf vtMesh::GetVtxColor(unsigned int i) const
  *	\param i	Index of the vertex.
  *	\param uv	The texture coordinate.
  */
-void vtMesh::SetVtxTexCoord(unsigned int i, const FPoint2 &uv)
+void vtMesh::SetVtxTexCoord(uint i, const FPoint2 &uv)
 {
 	if (!hasVertexTexCoords())
 		return;
@@ -1290,7 +1290,7 @@ void vtMesh::SetVtxTexCoord(unsigned int i, const FPoint2 &uv)
 /**
  * Get the texture coordinates of a vertex.
  */
-FPoint2 vtMesh::GetVtxTexCoord(unsigned int i) const
+FPoint2 vtMesh::GetVtxTexCoord(uint i) const
 {
 	if (hasVertexTexCoords())
 	{
@@ -1381,8 +1381,8 @@ void vtMesh::SetNormalsFromPrimitives()
 void vtMesh::_AddStripNormals()
 {
 #ifdef AVOID_OSG_INDICES
-	unsigned int i, j, len;
-	unsigned int NumPrimitiveSets = getNumPrimitiveSets();
+	uint i, j, len;
+	uint NumPrimitiveSets = getNumPrimitiveSets();
 	unsigned short v0 = 0, v1 = 0, v2 = 0;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
 	osg::Vec3Array *norms = getNormals();
@@ -1454,8 +1454,8 @@ void vtMesh::_AddStripNormals()
 void vtMesh::_AddPolyNormals()
 {
 #ifdef AVOID_OSG_INDICES
-	unsigned int i, j, len;
-	unsigned int NumPrimitiveSets = getNumPrimitiveSets();
+	uint i, j, len;
+	uint NumPrimitiveSets = getNumPrimitiveSets();
 	unsigned short v0 = 0, v1 = 0, v2 = 0;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
 	osg::Vec3Array *norms = getNormals();
@@ -1483,7 +1483,7 @@ void vtMesh::_AddPolyNormals()
 
 			for (j = 0; j < len; j++)
 			{
-				unsigned int v = pDrawElements->index(j);
+				uint v = pDrawElements->index(j);
 				getNormals()->at(v) += norm;
 			}
 		}

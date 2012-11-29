@@ -244,7 +244,7 @@ void vtScaledView::DrawPolyLine(wxDC *pDC, const DLine2 &dline, bool bClose)
 
 void vtScaledView::DrawDoubleLine(wxDC *pDC, const DLine2 &line, const DLine2 &width)
 {
-	unsigned int i, size = line.GetSize();
+	uint i, size = line.GetSize();
 	if (size < 2)
 		return;
 
@@ -276,7 +276,7 @@ void vtScaledView::DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill)
 	{
 #if 0
 		// just draw each ring
-		for (unsigned int ring = 0; ring < poly.size(); ring++)
+		for (uint ring = 0; ring < poly.size(); ring++)
 			DrawPolyLine(pDC, poly[ring], true);
 #else
 		// Draw outer ring solid
@@ -288,7 +288,7 @@ void vtScaledView::DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill)
 			wxPen pen2(pen1);			// copy
 			pen2.SetStyle(wxDOT);		// modify
 			pDC->SetPen(pen2);			// use
-			for (unsigned int ring = 1; ring < poly.size(); ring++)
+			for (uint ring = 1; ring < poly.size(); ring++)
 				DrawPolyLine(pDC, poly[ring], true);
 			pDC->SetPen(pen1);			// restore
 		}
@@ -360,7 +360,7 @@ void vtScaledView::DrawDPolygon2(wxDC *pDC, const DPolygon2 &poly, bool bFill,
 	else
 	{
 		// just draw each ring
-		for (unsigned int ring = 0; ring < poly.size(); ring++)
+		for (uint ring = 0; ring < poly.size(); ring++)
 		{
 			DrawPolyLine(pDC, poly[ring], true);
 			if (bCircles)

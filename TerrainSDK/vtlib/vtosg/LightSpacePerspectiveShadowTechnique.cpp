@@ -37,10 +37,10 @@ void CLightSpacePerspectiveShadowTechnique::ViewData::init(ThisClass * st, osgUt
 	// so add this texture to any of the other active units 
 	osg::Texture* pFakeTex = dynamic_cast<osg::Texture*>(_stateset->getTextureAttribute(st->_baseTextureUnit, osg::StateAttribute::TEXTURE));
 	osg::ref_ptr<osg::IntArray> UnitArray = new osg::IntArray;
-	for (std::map<unsigned int, unsigned int>::iterator iTr = st->m_AdditionalTerrainTextureUnits.begin();
+	for (std::map<uint, uint>::iterator iTr = st->m_AdditionalTerrainTextureUnits.begin();
 			iTr != st->m_AdditionalTerrainTextureUnits.end(); iTr++)
 	{
-		unsigned int Unit = (*iTr).first;
+		uint Unit = (*iTr).first;
 		UnitArray->push_back(Unit);
 		_stateset->setTextureAttribute(Unit, pFakeTex, osg::StateAttribute::ON);
 		_stateset->setTextureMode(Unit,GL_TEXTURE_1D, osg::StateAttribute::OFF);
@@ -70,23 +70,23 @@ void CLightSpacePerspectiveShadowTechnique::InitJittering(osg::StateSet *pStateS
     pJitterTexture->setWrap(osg::Texture3D::WRAP_R,osg::Texture3D::REPEAT);
     pJitterTexture->setUseHardwareMipMapGeneration(true);
 
-    const unsigned int size = 16;
-    const unsigned int gridW =  8;
-    const unsigned int gridH =  8;
-    unsigned int R = (gridW * gridH / 2);
+    const uint size = 16;
+    const uint gridW =  8;
+    const uint gridH =  8;
+    uint R = (gridW * gridH / 2);
     pJitterTexture->setTextureSize(size, size, R);
 
     // then create the 3d image to fill with jittering data
     osg::Image* pJitterImage = new osg::Image;
-    unsigned char *pJitterData = new unsigned char[size * size * R * 4];
+    uchar *pJitterData = new uchar[size * size * R * 4];
 
-    for ( unsigned int s = 0; s < size; ++s )
+    for ( uint s = 0; s < size; ++s )
     {
-        for ( unsigned int t = 0; t < size; ++t )
+        for ( uint t = 0; t < size; ++t )
         {
             float v[4], d[4];
 
-            for ( unsigned int r = 0; r < R; ++r )
+            for ( uint r = 0; r < R; ++r )
             {
                 const int x = r % ( gridW / 2 );
                 const int y = ( gridH - 1 ) - ( r / (gridW / 2) );
@@ -113,11 +113,11 @@ void CLightSpacePerspectiveShadowTechnique::InitJittering(osg::StateSet *pStateS
                 d[3] = sqrtf( v[3] ) * sinf( 2.f * 3.1415926f * v[2] );
 
                 // store d into unsigned values [0,255]
-                const unsigned int tmp = ( (r * size * size) + (t * size) + s ) * 4;
-                pJitterData[ tmp + 0 ] = (unsigned char)( ( 1.f + d[0] ) * 127  );
-                pJitterData[ tmp + 1 ] = (unsigned char)( ( 1.f + d[1] ) * 127  );
-                pJitterData[ tmp + 2 ] = (unsigned char)( ( 1.f + d[2] ) * 127  );
-                pJitterData[ tmp + 3 ] = (unsigned char)( ( 1.f + d[3] ) * 127  );
+                const uint tmp = ( (r * size * size) + (t * size) + s ) * 4;
+                pJitterData[ tmp + 0 ] = (uchar)( ( 1.f + d[0] ) * 127  );
+                pJitterData[ tmp + 1 ] = (uchar)( ( 1.f + d[1] ) * 127  );
+                pJitterData[ tmp + 2 ] = (uchar)( ( 1.f + d[2] ) * 127  );
+                pJitterData[ tmp + 3 ] = (uchar)( ( 1.f + d[3] ) * 127  );
             }
         }
     }
@@ -210,11 +210,11 @@ std::string CLightSpacePerspectiveShadowTechnique::GenerateFragmentShaderSource(
 			<< "    vec3 TempColour;" << std::endl
 			<< "    vec4 TexColour;" << std::endl;
 		int Index = 0;
-		for (std::map<unsigned int, unsigned int>::iterator iTr = m_AdditionalTerrainTextureUnits.begin();
+		for (std::map<uint, uint>::iterator iTr = m_AdditionalTerrainTextureUnits.begin();
 							iTr != m_AdditionalTerrainTextureUnits.end(); iTr++)
 		{
-			unsigned int Unit = (*iTr).first;
-			unsigned int Mode = (*iTr).second;
+			uint Unit = (*iTr).first;
+			uint Mode = (*iTr).second;
 			switch (Mode)
 			{
 			case GL_ADD:
@@ -267,13 +267,13 @@ std::string CLightSpacePerspectiveShadowTechnique::GenerateFragmentShaderSource(
 	return ShaderSource.str();
 }
 
-void CLightSpacePerspectiveShadowTechnique::AddAdditionalTerrainTextureUnit(const unsigned int Unit, const unsigned int Mode)
+void CLightSpacePerspectiveShadowTechnique::AddAdditionalTerrainTextureUnit(const uint Unit, const uint Mode)
 {
 	m_AdditionalTerrainTextureUnits[Unit] = Mode;
 	dirty();
 }
 
-void CLightSpacePerspectiveShadowTechnique::RemoveAdditionalTerrainTextureUnit(const unsigned int Unit)
+void CLightSpacePerspectiveShadowTechnique::RemoveAdditionalTerrainTextureUnit(const uint Unit)
 {
 	m_AdditionalTerrainTextureUnits.erase(Unit);
 	dirty();

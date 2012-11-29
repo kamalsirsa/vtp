@@ -184,7 +184,7 @@ void Enviro::LoadAllTerrainDescriptions()
 {
 	VTLOG("LoadAllTerrainDescriptions...\n");
 
-	for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
+	for (uint i = 0; i < vtGetDataPath().size(); i++)
 		LoadTerrainDescriptions(vtGetDataPath()[i]);
 
 	VTLOG(" Done.\n");
@@ -1121,7 +1121,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	vtString sname;
 	if (param.GetValueString(STR_INIT_SCENARIO, sname))
 	{
-		for (unsigned int snum = 0; snum < param.m_Scenarios.size(); snum++)
+		for (uint snum = 0; snum < param.m_Scenarios.size(); snum++)
 		{
 			if (sname == param.m_Scenarios[snum].GetValueString(STR_SCENARIO_NAME))
 				pTerrain->ActivateScenario(snum);
@@ -1187,7 +1187,7 @@ void Enviro::StoreTerrainParameters()
 	//  layers in the parameters.
 	LayerSet &set = terr->GetLayers();
 	par.m_Layers.clear();
-	for (unsigned int i = 0; i < set.size(); i++)
+	for (uint i = 0; i < set.size(); i++)
 	{
 		vtLayer *lay = set[i];
 
@@ -1902,7 +1902,7 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 	vtTerrain *terr = GetCurrentTerrain();
 	float fVerticalExag = terr->GetVerticalExag();
 	LayerSet &layers = terr->GetLayers();
-	for (unsigned int i = 0; i < layers.size(); i++)
+	for (uint i = 0; i < layers.size(); i++)
 	{
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i].get());
 		if (!alay)
@@ -1914,7 +1914,7 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 		if (pset2 || pset3)
 		{
 			FBox3 bbox;
-			for (unsigned int j = 0; j < fset->GetNumEntities(); j++)
+			for (uint j = 0; j < fset->GetNumEntities(); j++)
 			{
 				vtFeature *feat = fset->GetFeature(j);
 				vtVisual *viz = alay->GetViz(feat);
@@ -1926,7 +1926,7 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 					fset->Select(j, false);
 
 				bool bSelected = false;
-				for (unsigned int k = 0; k < viz->m_meshes.size(); k++)
+				for (uint k = 0; k < viz->m_meshes.size(); k++)
 				{
 					vtMesh *mesh = viz->m_meshes[k];
 					mesh->GetBoundBox(bbox);
@@ -1976,7 +1976,7 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 		m_Elastic.Clear();
 
 		VTLOG1(" Polygon:");
-		for (unsigned int i = 0; i < line.GetSize(); i++)
+		for (uint i = 0; i < line.GetSize(); i++)
 			VTLOG(" (%lf %lf)", line[i].x, line[i].y);
 		VTLOG1("\n");
 
@@ -2132,7 +2132,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 		if (m_bMeasurePath)
 		{
 			DPoint2 g2(m_EarthPos.x, m_EarthPos.y);
-			unsigned int len = m_distance_path.GetSize();
+			uint len = m_distance_path.GetSize();
 			if (len > 1)
 				m_distance_path[len-1] = g2;
 			SetTerrainMeasure(m_distance_path);
@@ -2380,7 +2380,7 @@ void Enviro::SetFenceOptions(const vtLinearParams &param, bool bProfileChanged)
 	}
 
 	vtStructureArray3d *structures = pTerr->GetStructureLayer();
-	for (unsigned int i = 0; i < structures->GetSize(); i++)
+	for (uint i = 0; i < structures->GetSize(); i++)
 	{
 		vtStructure *str = structures->GetAt(i);
 		if (!str->IsSelected() || str->GetType() != ST_LINEAR)
@@ -2433,7 +2433,7 @@ void Enviro::SetPlantOptions(const PlantingOptions &opt)
 	if (m_mode == MM_SELECT || m_mode == MM_SELECTMOVE)
 	{
 		vtPlantInstanceArray3d &pia = GetCurrentTerrain()->GetPlantInstances();
-		for (unsigned int i = 0; i < pia.GetNumEntities(); i++)
+		for (uint i = 0; i < pia.GetNumEntities(); i++)
 		{
 			if (pia.IsSelected(i))
 			{
@@ -2952,7 +2952,7 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain)
 	// How many four-wheel land vehicles are there in the content catalog?
 	vtStringArray vnames;
 	vtContentManager3d &con = vtGetContent();
-	for (unsigned int i = 0; i < con.NumItems(); i++)
+	for (uint i = 0; i < con.NumItems(); i++)
 	{
 		vtItem *item = con.GetItem(i);
 		const char *type = item->GetValueString("type");
@@ -2962,13 +2962,13 @@ void Enviro::CreateSomeTestVehicles(vtTerrain *pTerrain)
 			vnames.push_back(item->m_name);
 		}
 	}
-	unsigned int numv = vnames.size();
+	uint numv = vnames.size();
 
 	// put one of each at the center of the terrain
 	DPoint2 center = pTerrain->GetHeightField()->GetEarthExtents().GetCenter();
 
 	// add some test vehicles
-	for (unsigned int i = 0; i < numv; i++)
+	for (uint i = 0; i < numv; i++)
 	{
 		RGBf color(1.0f, 1.0f, 1.0f);	// white
 
@@ -3128,7 +3128,7 @@ vtAbstractLayer *Enviro::GetLabelLayer()
 	if (!pTerr)
 		return false;
 	LayerSet &layers = pTerr->GetLayers();
-	for (unsigned int i = 0; i < layers.size(); i++)
+	for (uint i = 0; i < layers.size(); i++)
 	{
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i].get());
 		if (!alay)
@@ -3147,7 +3147,7 @@ int Enviro::NumSelectedAbstractFeatures()
 		return 0;
 	LayerSet &layers = pTerr->GetLayers();
 	int count = 0;
-	for (unsigned int i = 0; i < layers.size(); i++)
+	for (uint i = 0; i < layers.size(); i++)
 	{
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i].get());
 		if (alay)

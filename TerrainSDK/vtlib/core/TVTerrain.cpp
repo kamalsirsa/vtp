@@ -745,7 +745,7 @@ DTErr TVTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 
 	m_size = init_ntriabove(m_depth);
 	m_err = (unsigned short *)malloc(m_size * sizeof(short));
-	m_info = (unsigned char *)malloc(m_size * sizeof(char));
+	m_info = (uchar *)malloc(m_size * sizeof(char));
 
 	fprintf(stderr, "Hierarchy uses %d bytes.\n",
 		(int)(m_size*sizeof(short)+m_size*sizeof(char)));

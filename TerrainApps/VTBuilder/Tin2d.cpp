@@ -189,7 +189,7 @@ vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum)
 void vtTin2d::MakeOutline()
 {
 	// Find all the unique edges (all internal edges appear twice)
-	for (unsigned int i = 0; i < NumTris(); i++)
+	for (uint i = 0; i < NumTris(); i++)
 	{
 		int v0 = m_tri[i*3+0];
 		int v1 = m_tri[i*3+1];
@@ -254,8 +254,8 @@ void vtTin2d::DrawTin(wxDC *pDC, vtScaledView *pView)
 	{
 		// Draw every triangle
 		FPoint2 p2;
-		unsigned int tris = NumTris();
-		for (unsigned int i = 0; i < tris; i++)
+		uint tris = NumTris();
+		for (uint i = 0; i < tris; i++)
 		{
 			if (m_bConstrain)
 			{
@@ -276,7 +276,7 @@ void vtTin2d::DrawTin(wxDC *pDC, vtScaledView *pView)
 	}
 #if 0
 	// For testing purposes, draw the vertices as well
-	unsigned int points = NumVerts();
+	uint points = NumVerts();
 	for (i = 0; i < tris; i++)
 	{
 		pView->screen(m_vert[i], g_screenbuf[0]);

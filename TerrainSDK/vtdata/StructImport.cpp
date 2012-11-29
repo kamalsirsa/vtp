@@ -677,7 +677,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 	float fMinZ, fMaxZ, fTotalZ;
 	float fZ;
 	float fMin, fMax, fDiff, fElev;
-	unsigned int i, j;
+	uint i, j;
 	while( (pFeature = pLayer->GetNextFeature()) != NULL )
 	{
 		count++;
@@ -727,7 +727,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		DPolygon2 footprint;
 		OGRPolygon	 *pPolygon;
 		OGRLineString *pLineString;
-		unsigned int line_points = 0;
+		uint line_points = 0;
 
 		switch (wkbFlatten(GeometryType))
 		{
@@ -780,7 +780,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		}
 
 		const DLine2 &outer_ring = footprint[0];
-		unsigned int outer_ring_size = outer_ring.GetSize();
+		uint outer_ring_size = outer_ring.GetSize();
 
 		if (opt.bInsideOnly)
 		{
@@ -816,7 +816,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		{
 			float fTotalHeight = 0;
 			float fScaleFactor;
-			unsigned int iNumLevels = pBld->GetNumLevels();
+			uint iNumLevels = pBld->GetNumLevels();
 			RoofType eRoofType = pBld->GetRoofType();
 			float fRoofHeight = pBld->GetLevel(iNumLevels - 1)->m_fStoryHeight;
 
@@ -840,7 +840,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 			// Use the outer footprint of the lowest level
 			fMin = 1E9;
 			fMax = -1E9;
-			for (unsigned int v = 0; v < outer_ring_size; v++)
+			for (uint v = 0; v < outer_ring_size; v++)
 			{
 				if (opt.pHeightField->FindAltitudeOnEarth(outer_ring.GetAt(v), fElev))
 				{

@@ -90,7 +90,7 @@ void VegFieldsDlg::RefreshEnabled()
 
 void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	unsigned int i;
+	uint i;
 
 	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(m_filename.mb_str(wxConvUTF8));

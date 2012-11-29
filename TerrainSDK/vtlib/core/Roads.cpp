@@ -361,7 +361,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 	float length = 0.0f;
 
 	//  for each point in the link, determine coordinates
-	unsigned int j, size = GetSize();
+	uint j, size = GetSize();
 	for (j = 0; j < size; j++)
 	{
 		FPoint3 left, right;
@@ -448,7 +448,7 @@ void LinkGeom::AddRoadStrip(vtMesh *pMesh, RoadBuildInfo &bi,
 	float texture_v;
 	FPoint2 uv;
 
-	for (unsigned int j = 0; j < GetSize(); j++)
+	for (uint j = 0; j < GetSize(); j++)
 	{
 		texture_v = bi.fvLength[j] * uv_scale;
 
@@ -659,11 +659,11 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 
 	// set lane coordinates
 	m_Lanes.resize(m_iLanes);
-	for (unsigned int i = 0; i < m_iLanes; i++)
+	for (uint i = 0; i < m_iLanes; i++)
 	{
 		m_Lanes.at(i).SetSize(GetSize());
 	}
-	for (unsigned int j = 0; j < GetSize(); j++)
+	for (uint j = 0; j < GetSize(); j++)
 	{
 		for (int i = 0; i < m_iLanes; i++)
 		{
@@ -691,7 +691,7 @@ FPoint3 LinkGeom::FindPointAlongRoad(float fDistance)
 		return m_centerline[0];
 	}
 	// compute 2D length of this link, by adding up the 2d link segment lengths
-	for (unsigned int j = 0; j < GetSize()-1; j++)
+	for (uint j = 0; j < GetSize()-1; j++)
 	{
 		// consider length of next segment
 		v.x = m_centerline[j+1].x - m_centerline[j].x;
@@ -722,7 +722,7 @@ float LinkGeom::Length()
 	float length = 0.0f;
 
 	// compute 2D length of this link, by adding up the 2d link segment lengths
-	for (unsigned int j = 0; j < GetSize(); j++)
+	for (uint j = 0; j < GetSize(); j++)
 	{
 		if (j > 0)
 		{
@@ -1149,7 +1149,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 	for (LinkGeom *pL = GetFirstLink(); pL; pL = (LinkGeom *)pL->m_pNext)
 	{
 		pL->m_centerline.SetSize(pL->GetSize());
-		for (unsigned int j = 0; j < pL->GetSize(); j++)
+		for (uint j = 0; j < pL->GetSize(); j++)
 		{
 			pHeightField->ConvertEarthToSurfacePoint(pL->GetAt(j), p);
 			pL->m_centerline[j] = p;

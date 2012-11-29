@@ -35,7 +35,7 @@ class wstring2;
 // pointer to const char
 typedef char *pchar;
 typedef const char *pcchar;
-typedef const unsigned char *pcuchar;
+typedef const uchar *pcuchar;
 
 struct vtStringData
 {
@@ -62,8 +62,8 @@ public:
 	vtString(const vtString& stringSrc);
 	// from an ANSI string (converts to char)
 	vtString(pcchar lpsz);
-	// from unsigned characters
-	vtString(const unsigned char* psz);
+	// from ucharacters
+	vtString(const uchar* psz);
 	// subset of characters from an ANSI string (converts to char)
 	vtString(pcchar lpch, int nLength);
 
@@ -91,8 +91,8 @@ public:
 	const vtString& operator=(const vtString& stringSrc);
 	// copy string content from ANSI string (converts to char)
 	const vtString& operator=(pcchar lpsz);
-	// copy string content from unsigned chars
-	const vtString& operator=(const unsigned char* psz);
+	// copy string content from uchars
+	const vtString& operator=(const uchar* psz);
 
 	// string concatenation
 
@@ -274,9 +274,9 @@ inline void vtString::Init()
 	{ m_pchData = vtEmptyString.m_pchData; }
 inline vtString::vtString()
 	{ m_pchData = vtEmptyString.m_pchData; }
-inline vtString::vtString(const unsigned char* lpsz)
+inline vtString::vtString(const uchar* lpsz)
 	{ Init(); *this = (pcchar)lpsz; }
-inline const vtString& vtString::operator=(const unsigned char* lpsz)
+inline const vtString& vtString::operator=(const uchar* lpsz)
 	{ *this = (pcchar)lpsz; return *this; }
 
 inline int vtString::GetLength() const

@@ -106,7 +106,7 @@ void Builder::ImportData(LayerType ltype)
 	// TESTING code here
 //	ImportDataFromS57(strFileName);
 
-	for (unsigned int i=0; i<strFileNameArray.GetCount(); ++i)
+	for (uint i=0; i<strFileNameArray.GetCount(); ++i)
 	{
 		const wxString &fname = strFileNameArray.Item(i);
 		if (ImportDataFromArchive(ltype, fname, true) != 0)
@@ -342,7 +342,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 			DisplayAndLog("Don't know what to do with contents of archive.");
 
 		// set the original imported filename
-		for (unsigned int i = 0; i < LoadedLayers.GetSize(); i++)
+		for (uint i = 0; i < LoadedLayers.GetSize(); i++)
 			LoadedLayers[i]->SetImportedFrom(fname_in);
 	}
 
@@ -2380,7 +2380,7 @@ bool Builder::ImportDataFromDXF(const char *filename)
 	fs_polylines->AddField("Color", FT_String, 16);
 
 	vtFeatureSet *set;
-	for (unsigned int i = 0; i < entities.size(); i++)
+	for (uint i = 0; i < entities.size(); i++)
 	{
 		const DxfEntity &ent = entities[i];
 		int record = -1;

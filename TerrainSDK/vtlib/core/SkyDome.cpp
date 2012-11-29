@@ -601,7 +601,7 @@ void vtSkyDome::ApplyDomeColors()
 		return;
 
 	// Set day colors
-	for (unsigned int i = 0; i < mesh->GetNumVertices(); i++)
+	for (uint i = 0; i < mesh->GetNumVertices(); i++)
 	{
 		FPoint3 p = mesh->GetVtxPos(i);
 		psph = SphVertices[i];

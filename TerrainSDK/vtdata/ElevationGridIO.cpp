@@ -796,14 +796,14 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 
 	// REF: record header length + (2 * number of rows) + checksum length
 	int line_length = 8 + (2 * m_iRows) + 4;
-	unsigned char *linebuf = new unsigned char[line_length];
+	uchar *linebuf = new uchar[line_length];
 
 	// Skip DSI and ACC headers
 	fseek(fp, 648 + 2700, SEEK_CUR);
 
 	// each elevation, z, is stored in 2 bytes
 	const int z_len = 2;
-	unsigned char swap[z_len];
+	uchar swap[z_len];
 
 	int i, j, offset;
 	for (i = 0; i < m_iColumns; i++)
@@ -1529,7 +1529,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 		int data_length = offset_end - offset_start;
 		int data_size = data_length / (xsize*ysize);
 
-		unsigned char oneb;		// one byte from file
+		uchar oneb;		// one byte from file
 		short twob;				// two bytes from file
 		for (int j = 0; j < ysize; j++)
 		{
@@ -1546,7 +1546,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 				}
 				else
 				{
-					quiet = fread(&oneb, sizeof(unsigned char), 1, fp);
+					quiet = fread(&oneb, sizeof(uchar), 1, fp);
 					SetFValue(i, ysize-1-j, oneb);
 				}
 			}
@@ -1755,7 +1755,7 @@ bool vtElevationGrid::SaveToBMP(const char *szFileName) const
 		for (y = 0; y < m_iRows; y++)
 		{
 			value = GetFValue(x, y);
-			dib.SetPixel8(x, y, (unsigned char) ((value - fMin) * fScale));
+			dib.SetPixel8(x, y, (uchar) ((value - fMin) * fScale));
 		}
 	}
 	return dib.WriteBMP(szFileName);
@@ -2217,7 +2217,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 			if (bytes_per_element == 1)
 			{
 				quiet = fread(data, 1, 1, fp);
-				SetValue(i, m_iRows-1-j, *((unsigned char *)data));
+				SetValue(i, m_iRows-1-j, *((uchar *)data));
 			}
 			if (bytes_per_element == 2)
 			{
@@ -2509,7 +2509,7 @@ bool vtElevationGrid::GetXYZLine(const char *buf, const char *pattern, const cha
 	if (sscanf(buf, format, &val[0], &val[1], &val[2], &val[3]) != components)
 		return false;
 	int v = 0;
-	for (unsigned int i = 0; i < strlen(pattern); i++)
+	for (uint i = 0; i < strlen(pattern); i++)
 	{
 		char ch = pattern[i];
 		switch (ch)
@@ -2540,7 +2540,7 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 
 	// Convert pattern ("n x y z") to fscanf format ("%lf %lf %lf %lf")
 	char format[40];
-	unsigned int i, j = 0;
+	uint i, j = 0;
 	int components = 0;
 	for (i = 0; i < strlen(pattern); i++)
 	{
@@ -2755,11 +2755,11 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 
 #define MAGIC_VALUE 0x04030201
 typedef union {
-	unsigned int val;
-	unsigned char bytes[4];
+	uint val;
+	uchar bytes[4];
 } bitTest;
 #define SWAP(a,b)	{ a^=b; b^=a; a^=b; }
-#define BYTE		unsigned char
+#define BYTE		uchar
 #define BSWAP_W(w)	SWAP( (((BYTE *)&w)[0]), (((BYTE *)&w)[1]) )
 
 /**
@@ -3237,7 +3237,7 @@ bool vtElevationGrid::SaveToPNG16(const char *fname)
 
 	short val;
 	byte *adr = (byte *) &val;
-	unsigned int row, col;
+	uint row, col;
 	for (row = 0; row < height; row++)
 	{
 		png_bytep pngptr = row_pointers[row];

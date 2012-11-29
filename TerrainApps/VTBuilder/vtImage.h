@@ -47,10 +47,10 @@ public:
 	int		m_iYSize;
 
 	int m_iRasterCount;
-	unsigned char *m_pBlock;
-	unsigned char *m_pRedBlock;
-	unsigned char *m_pGreenBlock;
-	unsigned char *m_pBlueBlock;
+	uchar *m_pBlock;
+	uchar *m_pRedBlock;
+	uchar *m_pGreenBlock;
+	uchar *m_pBlueBlock;
 	GDALRasterBand *m_pBand;
 	GDALRasterBand *m_pRed;
 	GDALRasterBand *m_pGreen;
@@ -118,7 +118,7 @@ public:
 	bool GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes = 0.0);
 	bool GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb, double dRes = 0.0);
 	void GetRGB(int x, int y, RGBi &rgb, double dRes = 0.0);
-	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);
+	void SetRGB(int x, int y, uchar r, uchar g, uchar b);
 	void SetRGB(int x, int y, const RGBi &rgb);
 	void ReplaceColor(const RGBi &rgb1, const RGBi &rgb2);
 	void SetupBitmapInfo(int iXSize, int iYSize);
@@ -127,7 +127,7 @@ public:
 	bool ReadPPM(const char *fname, bool progress_callback(int) = NULL);
 	bool WritePPM(const char *fname) const;
 	bool SaveToFile(const char *fname) const;
-	bool ReadPNGFromMemory(unsigned char *buf, int len);
+	bool ReadPNGFromMemory(uchar *buf, int len);
 	bool LoadFromGDAL(const char *fname);
 	bool CreateOverviews();
 
@@ -170,7 +170,7 @@ protected:
 
 // Helpers
 int GetBitDepthUsingGDAL(const char *fname);
-void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets);
+void MakeSampleOffsets(const DPoint2 cellsize, uint N, DLine2 &offsets);
 void SampleMipLevel(vtBitmap *bigger, vtBitmap *smaller);
 
 #endif	// VTIMAGE_H

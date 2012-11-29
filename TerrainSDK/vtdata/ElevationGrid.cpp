@@ -903,7 +903,7 @@ bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
  */
 int vtElevationGrid::FillGapsByRegionGrowing(int radius_start, int radius_stop, bool progress_callback(int))
 {
-	unsigned int count = 0;
+	uint count = 0;
 
 	for (int r=radius_start; r<=radius_stop; r++)
 	{
@@ -932,7 +932,7 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius_start, int radius_stop, 
  */
 int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(int))
 {
-	unsigned int count = 0;
+	uint count = 0;
 
 	int i,j;
 	int m,n;

@@ -17,13 +17,13 @@ class ImageGLCanvas;
 class TilingOptions;
 
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
-					unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
+					uchar *rgb_bytes, vtMiniDatabuf &output_buf,
 					int iUncompressedSize, ImageGLCanvas *pCanvas);
 void CheckCompressionMethod(TilingOptions &opts);
 
 #if USE_OPENGL
 #include "wx/glcanvas.h"
-void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
+void DoTextureCompress(uchar *rgb_bytes, vtMiniDatabuf &output_buf,
 					   GLuint &iTex, bool bAlpha);
 
 //
@@ -50,7 +50,7 @@ protected:
 #endif	// USE_OPENGL
 
 #if SUPPORT_SQUISH
-void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool bFast);
+void DoTextureSquish(uchar *rgb_bytes, vtMiniDatabuf &output_buf, bool bFast);
 #endif
 
 #endif	// HELPERH

@@ -53,7 +53,7 @@ vtPlantSpecies::vtPlantSpecies()
 
 vtPlantSpecies::~vtPlantSpecies()
 {
-	for (unsigned int i = 0; i < m_Apps.GetSize(); i++)
+	for (uint i = 0; i < m_Apps.GetSize(); i++)
 	{
 		delete m_Apps[i];
 	}
@@ -84,10 +84,10 @@ void vtPlantSpecies::AddCommonName(const char *Name, const char *Lang)
  * Return the number of common names of this species in a given language.
  * Language is a two-letter ISO 639 code, e.g. "fr" for French.
  */
-unsigned int vtPlantSpecies::CommonNamesOfLanguage(const char *lang)
+uint vtPlantSpecies::CommonNamesOfLanguage(const char *lang)
 {
-	unsigned int count = 0;
-	for (unsigned int j = 0; j < NumCommonNames(); j++)
+	uint count = 0;
+	for (uint j = 0; j < NumCommonNames(); j++)
 	{
 		if (m_CommonNames[j].m_strLang == lang)
 			count++;
@@ -114,7 +114,7 @@ vtSpeciesList::vtSpeciesList()
 
 vtSpeciesList::~vtSpeciesList()
 {
-	for (unsigned int i = 0; i < m_Species.GetSize(); i++)
+	for (uint i = 0; i < m_Species.GetSize(); i++)
 	{
 		delete m_Species[i];
 	}
@@ -135,20 +135,20 @@ bool vtSpeciesList::WriteXML(const char *fname) const
 	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n");
 	fprintf(fp, "<species-file file-format-version=\"1.1\">\n");
 
-	for (unsigned int i = 0; i < NumSpecies(); i++)
+	for (uint i = 0; i < NumSpecies(); i++)
 	{
 		vtPlantSpecies *spe = GetSpecies(i);
 		fprintf(fp, "\t<species name=\"%s\" max_height=\"%.2f\">\n",
 			spe->GetSciName(),
 			spe->GetMaxHeight());
-		for (unsigned int j = 0; j < spe->NumCommonNames(); j++)
+		for (uint j = 0; j < spe->NumCommonNames(); j++)
 		{
 			vtPlantSpecies::CommonName cname = spe->GetCommonName(j);
 			fprintf(fp, "\t\t<common name=\"%s\" lang=\"%s\" />\n",
 				(const char *) cname.m_strName,
 				(const char *) cname.m_strLang);
 		}
-		for (unsigned int j = 0; j < GetSpecies(i)->NumAppearances(); j++)
+		for (uint j = 0; j < GetSpecies(i)->NumAppearances(); j++)
 		{
 			vtPlantAppearance* app = GetSpecies(i)->GetAppearance(j);
 			fprintf(fp, "\t\t<appearance type=\"%d\" filename=\"%s\" "
@@ -186,19 +186,19 @@ bool vtSpeciesList::WriteHTML(const char *fname) const
 	fprintf(fp, "<p>Generated on %s GMT</p>\n", asctime(gmtime(&t)));
 
 	int total = 0;
-	for (unsigned int i = 0; i < NumSpecies(); i++)
+	for (uint i = 0; i < NumSpecies(); i++)
 		total += GetSpecies(i)->NumAppearances();
 
 	fprintf(fp, "<p>Total: %d species with %d appearances</p>\n", NumSpecies(), total);
 	fprintf(fp, "</blockquote>\n\n");
 
 	fprintf(fp, "<ul>\n");
-	for (unsigned int i = 0; i < NumSpecies(); i++)
+	for (uint i = 0; i < NumSpecies(); i++)
 	{
 		vtPlantSpecies *sp = GetSpecies(i);
 		fprintf(fp, "  <li><i><font size=\"4\">%s</font></i>\n    <ul>\n", sp->GetSciName());
 		fprintf(fp, "      <li>Common names: ");
-		for (unsigned int j = 0; j < sp->NumCommonNames(); j++)
+		for (uint j = 0; j < sp->NumCommonNames(); j++)
 		{
 			if (j > 0)
 				fprintf(fp, ", ");
@@ -219,7 +219,7 @@ bool vtSpeciesList::WriteHTML(const char *fname) const
 
 short vtSpeciesList::FindSpeciesId(vtPlantSpecies *ps)
 {
-	for (unsigned int i = 0; i < m_Species.GetSize(); i++)
+	for (uint i = 0; i < m_Species.GetSize(); i++)
 	{
 		if (m_Species[i] == ps)
 			return (short) i;
@@ -240,12 +240,12 @@ vtString RemSpaces(const vtString &str)
 
 /*void vtSpeciesList::LookupPlantIndices(vtBioType *bt)
 {
-	for (unsigned int i = 0; i < bt->m_Densities.GetSize(); i++)
+	for (uint i = 0; i < bt->m_Densities.GetSize(); i++)
 	{
 		vtString common_name = RemSpaces(bt->m_Densities[i]->m_common_name);
 
 		bt->m_Densities[i]->m_list_index = -1;
-		for (unsigned int j = 0; j < NumSpecies(); j++)
+		for (uint j = 0; j < NumSpecies(); j++)
 		{
 			vtPlantSpecies *ps = GetSpecies(j);
 			if (common_name == RemSpaces(ps->GetCommonName()))
@@ -267,7 +267,7 @@ vtString RemSpaces(const vtString &str)
  */
 short vtSpeciesList::GetSpeciesIdByName(const char *name) const
 {
-	for (unsigned int j = 0; j < NumSpecies(); j++)
+	for (uint j = 0; j < NumSpecies(); j++)
 	{
 		if (!strcmp(name, m_Species[j]->GetSciName()))
 			return (short) j;
@@ -285,7 +285,7 @@ short vtSpeciesList::GetSpeciesIdByName(const char *name) const
  */
 short vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 {
-	unsigned int i, j;
+	uint i, j;
 	for (i = 0; i < NumSpecies(); i++)
 	{
 		vtPlantSpecies *spe = GetSpecies(i);
@@ -440,7 +440,7 @@ vtBioRegion::vtBioRegion()
 
 vtBioRegion::~vtBioRegion()
 {
-	for (unsigned int i = 0; i < m_Types.GetSize(); i++)
+	for (uint i = 0; i < m_Types.GetSize(); i++)
 	{
 		delete m_Types[i];
 	}
@@ -660,7 +660,7 @@ vtBioType::vtBioType()
 
 vtBioType::~vtBioType()
 {
-	for (unsigned int i = 0; i < m_Densities.GetSize(); i++)
+	for (uint i = 0; i < m_Densities.GetSize(); i++)
 		delete m_Densities[i];
 }
 
@@ -677,7 +677,7 @@ void vtBioType::AddPlant(vtPlantSpecies *pSpecies, float plant_per_m2, float typ
 
 void vtBioType::ResetAmounts()
 {
-	for (unsigned int i = 0; i < m_Densities.GetSize(); i++)
+	for (uint i = 0; i < m_Densities.GetSize(); i++)
 		m_Densities[i]->ResetAmounts();
 }
 
@@ -751,9 +751,9 @@ void vtPlantInstanceArray::GetPlant(int iNum, float &size, short &species_id) co
 /**
  * Given a species index, return the number of instances which are of that species.
  */
-unsigned int vtPlantInstanceArray::InstancesOfSpecies(short species_id)
+uint vtPlantInstanceArray::InstancesOfSpecies(short species_id)
 {
-	unsigned int i, count = 0, numinstances = GetNumEntities();
+	uint i, count = 0, numinstances = GetNumEntities();
 	float size;
 	short species;
 	for (i = 0; i < numinstances; i++)
@@ -768,7 +768,7 @@ unsigned int vtPlantInstanceArray::InstancesOfSpecies(short species_id)
 /*void vtPlantInstanceArray::AppendFrom(const vtPlantInstanceArray &from)
 {
 	// TODO: match actual species
-	for (unsigned int i = 0; i < from.GetSize(); i++)
+	for (uint i = 0; i < from.GetSize(); i++)
 	{
 		Append(from[i]);
 	}

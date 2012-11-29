@@ -76,8 +76,8 @@ public:
 	void UpdateSkydomeForTerrain(vtTerrain *pTerrain);
 
 	/// Access the terrains in the list.
-	unsigned int NumTerrains() { return m_Terrains.size(); }
-	vtTerrain *GetTerrain(unsigned int i) { return m_Terrains[i]; }
+	uint NumTerrains() { return m_Terrains.size(); }
+	vtTerrain *GetTerrain(uint i) { return m_Terrains[i]; }
 
 	/// Get the terrain currently being shown.
 	vtTerrain *GetCurrentTerrain() { return m_pCurrentTerrain; }

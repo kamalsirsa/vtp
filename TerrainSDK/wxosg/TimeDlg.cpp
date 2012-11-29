@@ -147,7 +147,7 @@ void TimeDlg::SetTimeEngine(vtTimeEngine *pEngine)
 
 	// If the engine is not yet connected to us, connect it.
 	bool bFound = false;
-	for (unsigned int i = 0; i < pEngine->NumTargets(); i++)
+	for (uint i = 0; i < pEngine->NumTargets(); i++)
 	{
 		if (pEngine->GetTarget(i) == self)
 			bFound = true;

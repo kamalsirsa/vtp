@@ -24,7 +24,7 @@ vtString RemoveAccents(const vtString &strInput)
 	int len = strInput.GetLength();
 	for (int i = 0; i < len; i++)
 	{
-		unsigned char ch = (unsigned char) strInput.GetAt(i);
+		uchar ch = (uchar) strInput.GetAt(i);
 		switch (ch)
 		{
 			// do conversion from "ANSI western europe" character set
@@ -398,7 +398,7 @@ void Countries::ParseRawCountryFiles(const char *path_prefix, bool bNativeNames)
 {
 	m_path = path_prefix;
 
-	unsigned int num = m_countries.GetSize();
+	uint num = m_countries.GetSize();
 	for (int unsigned i = 0; i < num; i++)
 		ParseRawCountry(i, bNativeNames);
 }
@@ -425,7 +425,7 @@ bool Countries::WriteSHPPerCountry(const char *prefix)
 void Countries::Free(bool progress_callback(int))
 {
 	// manually free memory
-	unsigned int size = m_countries.GetSize();
+	uint size = m_countries.GetSize();
 	for (int unsigned i = 0; i < size; i++)
 	{
 		if (progress_callback != NULL)
@@ -442,14 +442,14 @@ void Countries::Free(bool progress_callback(int))
 void GNS_to_wstring(int region, const char *word, std::wstring &output)
 {
 	int len = strlen(word);
-	unsigned char ch;
+	uchar ch;
 	unsigned short unicode;
 
 	output.clear();
 
 	for (int i = 0; i < len; i++)
 	{
-		ch = (unsigned char) word[i];
+		ch = (uchar) word[i];
 		if (ch < 128)
 			unicode = ch;
 		else
@@ -1432,7 +1432,7 @@ bool Gazetteer::FindPlace(const vtString &state, const vtString &place_org, DPoi
 	// Saunderstown, RI
 	// Ashburn, VA		(speck outside DC)
 
-	for (unsigned int i = 0; i < m_places.size(); i++)
+	for (uint i = 0; i < m_places.size(); i++)
 	{
 		const Place &p = m_places[i];
 		if (p.m_state.Compare(state) == 0 && p.m_name.CompareNoCase(place) == 0)
@@ -1446,7 +1446,7 @@ bool Gazetteer::FindPlace(const vtString &state, const vtString &place_org, DPoi
 
 bool Gazetteer::FindZip(int zip, DPoint2 &geo)
 {
-	for (unsigned int i = 0; i < m_zips.size(); i++)
+	for (uint i = 0; i < m_zips.size(); i++)
 	{
 		const Zip &p = m_zips[i];
 		if (p.m_zip == zip)

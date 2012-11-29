@@ -169,7 +169,7 @@ void ContourConverter::Flush()
 		// confirm they are not all the same
 		DPoint2 p2 = m_line[0];
 		bool same = true;
-		for (unsigned int i = 1; i < m_line.GetSize(); i++)
+		for (uint i = 1; i < m_line.GetSize(); i++)
 		{
 			if (m_line[i] != p2)
 			{

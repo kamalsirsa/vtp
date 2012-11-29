@@ -71,7 +71,7 @@ bool vtExternalHeightField3d::Initialize(const char *external_data)
 
 		MapFrame.sync();
 		int TileSizeInHeixels = 0;
-		unsigned int MaxLOD = 0;
+		uint MaxLOD = 0;
 
         for( osgEarth::ElevationLayerVector::const_iterator i = MapFrame.elevationLayers().begin();
             i != MapFrame.elevationLayers().end();
@@ -83,11 +83,11 @@ bool vtExternalHeightField3d::Initialize(const char *external_data)
                 TileSizeInHeixels = layerTileSize;
 
             // we also need the maximum available data level.
-            unsigned int layerMaxDataLevel = i->get()->getMaxDataLevel();
+            uint layerMaxDataLevel = i->get()->getMaxDataLevel();
             if ( layerMaxDataLevel > MaxLOD )
                 MaxLOD = layerMaxDataLevel;
         }
-		unsigned int tiles_wide, tiles_high;
+		uint tiles_wide, tiles_high;
         pProfile->getNumTiles(0, tiles_wide, tiles_high);
         double WidthResolution = GeoExtent.width() / (double)tiles_wide / (double)TileSizeInHeixels;
         double HeightResolution = GeoExtent.height() / (double)tiles_high / (double)TileSizeInHeixels;
@@ -125,12 +125,12 @@ bool vtExternalHeightField3d::Initialize(const char *external_data)
 	m_Projection.SetTextDescription((const char *)"wkt", m_pLayer->getLocator()->getCoordinateSystem().c_str());
 	// Calculate the rough minimum and maximum heights
 	osg::BoundingBox bb;
-	unsigned int numColumns = m_pLayer->getNumColumns();
-	unsigned int numRows = m_pLayer->getNumRows();
+	uint numColumns = m_pLayer->getNumColumns();
+	uint numRows = m_pLayer->getNumRows();
 	osg::Vec3d Local;
-	for(unsigned int r = 0; r<numRows; ++r)
+	for(uint r = 0; r<numRows; ++r)
 	{
-		for(unsigned int c = 0;c<numColumns;++c)
+		for(uint c = 0;c<numColumns;++c)
 		{
 			float value = 0.0f;
 			bool validValue = m_pLayer->getValidValue(c,r, value);
@@ -280,8 +280,8 @@ bool vtExternalHeightField3d::CastRayToSurface(const FPoint3 &point, const FPoin
 	}
 else
 	{
-        unsigned int NumColumns = m_pLayer->getNumColumns();
-        unsigned int NumRows = m_pLayer->getNumRows();
+        uint NumColumns = m_pLayer->getNumColumns();
+        uint NumRows = m_pLayer->getNumRows();
         osg::Vec3d Local((double)1.0/(double)(NumColumns - 1), double(1.0)/(double)(NumRows - 1), 0.0);
         osg::Vec3d Model;
         m_pLayer->getLocator()->convertLocalToModel(Local, Model);

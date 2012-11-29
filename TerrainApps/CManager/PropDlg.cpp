@@ -138,7 +138,7 @@ void PropPanel::OnInitDialog(wxInitDialogEvent& event)
 		fclose(fp);
 	}
 	m_pTypeChoice->Clear();
-	for (unsigned int i = 0; i < m_types.size(); i++)
+	for (uint i = 0; i < m_types.size(); i++)
 	{
 		if (m_types[i].subtype == "")
 			m_pTypeChoice->Append(wxString(m_types[i].type, wxConvUTF8));
@@ -180,7 +180,7 @@ void PropPanel::UpdateSubtypes()
 	vtString type = (const char *) m_pTypeChoice->GetStringSelection().mb_str();
 
 	m_pSubtypeChoice->Clear();
-	for (unsigned int i = 0; i < m_types.size(); i++)
+	for (uint i = 0; i < m_types.size(); i++)
 	{
 		if (m_types[i].type == type)
 			m_pSubtypeChoice->Append(wxString(m_types[i].subtype, wxConvUTF8));
@@ -201,7 +201,7 @@ void PropPanel::UpdateTagList()
 
 	int item;
 	vtTag *tag;
-	for (unsigned int i = 0; i < m_pCurrentItem->NumTags(); i++)
+	for (uint i = 0; i < m_pCurrentItem->NumTags(); i++)
 	{
 		tag = m_pCurrentItem->GetTag(i);
 		if (!tag->name.Compare("type"))

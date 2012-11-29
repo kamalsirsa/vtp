@@ -174,7 +174,7 @@ void MainFrame::DoGeocode()
 		if (success)
 		{
 			// ensure the points are initialized to zero
-			for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
+			for (uint i = 0; i < feat.GetNumEntities(); i++)
 				feat.SetPoint(i, zero);
 		}
 	}

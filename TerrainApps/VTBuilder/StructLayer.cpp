@@ -93,7 +93,7 @@ void vtStructureLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
-	unsigned int structs = GetSize();
+	uint structs = GetSize();
 	pDC->SetBrush(*wxTRANSPARENT_BRUSH);
 	pDC->SetPen(orangePen);
 	DrawStructures(pDC, pView, false);	// unselected
@@ -109,7 +109,7 @@ void vtStructureLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 
 void vtStructureLayer::DrawStructures(wxDC *pDC, vtScaledView *pView, bool bOnlySelected)
 {
-	unsigned int structs = GetSize();
+	uint structs = GetSize();
 	for (unsigned i = 0; i < structs; i++)
 	{
 		// draw each building
@@ -197,7 +197,7 @@ void vtStructureLayer::DrawBuilding(wxDC *pDC, vtScaledView *pView,
 
 void vtStructureLayer::DrawLinear(wxDC *pDC, vtScaledView *pView, vtFence *fen)
 {
-	unsigned int j;
+	uint j;
 
 	// draw the line itself
 	DLine2 &pts = fen->GetFencePoints();
@@ -249,8 +249,8 @@ bool vtStructureLayer::OnLoad()
 
 void vtStructureLayer::ResolveInstancesOfItems()
 {
-	unsigned int structs = GetSize();
-	for (unsigned int i = 0; i < structs; i++)
+	uint structs = GetSize();
+	for (uint i = 0; i < structs; i++)
 	{
 		vtStructure *str = GetAt(i);
 		vtStructInstance *inst = str->GetInstance();
@@ -264,13 +264,13 @@ void vtStructureLayer::CleanFootprints(double epsilon, int &degenerate, int &ove
 {
 	degenerate = 0;
 	overlapping = 0;
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		vtStructure *pStructure = GetAt(i);
 		vtBuilding *bld = pStructure->GetBuilding();
 		if (!bld)
 			continue;
-		for (unsigned int j = 0; j < bld->GetNumLevels(); j++)
+		for (uint j = 0; j < bld->GetNumLevels(); j++)
 		{
 			vtLevel *lev = bld->GetLevel(j);
 			DPolygon2 &dp = lev->GetFootprint();
@@ -279,13 +279,13 @@ void vtStructureLayer::CleanFootprints(double epsilon, int &degenerate, int &ove
 
 			// Also try to catch the case of the polygon looping around
 			// over the same points more than once.
-			for (unsigned int r = 0; r < dp.size(); r++)
+			for (uint r = 0; r < dp.size(); r++)
 			{
 				DLine2 &ring = dp[r];
-				for (unsigned int k2 = 1; k2 < ring.GetSize(); k2++)
+				for (uint k2 = 1; k2 < ring.GetSize(); k2++)
 				{
 					DPoint2 &p2 = ring.GetAt(k2);
-					for (unsigned int k1 = 0; k1 < k2; k1++)
+					for (uint k1 = 0; k1 < k2; k1++)
 					{
 						DPoint2 &p1 = ring.GetAt(k1);
 						DPoint2 diff = p1 - p2;
@@ -332,8 +332,8 @@ bool vtStructureLayer::TransformCoords(vtProjection &proj)
 		return false;		// inconvertible projections
 
 	DPoint2 loc;
-	unsigned int i, j;
-	unsigned int count = GetSize();
+	uint i, j;
+	uint count = GetSize();
 	for (i = 0; i < count; i++)
 	{
 		vtStructure *str = GetAt(i);
@@ -797,7 +797,7 @@ void vtStructureLayer::UpdateRotate(UIContext &ui)
 	double angle_diff = angle2 - angle1;
 
 	DPoint2 p;
-	unsigned int i, j, r, levs = ui.m_pCurBuilding->GetNumLevels();
+	uint i, j, r, levs = ui.m_pCurBuilding->GetNumLevels();
 	for (i = 0; i < levs; i++)
 	{
 		DPolygon2 foot = ui.m_pCurBuilding->GetFootprint(i);
@@ -828,12 +828,12 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 	DPoint2 diff2 = ui.m_CurLocation - origin;
 	float fScale = diff2.Length() / diff1.Length();
 
-	unsigned int i, j, r;
+	uint i, j, r;
 	DPoint2 p;
 	if (ui.m_bShift)
 	{
 		// Scale evenly
-		unsigned int levs = ui.m_pCurBuilding->GetNumLevels();
+		uint levs = ui.m_pCurBuilding->GetNumLevels();
 		for (i = 0; i < levs; i++)
 		{
 			DPolygon2 foot = ui.m_pCurBuilding->GetFootprint(i);
@@ -1021,7 +1021,7 @@ int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 	int affected = 0;
 	bool bWas;
 
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 

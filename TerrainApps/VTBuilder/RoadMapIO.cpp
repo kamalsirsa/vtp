@@ -972,7 +972,7 @@ private:
 void VisitorOSM::SetSignalLights()
 {
 	// For all the nodes which have signal lights, set the state
-	for (unsigned int i = 0; i < m_nodes.size(); i++)
+	for (uint i = 0; i < m_nodes.size(); i++)
 	{
 		OSMNode &node = m_nodes[i];
 		if (node.signal_lights)
@@ -1148,7 +1148,7 @@ void VisitorOSM::endElement(const char *name)
 	else if (m_state == 2 && !strcmp(name, "way"))
 	{
 		// Look at the referenced nodes, turn them into a vt link
-		unsigned int refs = (unsigned int)m_refs.size();
+		uint refs = (uint)m_refs.size();
 
 		// must have at least 2 refs
 		if (refs >= 2 && m_bAddLink == true)
@@ -1182,7 +1182,7 @@ void VisitorOSM::endElement(const char *name)
 			m_pLink->SetNode(1, node1);
 
 			// Copy all the points
-			for (unsigned int r = 0; r < refs; r++)
+			for (uint r = 0; r < refs; r++)
 			{
 				int idx = find_node(m_refs[r]);
 				m_pLink->Append(m_nodes[idx].p);

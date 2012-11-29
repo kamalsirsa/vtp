@@ -81,7 +81,7 @@ void RenderOptionsDlg::UpdateEnables()
 void RenderOptionsDlg::UpdateColorMapChoice()
 {
 	GetChoiceColors()->Clear();
-	for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
+	for (uint i = 0; i < vtGetDataPath().size(); i++)
 	{
 		// fill the "colormap" control with available colormap files
 		AddFilenamesToChoice(GetChoiceColors(), vtGetDataPath()[i] + "GeoTypical", "*.cmt");

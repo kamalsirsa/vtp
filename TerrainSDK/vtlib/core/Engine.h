@@ -61,7 +61,7 @@ public:
 	 * target.
 	 * \param which The number of the target (default 0).
 	 */
-	osg::Referenced *GetTarget(unsigned int which = 0);
+	osg::Referenced *GetTarget(uint which = 0);
 	/** Adds a target to the engine. */
 	void AddTarget(osg::Referenced *ptr) { m_Targets.Append(ptr); }
 	/** Sets a single target for this engine (for backward compatibility.) */
@@ -70,7 +70,7 @@ public:
 	void RemoveTarget(osg::Referenced *ptr);
 
 	/// Return the number of targets for this engine.
-	unsigned int NumTargets() { return m_Targets.GetSize(); }
+	uint NumTargets() { return m_Targets.GetSize(); }
 
 	void setName(const char *str) { m_strName = str; }
 	const char *getName() { return m_strName; }
@@ -96,8 +96,8 @@ public:
 	// Engine tree methods
 	void AddChild(vtEngine *pEngine) { m_Children.push_back(pEngine); }
 	void RemoveChild(vtEngine *pEngine);
-	vtEngine *GetChild(unsigned int i) { return m_Children[i].get(); }
-	unsigned int NumChildren() { return m_Children.size(); }
+	vtEngine *GetChild(uint i) { return m_Children[i].get(); }
+	uint NumChildren() { return m_Children.size(); }
 
 	void AddChildrenToList(vtArray<vtEngine*> &list, bool bEnabledOnly);
 

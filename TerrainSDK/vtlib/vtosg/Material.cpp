@@ -626,7 +626,7 @@ void vtMaterialArray::RemoveMaterial(vtMaterial *pMat)
  */
 int vtMaterialArray::FindByDiffuse(const RGBAf &rgba) const
 {
-	for (unsigned int i = 0; i < size(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
 		if (rgba == at(i)->GetDiffuse())
 			return i;
@@ -641,7 +641,7 @@ int vtMaterialArray::FindByDiffuse(const RGBAf &rgba) const
  */
 int vtMaterialArray::FindByImage(const osg::Image *image) const
 {
-	for (unsigned int i = 0; i < size(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
 		const osg::Image *tex = at(i)->GetTexture();
 		if (tex == image)

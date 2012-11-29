@@ -36,7 +36,7 @@ public:
 };
 
 // Simple cache of tiles loaded from disk
-typedef unsigned char *ucharptr;
+typedef uchar *ucharptr;
 class databuf;
 class ReqContext;
 

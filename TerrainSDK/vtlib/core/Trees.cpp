@@ -276,17 +276,17 @@ vtPlantSpecies3d::vtPlantSpecies3d() : vtPlantSpecies()
 
 vtPlantSpecies3d &vtPlantSpecies3d::operator=(const vtPlantSpecies &v)
 {
-	unsigned int i;
+	uint i;
 
 	m_szSciName = v.GetSciName();
 	m_fMaxHeight = v.GetMaxHeight();
 
-	unsigned int cnames = v.NumCommonNames();
+	uint cnames = v.NumCommonNames();
 	m_CommonNames.resize(cnames);
 	for (i = 0; i < cnames; i++)
 		m_CommonNames[i] = v.GetCommonName(i);
 
-	unsigned int apps = v.NumAppearances();
+	uint apps = v.NumAppearances();
 	for (i = 0; i < apps; i++)
 	{
 		vtPlantAppearance3d *pa3d = new vtPlantAppearance3d(*(v.GetAppearance(i)));
@@ -300,7 +300,7 @@ vtPlantSpecies3d &vtPlantSpecies3d::operator=(const vtPlantSpecies &v)
  */
 vtPlantAppearance3d *vtPlantSpecies3d::GetAppearanceByHeight(float fHeight)
 {
-	unsigned int i, size = m_Apps.GetSize();
+	uint i, size = m_Apps.GetSize();
 
 	// simple case: if only one appearance, nothing random is possible
 	if (size == 1)
@@ -359,14 +359,14 @@ void vtPlantSpecies3d::CheckAvailability()
 	VTLOG(" species '%s' checking availability of %d appearances\n",
 		(const char *) m_szSciName, NumAppearances());
 #endif
-	for (unsigned int i = 0; i < NumAppearances(); i++)
+	for (uint i = 0; i < NumAppearances(); i++)
 		GetAppearance(i)->CheckAvailability();
 }
 
 int vtPlantSpecies3d::NumAvailableInstances()
 {
 	int num = 0;
-	for (unsigned int i = 0; i < NumAppearances(); i++)
+	for (uint i = 0; i < NumAppearances(); i++)
 		if (GetAppearance(i)->IsAvailable())
 			num++;
 	return num;
@@ -404,7 +404,7 @@ vtSpeciesList3d &vtSpeciesList3d::operator=(const vtSpeciesList &v)
 }
 
 
-vtPlantSpecies3d *vtSpeciesList3d::GetSpecies(unsigned int i) const
+vtPlantSpecies3d *vtSpeciesList3d::GetSpecies(uint i) const
 {
 	if (i >= 0 && i < m_Species.GetSize())
 		return (vtPlantSpecies3d *) m_Species[i];
@@ -460,7 +460,7 @@ int vtSpeciesList3d::CheckAvailability()
 		NumSpecies());
 
 	int num = 0;
-	for (unsigned int i = 0; i < NumSpecies(); i++)
+	for (uint i = 0; i < NumSpecies(); i++)
 	{
 		GetSpecies(i)->CheckAvailability();
 		num += GetSpecies(i)->NumAvailableInstances();
@@ -473,7 +473,7 @@ int vtSpeciesList3d::CheckAvailability()
  */
 void vtSpeciesList3d::CreatePlantSurfaces()
 {
-	for (unsigned int i = 0; i < NumSpecies(); i++)
+	for (uint i = 0; i < NumSpecies(); i++)
 	{
 		vtPlantSpecies3d *pSpecies = GetSpecies(i);
 		int iApps = pSpecies->NumAppearances();
@@ -566,7 +566,7 @@ vtPlantInstanceArray3d::~vtPlantInstanceArray3d()
 	}
 }
 
-vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(unsigned int i) const
+vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(uint i) const
 {
 	if (i < 0 || i >= m_Instances3d.GetSize())
 		return NULL;
@@ -575,7 +575,7 @@ vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(unsigned int i) const
 
 int vtPlantInstanceArray3d::CreatePlantNodes(bool progress_dialog(int))
 {
-	unsigned int i, size = GetNumEntities();
+	uint i, size = GetNumEntities();
 	int created = 0;
 	m_iOffTerrain = 0;
 
@@ -594,7 +594,7 @@ int vtPlantInstanceArray3d::CreatePlantNodes(bool progress_dialog(int))
 	return created;
 }
 
-bool vtPlantInstanceArray3d::CreatePlantNode(unsigned int i)
+bool vtPlantInstanceArray3d::CreatePlantNode(uint i)
 {
 	// If it was already constructed, destruct so we can build again
 	ReleasePlantGeometry(i);
@@ -654,7 +654,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(unsigned int i)
 	return true;
 }
 
-void vtPlantInstanceArray3d::ReleasePlantGeometry(unsigned int i)
+void vtPlantInstanceArray3d::ReleasePlantGeometry(uint i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (inst3d)
@@ -663,7 +663,7 @@ void vtPlantInstanceArray3d::ReleasePlantGeometry(unsigned int i)
 	}
 }
 
-vtTransform *vtPlantInstanceArray3d::GetPlantNode(unsigned int i) const
+vtTransform *vtPlantInstanceArray3d::GetPlantNode(uint i) const
 {
 	if (i >= m_Instances3d.GetSize())
 		return NULL;
@@ -676,9 +676,9 @@ vtTransform *vtPlantInstanceArray3d::GetPlantNode(unsigned int i) const
 
 void vtPlantInstanceArray3d::VisualDeselectAll()
 {
-	unsigned int size = GetNumEntities();
+	uint size = GetNumEntities();
 
-	for (unsigned int i = 0; i < size; i++)
+	for (uint i = 0; i < size; i++)
 	{
 		vtPlantInstance3d *inst3d = GetInstance3d(i);
 		if (inst3d)
@@ -689,7 +689,7 @@ void vtPlantInstanceArray3d::VisualDeselectAll()
 	}
 }
 
-void vtPlantInstanceArray3d::VisualSelect(unsigned int i)
+void vtPlantInstanceArray3d::VisualSelect(uint i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (inst3d && inst3d->m_pContainer != NULL)
@@ -701,8 +701,8 @@ void vtPlantInstanceArray3d::VisualSelect(unsigned int i)
 
 void vtPlantInstanceArray3d::OffsetSelectedPlants(const DPoint2 &offset)
 {
-	unsigned int size = GetNumEntities();
-	for (unsigned int i = 0; i < size; i++)
+	uint size = GetNumEntities();
+	for (uint i = 0; i < size; i++)
 	{
 		if (!IsSelected(i))
 			continue;
@@ -712,7 +712,7 @@ void vtPlantInstanceArray3d::OffsetSelectedPlants(const DPoint2 &offset)
 	}
 }
 
-void vtPlantInstanceArray3d::UpdateTransform(unsigned int i)
+void vtPlantInstanceArray3d::UpdateTransform(uint i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 
@@ -730,7 +730,7 @@ void vtPlantInstanceArray3d::UpdateTransform(unsigned int i)
 //
 // Note you must remove the plant from the scene graph before deleting it!
 //
-void vtPlantInstanceArray3d::DeletePlant(unsigned int i)
+void vtPlantInstanceArray3d::DeletePlant(uint i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 
@@ -746,7 +746,7 @@ void vtPlantInstanceArray3d::DeletePlant(unsigned int i)
 bool vtPlantInstanceArray3d::FindPlantFromNode(osg::Node *pNode, int &iOffset)
 {
 	bool bFound = false;
-	unsigned int i, j;
+	uint i, j;
 
 	for (i = 0; (i < m_Instances3d.GetSize()) & !bFound; i++)
 	{

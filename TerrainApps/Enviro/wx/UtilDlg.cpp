@@ -61,7 +61,7 @@ void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	int found = 0;
 	m_pChoice->Clear();
-	for (unsigned int i = 0; i < mng.NumItems(); i++)
+	for (uint i = 0; i < mng.NumItems(); i++)
 	{
 		vtString str;
 		vtItem *item = mng.GetItem(i);

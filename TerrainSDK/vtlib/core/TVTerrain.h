@@ -176,7 +176,7 @@ private:
 	int m_size;				/* number of triangles in hierarchy */
 	int m_numSurfTri;		/* number of triangles on surface */
 	unsigned short *m_err;	/* error of triangles */
-	unsigned char *m_info;	/* surface,neighbor,infov of triangles */
+	uchar *m_info;	/* surface,neighbor,infov of triangles */
 	int m_iLevels;
 
 	double x_per_y, y_per_x, errPerEm;

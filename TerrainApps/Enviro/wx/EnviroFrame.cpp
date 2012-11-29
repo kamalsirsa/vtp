@@ -1325,14 +1325,14 @@ void EnviroFrame::LoadClouds(const char *fname)
 		{
 			// For transparency, convert the 8-bit (from black to white) to a
 			//  32-bit (RGB is white, Alpha is 0-255)
-			unsigned int w = input->s();
-			unsigned int h = input->t();
+			uint w = input->s();
+			uint h = input->t();
 
 			vtImagePtr img2 = new vtImage;
 			img2->Create(w, h, 32);
 			RGBAi rgba(255,255,255,0);
-			for (unsigned int i = 0; i < w; i++)
-				for (unsigned int j = 0; j < h; j++)
+			for (uint i = 0; i < w; i++)
+				for (uint j = 0; j < h; j++)
 				{
 					rgba.a = GetPixel8(input, i, j);
 					img2->SetPixel32(i, j, rgba);
@@ -2514,7 +2514,7 @@ void EnviroFrame::OnSceneTerrain(wxCommandEvent& event)
 	// Or, if in Earth view, highlight a terrain that's already been created
 	if (!pTerr && g_App.m_state == AS_Orbit)
 	{
-		for (unsigned int i = 0; i < vtGetTS()->NumTerrains(); i++)
+		for (uint i = 0; i < vtGetTS()->NumTerrains(); i++)
 		{
 			vtTerrain *t = vtGetTS()->GetTerrain(i);
 			if (t->IsCreated())
@@ -2913,7 +2913,7 @@ void EnviroFrame::OnTerrainDistribVehicles(wxCommandEvent& event)
 
 	int numv = 0;
 	vtContentManager3d &con = vtGetContent();
-	for (unsigned int i = 0; i < con.NumItems(); i++)
+	for (uint i = 0; i < con.NumItems(); i++)
 	{
 		vtItem *item = con.GetItem(i);
 		const char *type = item->GetValueString("type");
@@ -2993,7 +2993,7 @@ void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 
 	dlg.LayerChoice()->Clear();
 	LayerSet &layers = pTerr->GetLayers();
-	for (unsigned int i = 0; i < layers.size(); i++)
+	for (uint i = 0; i < layers.size(); i++)
 	{
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(layers[i].get());
 		if (!alay)
@@ -3374,7 +3374,7 @@ void EnviroFrame::ShowTable(vtAbstractLayer *alay)
 {
 	vtFeatureSet *set = alay->GetFeatureSet();
 	FeatureTableDlg3d *table = NULL;
-	for (unsigned int i = 0; i < m_FeatureDlgs.size(); i++)
+	for (uint i = 0; i < m_FeatureDlgs.size(); i++)
 	{
 		if (m_FeatureDlgs[i]->GetFeatureSet() == set)
 			table = m_FeatureDlgs[i];
@@ -3400,7 +3400,7 @@ void EnviroFrame::ShowTable(vtAbstractLayer *alay)
 //
 void EnviroFrame::OnSetDelete(vtFeatureSet *set)
 {
-	for (unsigned int i = 0; i < m_FeatureDlgs.size(); i++)
+	for (uint i = 0; i < m_FeatureDlgs.size(); i++)
 	{
 		if (m_FeatureDlgs[i]->GetFeatureSet() == set)
 		{
@@ -3593,8 +3593,8 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 	if (plants.NumSelected() != 0)
 	{
 		int found = -1;
-		unsigned int count = plants.GetNumEntities();
-		for (unsigned int i = 0; i < count; i++)
+		uint count = plants.GetNumEntities();
+		for (uint i = 0; i < count; i++)
 		{
 			if (plants.IsSelected(i))
 			{

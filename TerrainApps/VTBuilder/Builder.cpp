@@ -721,12 +721,12 @@ DPoint2 Builder::EstimateGeoDataCenter()
 void Builder::LookForContentFiles()
 {
 	VTLOG1("Searching data paths for content files (.vtco)\n");
-	for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
+	for (uint i = 0; i < vtGetDataPath().size(); i++)
 	{
 		vtStringArray fnames;
 		AddFilenamesToStringArray(fnames, vtGetDataPath()[i], "*.vtco");
 
-		for (unsigned int j = 0; j < fnames.size(); j++)
+		for (uint j = 0; j < fnames.size(); j++)
 		{
 			vtString path = vtGetDataPath()[i];
 			path += fnames[j];
@@ -754,7 +754,7 @@ void Builder::LookForContentFiles()
 
 void Builder::FreeContentFiles()
 {
-	for (unsigned int i = 0; i < m_contents.size(); i++)
+	for (uint i = 0; i < m_contents.size(); i++)
 		delete m_contents[i];
 	m_contents.clear();
 }
@@ -764,7 +764,7 @@ void Builder::ResolveInstanceItem(vtStructInstance *inst)
 	vtString name;
 	if (!inst->GetValueString("itemname", name))
 		return;
-	for (unsigned int j = 0; j < m_contents.size(); j++)
+	for (uint j = 0; j < m_contents.size(); j++)
 	{
 		vtItem *item = m_contents[j]->FindItemByName(name);
 		if (item)
@@ -799,8 +799,8 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	// Determine which source elevation layers overlap our desired area
 	std::vector<vtElevLayer*> elevs;
 	std::vector<vtElevLayer*> relevant_elevs;
-	unsigned int elev_layers = ElevLayerArray(elevs);
-	for (unsigned int e = 0; e < elev_layers; e++)
+	uint elev_layers = ElevLayerArray(elevs);
+	for (uint e = 0; e < elev_layers; e++)
 	{
 		DRECT layer_extent;
 		elevs[e]->GetExtent(layer_extent);
@@ -862,7 +862,7 @@ float Builder::GetHeightFromTerrain(const DPoint2 &p)
 	return height;
 }
 
-unsigned int Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
+uint Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 {
 	for (int l = 0; l < NumLayers(); l++)
 	{
@@ -870,7 +870,7 @@ unsigned int Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 		if (lp->GetType() == LT_ELEVATION && lp->GetVisible())
 			elevs.push_back((vtElevLayer *)lp);
 	}
-	return (unsigned int)elevs.size();
+	return (uint)elevs.size();
 }
 
 /**
@@ -908,7 +908,7 @@ bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
 void Builder::FlagStickyLayers(const std::vector<vtElevLayer*> &elevs)
 {
 	// Clear sticky flag for all layers
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+	for (uint i = 0; i < m_Layers.GetSize(); i++)
 		m_Layers[i]->SetSticky(false);
 
 	// Set sticky flag for the desired layers
@@ -942,7 +942,7 @@ vtElevLayer *Builder::ComputeDifference(vtElevLayer *pElev)
 		if (lp->GetType() == LT_ELEVATION && lp->GetVisible() && lp != pElev)
 			elevs.push_back((vtElevLayer *)lp);
 	}
-	unsigned int elays = elevs.size();
+	uint elays = elevs.size();
 
 	// Make layer for difference value; initially copy from source
 	vtElevationGrid *diffgrid = new vtElevationGrid(*grid);
@@ -964,7 +964,7 @@ vtElevLayer *Builder::ComputeDifference(vtElevLayer *pElev)
 				continue;
 
 			float val2 = INVALID_ELEVATION;
-			for (unsigned int e = 0; e < elays; e++)
+			for (uint e = 0; e < elays; e++)
 			{
 				val2 = elevs[e]->GetElevation(p);
 				if (val2 != INVALID_ELEVATION)
@@ -1127,7 +1127,7 @@ void Builder::ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 
 {
 	count = floating = tins = 0;
 	spacing.Set(0,0);
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+	for (uint i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() != LT_ELEVATION)
@@ -1278,7 +1278,7 @@ void Builder::MergeResampleImages(BuilderView *pView)
 {
 	// sample spacing in meters/heixel or degrees/heixel
 	DPoint2 spacing(0, 0);
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+	for (uint i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() == LT_IMAGE)
@@ -1413,11 +1413,11 @@ void Builder::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	unsigned int i, j, k;
+	uint i, j, k;
 	DPoint2 p, p2;
 
-	unsigned int x_trees = (unsigned int)(area.Width() / opt.m_fSampling);
-	unsigned int y_trees = (unsigned int)(area.Height() / opt.m_fSampling);
+	uint x_trees = (uint)(area.Width() / opt.m_fSampling);
+	uint y_trees = (uint)(area.Height() / opt.m_fSampling);
 
 	int bio_type=0;
 	float density_scale;
@@ -1650,7 +1650,7 @@ bool Builder::ConfirmValidCRS(vtProjection *pProj)
 float ElevLayerArrayValue(std::vector<vtElevLayer*> &elevs, const DPoint2 &p)
 {
 	float fData, fBestData = INVALID_ELEVATION;
-	for (unsigned int g = 0; g < elevs.size(); g++)
+	for (uint g = 0; g < elevs.size(); g++)
 	{
 		vtElevLayer *elev = elevs[g];
 
@@ -1698,7 +1698,7 @@ void ElevLayerArrayRange(std::vector<vtElevLayer*> &elevs,
 {
 	float fMin = 1E9;
 	float fMax = -1E9;
-	for (unsigned int g = 0; g < elevs.size(); g++)
+	for (uint g = 0; g < elevs.size(); g++)
 	{
 		float LayerMin, LayerMax;
 		elevs[g]->GetHeightField()->GetHeightExtents(LayerMin, LayerMax);

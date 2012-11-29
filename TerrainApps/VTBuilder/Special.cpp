@@ -364,7 +364,7 @@ void Builder::ElevCopy()
 
 	// Void data.
 	if (bAlpha)
-		clipSize += clip.CalcBinaryTagStorage(cw * cb * sizeof(unsigned char));
+		clipSize += clip.CalcBinaryTagStorage(cw * cb * sizeof(uchar));
 
 	// Projection string.
 	char *wkt = NULL;
@@ -428,8 +428,8 @@ void Builder::ElevCopy()
 			clip.Write("geometry", (unsigned __int32)1, true);
 			clip.WriteParent("projection", true);
 				clip.Write("format", (unsigned __int32)0, true);
-				unsigned char *pstrproj =
-					(unsigned char*)clip.WriteBinary(
+				uchar *pstrproj =
+					(uchar*)clip.WriteBinary(
 						"data", false,
 					wkt_str.GetLength());
 				::memcpy(pstrproj, (const char *)wkt_str, wkt_str.GetLength());
@@ -461,11 +461,11 @@ void Builder::ElevCopy()
 			clip.WriteParent("alpha", false);
 
 			clip.WriteParent("format", true);
-			clip.Write("depth", (unsigned __int32)(sizeof(unsigned char)*8), false);
+			clip.Write("depth", (unsigned __int32)(sizeof(uchar)*8), false);
 
-			unsigned char *pa = (unsigned char*)
+			uchar *pa = (uchar*)
 				clip.WriteBinary("data", false,
-					cw * cb * sizeof(unsigned char));
+					cw * cb * sizeof(uchar));
 
 			for(z = 0; z < cb; z++)
 			{
@@ -673,7 +673,7 @@ void MainFrame::DoDymaxTexture()
 
 	DymaxIcosa ico;
 
-	unsigned char value;
+	uchar value;
 	RGBi rgb;
 	RGBAi rgba;
 	for (i = 0; i < 10; i++)
@@ -820,7 +820,7 @@ void MainFrame::DoDymaxMap()
 
 	DPoint2 p;
 	DPoint2 dmp;
-	unsigned char value;
+	uchar value;
 	RGBi rgb;
 	RGBAi rgba;
 

@@ -119,10 +119,10 @@ void vtAbstractLayer::CreateStyledFeatures()
 	if (!pContainer)
 		CreateContainer();
 
-	unsigned int entities = pSet->GetNumEntities();
+	uint entities = pSet->GetNumEntities();
 	VTLOG("  Creating %d entities.. ", entities);
 
-	for (unsigned int i = 0; i < entities; i++)
+	for (uint i = 0; i < entities; i++)
 	{
 		CreateStyledFeature(i);
 		m_pTerr->ProgressCallback(i * 100 / entities);
@@ -220,7 +220,7 @@ void vtAbstractLayer::CreateLabelGroup()
 		VTLOG("Couldn't read font from file '%s', not creating labels.\n", (const char *) fontfile);
 }
 
-int vtAbstractLayer::GetObjectMaterialIndex(vtTagArray &style, unsigned int iIndex)
+int vtAbstractLayer::GetObjectMaterialIndex(vtTagArray &style, uint iIndex)
 {
 	int result;
 	int color_field_index;
@@ -250,7 +250,7 @@ int vtAbstractLayer::GetObjectMaterialIndex(vtTagArray &style, unsigned int iInd
 	spheres) and place it on the terrain.
 	If 2D, they will be draped on the terrain.
 */
-void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
+void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 {
 	if (!pGeomGroup)
 		CreateGeomGroup();
@@ -327,7 +327,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 	else if (pSetLS2)
 	{
 		const DLine2 &dline = pSetLS2->GetPolyLine(iIndex);
-		for (unsigned int j = 0; j < dline.GetSize(); j++)
+		for (uint j = 0; j < dline.GetSize(); j++)
 		{
 			// preserve 3D point's elevation: don't drape
 			hf->ConvertEarthToSurfacePoint(dline[j], p3);
@@ -345,7 +345,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 	else if (pSetLS3)
 	{
 		const DLine3 &dline = pSetLS3->GetPolyLine(iIndex);
-		for (unsigned int j = 0; j < dline.GetSize(); j++)
+		for (uint j = 0; j < dline.GetSize(); j++)
 		{
 			// preserve 3D point's elevation: don't drape
 			hf->m_Conversion.ConvertFromEarth(dline[j], p3);
@@ -367,7 +367,7 @@ void vtAbstractLayer::CreateObjectGeometry(unsigned int iIndex)
 	(vtFeatureSetPolygon) will also be created as line geometry
 	(unfilled polygons) and draped on the ground.
 */
-void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
+void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 {
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -427,7 +427,7 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 	else if (pSetPoly)
 	{
 		const DPolygon2 &dpoly = pSetPoly->GetPolygon(iIndex);
-		for (unsigned int k = 0; k < dpoly.size(); k++)
+		for (uint k = 0; k < dpoly.size(); k++)
 		{
 			const DLine2 &dline = dpoly[k];
 			iEstimatedVerts += dline.GetSize();
@@ -448,7 +448,7 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 	bool bCurve = false;
 
 	FPoint3 f3;
-	unsigned int size;
+	uint size;
 	if (pSetLS2)
 	{
 		const DLine2 &dline = pSetLS2->GetPolyLine(iIndex);
@@ -460,7 +460,7 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 		mf.PrimStart();
 		const DLine3 &dline = pSetLS3->GetPolyLine(iIndex);
 		size = dline.GetSize();
-		for (unsigned int j = 0; j < size; j++)
+		for (uint j = 0; j < size; j++)
 		{
 			// preserve 3D point's elevation: don't drape
 			DPoint3 p = dline[j];
@@ -474,7 +474,7 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 	else if (pSetPoly)
 	{
 		const DPolygon2 &dpoly = pSetPoly->GetPolygon(iIndex);
-		for (unsigned int k = 0; k < dpoly.size(); k++)
+		for (uint k = 0; k < dpoly.size(); k++)
 		{
 			// This would be the efficient way
 //				const DLine2 &dline = dpoly[k];
@@ -495,7 +495,7 @@ void vtAbstractLayer::CreateLineGeometry(unsigned int iIndex)
 
 	// Track what was created
 	vtVisual *viz = GetViz(pSet->GetFeature(iIndex));
-	for (unsigned int i = 0; i < mf.m_Meshes.size(); i++)
+	for (uint i = 0; i < mf.m_Meshes.size(); i++)
 	{
 		vtMesh *mesh = mf.m_Meshes[i];
 
@@ -528,7 +528,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 
 	// Estimate number of mesh vertices we'll have
 	const DLine3 &dline = pSetP3->GetAllPoints();
-	unsigned int size = dline.GetSize();
+	uint size = dline.GetSize();
 	int iEstimatedVerts = size;
 
 	vtGeomFactory mf(pGeodeLine, osg::PrimitiveSet::LINE_STRIP, 0, 30000, material_index,
@@ -536,7 +536,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 
 	FPoint3 f3;
 	mf.PrimStart();
-	for (unsigned int j = 0; j < size; j++)
+	for (uint j = 0; j < size; j++)
 	{
 		// preserve 3D point's elevation: don't drape
 		m_pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
@@ -548,7 +548,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 	float fWidth;
 	if (m_StyleProps.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
 	{
-		for (unsigned int i = 0; i < mf.m_Meshes.size(); i++)
+		for (uint i = 0; i < mf.m_Meshes.size(); i++)
 		{
 			vtMesh *mesh = mf.m_Meshes[i];
 			mesh->SetLineWidth(fWidth);
@@ -565,7 +565,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
  * the features are 2D polygons (vtFeatureSetPolygon) then the point used is
  * the centroid of the polygon.
  */
-void vtAbstractLayer::CreateFeatureLabel(unsigned int iIndex)
+void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 {
 	// We support text labels for 2D and 3D points, and 2D polygons
 	if (!pSetP2 && !pSetP3 && !pSetPoly)
@@ -761,7 +761,7 @@ void vtAbstractLayer::ReleaseFeatureGeometry(vtFeature *f)
 {
 	vtVisual *v = GetViz(f);
 
-	for (unsigned int m = 0; m < v->m_meshes.size(); m++)
+	for (uint m = 0; m < v->m_meshes.size(); m++)
 	{
 		vtMesh *mesh = v->m_meshes[m];
 
@@ -815,7 +815,7 @@ void vtAbstractLayer::Reload()
 }
 
 // When the underlying feature changes, we need to rebuild the visual
-void vtAbstractLayer::RebuildFeature(unsigned int iIndex)
+void vtAbstractLayer::RebuildFeature(uint iIndex)
 {
 	// If we're not doing a full rebuild, we can create individual items
 	if (!m_bNeedRebuild)
@@ -829,7 +829,7 @@ void vtAbstractLayer::RebuildFeature(unsigned int iIndex)
 void vtAbstractLayer::UpdateVisualSelection()
 {
 	// use SetMeshMatIndex to make the meshes of selected features yellow
-	for (unsigned int j = 0; j < pSet->GetNumEntities(); j++)
+	for (uint j = 0; j < pSet->GetNumEntities(); j++)
 	{
 		vtFeature *feat = pSet->GetFeature(j);
 		vtVisual *viz = GetViz(feat);
@@ -841,7 +841,7 @@ void vtAbstractLayer::UpdateVisualSelection()
 			else
 				material_index = GetObjectMaterialIndex(m_StyleProps, j);
 
-			for (unsigned int k = 0; k < viz->m_meshes.size(); k++)
+			for (uint k = 0; k < viz->m_meshes.size(); k++)
 			{
 				vtMesh *mesh = viz->m_meshes[k];
 				pGeodeObject->SetMeshMatIndex(mesh, material_index);

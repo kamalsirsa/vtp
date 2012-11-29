@@ -91,7 +91,7 @@ void vtTerrainScene::CleanupScene()
 	// if (m_pSkyDome)
 	//	m_pSkyDome->Destroy();
 
-	for (unsigned int i = 0; i < NumTerrains(); i++)
+	for (uint i = 0; i < NumTerrains(); i++)
 	{
 		vtTerrain *curr = GetTerrain(i);
 		vtGroup *group = curr->GetTopGroup();
@@ -102,7 +102,7 @@ void vtTerrainScene::CleanupScene()
 	m_Terrains.clear();
 	m_pCurrentTerrain = NULL;
 
-	for (unsigned int i = 0; i < m_StructObjs.GetSize(); i++)
+	for (uint i = 0; i < m_StructObjs.GetSize(); i++)
 		delete m_StructObjs[i];
 
 	// let go of anything left at the top of the scene graph
@@ -157,7 +157,7 @@ void vtTerrainScene::_CreateSky()
 vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 {
 	VTLOG("FindTerrainByName (%s):\n", name);
-	for (unsigned int i = 0; i < NumTerrains(); i++)
+	for (uint i = 0; i < NumTerrains(); i++)
 	{
 		vtString tname = m_Terrains[i]->GetName();
 		//VTLOG(" %d: %s\n", i, (const char *) tname);
@@ -254,7 +254,7 @@ vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 
 void vtTerrainScene::RemoveTerrain(vtTerrain *pTerrain)
 {
-	for (unsigned int i = 0; i < NumTerrains(); i++)
+	for (uint i = 0; i < NumTerrains(); i++)
 	{
 		if (pTerrain != GetTerrain(i))
 			continue;
@@ -451,7 +451,7 @@ vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
 	VTLOG("LoadUtilStructure '%s'\n", (const char *)name);
 
 	// Check to see if it's already loaded
-	unsigned int i;
+	uint i;
 	for (i = 0; i < m_StructObjs.GetSize(); i++)
 	{
 		if (m_StructObjs[i]->m_sStructName == name)

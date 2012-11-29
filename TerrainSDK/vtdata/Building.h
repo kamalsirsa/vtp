@@ -138,8 +138,8 @@ public:
 	void DeleteEdge(int iEdge);
 	bool AddEdge(const int iEdge, const DPoint2 &Point);
 	int NumEdges() const { return m_Edges.GetSize(); }
-	vtEdge *GetEdge(unsigned int i) const;
-	float GetEdgeLength(unsigned int i) const;
+	vtEdge *GetEdge(uint i) const;
+	float GetEdgeLength(uint i) const;
 	const vtString GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
 	RoofType GuessRoofType();
@@ -156,7 +156,7 @@ public:
 	void SetRoofType(RoofType rt, int iSlopeDegrees);
 	void SetEaveLength(float fMeters);
 
-	unsigned int m_iStories;
+	uint m_iStories;
 	float	m_fStoryHeight;
 
 	void SetFootprint(const DLine2 &dl);
@@ -174,8 +174,8 @@ public:
 	const FPolygon3 &GetLocalFootprint() const { return m_LocalFootprint; }
 
 private:
-	void RebuildEdges(unsigned int n);
-	void GetEdgePlane(unsigned int i, FPlane &plane);
+	void RebuildEdges(uint n);
+	void GetEdgePlane(uint i, FPlane &plane);
 	bool DetermineHeightFromSlopes();
 	void DeleteEdges();
 
@@ -234,7 +234,7 @@ public:
 	int GetStories() const;
 	float GetTotalHeight() const;
 
-	unsigned int GetNumLevels() const { return m_Levels.GetSize(); }
+	uint GetNumLevels() const { return m_Levels.GetSize(); }
 	vtLevel *GetLevel(int i) { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }
 	const vtLevel *GetLevel(int i) const { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }
 	vtLevel *CreateLevel(const DPolygon2 &footprint);

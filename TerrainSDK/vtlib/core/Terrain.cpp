@@ -1168,7 +1168,7 @@ int vtTerrain::DeleteSelectedStructures()
 	vtStructureArray3d *structures = GetStructureLayer();
 
 	// first remove them from the terrain
-	for (unsigned int i = 0; i < structures->GetSize(); i++)
+	for (uint i = 0; i < structures->GetSize(); i++)
 	{
 		vtStructure *str = structures->GetAt(i);
 		if (str->IsSelected())
@@ -1379,7 +1379,7 @@ void vtTerrain::_CreateCulture()
 	}
 
 	// create any route geometry
-	for (unsigned int i = 0; i < m_Routes.GetSize(); i++)
+	for (uint i = 0; i < m_Routes.GetSize(); i++)
 	{
 		m_Routes[i]->BuildGeometry(m_pHeightField);
 	}
@@ -1517,7 +1517,7 @@ void vtTerrain::_CreateStructures()
 	// create built structures
 	vtStructure3d::InitializeMaterialArrays();
 
-	unsigned int i, num = m_Params.m_Layers.size();
+	uint i, num = m_Params.m_Layers.size();
 	for (i = 0; i < num; i++)
 	{
 		const vtTagArray &lay = m_Params.m_Layers[i];
@@ -1582,7 +1582,7 @@ void vtTerrain::_CreateStructures()
 void vtTerrain::_CreateAbstractLayers()
 {
 	// Go through the layers in the terrain parameters, and try to load them
-	unsigned int i, num = m_Params.m_Layers.size();
+	uint i, num = m_Params.m_Layers.size();
 	for (i = 0; i < num; i++)
 	{
 		const vtTagArray &lay = m_Params.m_Layers[i];
@@ -1593,7 +1593,7 @@ void vtTerrain::_CreateAbstractLayers()
 			continue;
 
 		VTLOG(" Layer %d: Abstract\n", i);
-		for (unsigned int j = 0; j < lay.NumTags(); j++)
+		for (uint j = 0; j < lay.NumTags(); j++)
 		{
 			const vtTag *tag = lay.GetTag(j);
 			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
@@ -1668,7 +1668,7 @@ void vtTerrain::_CreateImageLayers()
 		return;
 
 	// Go through the layers in the terrain parameters, and try to load them
-	unsigned int i, num = m_Params.m_Layers.size();
+	uint i, num = m_Params.m_Layers.size();
 	for (i = 0; i < num; i++)
 	{
 		const vtTagArray &lay = m_Params.m_Layers[i];
@@ -1679,7 +1679,7 @@ void vtTerrain::_CreateImageLayers()
 			continue;
 
 		VTLOG(" Layer %d: Image\n", i);
-		for (unsigned int j = 0; j < lay.NumTags(); j++)
+		for (uint j = 0; j < lay.NumTags(); j++)
 		{
 			const vtTag *tag = lay.GetTag(j);
 			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
@@ -1853,8 +1853,8 @@ void vtTerrain::SetShadows(bool shadows)
 #endif
 #if VTLISPSM
 		m_pShadow->RemoveAllAdditionalTerrainTextureUnits();
-		unsigned int NumLayers = m_Layers.GetSize();
-		for (unsigned int i = 0; i < NumLayers; i++)
+		uint NumLayers = m_Layers.GetSize();
+		for (uint i = 0; i < NumLayers; i++)
 		{
 			vtAbstractLayer *pAbstractLayer = dynamic_cast<vtAbstractLayer*>(m_Layers[i]);
 			vtImageLayer *pImageLayer = dynamic_cast<vtImageLayer*>(m_Layers[i]);
@@ -2544,7 +2544,7 @@ bool vtTerrain::CreateStep5()
 	m_LocSaver.SetProjection(m_proj);
 
 	// Read stored animpaths
-	for (unsigned int i = 0; i < m_Params.m_AnimPaths.size(); i++)
+	for (uint i = 0; i < m_Params.m_AnimPaths.size(); i++)
 	{
 		vtString fname1 = m_Params.m_AnimPaths[i];
 		vtString fname2 = "Locations/" + fname1;
@@ -2925,7 +2925,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 									 float fOffset, bool bInterp, bool bCurve,
 									 bool bTrue)
 {
-	unsigned int i, j;
+	uint i, j;
 	FPoint3 v1, v2, v;
 
 	float fSpacing=0;
@@ -2960,7 +2960,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 	float fTotalLength = 0.0f;
 	pMF->PrimStart();
 	int iVerts = 0;
-	unsigned int points = line.GetSize();
+	uint points = line.GetSize();
 	if (bCurve)
 	{
 		DPoint2 p2, last(1E9,1E9);
@@ -2985,7 +2985,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 		float fLinearLength, dummy;
 		m_pHeightField->m_Conversion.ConvertVectorFromEarth(DPoint2(dLinearLength,0.0), fLinearLength, dummy);
 		double full = (double) (spline_points-1);
-		int iSteps = (unsigned int) (fLinearLength / fSpacing);
+		int iSteps = (uint) (fLinearLength / fSpacing);
 		if (iSteps < 3)
 			iSteps = 3;
 		double dStep = full / iSteps;
@@ -3024,7 +3024,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 				// estimate how many steps to subdivide this segment into
 				FPoint3 diff = v2 - v1;
 				float fLen = diff.Length();
-				unsigned int iSteps = (unsigned int) (fLen / fSpacing);
+				uint iSteps = (uint) (fLen / fSpacing);
 				if (iSteps < 1) iSteps = 1;
 
 				for (j = (i == 1 ? 0:1); j <= iSteps; j++)
@@ -3066,7 +3066,7 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 	if (slay)
 	{
 		// first remove each structure from the terrain
-		for (unsigned int i = 0; i < slay->GetSize(); i++)
+		for (uint i = 0; i < slay->GetSize(); i++)
 		{
 			if (progress_callback != NULL)
 				progress_callback(i * 99 / slay->GetSize());
@@ -3336,7 +3336,7 @@ int vtTerrain::DeleteSelectedFeatures()
 {
 	int count = 0;
 
-	unsigned int i, size = m_Layers.size();
+	uint i, size = m_Layers.size();
 	for (i = 0; i < size; i++)
 	{
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(m_Layers[i].get());
@@ -3345,7 +3345,7 @@ int vtTerrain::DeleteSelectedFeatures()
 
 		int NumToDelete = 0;
 		vtFeatureSet *fset = alay->GetFeatureSet();
-		for (unsigned int j = 0; j < fset->GetNumEntities(); j++)
+		for (uint j = 0; j < fset->GetNumEntities(); j++)
 		{
 			if (fset->IsSelected(j))
 			{
@@ -3358,7 +3358,7 @@ int vtTerrain::DeleteSelectedFeatures()
 			VTLOG("Set %d items to delete, removing visuals..\n", NumToDelete);
 
 			// Delete high-level features first
-			for (unsigned int j = 0; j < fset->GetNumEntities(); j++)
+			for (uint j = 0; j < fset->GetNumEntities(); j++)
 			{
 				if (fset->IsDeleted(j))
 				{
@@ -3386,16 +3386,16 @@ void vtTerrain::ActivateScenario(int iScenario)
 	ScenarioParams &ScenarioParams = m_Params.m_Scenarios[iScenario];
 	vtStringArray &ActiveLayers = ScenarioParams.GetActiveLayers();
 
-	unsigned int iNumActiveLayers = ActiveLayers.size();
+	uint iNumActiveLayers = ActiveLayers.size();
 
-	for (unsigned int i = 0; i < m_Layers.size(); i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
 		vtLayer *lay = m_Layers[i];
 		vtString Name = StartOfFilename(lay->GetLayerName());
 		RemoveFileExtensions(Name);
 
 		bool bFound = false;
-		for (unsigned int j = 0; j < iNumActiveLayers; j++)
+		for (uint j = 0; j < iNumActiveLayers; j++)
 			if (Name == ActiveLayers[j])
 				bFound = true;
 		lay->SetVisible(bFound);
@@ -3433,12 +3433,12 @@ void vtTerrain::UpdateElevation()
 void vtTerrain::RedrapeCulture(const DRECT &area)
 {
 	// Tell the terrain to re-drape all its structure instances.
-	for (unsigned int i = 0; i < m_Layers.size(); i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(m_Layers[i].get());
 		if (slay)
 		{
-			for (unsigned int j = 0; j < slay->GetSize(); j++)
+			for (uint j = 0; j < slay->GetSize(); j++)
 			{
 				vtStructure *st = slay->GetAt(j);
 				vtStructure3d *s3 = slay->GetStructure3d(j);
@@ -3467,7 +3467,7 @@ void vtTerrain::RedrapeCulture(const DRECT &area)
 		//vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer *>(m_Layers[i]);
 	}
 	// And plants
-	for (unsigned int i = 0; i < m_PIA.GetNumEntities(); i++)
+	for (uint i = 0; i < m_PIA.GetNumEntities(); i++)
 	{
 		m_PIA.UpdateTransform(i);
 	}

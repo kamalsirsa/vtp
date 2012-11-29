@@ -183,9 +183,9 @@ class vtMaterialDescriptorArray : public vtArray<vtMaterialDescriptor*>
 {
 public:
 	virtual ~vtMaterialDescriptorArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	void DestructItems(unsigned int first, unsigned int last)
+	void DestructItems(uint first, uint last)
 	{
-		for (unsigned int i = first; i <= last; i++)
+		for (uint i = first; i <= last; i++)
 			delete GetAt(i);
 	}
 	bool LoadExternalMaterials();

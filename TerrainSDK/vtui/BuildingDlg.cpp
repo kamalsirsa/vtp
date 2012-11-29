@@ -341,7 +341,7 @@ void BuildingDlg::SetupControls()
 	if (NULL != GetFacadeChoice())
 	{
 		GetFacadeChoice()->Clear();
-		for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
+		for (uint i = 0; i < vtGetDataPath().size(); i++)
 		{
 			vtString Directory = vtGetDataPath()[i] + "Facade";
 			for (dir_iter it((const char *)Directory); it != dir_iter(); ++it)

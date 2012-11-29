@@ -17,7 +17,7 @@ class OGCLayerArray : public std::vector<vtTagArray *>
 public:
 	OGCLayerArray() { m_iSelected = -1; }
 	~OGCLayerArray() {
-		for (unsigned int i = 0; i < size(); i++)
+		for (uint i = 0; i < size(); i++)
 			delete at(i);
 	}
 	// remember which layer the user last expressed interest in

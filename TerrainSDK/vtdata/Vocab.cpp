@@ -388,9 +388,9 @@ void TestParser::Apply()
  */
 bool TestParser::Matches(SentenceMatch &pattern)
 {
-	unsigned int i, j;
+	uint i, j;
 	int pos = 0;	// position in the array of input tokens
-	unsigned int pat_toks = pattern.GetSize();
+	uint pat_toks = pattern.GetSize();
 
 	// rather than iterate through the words of the input, interate
 	// through the words of the pattern

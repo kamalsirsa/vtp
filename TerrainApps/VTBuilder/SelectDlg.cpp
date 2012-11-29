@@ -87,7 +87,7 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 		m_iFauxFields = 3;
 	}
 
-	for (unsigned int i = 0; i < pSet->GetNumFields(); i++)
+	for (uint i = 0; i < pSet->GetNumFields(); i++)
 	{
 		Field *field = pSet->GetField(i);
 		wxString str(field->m_name, wxConvUTF8);
@@ -118,7 +118,7 @@ void SelectDlg::FillValuesControl()
 	}
 
 	vtFeatureSet *pSet = m_pLayer->GetFeatureSet();
-	for (unsigned int i = 0; i < pSet->GetNumEntities(); i++)
+	for (uint i = 0; i < pSet->GetNumEntities(); i++)
 	{
 		pSet->GetValueAsString(i, m_iField, str);
 		if (str == "")

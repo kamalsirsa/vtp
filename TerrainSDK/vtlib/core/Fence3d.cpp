@@ -88,7 +88,7 @@ float SidewaysVector(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2,
 void vtFence3d::AddWireMeshes(const FLine3 &p3)
 {
 	// special connector type, consisting of 3 wires
-	unsigned int i, j, npoints = p3.GetSize();
+	uint i, j, npoints = p3.GetSize();
 	if (npoints > 1)
 	{
 		float wire_height[3] = { 0.42f, 0.66f, 0.91f };
@@ -136,7 +136,7 @@ void vtFence3d::AddFlatConnectionMesh(const FLine3 &p3)
 	else
 		v_top = vertical_meters / uvscale.y;
 
-	unsigned int i, npoints = p3.GetSize();
+	uint i, npoints = p3.GetSize();
 	int vidx = 0;
 	for (i = 0; i < npoints; i++)
 	{
@@ -174,7 +174,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 	float fWidthTop = m_Params.m_fConnectWidth / 2;
 	float slope = m_Params.m_iConnectSlope / 180.0f * PIf;
 
-	unsigned int i, j, npoints = p3.GetSize();
+	uint i, j, npoints = p3.GetSize();
 	float u = 0.0f;
 	float v1, v2;
 	for (i = 0; i < 3; i++)
@@ -319,7 +319,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 
 void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 {
-	unsigned int i, j, npoints = p3.GetSize(), prof_points = m_Profile.GetSize();
+	uint i, j, npoints = p3.GetSize(), prof_points = m_Profile.GetSize();
 
 	// Must have at least 2 points in the profile
 	if (prof_points < 2)
@@ -444,7 +444,7 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 	//  may not be convex.  Hence it must be triangulated.
 	FLine2 result;
 	Triangulate_f::Process(m_Profile, result);
-	unsigned int tcount = result.GetSize()/3;
+	uint tcount = result.GetSize()/3;
 
 	int ind[3];
 	int line_point;
@@ -503,7 +503,7 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 
 void vtFence3d::AddPostExtensions(const FLine3 &p3)
 {
-	unsigned int i, j, npoints = p3.GetSize();
+	uint i, j, npoints = p3.GetSize();
 
 	bool bLeft = false, bRight = false, bWires = (npoints > 1);
 	if (m_Params.m_PostExtension == "left")
@@ -584,8 +584,8 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	// Trigger the creation of any materials we may need
 	FindMatIndex("");
 
-	unsigned int i, j;
-	unsigned int numfencepts = m_pFencePts.GetSize();
+	uint i, j;
+	uint numfencepts = m_pFencePts.GetSize();
 
 	FLine3 p3;
 
@@ -626,7 +626,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 			//  coordinates, which might be in e.g. feet or degrees)
 			diff = wpos2 - wpos1;
 			float distance = sqrt(diff.x*diff.x+diff.z*diff.z);
-			unsigned int segments = (unsigned int) (distance / m_Params.m_fPostSpacing);
+			uint segments = (uint) (distance / m_Params.m_fPostSpacing);
 			if (segments < 1) segments = 1;
 			FPoint3 diff_per_segment = diff / (float) segments;
 
@@ -762,7 +762,7 @@ void vtFence3d::ShowBounds(bool bShow)
 	}
 	if (bShow)
 	{
-		unsigned int i, npoints = m_pFencePts.GetSize();
+		uint i, npoints = m_pFencePts.GetSize();
 
 		// Create border around the feature, also some lines as handles for
 		//  the control points.

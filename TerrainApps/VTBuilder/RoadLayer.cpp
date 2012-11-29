@@ -184,7 +184,7 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 	NodeEdit *n;
 	for (l = GetFirstLink(); l; l=l->GetNext())
 	{
-		for (unsigned int i = 0; i < l->GetSize(); i++)
+		for (uint i = 0; i < l->GetSize(); i++)
 			trans->Transform(1, &(l->GetAt(i).x), &(l->GetAt(i).y));
 	}
 	for (n = GetFirstNode(); n; n=n->GetNext())
@@ -228,7 +228,7 @@ void vtRoadLayer::Offset(const DPoint2 &p)
 	bool bSelected = bSelLinks || bSelNodes;
 	for (LinkEdit *link = GetFirstLink(); link; link=link->GetNext())
 	{
-		for (unsigned int i = 0; i < link->GetSize(); i++)
+		for (uint i = 0; i < link->GetSize(); i++)
 		{
 			if (bSelected && !link->IsSelected())
 				continue;
@@ -283,7 +283,7 @@ void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	{
 		double closest = 1E8;
 		int closest_i=-1;
-		for (unsigned int i = 0; i < ui.m_pEditingRoad->GetSize(); i++)
+		for (uint i = 0; i < ui.m_pEditingRoad->GetSize(); i++)
 		{
 			DPoint2 diff = ui.m_DownLocation - ui.m_pEditingRoad->GetAt(i);
 			double dist = diff.Length();

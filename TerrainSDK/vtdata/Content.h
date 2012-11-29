@@ -75,7 +75,7 @@ public:
 	vtTag *GetTag(int index);
 	const vtTag *GetTag(int index) const;
 
-	unsigned int NumTags() const;
+	uint NumTags() const;
 	void RemoveTag(int index);
 	void RemoveTag(const char *szTagName);
 	void Clear();
@@ -166,7 +166,7 @@ public:
 	void Empty();
 	void AddModel(vtModel *item) { m_models.Append(item); }
 	void RemoveModel(vtModel *model);
-	unsigned int NumModels() { return m_models.GetSize(); }
+	uint NumModels() { return m_models.GetSize(); }
 	vtModel *GetModel(int i) { return m_models.GetAt(i); }
 
 	vtString	m_name;
@@ -199,7 +199,7 @@ public:
 	void Empty();
 	void AddItem(vtItem *item) { m_items.Append(item); }
 	void RemoveItem(vtItem *item);
-	unsigned int NumItems() { return m_items.GetSize(); }
+	uint NumItems() { return m_items.GetSize(); }
 	virtual vtItem *NewItem() { return new vtItem; }
 	vtItem *GetItem(int i) { return m_items.GetAt(i); }
 	vtItem *FindItemByName(const char *name);

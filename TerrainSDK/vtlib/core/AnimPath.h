@@ -81,7 +81,7 @@ public:
 	/// Remove a control point from this path, by index.
 	void RemovePoint(int index);
 	/// Return number of control points in this path.
-	unsigned int GetNumPoints() { return m_TimeControlPointMap.size(); }
+	uint GetNumPoints() { return m_TimeControlPointMap.size(); }
 
 	void SetTimeFromLinearDistance();
 	void ProcessPoints();

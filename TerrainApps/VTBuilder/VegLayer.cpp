@@ -70,7 +70,7 @@ void vtVegLayer::GetPropertyText(wxString &str)
 		str += s;
 
 		vtSpeciesList *list = g_bld->GetPlantList();
-		for (unsigned int i = 0; i < list->NumSpecies(); i++)
+		for (uint i = 0; i < list->NumSpecies(); i++)
 		{
 			int num = pPIA->InstancesOfSpecies(i);
 			if (num != 0)
@@ -218,8 +218,8 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 	SetProjection(proj_new);
 
 	// figure out the number of polygons in file
-	unsigned int size = 0;
-	for (unsigned int sec = 0; sec < pLULC->NumSections(); sec++)
+	uint size = 0;
+	for (uint sec = 0; sec < pLULC->NumSections(); sec++)
 	{
 		section = pLULC->GetSection(sec);
 		size = size + section->m_iNumPolys;
@@ -230,7 +230,7 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 	m_pSet->SetNumEntities(size);
 
 	// get each poly from LULC file
-	unsigned int i, s, p, count = 0;
+	uint i, s, p, count = 0;
 	float density=0;
 	for (s = 0; s < pLULC->NumSections(); s++)
 	{
@@ -371,7 +371,7 @@ bool vtVegLayer::AddElementsFromSHP_Polys(const wxString &filename,
 
 	// Read fields
 	int biotype_id;
-	for (unsigned int i = 0; i < (unsigned int) nElem; i++)
+	for (uint i = 0; i < (uint) nElem; i++)
 	{
 		int record = m_pSet->AddRecord();
 		// Read DBF Attributes per poly

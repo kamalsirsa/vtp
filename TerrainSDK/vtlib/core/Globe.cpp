@@ -36,7 +36,7 @@ vtIcoGlobe::vtIcoGlobe()
 
 vtIcoGlobe::~vtIcoGlobe()
 {
-	for (unsigned int i = 0; i < m_GlobeLayers.GetSize(); i++)
+	for (uint i = 0; i < m_GlobeLayers.GetSize(); i++)
 		delete m_GlobeLayers[i];
 }
 
@@ -624,7 +624,7 @@ void vtIcoGlobe::BuildSphericalPolygons(GlobeLayer *glay, float fSize)
 	for (i = 0; i < size; i++)
 	{
 		const DPolygon2 &poly = pSetPoly->GetPolygon(i);
-		for (unsigned int ring = 0; ring < poly.size(); ring++)
+		for (uint ring = 0; ring < poly.size(); ring++)
 		{
 			const DLine2 &line = poly[ring];
 			AddSurfaceLineToMesh(&mf, line);
@@ -713,7 +713,7 @@ void vtIcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 	m_SurfaceGroup->addChild(m_pRectangles);
 
 	vtGeomFactory mf(m_pRectangles, osg::PrimitiveSet::LINE_STRIP, 0, 30000, m_red);
-	for (unsigned int a = 0; a < pTerrainScene->NumTerrains(); a++)
+	for (uint a = 0; a < pTerrainScene->NumTerrains(); a++)
 	{
 		vtTerrain *pTerr = pTerrainScene->GetTerrain(a);
 		// skip if undefined
@@ -1033,7 +1033,7 @@ void vtIcoGlobe::set_face_verts2(vtMesh *mesh, int mface, float f)
 	if (f == 1.0f)
 	{
 		// sphere normals pointing straight outwards
-		for (unsigned int i = 0; i < m_rtv[mface].GetSize(); i++)
+		for (uint i = 0; i < m_rtv[mface].GetSize(); i++)
 			mesh->SetVtxNormal(i, m_rtv[mface][i].p);
 	}
 	else

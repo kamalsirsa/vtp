@@ -49,6 +49,6 @@ protected:
 
 // Helper
 int GetBitDepthUsingGDAL(const char *fname);
-void MakeSampleOffsets(const DPoint2 cellsize, unsigned int N, DLine2 &offsets);
+void MakeSampleOffsets(const DPoint2 cellsize, uint N, DLine2 &offsets);
 
 #endif	// IMAGELAYER_H

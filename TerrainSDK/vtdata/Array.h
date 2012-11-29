@@ -46,9 +46,9 @@
 	class MyArray : public vtArray<MyObject *>
 	{
 		virtual ~MyArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-		virtual	void DestructItems(unsigned int first, unsigned int last)
+		virtual	void DestructItems(uint first, uint last)
 		{
-			for (unsigned int i = first; i <= last; i++)
+			for (uint i = first; i <= last; i++)
 				delete GetAt(i);
 		}
 	};
@@ -57,40 +57,40 @@
 template <class E> class vtArray
 {
 public:
-	vtArray(unsigned int size = 0);
+	vtArray(uint size = 0);
 	vtArray(const vtArray<E>&);
 	virtual ~vtArray();
 
 //	Accessors
-	unsigned int	GetSize() const;
-	unsigned int	GetMaxSize() const;
-	bool		SetSize(unsigned int);
-	bool		SetMaxSize(unsigned int);
-	unsigned int	GetElemSize() const;
+	uint	GetSize() const;
+	uint	GetMaxSize() const;
+	bool		SetSize(uint);
+	bool		SetMaxSize(uint);
+	uint	GetElemSize() const;
 	E*			GetData() const;
 	void		FreeData();
 	bool		IsEmpty() const;
-	E&			GetAt(unsigned int i) const;
-	bool		SetAt(unsigned int i, E);
+	E&			GetAt(uint i) const;
+	bool		SetAt(uint i, E);
 
 //	Other operations
 	vtArray<E>& operator=(const vtArray<E>&);
-	E&			operator[](unsigned int i);
-	const E&	operator[](unsigned int i) const;
+	E&			operator[](uint i);
+	const E&	operator[](uint i) const;
 	void		Empty();
-	bool		RemoveAt(unsigned int i, int n = 1);
+	bool		RemoveAt(uint i, int n = 1);
 	int			Append(const E&);
 	int			Append(const vtArray<E>&);
 	int			Find(const E&) const;
 
 protected:
 //	Internal functions
-	virtual bool	Grow(unsigned int);
-	virtual	void	DestructItems(unsigned int first, unsigned int last);
+	virtual bool	Grow(uint);
+	virtual	void	DestructItems(uint first, uint last);
 
 //	Data members
-	unsigned int	m_Size;		// number of elements added so far
-	unsigned int	m_MaxSize;	// maximum number of elements we have room for
+	uint	m_Size;		// number of elements added so far
+	uint	m_MaxSize;	// maximum number of elements we have room for
 	E*				m_Data;		// data area for array
 };
 
@@ -111,7 +111,7 @@ protected:
 \endcode
  *
  */
-template <class E> vtArray<E>::vtArray(unsigned int size)
+template <class E> vtArray<E>::vtArray(uint size)
 {
 	m_Size = 0;				// empty to start
 	m_MaxSize = 0;			// remember the size
@@ -164,14 +164,14 @@ template <class E> vtArray<E>::vtArray(const vtArray<E>& a)
  * \par Example:
 \code
 	// Overrides DestructItems to call constructors
-	inline void MyArray::DestructItems(unsigned int first, unsigned int last)
+	inline void MyArray::DestructItems(uint first, uint last)
 	{
-		for (unsigned int i = first; i <= last; ++i)
+		for (uint i = first; i <= last; ++i)
 		   delete GetAt(i);
 	}
 \endcode
  */
-template <class E> inline void vtArray<E>::DestructItems(unsigned int first, unsigned int last)
+template <class E> inline void vtArray<E>::DestructItems(uint first, uint last)
 {
 	//VTLOG("base DestructItems, %d %d\n", start, nitems);
 }
@@ -202,7 +202,7 @@ template <class E> inline vtArray<E>::~vtArray()
  *
  * \sa vtArray::SetData vtArray::SetMaxSize
  */
-template <class E> bool vtArray<E>::Grow(unsigned int growto)
+template <class E> bool vtArray<E>::Grow(uint growto)
 {
 	int	n = growto - m_MaxSize;
 	E*		old_data;
@@ -251,17 +251,17 @@ template <class E> inline E* vtArray<E>::GetData() const
  *
  * \sa vtArray::SetData vtArray::SetSize vtArray::GetElemSize vtArray::Grow
  */
-template <class E> bool vtArray<E>::SetMaxSize(unsigned int s)
+template <class E> bool vtArray<E>::SetMaxSize(uint s)
 {
 	if (s > m_MaxSize)			// enlarge array
 		return Grow(s);			// if we can
 	return true;
 }
 
-template <class E> inline unsigned int	vtArray<E>::GetMaxSize() const
+template <class E> inline uint	vtArray<E>::GetMaxSize() const
 	{ return m_MaxSize; }
 
-template <class E> inline unsigned int	vtArray<E>::GetElemSize() const
+template <class E> inline uint	vtArray<E>::GetElemSize() const
 	{ return sizeof(E); }
 
 /**
@@ -286,7 +286,7 @@ template <class E> inline unsigned int	vtArray<E>::GetElemSize() const
 \endcode
  *
  */
-template <class E> bool inline vtArray<E>::SetSize(unsigned int s)
+template <class E> bool inline vtArray<E>::SetSize(uint s)
 {
 	assert(s >= 0);
 	if (s > m_MaxSize)
@@ -296,7 +296,7 @@ template <class E> bool inline vtArray<E>::SetSize(unsigned int s)
 	return true;
 }
 
-template <class E> inline unsigned int vtArray<E>::GetSize() const
+template <class E> inline uint vtArray<E>::GetSize() const
 	{ return m_Size; }
 
 /**
@@ -320,11 +320,11 @@ template <class E> inline unsigned int vtArray<E>::GetSize() const
 	cols.SetAt(17, RGBi(0,1,1));	// causes array growth
 \endcode
  */
-template <class E> bool vtArray<E>::SetAt(unsigned int i, E val)
+template <class E> bool vtArray<E>::SetAt(uint i, E val)
 {
 	if (i >= m_MaxSize)			// need to extend array?
 	   {
-		unsigned int n = m_MaxSize;
+		uint n = m_MaxSize;
 		n += (n >> 1);			// grow to 1 1/2 times current size
 		if (n <= i) n = i + 1;	// unless user wants more
 		if (!Grow(n))			// extend failure
@@ -346,13 +346,13 @@ template <class E> bool vtArray<E>::SetAt(unsigned int i, E val)
  *
  * \return element accessed
  */
-template <class E> inline E& vtArray<E>::GetAt(unsigned int i) const
+template <class E> inline E& vtArray<E>::GetAt(uint i) const
 	{ return m_Data[i]; }
 
-template <class E> inline const E& vtArray<E>::operator[](unsigned int i) const
+template <class E> inline const E& vtArray<E>::operator[](uint i) const
 	{ return m_Data[i]; }
 
-template <class E> inline E& vtArray<E>::operator[](unsigned int i)
+template <class E> inline E& vtArray<E>::operator[](uint i)
 	{ return m_Data[i]; }
 
 /**
@@ -383,7 +383,7 @@ template <class E> int vtArray<E>::Find(const E& elem) const
 {
 	const E* p = m_Data;
 
-	for (unsigned int i = 0; i < m_Size; ++i)	// look for matching element
+	for (uint i = 0; i < m_Size; ++i)	// look for matching element
 		if (*p++ == elem)
 			return i;					// found it
 	return -1;
@@ -441,7 +441,7 @@ template <class E> int inline vtArray<E>::Append(const E& v)
 	zot.RemoveAt(-1);	 // returns false
 \endcode
  */
-template <class E> bool vtArray<E>::RemoveAt(unsigned int i, int n)
+template <class E> bool vtArray<E>::RemoveAt(uint i, int n)
 {
 	E*	elem;
 	int	shuffle;
@@ -482,7 +482,7 @@ template <class E> int vtArray<E>::Append(const vtArray<E>& src)
 
 	if (!Grow(n))
 		return -1;
-	for (unsigned int i = 0; i < src.m_Size; ++i)
+	for (uint i = 0; i < src.m_Size; ++i)
 		m_Data[m_Size + i] = src.m_Data[i];
 	m_MaxSize = n;
 	m_Size += src.m_Size;

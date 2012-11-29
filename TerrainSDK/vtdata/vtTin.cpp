@@ -57,7 +57,7 @@ void vtTin::RemVert(int v)
 	m_vert_normal.RemoveAt(v);
 
 	// Re-index the triangles
-	for (unsigned int i = 0; i < m_tri.GetSize()/3; i++)
+	for (uint i = 0; i < m_tri.GetSize()/3; i++)
 	{
 		// Remove any triangles which referenced this vertex
 		if (m_tri[i*3 + 0] == v ||
@@ -83,7 +83,7 @@ void vtTin::RemTri(int t)
 	m_tri.RemoveAt(t*3, 3);
 }
 
-unsigned int vtTin::AddSurfaceType(const vtString &surface_texture, bool bTiled)
+uint vtTin::AddSurfaceType(const vtString &surface_texture, bool bTiled)
 {
 	m_surftypes.push_back(surface_texture);
 	m_surftype_tiled.Append(bTiled);
@@ -276,7 +276,7 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 
 	int vtx = 0;
 	int found = 0;
-	for (unsigned int i = 0; i < entities.size(); i++)
+	for (uint i = 0; i < entities.size(); i++)
 	{
 		const DxfEntity &ent = entities[i];
 		if (ent.m_iType == DET_3DFace || ent.m_iType == DET_Polygon)
@@ -329,16 +329,16 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	fseek(fp1, 0, SEEK_END);
 	const int length_xy = ftell(fp1);
 	rewind(fp1);	// go back again
-	unsigned int num_points = length_xy / 16;	// X and Y, each 8 byte doubles
+	uint num_points = length_xy / 16;	// X and Y, each 8 byte doubles
 
 	fseek(fp2, 0, SEEK_END);
 	const int length_z = ftell(fp2);
 	rewind(fp2);	// go back again
-	unsigned int num_heights = length_z / 4;		// Z is a 4 byte float
+	uint num_heights = length_z / 4;		// Z is a 4 byte float
 
 	DPoint2 p;
 	float z;
-	for (unsigned int i = 0; i < num_points; i++)
+	for (uint i = 0; i < num_points; i++)
 	{
 		if ((i%200) == 0 && progress_callback != NULL)
 			progress_callback(i * 40 / num_points);
@@ -351,10 +351,10 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	fseek(fp3, 0, SEEK_END);
 	const int length_od = ftell(fp3);
 	rewind(fp3);	// go back again
-	const unsigned int num_faces = length_od / 12;		// A B C as 4-byte ints
+	const uint num_faces = length_od / 12;		// A B C as 4-byte ints
 
 	int v[3];
-	for (unsigned int i = 0; i < num_faces; i++)
+	for (uint i = 0; i < num_faces; i++)
 	{
 		if ((i%200) == 0 && progress_callback != NULL)
 			progress_callback(40 + i * 40 / num_faces);
@@ -376,8 +376,8 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	m_vert_normal.RemoveAt(0, 4);
 
 	// Re-index the triangles
-	unsigned int total = m_tri.GetSize()/3;
-	for (unsigned int i = 0; i < total; i++)
+	uint total = m_tri.GetSize()/3;
+	for (uint i = 0; i < total; i++)
 	{
 		if ((i%200) == 0 && progress_callback != NULL)
 			progress_callback(80 + i * 20 / total);
@@ -394,7 +394,7 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 		}
 	}
 	// For all other triangles, adjust the indices to reflect the removal
-	for (unsigned int i = 0; i < m_tri.GetSize(); i++)
+	for (uint i = 0; i < m_tri.GetSize(); i++)
 		m_tri[i] = m_tri[i] - 4;
 
 	// Test each triangle for clockwisdom, fix if needed
@@ -1101,24 +1101,24 @@ bool vtTin::ComputeExtents()
 
 void vtTin::Offset(const DPoint2 &p)
 {
-	unsigned int size = m_vert.GetSize();
-	for (unsigned int j = 0; j < size; j++)
+	uint size = m_vert.GetSize();
+	for (uint j = 0; j < size; j++)
 		m_vert[j] += p;
 	ComputeExtents();
 }
 
 void vtTin::Scale(float fFactor)
 {
-	unsigned int size = m_z.GetSize();
-	for (unsigned int j = 0; j < size; j++)
+	uint size = m_z.GetSize();
+	for (uint j = 0; j < size; j++)
 		m_z[j] *= fFactor;
 	ComputeExtents();
 }
 
 void vtTin::VertOffset(float fAmount)
 {
-	unsigned int size = m_z.GetSize();
-	for (unsigned int j = 0; j < size; j++)
+	uint size = m_z.GetSize();
+	for (uint j = 0; j < size; j++)
 		m_z[j] += fAmount;
 	ComputeExtents();
 }
@@ -1176,8 +1176,8 @@ void vtTin::SetupTriangleBins(int bins, bool progress_callback(int))
 	m_trianglebins = new BinArray(bins, bins);
 
 	DPoint2 p1, p2, p3;
-	unsigned int tris = NumTris();
-	for (unsigned int i = 0; i < tris; i++)
+	uint tris = NumTris();
+	for (uint i = 0; i < tris; i++)
 	{
 		if ((i%100)==0 && progress_callback)
 			progress_callback(i * 100 / tris);
@@ -1198,11 +1198,11 @@ void vtTin::SetupTriangleBins(int bins, bool progress_callback(int))
 
 		IPoint2 bin_start, bin_end;
 
-		bin_start.x = (unsigned int) ((fminrange.x-rect.left) / m_BinSize.x);
-		bin_end.x = (unsigned int)	 ((fmaxrange.x-rect.left) / m_BinSize.x);
+		bin_start.x = (uint) ((fminrange.x-rect.left) / m_BinSize.x);
+		bin_end.x = (uint)	 ((fmaxrange.x-rect.left) / m_BinSize.x);
 
-		bin_start.y = (unsigned int) ((fminrange.y-rect.bottom) / m_BinSize.y);
-		bin_end.y = (unsigned int)	 ((fmaxrange.y-rect.bottom) / m_BinSize.y);
+		bin_start.y = (uint) ((fminrange.y-rect.bottom) / m_BinSize.y);
+		bin_end.y = (uint)	 ((fmaxrange.y-rect.bottom) / m_BinSize.y);
 
 		for (int j = bin_start.x; j <= bin_end.x; j++)
 		{
@@ -1226,7 +1226,7 @@ int vtTin::MemoryNeededToLoad() const
 
 bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const
 {
-	unsigned int tris = NumTris();
+	uint tris = NumTris();
 
 	// If we have some triangle bins, they can be used for a much faster test
 	if (m_trianglebins != NULL)
@@ -1237,7 +1237,7 @@ bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) 
 		if (!bin)
 			return false;
 
-		for (unsigned int i = 0; i < bin->GetSize(); i++)
+		for (uint i = 0; i < bin->GetSize(); i++)
 		{
 			if (TestTriangle(bin->GetAt(i), p, fAltitude))
 				return true;
@@ -1246,7 +1246,7 @@ bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) 
 		return false;
 	}
 	// If no bins, we do a naive slow search.
-	for (unsigned int i = 0; i < tris; i++)
+	for (uint i = 0; i < tris; i++)
 	{
 		if (TestTriangle(i, p, fAltitude))
 			return true;
@@ -1294,8 +1294,8 @@ void vtTin::CleanupClockwisdom()
 {
 	DPoint2 p1, p2, p3;		// 2D points
 	int v0, v1, v2;
-	unsigned int tris = NumTris();
-	for (unsigned int i = 0; i < tris; i++)
+	uint tris = NumTris();
+	for (uint i = 0; i < tris; i++)
 	{
 		v0 = m_tri[i*3];
 		v1 = m_tri[i*3+1];
@@ -1427,9 +1427,9 @@ double vtTin::GetTriMaxEdgeLength(int iTri) const
  */
 void vtTin::MergeSharedVerts(bool progress_callback(int))
 {
-	unsigned int verts = NumVerts();
+	uint verts = NumVerts();
 
-	unsigned int i, j;
+	uint i, j;
 	int bin;
 
 	DRECT rect = m_EarthExtents;
@@ -1453,7 +1453,7 @@ void vtTin::MergeSharedVerts(bool progress_callback(int))
 		bin = (int) (BINS * (m_vert[i].x - rect.left) / width);
 		m_vertbin[bin].Append(i);
 	}
-	unsigned int trisize = m_tri.GetSize();
+	uint trisize = m_tri.GetSize();
 	for (i = 0; i < trisize; i++)
 	{
 		// find the correct bin, and add the index of this index to it
@@ -1496,7 +1496,7 @@ void vtTin::MergeSharedVerts(bool progress_callback(int))
 		if (progress_callback != NULL)
 			progress_callback(bin * 100 / BINS);
 
-		unsigned int binverts = m_vertbin[bin].GetSize();
+		uint binverts = m_vertbin[bin].GetSize();
 		for (i = 0; i < binverts; i++)
 		{
 			int v_old = m_vertbin[bin].GetAt(i);
@@ -1509,7 +1509,7 @@ void vtTin::MergeSharedVerts(bool progress_callback(int))
 			m_vert[v_new] = vertcopy->GetAt(v_old);
 			m_z[v_new] = zcopy[v_old];
 
-			unsigned int bintris = m_tribin[bin].GetSize();
+			uint bintris = m_tribin[bin].GetSize();
 			for (j = 0; j < bintris; j++)
 			{
 				int trindx = m_tribin[bin].GetAt(j);
@@ -1617,8 +1617,8 @@ int vtTin::RemoveTrianglesBySegment(const DPoint2 &ep1, const DPoint2 &ep2)
 
 	DPoint2 p1, p2, p3;		// 2D points
 	int v0, v1, v2;
-	unsigned int tris = NumTris();
-	for (unsigned int i = 0; i < tris; i++)
+	uint tris = NumTris();
+	for (uint i = 0; i < tris; i++)
 	{
 		// get 2D points
 		v0 = m_tri[i*3];

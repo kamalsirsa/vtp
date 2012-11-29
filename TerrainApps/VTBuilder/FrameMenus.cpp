@@ -2697,7 +2697,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		// We got an XML-formatted response, not the image we were expecting.
 		// The XML probably contains diagnostic error msg.
 		// So show it to the user.
-		unsigned char ch = 0;
+		uchar ch = 0;
 		data.Append(&ch, 1);
 		VTLOG1("  Got response: ");
 		VTLOG1((const char*) data.Get());
@@ -2855,7 +2855,7 @@ void MainFrame::OnVegRemap(wxCommandEvent& event)
 	vtSpeciesList *list = GetPlantList();
 
 	wxArrayString choices;
-	unsigned int i, n = list->NumSpecies();
+	uint i, n = list->NumSpecies();
 	for (i = 0; i < n; i++)
 	{
 		vtPlantSpecies *spe = list->GetSpecies(i);
@@ -2978,7 +2978,7 @@ void MainFrame::OnAreaVegDensity(wxCommandEvent& event)
 	if (!vlay) return;
 	vtPlantInstanceArray *pia = vlay->GetPIA();
 	if (!pia) return;
-	unsigned int ent = pia->GetNumEntities();
+	uint ent = pia->GetNumEntities();
 	vtSpeciesList *list = GetMainFrame()->GetPlantList();
 
 	// Put the results in a biotype as well
@@ -2987,11 +2987,11 @@ void MainFrame::OnAreaVegDensity(wxCommandEvent& event)
 	float size;
 	short species;
 	int total = 0;
-	for (unsigned int i = 0; i < list->NumSpecies(); i++)
+	for (uint i = 0; i < list->NumSpecies(); i++)
 	{
 		int count = 0;
 		float height = 0;
-		for (unsigned int j = 0; j < ent; j++)
+		for (uint j = 0; j < ent; j++)
 		{
 			pia->GetPlant(j, size, species);
 			DPoint2 &p = pia->GetPoint(j);
@@ -3207,15 +3207,15 @@ void MainFrame::OnStructureSelectUsingPolygons(wxCommandEvent &event)
 			vtFeatureSetPolygon *pFeatureSetPolygon = dynamic_cast<vtFeatureSetPolygon*>(pRawLayer->GetFeatureSet());
 			if (NULL != pFeatureSetPolygon)
 			{
-				unsigned int iNumEntities = pFeatureSetPolygon->GetNumEntities();
-				unsigned int iIndex;
+				uint iNumEntities = pFeatureSetPolygon->GetNumEntities();
+				uint iIndex;
 				for (iIndex = 0; iIndex < iNumEntities; iIndex++)
 				{
 					if (pFeatureSetPolygon->IsSelected(iIndex))
 					{
-						unsigned int iIndex2;
+						uint iIndex2;
 						const DPolygon2 Polygon = pFeatureSetPolygon->GetPolygon(iIndex);
-						unsigned int iNumStructures = pStructureLayer->GetSize();
+						uint iNumStructures = pStructureLayer->GetSize();
 						for (iIndex2 = 0; iIndex2 < iNumStructures; iIndex2++)
 						{
 							DRECT Extents;
@@ -3268,7 +3268,7 @@ void MainFrame::OnStructureColourSelectedRoofs(wxCommandEvent& event)
 	if (Colour.Ok())
 	{
 		RGBi RoofColour(Colour.Red(), Colour.Green(), Colour.Blue());
-		for (unsigned int i = 0; i < pLayer->GetSize(); i++)
+		for (uint i = 0; i < pLayer->GetSize(); i++)
 		{
 			vtStructure *pStructure = pLayer->GetAt(i);
 			if (!pStructure->IsSelected())
@@ -3590,7 +3590,7 @@ void MainFrame::OnRawConvertToTIN(wxCommandEvent& event)
 	else if (setpg)
 	{
 		wxArrayString choices;
-		unsigned int i, n = setpg->GetNumFields();
+		uint i, n = setpg->GetNumFields();
 		for (i = 0; i < n; i++)
 			choices.Add(wxString(setpg->GetField(i)->m_name, wxConvUTF8));
 
@@ -3706,7 +3706,7 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 	fprintf(fp, "<map name=\"ImageMap\">\n");
 
 	vtFeatureSetPolygon *polyset = (vtFeatureSetPolygon *) fset;
-	unsigned int i, num = polyset->GetNumEntities();
+	uint i, num = polyset->GetNumEntities();
 	wxPoint sp;		// screen point
 
 	for (i = 0; i < num; i++)
@@ -3725,7 +3725,7 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 		DLine2 dline;
 		poly.GetAsDLine2(dline);
 
-		unsigned int j, points = dline.GetSize();
+		uint j, points = dline.GetSize();
 		for (j = 0; j < points; j++)
 		{
 			DPoint2 p = dline[j];

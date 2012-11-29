@@ -276,7 +276,7 @@ vtGeode* GenerateBuildingGeometry::Generate()
 	m_pPrimitiveCache = new PrimitiveCache;
 
 	int i;
-	unsigned int j, k;
+	uint j, k;
 	int iLevels = m_Building.GetNumLevels();
 
 	// create the edges (walls and roof)
@@ -289,7 +289,7 @@ vtGeode* GenerateBuildingGeometry::Generate()
 	{
 		const vtLevel *lev = m_Building.GetLevel(i);
 		const FPolygon3 &foot = m_Building.GetLocalFootprint(i);
-		unsigned int edges = lev->NumEdges();
+		uint edges = lev->NumEdges();
 
 		// safety check
 		if (foot[0].GetSize() < 3)
@@ -330,7 +330,7 @@ vtGeode* GenerateBuildingGeometry::Generate()
 			// Build a set of walls for each storey of the level
 			for (j = 0; j < lev->m_iStories; j++)
 			{
-				for (unsigned int r = 0; r < poly.size(); r++)
+				for (uint r = 0; r < poly.size(); r++)
 				{
 					for (k = 0; k < poly[r].GetSize(); k++)
 					{
@@ -339,7 +339,7 @@ vtGeode* GenerateBuildingGeometry::Generate()
 				}
 				CreateUpperPolygon(lev, poly, poly2);
 				int edge_start = 0;
-				for (unsigned int r = 0; r < poly.size(); r++)
+				for (uint r = 0; r < poly.size(); r++)
 				{
 					for (k = edge_start; k < edge_start + poly[r].GetSize(); k++)
 					{
@@ -482,7 +482,7 @@ void GenerateBuildingGeometry::CreateUniformLevel(int iLevel, float fHeight,
 
 	int i;
 	int base_edge = 0;
-	for (unsigned int ring = 0; ring < polygon1.size(); ring++)
+	for (uint ring = 0; ring < polygon1.size(); ring++)
 	{
 		FLine3 poly1 = polygon1[ring];
 		FLine3 poly2;
@@ -529,7 +529,7 @@ void GenerateBuildingGeometry::CreateUniformLevel(int iLevel, float fHeight,
 
 			if (base_edge+i == iHighlightEdge)
 			{
-				for (unsigned int j = 0; j < pLev->m_iStories; j++)
+				for (uint j = 0; j < pLev->m_iStories; j++)
 				{
 					AddHighlightSection(pEdge, quad);
 					quad[0].y += pLev->m_fStoryHeight;
@@ -887,7 +887,7 @@ float GenerateBuildingGeometry::MakeFelkelRoof(const FPolygon3 &EavePolygons, co
 #ifdef FELKELDEBUG
 			VTLOG("Building panel\n");
 #endif
-			unsigned int iNumberofPoints = 0;
+			uint iNumberofPoints = 0;
 			do
 			{
 				if (iNumberofPoints++ > Skeleton.size())

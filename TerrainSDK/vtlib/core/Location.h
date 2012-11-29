@@ -109,7 +109,7 @@ public:
 	const vtProjection &GetAtProjection() const { return m_proj; }
 
 	/// Get the location of the attached object and store it
-	bool StoreTo(unsigned int num, const LocNameString &name = "");
+	bool StoreTo(uint num, const LocNameString &name = "");
 
 	/// Recall a location by index, and set it to the attached object
 	bool RecallFrom(int num);

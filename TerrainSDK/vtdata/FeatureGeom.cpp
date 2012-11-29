@@ -21,7 +21,7 @@ vtFeatureSetPoint2D::vtFeatureSetPoint2D() : vtFeatureSet()
 	m_eGeomType = wkbPoint;
 }
 
-unsigned int vtFeatureSetPoint2D::GetNumEntities() const
+uint vtFeatureSetPoint2D::GetNumEntities() const
 {
 	return m_Point2.GetSize();
 }
@@ -52,7 +52,7 @@ bool vtFeatureSetPoint2D::ComputeExtent(DRECT &rect) const
 
 void vtFeatureSetPoint2D::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
-	for (unsigned int i = 0; i < m_Point2.GetSize(); i++)
+	for (uint i = 0; i < m_Point2.GetSize(); i++)
 	{
 		if (bSelectedOnly && !IsSelected(i))
 			continue;
@@ -62,7 +62,7 @@ void vtFeatureSetPoint2D::Offset(const DPoint2 &p, bool bSelectedOnly)
 
 bool vtFeatureSetPoint2D::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
-	unsigned int i, bad = 0, size = m_Point2.GetSize();
+	uint i, bad = 0, size = m_Point2.GetSize();
 	for (i = 0; i < size; i++)
 	{
 		if (progress_callback != NULL && (i%200)==0)
@@ -83,7 +83,7 @@ bool vtFeatureSetPoint2D::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (unsigned int i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
 		m_Point2.Append(pFrom->m_Point2[i]);
 	return true;
 }
@@ -95,13 +95,13 @@ int vtFeatureSetPoint2D::AddPoint(const DPoint2 &p)
 	return rec;
 }
 
-void vtFeatureSetPoint2D::SetPoint(unsigned int num, const DPoint2 &p)
+void vtFeatureSetPoint2D::SetPoint(uint num, const DPoint2 &p)
 {
 	if (m_eGeomType == wkbPoint)
 		m_Point2.SetAt(num, p);
 }
 
-void vtFeatureSetPoint2D::GetPoint(unsigned int num, DPoint2 &p) const
+void vtFeatureSetPoint2D::GetPoint(uint num, DPoint2 &p) const
 {
 	p = m_Point2.GetAt(num);
 }
@@ -157,15 +157,15 @@ bool vtFeatureSetPoint2D::IsInsideRect(int iElem, const DRECT &rect)
 	return rect.ContainsPoint(m_Point2[iElem]);
 }
 
-void vtFeatureSetPoint2D::CopyGeometry(unsigned int from, unsigned int to)
+void vtFeatureSetPoint2D::CopyGeometry(uint from, uint to)
 {
 	m_Point2[to] = m_Point2[from];
 }
 
 void vtFeatureSetPoint2D::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
-	unsigned int size = m_Point2.GetSize();
-	for (unsigned int i = 0; i < size; i++)
+	uint size = m_Point2.GetSize();
+	for (uint i = 0; i < size; i++)
 	{
 		if (progress_callback && ((i%16)==0))
 			progress_callback(i*100/size);
@@ -218,7 +218,7 @@ vtFeatureSetPoint3D::vtFeatureSetPoint3D() : vtFeatureSet()
 	m_eGeomType = wkbPoint25D;
 }
 
-unsigned int vtFeatureSetPoint3D::GetNumEntities() const
+uint vtFeatureSetPoint3D::GetNumEntities() const
 {
 	return m_Point3.GetSize();
 }
@@ -253,7 +253,7 @@ bool vtFeatureSetPoint3D::ComputeExtent(DRECT &rect) const
 
 void vtFeatureSetPoint3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
-	for (unsigned int i = 0; i < m_Point3.GetSize(); i++)
+	for (uint i = 0; i < m_Point3.GetSize(); i++)
 	{
 		if (bSelectedOnly && !IsSelected(i))
 			continue;
@@ -263,7 +263,7 @@ void vtFeatureSetPoint3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 
 bool vtFeatureSetPoint3D::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
-	unsigned int i, bad = 0, size = m_Point3.GetSize();
+	uint i, bad = 0, size = m_Point3.GetSize();
 	for (i = 0; i < size; i++)
 	{
 		if (progress_callback != NULL && (i%200)==0)
@@ -284,7 +284,7 @@ bool vtFeatureSetPoint3D::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (unsigned int i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
 		m_Point3.Append(pFrom->m_Point3[i]);
 	return true;
 }
@@ -296,25 +296,25 @@ int vtFeatureSetPoint3D::AddPoint(const DPoint3 &p)
 	return rec;
 }
 
-void vtFeatureSetPoint3D::SetPoint(unsigned int num, const DPoint3 &p)
+void vtFeatureSetPoint3D::SetPoint(uint num, const DPoint3 &p)
 {
 	m_Point3.SetAt(num, p);
 }
 
-void vtFeatureSetPoint3D::GetPoint(unsigned int num, DPoint3 &p) const
+void vtFeatureSetPoint3D::GetPoint(uint num, DPoint3 &p) const
 {
 	p = m_Point3.GetAt(num);
 }
 
 bool vtFeatureSetPoint3D::ComputeHeightRange(float &fmin, float &fmax)
 {
-	unsigned int count = m_Point3.GetSize();
+	uint count = m_Point3.GetSize();
 	if (!count)
 		return false;
 
 	fmin = 1E9;
 	fmax = -1E9;
-	for (unsigned int i = 0; i < count; i++)
+	for (uint i = 0; i < count; i++)
 	{
 		if ((float)m_Point3[i].z > fmax) fmax = (float)m_Point3[i].z;
 		if ((float)m_Point3[i].z < fmin) fmin = (float)m_Point3[i].z;
@@ -327,15 +327,15 @@ bool vtFeatureSetPoint3D::IsInsideRect(int iElem, const DRECT &rect)
 	return rect.ContainsPoint(DPoint2(m_Point3[iElem].x, m_Point3[iElem].y));
 }
 
-void vtFeatureSetPoint3D::CopyGeometry(unsigned int from, unsigned int to)
+void vtFeatureSetPoint3D::CopyGeometry(uint from, uint to)
 {
 	m_Point3[to] = m_Point3[from];
 }
 
 void vtFeatureSetPoint3D::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
-	unsigned int size = m_Point3.GetSize();
-	for (unsigned int i = 0; i < size; i++)
+	uint size = m_Point3.GetSize();
+	for (uint i = 0; i < size; i++)
 	{
 		if (progress_callback && ((i%16)==0))
 			progress_callback(i*100/size);
@@ -387,7 +387,7 @@ vtFeatureSetLineString::vtFeatureSetLineString() : vtFeatureSet()
 	m_eGeomType = wkbLineString;
 }
 
-unsigned int vtFeatureSetLineString::GetNumEntities() const
+uint vtFeatureSetLineString::GetNumEntities() const
 {
 	return m_Line.size();
 }
@@ -418,7 +418,7 @@ bool vtFeatureSetLineString::ComputeExtent(DRECT &rect) const
 
 void vtFeatureSetLineString::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
-	for (unsigned int i = 0; i < m_Line.size(); i++)
+	for (uint i = 0; i < m_Line.size(); i++)
 	{
 		if (bSelectedOnly && !IsSelected(i))
 			continue;
@@ -428,7 +428,7 @@ void vtFeatureSetLineString::Offset(const DPoint2 &p, bool bSelectedOnly)
 
 bool vtFeatureSetLineString::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
-	unsigned int i, j, pts, bad = 0, size = m_Line.size();
+	uint i, j, pts, bad = 0, size = m_Line.size();
 	for (i = 0; i < size; i++)
 	{
 		if (progress_callback != NULL && (i%200)==0)
@@ -455,7 +455,7 @@ bool vtFeatureSetLineString::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (unsigned int i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
 		m_Line.push_back(pFrom->m_Line[i]);
 	return true;
 }
@@ -471,7 +471,7 @@ int vtFeatureSetLineString::AddPolyLine(const DLine2 &pl)
 int vtFeatureSetLineString::NumTotalVertices() const
 {
 	int total = 0;
-	for (unsigned int i = 0; i < m_Line.size(); i++)
+	for (uint i = 0; i < m_Line.size(); i++)
 		total += m_Line[i].GetSize();
 	return total;
 }
@@ -481,7 +481,7 @@ bool vtFeatureSetLineString::IsInsideRect(int iElem, const DRECT &rect)
 	return rect.ContainsLine(m_Line[iElem]);
 }
 
-void vtFeatureSetLineString::CopyGeometry(unsigned int from, unsigned int to)
+void vtFeatureSetLineString::CopyGeometry(uint from, uint to)
 {
 	// copy geometry
 	m_Line[to] = m_Line[from];
@@ -489,7 +489,7 @@ void vtFeatureSetLineString::CopyGeometry(unsigned int from, unsigned int to)
 
 void vtFeatureSetLineString::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
-	unsigned int i, j, size = m_Line.size();
+	uint i, j, size = m_Line.size();
 	for (i = 0; i < size; i++)
 	{
 		if (progress_callback && ((i%16)==0))
@@ -573,7 +573,7 @@ vtFeatureSetLineString3D::vtFeatureSetLineString3D() : vtFeatureSet()
 	m_eGeomType = wkbLineString25D;
 }
 
-unsigned int vtFeatureSetLineString3D::GetNumEntities() const
+uint vtFeatureSetLineString3D::GetNumEntities() const
 {
 	return m_Line.size();
 }
@@ -604,7 +604,7 @@ bool vtFeatureSetLineString3D::ComputeExtent(DRECT &rect) const
 
 void vtFeatureSetLineString3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
-	for (unsigned int i = 0; i < m_Line.size(); i++)
+	for (uint i = 0; i < m_Line.size(); i++)
 	{
 		if (bSelectedOnly && !IsSelected(i))
 			continue;
@@ -614,7 +614,7 @@ void vtFeatureSetLineString3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 
 bool vtFeatureSetLineString3D::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
-	unsigned int i, j, pts, bad = 0, size = m_Line.size();
+	uint i, j, pts, bad = 0, size = m_Line.size();
 	for (i = 0; i < size; i++)
 	{
 		if (progress_callback != NULL && (i%200)==0)
@@ -641,7 +641,7 @@ bool vtFeatureSetLineString3D::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (unsigned int i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
 		m_Line.push_back(pFrom->m_Line[i]);
 	return true;
 }
@@ -656,13 +656,13 @@ int vtFeatureSetLineString3D::AddPolyLine(const DLine3 &pl)
 
 bool vtFeatureSetLineString3D::ComputeHeightRange(float &fmin, float &fmax)
 {
-	unsigned int count = m_Line.size();
+	uint count = m_Line.size();
 	if (!count)
 		return false;
 
 	fmin = 1E9;
 	fmax = -1E9;
-	for (unsigned int i = 0; i < count; i++)
+	for (uint i = 0; i < count; i++)
 	{
 		const DLine3 &dl = m_Line[i];
 		int num = dl.GetSize();
@@ -679,7 +679,7 @@ bool vtFeatureSetLineString3D::ComputeHeightRange(float &fmin, float &fmax)
 int vtFeatureSetLineString3D::NumTotalVertices() const
 {
 	int total = 0;
-	for (unsigned int i = 0; i < m_Line.size(); i++)
+	for (uint i = 0; i < m_Line.size(); i++)
 		total += m_Line[i].GetSize();
 	return total;
 }
@@ -696,7 +696,7 @@ bool vtFeatureSetLineString3D::FindClosest(const DPoint2 &p, int &close_feature,
 	double dist, closest_dist = 1E9;
 	int point_index;
 	DPoint3 intersection;
-	for (unsigned int i = 0; i < m_Line.size(); i++)
+	for (uint i = 0; i < m_Line.size(); i++)
 	{
 		if (m_Line[i].NearestSegment2D(p, point_index, dist, intersection))
 		{
@@ -716,7 +716,7 @@ bool vtFeatureSetLineString3D::IsInsideRect(int iElem, const DRECT &rect)
 	return rect.ContainsLine(m_Line[iElem]);
 }
 
-void vtFeatureSetLineString3D::CopyGeometry(unsigned int from, unsigned int to)
+void vtFeatureSetLineString3D::CopyGeometry(uint from, uint to)
 {
 	// copy geometry
 	m_Line[to] = m_Line[from];
@@ -724,7 +724,7 @@ void vtFeatureSetLineString3D::CopyGeometry(unsigned int from, unsigned int to)
 
 void vtFeatureSetLineString3D::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
-	unsigned int i, j, size = m_Line.size();
+	uint i, j, size = m_Line.size();
 	for (i = 0; i < size; i++)
 	{
 		if (progress_callback && ((i%16)==0))
@@ -802,7 +802,7 @@ vtFeatureSetPolygon::vtFeatureSetPolygon() : vtFeatureSet()
 	m_pIndex = NULL;
 }
 
-unsigned int vtFeatureSetPolygon::GetNumEntities() const
+uint vtFeatureSetPolygon::GetNumEntities() const
 {
 	return m_Poly.size();
 }
@@ -840,7 +840,7 @@ bool vtFeatureSetPolygon::ComputeExtent(DRECT &rect) const
 
 void vtFeatureSetPolygon::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
-	for (unsigned int i = 0; i < m_Poly.size(); i++)
+	for (uint i = 0; i < m_Poly.size(); i++)
 	{
 		if (bSelectedOnly && !IsSelected(i))
 			continue;
@@ -850,7 +850,7 @@ void vtFeatureSetPolygon::Offset(const DPoint2 &p, bool bSelectedOnly)
 
 bool vtFeatureSetPolygon::TransformCoords(OCT *pTransform, bool progress_callback(int))
 {
-	unsigned int i, j, k, pts, bad = 0, size = m_Poly.size();
+	uint i, j, k, pts, bad = 0, size = m_Poly.size();
 	for (i = 0; i < size; i++)
 	{
 		if (progress_callback != NULL && (i%200)==0)
@@ -881,7 +881,7 @@ bool vtFeatureSetPolygon::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (unsigned int i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
 	{
 		switch (m_eGeomType) {
 		case wkbPolygon:
@@ -940,7 +940,7 @@ void SpatialIndex::GenerateIndices(const class vtFeatureSetPolygon *feat)
 	m_step.Set(m_Extent.Width() / m_iSize, m_Extent.Height() / m_iSize);
 	DRECT ext;
 	int x1, x2, y1, y2;
-	unsigned int e;
+	uint e;
 	int i, j;
 
 	for (e = 0; e < feat->GetNumEntities(); e++)
@@ -981,7 +981,7 @@ const IntVector *SpatialIndex::GetIndexForPoint(const DPoint2 &p) const
  */
 int vtFeatureSetPolygon::FindPolygon(const DPoint2 &p) const
 {
-	unsigned int num, i;
+	uint num, i;
 
 	if (m_pIndex != NULL)
 	{
@@ -1151,7 +1151,7 @@ bool vtFeatureSetPolygon::IsInsideRect(int iElem, const DRECT &rect)
 	return rect.ContainsLine(dpoly[0]);
 }
 
-void vtFeatureSetPolygon::CopyGeometry(unsigned int from, unsigned int to)
+void vtFeatureSetPolygon::CopyGeometry(uint from, uint to)
 {
 	// copy geometry
 	m_Poly[to] = m_Poly[from];
@@ -1159,7 +1159,7 @@ void vtFeatureSetPolygon::CopyGeometry(unsigned int from, unsigned int to)
 
 void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
-	unsigned int i, j, size = m_Poly.size();
+	uint i, j, size = m_Poly.size();
 	int part;
 	for (i = 0; i < size; i++)		// for each polyline
 	{

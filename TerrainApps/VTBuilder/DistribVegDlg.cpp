@@ -85,7 +85,7 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	// Populate the Choice controls with necessary values
 	wxString str;
-	unsigned int i;
+	uint i;
 
 	// Single species
 	GetChoiceSpecies()->Clear();

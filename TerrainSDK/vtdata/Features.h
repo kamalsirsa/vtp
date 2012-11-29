@@ -50,22 +50,22 @@ public:
 	int AddRecord();
 	void SetNumRecords(int iNum);
 
-	void SetValue(unsigned int iRecord, const char *string);
-	void SetValue(unsigned int iRecord, int value);
-	void SetValue(unsigned int iRecord, double value);
-	void SetValue(unsigned int iRecord, bool value);
+	void SetValue(uint iRecord, const char *string);
+	void SetValue(uint iRecord, int value);
+	void SetValue(uint iRecord, double value);
+	void SetValue(uint iRecord, bool value);
 
-	void GetValue(unsigned int iRecord, vtString &string);
-	void GetValue(unsigned int iRecord, short &value);
-	void GetValue(unsigned int iRecord, int &value);
-	void GetValue(unsigned int iRecord, float &value);
-	void GetValue(unsigned int iRecord, double &value);
-	void GetValue(unsigned int iRecord, bool &value);
+	void GetValue(uint iRecord, vtString &string);
+	void GetValue(uint iRecord, short &value);
+	void GetValue(uint iRecord, int &value);
+	void GetValue(uint iRecord, float &value);
+	void GetValue(uint iRecord, double &value);
+	void GetValue(uint iRecord, bool &value);
 
-	void CopyValue(unsigned int FromRecord, int ToRecord);
-	void GetValueAsString(unsigned int iRecord, vtString &str);
-	void SetValueFromString(unsigned int iRecord, const vtString &str);
-	void SetValueFromString(unsigned int iRecord, const char *str);
+	void CopyValue(uint FromRecord, int ToRecord);
+	void GetValueAsString(uint iRecord, vtString &str);
+	void SetValueFromString(uint iRecord, const vtString &str);
+	void SetValueFromString(uint iRecord, const char *str);
 
 	FieldType m_type;
 	int m_width, m_decimals;	// these are for remembering SHP limitations
@@ -91,7 +91,7 @@ FieldType ConvertFieldType(DBFFieldType type);
 #define FF_DELETE		4
 
 struct vtFeature {
-	unsigned char flags;
+	uchar flags;
 };
 
 /**
@@ -122,7 +122,7 @@ public:
 	vtString GetFilename() const { return m_strFilename; }
 
 	// feature (entity) operations
-	virtual unsigned int GetNumEntities() const = 0;
+	virtual uint GetNumEntities() const = 0;
 	void SetNumEntities(int iNum);
 	void AllocateFeatures();
 	OGRwkbGeometryType GetGeomType() const;
@@ -144,44 +144,44 @@ public:
 	void ApplyDeletion();
 
 	// selection
-	void Select(unsigned int iEnt, bool set = true)
+	void Select(uint iEnt, bool set = true)
 	{
 		if (set)
 			m_Features[iEnt]->flags |= FF_SELECTED;
 		else
 			m_Features[iEnt]->flags &= ~FF_SELECTED;
 	}
-	bool IsSelected(unsigned int iEnt)
+	bool IsSelected(uint iEnt)
 	{
 		return ((m_Features[iEnt]->flags & FF_SELECTED) != 0);
 	}
-	unsigned int NumSelected() const;
+	uint NumSelected() const;
 	void DeselectAll();
 	void InvertSelection();
 	int SelectByCondition(int iField, int iCondition, const char *szValue);
 	void DeleteSelected();
-	bool IsDeleted(unsigned int iEnt)
+	bool IsDeleted(uint iEnt)
 	{
 		return ((m_Features[iEnt]->flags & FF_DELETE) != 0);
 	}
 	int DoBoxSelect(const DRECT &rect, SelectionType st);
 
 	// picking (alternate form of selection)
-	void Pick(unsigned int iEnt, bool set = true)
+	void Pick(uint iEnt, bool set = true)
 	{
 		if (set)
 			m_Features[iEnt]->flags |= FF_PICKED;
 		else
 			m_Features[iEnt]->flags &= ~FF_PICKED;
 	}
-	bool IsPicked(unsigned int iEnt)
+	bool IsPicked(uint iEnt)
 	{
 		return ((m_Features[iEnt]->flags & FF_PICKED) != 0);
 	}
 	void DePickAll();
 
 	// attribute (field) operations
-	unsigned int GetNumFields() const { return m_fields.GetSize(); }
+	uint GetNumFields() const { return m_fields.GetSize(); }
 	Field *GetField(int i) { return m_fields.GetAt(i); }
 	const Field *GetField(int i) const { return m_fields.GetAt(i); }
 	Field *GetField(const char *name);
@@ -190,34 +190,34 @@ public:
 	int AddRecord();
 	void DeleteFields();
 
-	void SetValue(unsigned int record, unsigned int field, const char *string);
-	void SetValue(unsigned int record, unsigned int field, int value);
-	void SetValue(unsigned int record, unsigned int field, double value);
-	void SetValue(unsigned int record, unsigned int field, bool value);
+	void SetValue(uint record, uint field, const char *string);
+	void SetValue(uint record, uint field, int value);
+	void SetValue(uint record, uint field, double value);
+	void SetValue(uint record, uint field, bool value);
 
-	void GetValueAsString(unsigned int record, unsigned int field, vtString &str) const;
-	void SetValueFromString(unsigned int iRecord, unsigned int iField, const vtString &str);
-	void SetValueFromString(unsigned int iRecord, unsigned int iField, const char *str);
+	void GetValueAsString(uint record, uint field, vtString &str) const;
+	void SetValueFromString(uint iRecord, uint iField, const vtString &str);
+	void SetValueFromString(uint iRecord, uint iField, const char *str);
 
-	int GetIntegerValue(unsigned int iRecord, unsigned int iField) const;
-	short GetShortValue(unsigned int iRecord, unsigned int iField) const;
-	float GetFloatValue(unsigned int iRecord, unsigned int iField) const;
-	double GetDoubleValue(unsigned int iRecord, unsigned int iField) const;
-	bool GetBoolValue(unsigned int iRecord, unsigned int iField) const;
+	int GetIntegerValue(uint iRecord, uint iField) const;
+	short GetShortValue(uint iRecord, uint iField) const;
+	float GetFloatValue(uint iRecord, uint iField) const;
+	double GetDoubleValue(uint iRecord, uint iField) const;
+	bool GetBoolValue(uint iRecord, uint iField) const;
 
 	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 	vtProjection &GetAtProjection() { return m_proj; }
 
-	vtFeature *GetFeature(unsigned int iIndex) const { return m_Features[iIndex]; }
+	vtFeature *GetFeature(uint iIndex) const { return m_Features[iIndex]; }
 
 protected:
 	// these must be implemented for each type of geometry
 	virtual bool IsInsideRect(int iElem, const DRECT &rect) = 0;
-	virtual void CopyGeometry(unsigned int from, unsigned int to) = 0;
+	virtual void CopyGeometry(uint from, uint to) = 0;
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const = 0;
 	virtual void SetNumGeometries(int iNum) = 0;
 
-	void CopyEntity(unsigned int from, unsigned int to);
+	void CopyEntity(uint from, uint to);
 	void ParseDBFFields(DBFHandle db);
 	void ParseDBFRecords(DBFHandle db, bool progress_callback(int)=0);
 
@@ -241,7 +241,7 @@ class vtFeatureSetPoint2D : public vtFeatureSet
 public:
 	vtFeatureSetPoint2D();
 
-	unsigned int GetNumEntities() const;
+	uint GetNumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
@@ -250,17 +250,17 @@ public:
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPoint(const DPoint2 &p);
-	void SetPoint(unsigned int num, const DPoint2 &p);
-	DPoint2 &GetPoint(unsigned int num) { return m_Point2[num]; }
-	const DPoint2 &GetPoint(unsigned int num) const { return m_Point2[num]; }
+	void SetPoint(uint num, const DPoint2 &p);
+	DPoint2 &GetPoint(uint num) { return m_Point2[num]; }
+	const DPoint2 &GetPoint(uint num) const { return m_Point2[num]; }
 
 	int FindClosestPoint(const DPoint2 &p, double epsilon);
 	void FindAllPointsAtLocation(const DPoint2 &p, vtArray<int> &found);
-	void GetPoint(unsigned int num, DPoint2 &p) const;
+	void GetPoint(uint num, DPoint2 &p) const;
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
-	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 
@@ -276,7 +276,7 @@ class vtFeatureSetPoint3D : public vtFeatureSet
 public:
 	vtFeatureSetPoint3D();
 
-	unsigned int GetNumEntities() const;
+	uint GetNumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
@@ -285,16 +285,16 @@ public:
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPoint(const DPoint3 &p);
-	void SetPoint(unsigned int num, const DPoint3 &p);
-	void GetPoint(unsigned int num, DPoint3 &p) const;
-	DPoint3 &GetPoint(unsigned int num) { return m_Point3[num]; }
-	const DPoint3 &GetPoint(unsigned int num) const { return m_Point3[num]; }
+	void SetPoint(uint num, const DPoint3 &p);
+	void GetPoint(uint num, DPoint3 &p) const;
+	DPoint3 &GetPoint(uint num) { return m_Point3[num]; }
+	const DPoint3 &GetPoint(uint num) const { return m_Point3[num]; }
 	const DLine3 &GetAllPoints() const { return m_Point3; }
 	bool ComputeHeightRange(float &fmin, float &fmax);
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
-	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 
@@ -311,7 +311,7 @@ class vtFeatureSetLineString : public vtFeatureSet
 public:
 	vtFeatureSetLineString();
 
-	unsigned int GetNumEntities() const;
+	uint GetNumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
@@ -320,13 +320,13 @@ public:
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPolyLine(const DLine2 &pl);
-	const DLine2 &GetPolyLine(unsigned int num) const { return m_Line[num]; }
-	DLine2 &GetPolyLine(unsigned int num) { return m_Line[num]; }
+	const DLine2 &GetPolyLine(uint num) const { return m_Line[num]; }
+	DLine2 &GetPolyLine(uint num) { return m_Line[num]; }
 	int NumTotalVertices() const;
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
-	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 
@@ -343,7 +343,7 @@ class vtFeatureSetLineString3D : public vtFeatureSet
 public:
 	vtFeatureSetLineString3D();
 
-	unsigned int GetNumEntities() const;
+	uint GetNumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
@@ -352,15 +352,15 @@ public:
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPolyLine(const DLine3 &pl);
-	const DLine3 &GetPolyLine(unsigned int num) const { return m_Line[num]; }
-	DLine3 &GetPolyLine(unsigned int num) { return m_Line[num]; }
+	const DLine3 &GetPolyLine(uint num) const { return m_Line[num]; }
+	DLine3 &GetPolyLine(uint num) { return m_Line[num]; }
 	bool ComputeHeightRange(float &fmin, float &fmax);
 	int NumTotalVertices() const;
 	bool FindClosest(const DPoint2 &p, int &close_feature, DPoint3 &close_point);
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
-	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 
@@ -401,7 +401,7 @@ class vtFeatureSetPolygon : public vtFeatureSet
 public:
 	vtFeatureSetPolygon();
 
-	unsigned int GetNumEntities() const;
+	uint GetNumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
@@ -410,9 +410,9 @@ public:
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
 	int AddPolygon(const DPolygon2 &poly);
-	void SetPolygon(unsigned int num, const DPolygon2 &poly) { m_Poly[num] = poly; }
-	const DPolygon2 &GetPolygon(unsigned int num) const { return m_Poly[num]; }
-	DPolygon2 &GetPolygon(unsigned int num) { return m_Poly[num]; }
+	void SetPolygon(uint num, const DPolygon2 &poly) { m_Poly[num] = poly; }
+	const DPolygon2 &GetPolygon(uint num) const { return m_Poly[num]; }
+	DPolygon2 &GetPolygon(uint num) { return m_Poly[num]; }
 	int FindSimplePolygon(const DPoint2 &p) const;
 	int FindPolygon(const DPoint2 &p) const;
 
@@ -426,7 +426,7 @@ public:
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
-	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 

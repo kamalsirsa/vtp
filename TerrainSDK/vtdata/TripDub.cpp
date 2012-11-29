@@ -29,7 +29,7 @@ static int s_last_status = 0;
 
 void AddCookie(const char *name, const char *value)
 {
-	unsigned int i, size = g_cookies.size();
+	uint i, size = g_cookies.size();
 	for (i = 0; i < size; i++)
 	{
 		if (g_cookies[i].name == name)
@@ -75,7 +75,7 @@ size_t write_as_bytes( void *ptr, size_t size, size_t nmemb, void *stream)
 	ReqContext *context = (ReqContext *)stream;
 	size_t length = size * nmemb;
 
-	context->m_pDataBytes->Append((unsigned char *) ptr, length);
+	context->m_pDataBytes->Append((uchar *) ptr, length);
 	return length;
 }
 

@@ -759,7 +759,7 @@ void TParamsDlg::UpdateColorMapChoice()
 {
 	m_pColorMap->Clear();
 	vtStringArray &paths = vtGetDataPath();
-	for (unsigned int i = 0; i < paths.size(); i++)
+	for (uint i = 0; i < paths.size(); i++)
 	{
 		// fill the "colormap" control with available colormap files
 		AddFilenamesToChoice(m_pColorMap, paths[i] + "GeoTypical", "*.cmt");
@@ -779,7 +779,7 @@ void TParamsDlg::DeleteItem(wxListBox *pBox)
 		m_Layers.erase(m_Layers.begin()+idx);
 
 	// or an animpath
-	for (unsigned int i = 0; i < m_AnimPaths.size(); i++)
+	for (uint i = 0; i < m_AnimPaths.size(); i++)
 	{
 		if (!fname.Compare(m_AnimPaths[i]))
 		{
@@ -791,7 +791,7 @@ void TParamsDlg::DeleteItem(wxListBox *pBox)
 
 int TParamsDlg::FindLayerByFilename(const vtString &fname)
 {
-	for (unsigned int i = 0; i < m_Layers.size(); i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 		if (fname == m_Layers[i].GetValueString("Filename"))
 			return (int) i;
 	return -1;
@@ -826,7 +826,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_bReady = false;
 	m_bSetting = true;
 
-	unsigned int i;
+	uint i;
 	int sel;
 
 	// Clear drop-down controls before putting values into them
@@ -1003,7 +1003,7 @@ bool TParamsDlg::TransferDataToWindow()
 	m_pDerived->SetValue(m_iTexture == TE_DERIVED);
 	m_pTileset->SetValue(m_iTexture == TE_TILESET);
 
-	unsigned int i;
+	uint i;
 	m_pStructFiles->Clear();
 	m_pRawFiles->Clear();
 	m_pImageFiles->Clear();
@@ -1188,7 +1188,7 @@ void AddFilenamesToArray(wxArrayString &array, const wxString &dirname,
 
 void TParamsDlg::OnListDblClickStructure( wxCommandEvent &event )
 {
-	unsigned int i;
+	uint i;
 	wxArrayString strings;
 
 	for (i = 0; i < vtGetDataPath().size(); i++)
@@ -1239,7 +1239,7 @@ void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 
 void TParamsDlg::OnListDblClickAnimPaths( wxCommandEvent &event )
 {
-	unsigned int i;
+	uint i;
 	wxArrayString strings;
 
 	for (i = 0; i < vtGetDataPath().size(); i++)
@@ -1261,7 +1261,7 @@ void TParamsDlg::OnListDblClickAnimPaths( wxCommandEvent &event )
 
 void TParamsDlg::OnListDblClickImage( wxCommandEvent &event )
 {
-	unsigned int i;
+	uint i;
 	wxArrayString strings;
 
 	for (i = 0; i < vtGetDataPath().size(); i++)
@@ -1372,7 +1372,7 @@ void TParamsDlg::UpdateTimeString()
 void TParamsDlg::UpdateScenarioChoices()
 {
 	GetScenarios()->Clear();
-	for (unsigned int i = 0; i < m_Scenarios.size(); i++)
+	for (uint i = 0; i < m_Scenarios.size(); i++)
 	{
 		vtString vs = m_Scenarios[i].GetValueString(STR_SCENARIO_NAME);
 		GetScenarios()->Append(wxString(vs, wxConvUTF8));
@@ -1419,7 +1419,7 @@ void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 	if (iSelected != wxNOT_FOUND)
 	{
 		vtStringArray lnames;
-		for (unsigned int i = 0; i < m_Layers.size(); i++)
+		for (uint i = 0; i < m_Layers.size(); i++)
 			lnames.push_back(m_Layers[i].GetValueString("Filename"));
 
 		ScenarioParamsDialog.SetAvailableLayers(lnames);

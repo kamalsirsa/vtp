@@ -242,10 +242,10 @@ void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam)
 			}
 			else if (pRawHid->bRawData[0] == 3) // Buttons (display most significant byte to least)
 			{
-				//VTLOG("Button mask: %.2x %.2x %.2x\n",(unsigned char)pRawHid->bRawData[3],(unsigned char)pRawHid->bRawData[2],(unsigned char)pRawHid->bRawData[1]);
-				OnButtons((unsigned char)pRawHid->bRawData[3],
-						  (unsigned char)pRawHid->bRawData[2],
-						  (unsigned char)pRawHid->bRawData[1]);
+				//VTLOG("Button mask: %.2x %.2x %.2x\n",(uchar)pRawHid->bRawData[3],(uchar)pRawHid->bRawData[2],(uchar)pRawHid->bRawData[1]);
+				OnButtons((uchar)pRawHid->bRawData[3],
+						  (uchar)pRawHid->bRawData[2],
+						  (uchar)pRawHid->bRawData[1]);
 			}
 
 			if (bGotTranslation && bGotRotation)
@@ -257,7 +257,7 @@ void vtSpaceNav::ProcessWM_INPUTEvent(LPARAM lParam)
 							  (float)-all6DOFs[2]/256*m_fSpeed,
 							  (float) all6DOFs[1]/256*m_fSpeed);
 
-				for (unsigned int t = 0; t < NumTargets(); t++)
+				for (uint t = 0; t < NumTargets(); t++)
 				{
 					vtTransform *target = dynamic_cast<vtTransform *>(GetTarget(t));
 

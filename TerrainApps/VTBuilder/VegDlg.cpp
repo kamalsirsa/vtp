@@ -94,7 +94,7 @@ void SpeciesListDlg::OnInitDialog(wxInitDialogEvent& event)
 	long item1 = m_PSTable->InsertItem(0, _T(""), 0);
 	m_PSTable->SetItem(item1, 0, _("(All species)"));
 
-	for (unsigned int i = 0; i < pl->NumSpecies(); i++)
+	for (uint i = 0; i < pl->NumSpecies(); i++)
 	{
 		// Display species and max height in left table.
 		wxString str;
@@ -122,7 +122,7 @@ void SpeciesListDlg::RefreshAppeances()
 	if (m_idx == 0)
 	{
 		vtSpeciesList *pl = g_bld->GetPlantList();
-		for (unsigned int i = 0; i < pl->NumSpecies(); i++)
+		for (uint i = 0; i < pl->NumSpecies(); i++)
 			AddAppeance(i);
 	}
 	else
@@ -133,7 +133,7 @@ void SpeciesListDlg::AddAppeance(int idx)
 {
 	vtSpeciesList *pl = g_bld->GetPlantList();
 	vtPlantSpecies *spe = pl->GetSpecies(idx);
-	for (unsigned int j = 0; j < spe->NumAppearances(); j++)
+	for (uint j = 0; j < spe->NumAppearances(); j++)
 	{
 		vtPlantAppearance *app = spe->GetAppearance(j);
 		wxString str1;

@@ -25,7 +25,7 @@
 // helper
 void InsertSortedString(wxChoice *ch, const wxString &str)
 {
-	unsigned int i;
+	uint i;
 	for (i = 0; i < ch->GetCount(); i++)
 	{
 		if (str < ch->GetString(i))
@@ -152,9 +152,9 @@ void PlantDlg::UpdatePlantSizes()
 	if (!m_pPlantList)
 		return;
 
-	unsigned int num = m_pPlantList->NumSpecies();
+	uint num = m_pPlantList->NumSpecies();
 	m_PreferredSizes.SetSize(num);
-	for (unsigned int i = 0; i < num; i++)
+	for (uint i = 0; i < num; i++)
 	{
 		// Default to 80% of the maximum height of each species
 		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
@@ -172,10 +172,10 @@ void PlantDlg::UpdateAvailableLanguages()
 
 	// Collect every unique language string
 	wxString str;
-	for (unsigned int i = 0; i < m_pPlantList->NumSpecies(); i++)
+	for (uint i = 0; i < m_pPlantList->NumSpecies(); i++)
 	{
 		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
-		for (unsigned int j = 0; j < plant->NumCommonNames(); j++)
+		for (uint j = 0; j < plant->NumCommonNames(); j++)
 		{
 			vtPlantSpecies::CommonName cname = plant->GetCommonName(j);
 			str = wxString(cname.m_strLang, wxConvUTF8);
@@ -190,7 +190,7 @@ void PlantDlg::UpdateAvailableLanguages()
 // Helper: do an insertion sort for a wxChoice
 void AppendSorted(wxChoice *choice, const wxString &item, void *clientData)
 {
-	unsigned int pos, items = choice->GetCount();
+	uint pos, items = choice->GetCount();
 	for (pos = 0; pos < items; pos++)
 	{
 		wxString text = choice->GetString(pos);
@@ -216,7 +216,7 @@ void PlantDlg::UpdatePlantNames()
 		return;
 
 	wxString str;
-	for (unsigned int i = 0; i < m_pPlantList->NumSpecies(); i++)
+	for (uint i = 0; i < m_pPlantList->NumSpecies(); i++)
 	{
 		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
 
@@ -242,7 +242,7 @@ void PlantDlg::UpdatePlantNames()
 				//  so fall back on English
 				showLang = "en";
 			}
-			for (unsigned int j = 0; j < plant->NumCommonNames(); j++)
+			for (uint j = 0; j < plant->NumCommonNames(); j++)
 			{
 				vtPlantSpecies::CommonName cname = plant->GetCommonName(j);
 
@@ -266,7 +266,7 @@ void PlantDlg::UpdatePlantNames()
 	if (previous != NULL)
 	{
 		// look for a corresponding entry
-		for (unsigned int j = 0; j < m_pSpecies->GetCount(); j++)
+		for (uint j = 0; j < m_pSpecies->GetCount(); j++)
 		{
 			void *data = m_pSpecies->GetClientData(j);
 			if (data == previous)
@@ -292,7 +292,7 @@ void PlantDlg::SpeciesIdToSpeciesIndex()
 
 	// look up corresponding species choice index
 	vtPlantSpecies *ps = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
-	for (unsigned int i = 0; i < m_pSpecies->GetCount(); i++)
+	for (uint i = 0; i < m_pSpecies->GetCount(); i++)
 	{
 		if (ps == m_pSpecies->GetClientData(i))
 		{

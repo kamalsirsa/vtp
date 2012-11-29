@@ -165,7 +165,7 @@ void LocationDlg::RefreshAnims()
 		return;
 
 	wxString str;
-	unsigned int i, num = m_pAnimPaths->size();
+	uint i, num = m_pAnimPaths->size();
 
 	for (i = 0; i < num; i++)
 	{
@@ -193,7 +193,7 @@ void LocationDlg::RefreshAnimsText()
 	wxTreeItemIdValue cookie;
 	wxTreeItemId id;
 
-	unsigned int i, num = m_pAnimPaths->size();
+	uint i, num = m_pAnimPaths->size();
 	for (i = 0; i < num; i++)
 	{
 		vtAnimEntry &entry = m_pAnimPaths->at(i);

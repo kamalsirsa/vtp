@@ -559,8 +559,8 @@ void DxfParser::ReadVertex(std::vector<DPoint3> & points)
 
 int DxfParser::GetLayerIndex(const vtString &sLayer)
 {
-	unsigned int iLayers = m_layers.size();
-	for (unsigned int i = 0; i < iLayers; ++i)
+	uint iLayers = m_layers.size();
+	for (uint i = 0; i < iLayers; ++i)
 	{
 		if (sLayer == m_layers[i].m_name)
 			return i;

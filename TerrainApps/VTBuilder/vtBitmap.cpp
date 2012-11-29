@@ -132,7 +132,7 @@ bool vtBitmap::Allocate24(int iXSize, int iYSize)
 	return true;
 }
 
-void vtBitmap::SetPixel24(int x, int y, unsigned char r, unsigned char g, unsigned char b)
+void vtBitmap::SetPixel24(int x, int y, uchar r, uchar g, uchar b)
 {
 #if USE_DIBSECTIONS
 	*(m_pScanline + (y * m_iScanlineWidth) + (x * 3)) = b;
@@ -168,28 +168,28 @@ void vtBitmap::GetPixel32(int x, int y, RGBAi &rgba) const
 	// unsupported
 }
 
-unsigned char vtBitmap::GetPixel8(int x, int y) const
+uchar vtBitmap::GetPixel8(int x, int y) const
 {
 	// unimplemented
 	return 0;
 }
 
-void vtBitmap::SetPixel8(int x, int y, unsigned char color)
+void vtBitmap::SetPixel8(int x, int y, uchar color)
 {
 	// unimplemented
 }
 
-unsigned int vtBitmap::GetWidth() const
+uint vtBitmap::GetWidth() const
 {
 	return m_pBitmap->GetWidth();
 }
 
-unsigned int vtBitmap::GetHeight() const
+uint vtBitmap::GetHeight() const
 {
 	return m_pBitmap->GetHeight();
 }
 
-unsigned int vtBitmap::GetDepth() const
+uint vtBitmap::GetDepth() const
 {
 	// not fully implemented
 	return 24;
@@ -227,10 +227,10 @@ void user_read_data(png_structp png_ptr,
 {
 	membuf *buf = (membuf *) png_get_io_ptr(png_ptr);
 	memcpy(data, buf->m_data+buf->m_offset, length);
-	buf->m_offset += (unsigned int)length;
+	buf->m_offset += (uint)length;
 }
 
-bool vtBitmap::ReadPNGFromMemory(unsigned char *buf, int len)
+bool vtBitmap::ReadPNGFromMemory(uchar *buf, int len)
 {
 #if USE_DIBSECTIONS
 	png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -278,7 +278,7 @@ bool vtBitmap::ReadPNGFromMemory(unsigned char *buf, int len)
 
 	png_read_update_info(png, info);
 
-	unsigned char *m_pPngData = (png_bytep) malloc(png_get_rowbytes(png, info)*height);
+	uchar *m_pPngData = (png_bytep) malloc(png_get_rowbytes(png, info)*height);
 	png_bytep *row_p = (png_bytep *) malloc(sizeof(png_bytep)*height);
 
 	png_uint_32 i;
@@ -314,7 +314,7 @@ bool vtBitmap::ReadPNGFromMemory(unsigned char *buf, int len)
 	Allocate24(width, height);
 
 	size_t png_stride = png_get_rowbytes(png, info);
-	unsigned int row, col;
+	uint row, col;
 	for (row = 0; row < height; row++)
 	{
 		byte *adr = m_pScanline + (row * m_iScanlineWidth);

@@ -32,7 +32,7 @@ public:
 	void Clear();
 
 	DLine2 &GetPolyline() { return m_Line; }
-	unsigned int NumPoints() { return m_Line.GetSize(); }
+	uint NumPoints() { return m_Line.GetSize(); }
 
 protected:
 	void Realize();

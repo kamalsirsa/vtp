@@ -136,7 +136,7 @@ public:
 	{
 		// update bounding box
 		osg::BoundingBox bb;
-		for (unsigned int i = 0; i < node.getNumDrawables(); ++i)
+		for (uint i = 0; i < node.getNumDrawables(); ++i)
 		{
 			// expand overall bounding box
 			bb.expandBy(node.getDrawable(i)->getBound());
@@ -144,7 +144,7 @@ public:
 
 		// transform corners by current matrix
 		osg::BoundingBox xbb;
-		for (unsigned int i = 0; i < 8; ++i)
+		for (uint i = 0; i < 8; ++i)
 		{
 			osg::Vec3 xv = bb.corner(i) * m_TransformMatrix;
 			xbb.expandBy(xv);
@@ -236,11 +236,11 @@ public:
 void PolygonCountVisitor::apply(osg::Geode& geode)
 {
 	numObjects++;
-	for (unsigned int i=0; i<geode.getNumDrawables(); ++i)
+	for (uint i=0; i<geode.getNumDrawables(); ++i)
 	{
 		osg::Geometry* geometry = geode.getDrawable(i)->asGeometry();
 		if (!geometry) continue;
-		for (unsigned int j=0; j<geometry->getPrimitiveSetList().size(); ++j)
+		for (uint j=0; j<geometry->getPrimitiveSetList().size(); ++j)
 		{
 			osg::PrimitiveSet *pset = geometry->getPrimitiveSet(j);
 			osg::DrawArrayLengths *dal = dynamic_cast<osg::DrawArrayLengths*>(pset);
@@ -588,7 +588,7 @@ void TransformExtension::PointTowards(const FPoint3 &point, bool bPitch)
  */
 bool FindAncestor(osg::Node *node, osg::Node *parent)
 {
-	for (unsigned int i = 0; i < node->getNumParents(); i++)
+	for (uint i = 0; i < node->getNumParents(); i++)
 	{
 		if (node->getParent(i) == parent)
 			return true;
@@ -605,7 +605,7 @@ bool FindAncestor(osg::Node *node, osg::Node *parent)
  */
 osg::Node *FindDescendent(osg::Group *group, const char *pName)
 {
-	for (unsigned int i = 0; i < group->getNumChildren(); i++)
+	for (uint i = 0; i < group->getNumChildren(); i++)
 	{
 		osg::Node *child = group->getChild(i);
 		if (child->getName() == pName)
@@ -647,7 +647,7 @@ void InsertNodeAbove(osg::Node *node, osg::Group *newnode)
  */
 void InsertNodeBelow(osg::Group *group, osg::Group *newnode)
 {
-	for (unsigned int i = 0; i < group->getNumChildren(); i++)
+	for (uint i = 0; i < group->getNumChildren(); i++)
 		newnode->addChild(group->getChild(i));
 
 	group->removeChildren(0, group->getNumChildren());
@@ -1131,7 +1131,7 @@ float vtShadow::GetDarkness()
 		return 1.0f;
 }
 
-void vtShadow::AddAdditionalTerrainTextureUnit(const unsigned int Unit, const unsigned int Mode)
+void vtShadow::AddAdditionalTerrainTextureUnit(const uint Unit, const uint Mode)
 {
 #if VTLISPSM
 	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(getShadowTechnique());
@@ -1144,7 +1144,7 @@ void vtShadow::AddAdditionalTerrainTextureUnit(const unsigned int Unit, const un
 #endif
 }
 
-void vtShadow::RemoveAdditionalTerrainTextureUnit(const unsigned int Unit)
+void vtShadow::RemoveAdditionalTerrainTextureUnit(const uint Unit)
 {
 #if VTLISPSM
 	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(getShadowTechnique());
@@ -1166,7 +1166,7 @@ void vtShadow::RemoveAllAdditionalTerrainTextureUnits()
 #endif
 }
 
-void vtShadow::SetShadowTextureResolution(const unsigned int ShadowTextureResolution)
+void vtShadow::SetShadowTextureResolution(const uint ShadowTextureResolution)
 {
 #if VTLISPSM
 	CLightSpacePerspectiveShadowTechnique *pTechnique = dynamic_cast<CLightSpacePerspectiveShadowTechnique *>(getShadowTechnique());
@@ -1450,7 +1450,7 @@ void vtGeode::CloneFromGeode(const vtGeode *rhs)
 	//  geometry that we are copying from.
 	SetMaterials(rhs->GetMaterials());
 	int idx;
-	for (unsigned int i = 0; i < rhs->GetNumMeshes(); i++)
+	for (uint i = 0; i < rhs->GetNumMeshes(); i++)
 	{
 		vtMesh *mesh = rhs->GetMesh(i);
 		if (mesh)
@@ -1558,7 +1558,7 @@ void vtGeode::RemoveMesh(vtMesh *pMesh)
 	removeDrawable(pMesh);
 }
 
-unsigned int vtGeode::GetNumMeshes() const
+uint vtGeode::GetNumMeshes() const
 {
 	return getNumDrawables();
 }
@@ -1758,7 +1758,7 @@ vtDynGeom::vtDynGeom() : vtGeode()
  */
 int vtDynGeom::IsVisible(const FSphere &sphere) const
 {
-	unsigned int vis = 0;
+	uint vis = 0;
 
 	// cull against standard frustum
 	int i;
@@ -1810,7 +1810,7 @@ int vtDynGeom::IsVisible(const FPoint3& point0,
 							const FPoint3& point2,
 							const float fTolerance) const
 {
-	unsigned int outcode0 = 0, outcode1 = 0, outcode2 = 0;
+	uint outcode0 = 0, outcode1 = 0, outcode2 = 0;
 	register float dist;
 
 	// cull against standard frustum
@@ -1854,7 +1854,7 @@ int vtDynGeom::IsVisible(const FPoint3& point0,
  */
 int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 {
-	unsigned int incode = 0;
+	uint incode = 0;
 
 	// cull against standard frustum
 	for (int i = 0; i < 4; i++)

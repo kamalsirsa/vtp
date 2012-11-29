@@ -133,7 +133,7 @@ void LinearStructureDlg::UpdateChoices()
 
 void LinearStructureDlg::AddConnectStringsFromDescriptors(const vtMaterialDescriptorArray *mats)
 {
-	for (unsigned int i = 0; i < mats->GetSize(); i++)
+	for (uint i = 0; i < mats->GetSize(); i++)
 	{
 		vtMaterialDescriptor *desc = mats->GetAt(i);
 
@@ -172,7 +172,7 @@ void LinearStructureDlg::UpdateConnectChoices()
 	GetPostType()->Append(_T("none"));
 	if (m_pStructureMaterials)
 	{
-		for (unsigned int i = 0; i < m_pStructureMaterials->GetSize(); i++)
+		for (uint i = 0; i < m_pStructureMaterials->GetSize(); i++)
 		{
 			vtMaterialDescriptor *desc = m_pStructureMaterials->GetAt(i);
 
@@ -187,7 +187,7 @@ void LinearStructureDlg::UpdateProfiles()
 {
 	wxChoice *cc = GetChoiceProfile();
 	cc->Clear();
-	for (unsigned int i = 0; i < vtGetDataPath().size(); i++)
+	for (uint i = 0; i < vtGetDataPath().size(); i++)
 	{
 		// fill the "profiles" control with available profile files
 		AddFilenamesToChoice(cc, vtGetDataPath()[i] + "BuildingData", "*.shp");

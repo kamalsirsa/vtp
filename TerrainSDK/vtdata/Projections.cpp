@@ -202,7 +202,7 @@ int vtProjection::GetDatum() const
 	vtString strDatum = datum_string;
 	MassageDatumFromWKT(strDatum);	// Convert WKT name to EPSG name
 
-	for (unsigned int i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (uint i = 0; i < g_EPSGDatums.GetSize(); i++)
 	{
 		if (!strcmp((const char *)strDatum, g_EPSGDatums[i].szName))
 			return g_EPSGDatums[i].iCode;
@@ -807,7 +807,7 @@ const char *DatumToString(int d)
 	if (d < 24)
 		return datumToString((DATUM)d);	// allow backward compatibility
 
-	for (unsigned int i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (uint i = 0; i < g_EPSGDatums.GetSize(); i++)
 	{
 		if (g_EPSGDatums[i].iCode == d)
 			return g_EPSGDatums[i].szName;
@@ -886,7 +886,7 @@ const char *DatumToStringShort(int d)
 	if (d < 24)
 		return datumToStringShort((DATUM)d); // allow backward compatibility
 
-	for (unsigned int i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (uint i = 0; i < g_EPSGDatums.GetSize(); i++)
 	{
 		if (g_EPSGDatums[i].iCode == d)
 		{

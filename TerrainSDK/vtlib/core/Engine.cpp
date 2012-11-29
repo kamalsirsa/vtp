@@ -14,7 +14,7 @@ vtEngine::vtEngine() : vtEnabledBase()
 	m_pWindow = NULL;
 }
 
-osg::Referenced *vtEngine::GetTarget(unsigned int which)
+osg::Referenced *vtEngine::GetTarget(uint which)
 {
 	if (which < NumTargets())
 		return m_Targets.GetAt(which);
@@ -35,7 +35,7 @@ void vtEngine::Eval()
 
 void vtEngine::RemoveChild(vtEngine *pEngine)
 {
-	for (unsigned int i = 0; i < NumChildren(); i++)
+	for (uint i = 0; i < NumChildren(); i++)
 	{
 		if (m_Children[i] == pEngine)
 			m_Children.erase(m_Children.begin()+i);
@@ -47,7 +47,7 @@ void vtEngine::AddChildrenToList(vtArray<vtEngine*> &list, bool bEnabledOnly)
 	if (bEnabledOnly && !GetEnabled())
 		return;
 	list.Append(this);
-	for (unsigned int i = 0; i < NumChildren(); i++)
+	for (uint i = 0; i < NumChildren(); i++)
 		GetChild(i)->AddChildrenToList(list, bEnabledOnly);
 }
 
@@ -133,7 +133,7 @@ void vtSimpleBillboardEngine::Eval()
 	// Potential optimization: store last camera pos and only update on change
 
 	//get the target and it's location
-	for (unsigned int i = 0; i < NumTargets(); i++)
+	for (uint i = 0; i < NumTargets(); i++)
 	{
 		vtCamera *cam = vtGetScene()->GetCamera();
 		vtTransform* pTarget = (vtTransform*) GetTarget(i);

@@ -25,7 +25,7 @@ public:
 	float GetSpeed() { return m_fSpeed; }
 	void SetAllowRoll(bool b) { m_bAllowRoll = b; }
 	bool GetAllowRoll() { return m_bAllowRoll; }
-	virtual void OnButtons(unsigned char b1, unsigned char b2, unsigned char b3) {}
+	virtual void OnButtons(uchar b1, uchar b2, uchar b3) {}
 	virtual void Eval();
 
 #if WIN32

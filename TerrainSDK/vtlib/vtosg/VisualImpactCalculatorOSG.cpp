@@ -50,7 +50,7 @@ static const float DEFAULT_HUMAN_FOV_SOLID_ANGLE = PIf; // 2pi(1 - cos(120/2)) =
 // The standard for foveal (high detail) vision is 2 degrees and 1.0 aspect. Which is a bit too small for us.
 // The standard for peripheral vision is 180 degrees horizontal 130 degrees vertical. (Some sources go as far as 210
 // horizontal but vision is very limited at the extremes.)
-static const unsigned int DEFAULT_GRAPHICS_CONTEXT = 0;
+static const uint DEFAULT_GRAPHICS_CONTEXT = 0;
 
 typedef struct CameraMask
 {
@@ -367,7 +367,7 @@ float CVisualImpactCalculatorOSG::InnerImplementation() const
 	float* pIntermediateBuffer = (float*)m_pIntermediateImage->data();
 	int x, y;
 #ifdef _DEBUG
-	unsigned int Hits = 0;
+	uint Hits = 0;
 #endif
 	if (NULL != pIntermediateBuffer) // Buffer will be NULL if our bin has not been rendered
 	{

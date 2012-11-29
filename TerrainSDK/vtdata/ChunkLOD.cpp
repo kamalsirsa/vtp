@@ -46,7 +46,7 @@ struct heightfield {
 	float	vertical_scale;	// scales the units stored in heightfield_elem's.  meters == stored_short * vertical_scale
 	float	input_vertical_scale;	// scale factor to apply to input data.
 	vtElevationGrid *m_bt;
-	mmap_array<unsigned char>*	m_level;
+	mmap_array<uchar>*	m_level;
 
 	heightfield(float initial_vertical_scale, float input_scale) {
 		m_size = 0;
@@ -100,7 +100,7 @@ struct heightfield {
 	{
 		assert(lev >= -1 && lev < 15);
 		lev &= 0x0F;
-		unsigned char	current = m_level->get(z, x >> 1); // swap indices for VM performance -- .bt is column major
+		uchar	current = m_level->get(z, x >> 1); // swap indices for VM performance -- .bt is column major
 		if (x & 1) {
 			current = (current & 0x0F) | (lev << 4);
 		} else {
@@ -204,7 +204,7 @@ struct heightfield {
 		printf("sample_spacing = %f\n", sample_spacing);
 
 		// Allocate storage for vertex activation levels.
-		m_level = new mmap_array<unsigned char>(m_size, (m_size + 1) >> 1, true);	// swap height/width; .bt is column-major
+		m_level = new mmap_array<uchar>(m_size, (m_size + 1) >> 1, true);	// swap height/width; .bt is column-major
 		assert(m_level);
 
 		// Initialize level array.
@@ -568,7 +568,7 @@ const int	CHUNK_HEADER_BYTES = 4 + 4*4 + 1 + 2 + 2 + 2*2 + 4;
 // vert/index data gets appended after the TOC.
 void	generate_empty_TOC(FILE* rw, int root_level)
 {
-	unsigned char	buf[CHUNK_HEADER_BYTES];	// dummy chunk header.
+	uchar	buf[CHUNK_HEADER_BYTES];	// dummy chunk header.
 	memset(buf, 0, sizeof(buf));
 
 	int	start_pos = ftell(rw);

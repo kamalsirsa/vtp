@@ -102,7 +102,7 @@ public:
 	void CreatePlantSurfaces();
 
 	// override / replace a few methods of vtSpeciesList
-	vtPlantSpecies3d *GetSpecies(unsigned int i) const;
+	vtPlantSpecies3d *GetSpecies(uint i) const;
 
 //	vtGeode *plant_nursery(vtHeightField *pHeightField, float lat, float lon);
 };
@@ -138,11 +138,11 @@ public:
 	~vtPlantInstanceArray3d();
 
 	int CreatePlantNodes(bool progress_dialog(int) = NULL);
-	bool CreatePlantNode(unsigned int i);
+	bool CreatePlantNode(uint i);
 	int NumOffTerrain() { return m_iOffTerrain; }
 
-	vtTransform *GetPlantNode(unsigned int i) const;
-	vtPlantInstance3d *GetInstance3d(unsigned int i) const;
+	vtTransform *GetPlantNode(uint i) const;
+	vtPlantInstance3d *GetInstance3d(uint i) const;
 
 	/// Indicate the heightfield which will be used for the structures in this array
 	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
@@ -154,14 +154,14 @@ public:
 	void VisualDeselectAll();
 
 	/// Select a single plant, and visually highlight it
-	void VisualSelect(unsigned int i);
+	void VisualSelect(uint i);
 
 	void OffsetSelectedPlants(const DPoint2 &offset);
 
-	void ReleasePlantGeometry(unsigned int i);
-	void DeletePlant(unsigned int i);
+	void ReleasePlantGeometry(uint i);
+	void DeletePlant(uint i);
 
-	void UpdateTransform(unsigned int i);
+	void UpdateTransform(uint i);
 
 	bool FindPlantFromNode(osg::Node *pNode, int &iOffset);
 

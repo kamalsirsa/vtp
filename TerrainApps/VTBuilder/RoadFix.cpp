@@ -221,7 +221,7 @@ int RoadMapEdit::CleanLinkPoints()
 
 	for (LinkEdit *pR = GetFirstLink(); pR; pR = pR->GetNext())
 	{
-		for (unsigned int i = 1; i < pR->GetSize(); i++)
+		for (uint i = 1; i < pR->GetSize(); i++)
 		{
 			if (pR->GetAt(i-1) == pR->GetAt(i))
 			{

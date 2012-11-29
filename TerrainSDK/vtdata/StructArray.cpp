@@ -75,9 +75,9 @@ vtStructInstance *vtStructureArray::AddNewInstance()
 	return ni;
 }
 
-void vtStructureArray::DestructItems(unsigned int first, unsigned int last)
+void vtStructureArray::DestructItems(uint first, uint last)
 {
-	for (unsigned int i = first; i <= last; i++)
+	for (uint i = first; i <= last; i++)
 		delete GetAt(i);
 }
 
@@ -103,7 +103,7 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 	building = -1;
 	closest = 1E8;
 
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 		if (str->GetType() != ST_BUILDING)
@@ -142,7 +142,7 @@ bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 	double dist;
 	closest = 1E8;
 
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 		vtBuilding *bld = str->GetBuilding();
@@ -167,7 +167,7 @@ bool vtStructureArray::FindClosestLinearCorner(const DPoint2 &point, double epsi
 {
 	DPoint2 loc;
 	double dist;
-	unsigned int i, j;
+	uint i, j;
 
 	structure = -1;
 	corner = -1;
@@ -217,7 +217,7 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 	double dist;
 
 	// Check buildings and instances first
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 		dist = 1E9;
@@ -241,7 +241,7 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 		}
 	}
 	// then check fences
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 
@@ -285,7 +285,7 @@ bool vtStructureArray::FindClosestBuilding(const DPoint2 &point,
 	DPoint2 loc;
 	double dist;
 
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 		vtBuilding *bld = str->GetBuilding();
@@ -323,11 +323,11 @@ void vtStructureArray::GetExtents(DRECT &rect) const
 
 void vtStructureArray::Offset(const DPoint2 &delta)
 {
-	unsigned int npoints = GetSize();
+	uint npoints = GetSize();
 	if (!npoints)
 		return;
 
-	unsigned int i, j;
+	uint i, j;
 	DPoint2 temp;
 	for (i = 0; i < npoints; i++)
 	{
@@ -426,7 +426,7 @@ void vtStructureArray::RemoveFoundations()
 int vtStructureArray::NumSelected()
 {
 	int sel = 0;
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		if (GetAt(i)->IsSelected()) sel++;
 	}
@@ -435,7 +435,7 @@ int vtStructureArray::NumSelected()
 
 void vtStructureArray::DeselectAll()
 {
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 		GetAt(i)->Select(false);
 }
 
@@ -446,7 +446,7 @@ void vtStructureArray::DeselectAll()
 int vtStructureArray::DeleteSelected()
 {
 	int num_deleted = 0;
-	for (unsigned int i = 0; i < GetSize();)
+	for (uint i = 0; i < GetSize();)
 	{
 		vtStructure *str = GetAt(i);
 		if (str->IsSelected())
@@ -468,7 +468,7 @@ int vtStructureArray::DeleteSelected()
  */
 int vtStructureArray::GetFirstSelected()
 {
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 		if (GetAt(i)->IsSelected())
 		{
 			m_iLastSelected = i;
@@ -481,7 +481,7 @@ int vtStructureArray::GetNextSelected()
 {
 	if (-1 == m_iLastSelected)
 		return -1;
-	for (unsigned int i = m_iLastSelected + 1; i < GetSize(); i++)
+	for (uint i = m_iLastSelected + 1; i < GetSize(); i++)
 		if (GetAt(i)->IsSelected())
 		{
 			m_iLastSelected = i;
@@ -1192,7 +1192,7 @@ void DLine2FromString(const char *data, DLine2 &line)
 {
 	// Speed/memory optimization: quick check of how many vertices
 	//  there are, then preallocate that many
-	unsigned int verts = 0;
+	uint verts = 0;
 	for (size_t i = 0; i < strlen(data); i++)
 		if (data[i] == ',')
 			verts++;
@@ -1410,7 +1410,7 @@ bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 
 	bool bDegrees = (m_proj.IsGeographic() == 1);
 
-	for (unsigned int i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 		str->WriteXML(out, bDegrees);
@@ -1503,7 +1503,7 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* filename)
 	// Field 0: height in meters
 	DBFAddField(db, "Height", FTDouble, 3, 2);	// width, decimals
 
-	unsigned int i, j, count = GetSize(), record = 0;
+	uint i, j, count = GetSize(), record = 0;
 	for (i = 0; i < count; i++)	//for each coordinate
 	{
 		vtBuilding *bld = GetAt(i)->GetBuilding();
@@ -1591,7 +1591,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 
 	fprintf(fp3DV, "version 1\n");	
 
-	unsigned int i, j, count = GetSize(), record = 0;
+	uint i, j, count = GetSize(), record = 0;
 	for (i = 0; i < count; i++)	//for each coordinate
 	{
 		vtBuilding *bld = GetAt(i)->GetBuilding();

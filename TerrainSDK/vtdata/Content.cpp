@@ -99,7 +99,7 @@ const vtTag *vtTagArray::GetTag(int index) const
 	return &m_tags[index];
 }
 
-unsigned int vtTagArray::NumTags() const
+uint vtTagArray::NumTags() const
 {
 	return m_tags.size();
 }
@@ -338,11 +338,11 @@ vtTagArray &vtTagArray::operator=(const vtTagArray &v)
 
 bool vtTagArray::operator==(const vtTagArray &v) const
 {
-	unsigned int size = m_tags.size();
+	uint size = m_tags.size();
 	if (size != v.m_tags.size())
 		return false;
 
-	for (unsigned int i = 0; i < size; i++)
+	for (uint i = 0; i < size; i++)
 	{
 		const vtTag *tag = GetTag(i);
 		const vtTag *tag2 = v.FindTag(tag->name);
@@ -362,7 +362,7 @@ bool vtTagArray::operator!=(const vtTagArray &v) const
 
 void vtTagArray::CopyTagsFrom(const vtTagArray &v)
 {
-	for (unsigned int i = 0; i < v.NumTags(); i++)
+	for (uint i = 0; i < v.NumTags(); i++)
 	{
 		const vtTag *tag = v.GetTag(i);
 		SetValueString(tag->name, tag->value, true);	// suppress warn
@@ -388,7 +388,7 @@ bool vtTagArray::WriteToXML(const char *fname, const char *title) const
 
 void vtTagArray::WriteToXMLBody(FILE *fp, int iIndent) const
 {
-	unsigned int i, size = NumTags();
+	uint i, size = NumTags();
 	for (i = 0; i < size; i++)
 	{
 		// indent
@@ -450,9 +450,9 @@ void vtTagArray::SetVerbose(bool value)
 
 void vtTagArray::LogTags() const
 {
-	unsigned int size = NumTags();
+	uint size = NumTags();
 	VTLOG(" LogTags: %d tags\n", size);
-	for (unsigned int i = 0; i < size; i++)
+	for (uint i = 0; i < size; i++)
 	{
 		const vtTag *tag = &m_tags[i];
 		VTLOG("  tag %d: '%s'\n", i, (const char *)tag->name);
@@ -476,7 +476,7 @@ vtItem::~vtItem()
 
 void vtItem::Empty()
 {
-	for (unsigned int i = 0; i < m_models.GetSize(); i++)
+	for (uint i = 0; i < m_models.GetSize(); i++)
 	{
 		delete m_models.GetAt(i);
 	}
@@ -676,10 +676,10 @@ vtContentManager::~vtContentManager()
 
 void vtContentManager::Empty()
 {
-	unsigned int items = m_items.GetSize();
+	uint items = m_items.GetSize();
 	if (items)
 		VTLOG("vtContentManager::Empty, %d items to delete\n", items);
-	for (unsigned int i = 0; i < items; i++)
+	for (uint i = 0; i < items; i++)
 	{
 		delete m_items.GetAt(i);
 	}
@@ -695,7 +695,7 @@ void vtContentManager::RemoveItem(vtItem *item)
 
 vtItem *vtContentManager::FindItemByName(const char *name)
 {
-	for (unsigned int i = 0; i < m_items.GetSize(); i++)
+	for (uint i = 0; i < m_items.GetSize(); i++)
 	{
 		vtItem *pItem = m_items.GetAt(i);
 		if (!pItem->m_name.CompareNoCase(name))
@@ -706,7 +706,7 @@ vtItem *vtContentManager::FindItemByName(const char *name)
 
 vtItem *vtContentManager::FindItemByType(const char *type, const char *subtype)
 {
-	for (unsigned int i = 0; i < m_items.GetSize(); i++)
+	for (uint i = 0; i < m_items.GetSize(); i++)
 	{
 		vtItem *pItem = m_items.GetAt(i);
 		vtTag *tag1 = pItem->FindTag("type");
@@ -759,7 +759,7 @@ void vtContentManager::WriteXML(const char *filename) const
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	unsigned int i, j;
+	uint i, j;
 	FILE *fp = vtFileOpen(filename, "wb");
 	if (!fp)
 	{

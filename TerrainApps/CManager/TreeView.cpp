@@ -114,8 +114,8 @@ void MyTreeCtrl::RefreshTreeItems(vtFrame *pFrame)
 
 	vtContentManager *pMan = &(pFrame->m_Man);
 
-	unsigned int i, j;
-	unsigned int iItems = pMan->NumItems();
+	uint i, j;
+	uint iItems = pMan->NumItems();
 	for (i = 0; i < iItems; i++)
 	{
 		vtItem *pItem = pMan->GetItem(i);

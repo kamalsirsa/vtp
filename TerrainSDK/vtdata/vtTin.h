@@ -61,8 +61,8 @@ public:
 	vtTin();
 	virtual ~vtTin();
 
-	unsigned int NumVerts() const { return m_vert.GetSize(); }
-	unsigned int NumTris() const { return m_tri.GetSize()/3; }
+	uint NumVerts() const { return m_vert.GetSize(); }
+	uint NumTris() const { return m_tri.GetSize()/3; }
 
 	void AddVert(const DPoint2 &p, float z);
 	void AddVert(const DPoint2 &p, float z, FPoint3 &normal);
@@ -88,7 +88,7 @@ public:
 	bool WritePLY(const char *fname, bool progress_callback(int) = NULL) const;
 	void FreeData();
 
-	unsigned int AddSurfaceType(const vtString &surface_texture, bool bTiled = false);
+	uint AddSurfaceType(const vtString &surface_texture, bool bTiled = false);
 	void SetSurfaceType(int iTri, int surface_type);
 
 	bool ComputeExtents();

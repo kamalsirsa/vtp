@@ -56,7 +56,7 @@ bool vtPagedStructureLOD::TestVisible(float fDistance, bool bLoad)
 void vtPagedStructureLOD::AppendToQueue()
 {
 	int count = 0;
-	for (unsigned int i = 0; i < m_StructureRefs.size(); i++)
+	for (uint i = 0; i < m_StructureRefs.size(); i++)
 	{
 		StructureRef &ref = m_StructureRefs[i];
 
@@ -275,7 +275,7 @@ void vtPagedStructureLodGrid::DeconstructCell(vtPagedStructureLOD *pLOD)
 
 	StructureRefVector &refs = pLOD->m_StructureRefs;
 	//VTLOG("Deconstruction check on %d structures: ", indices.GetSize());
-	for (unsigned int i = 0; i < refs.size(); i++)
+	for (uint i = 0; i < refs.size(); i++)
 	{
 		StructureRef &ref = refs[i];
 		vtStructure3d *str3d = ref.pArray->GetStructure3d(ref.iIndex);
@@ -302,7 +302,7 @@ void vtPagedStructureLodGrid::RemoveCellFromQueue(vtPagedStructureLOD *pLOD)
 
 	const StructureRefVector &refs = pLOD->m_StructureRefs;
 	int count = 0;
-	for (unsigned int i = 0; i < refs.size(); i++)
+	for (uint i = 0; i < refs.size(); i++)
 	{
 		if (RemoveFromQueue(refs[i].pArray, refs[i].iIndex))
 			count++;
@@ -386,7 +386,7 @@ void vtPagedStructureLodGrid::SortQueue()
 	cam_dir.Normalize();
 
 	DPoint2 p;
-	for (unsigned int i = 0; i < m_Queue.size(); i++)
+	for (uint i = 0; i < m_Queue.size(); i++)
 	{
 		QueueEntry &e = m_Queue[i];
 		vtStructure *st = e.pStructureArray->GetAt(e.iStructIndex);
@@ -429,7 +429,7 @@ void vtPagedStructureLodGrid::ClearQueue(vtStructureArray3d *pArray)
  */
 void vtPagedStructureLodGrid::RefreshPaging(vtStructureArray3d *pArray)
 {
-	for (unsigned int i = 0; i < pArray->GetSize(); i++)
+	for (uint i = 0; i < pArray->GetSize(); i++)
 	{
 		// Get 2D extents from the unbuild structure
 		vtStructure *str = pArray->GetAt(i);
@@ -484,7 +484,7 @@ void vtPagedStructureLodGrid::DoPaging(const FPoint3 &CamPos,
 
 void vtPagedStructureLodGrid::ConstructByIndex(vtPagedStructureLOD *pLOD,
 											   vtStructureArray3d *pArray,
-											   unsigned int iStructIndex)
+											   uint iStructIndex)
 {
 	bool bSuccess = pArray->ConstructStructure(iStructIndex);
 	if (bSuccess)

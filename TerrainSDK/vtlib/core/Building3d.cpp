@@ -174,7 +174,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 #else
 	PolyChecker PolyChecker;
 	int i;
-	unsigned int j, k;
+	uint j, k;
 
 	UpdateWorldLocation(pHeightField);
 
@@ -194,7 +194,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	{
 		vtLevel *lev = m_Levels[i];
 		const FPolygon3 &foot = GetLocalFootprint(i);
-		unsigned int edges = lev->NumEdges();
+		uint edges = lev->NumEdges();
 
 		// safety check
 		if (foot[0].GetSize() < 3)
@@ -235,7 +235,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 			// Build a set of walls for each storey of the level
 			for (j = 0; j < lev->m_iStories; j++)
 			{
-				for (unsigned int r = 0; r < poly.size(); r++)
+				for (uint r = 0; r < poly.size(); r++)
 				{
 					for (k = 0; k < poly[r].GetSize(); k++)
 					{
@@ -244,7 +244,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 				}
 				CreateUpperPolygon(lev, poly, poly2);
 				int edge_start = 0;
-				for (unsigned int r = 0; r < poly.size(); r++)
+				for (uint r = 0; r < poly.size(); r++)
 				{
 					for (k = edge_start; k < edge_start + poly[r].GetSize(); k++)
 					{
@@ -867,7 +867,7 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 #ifdef FELKELDEBUG
 			VTLOG("Building panel\n");
 #endif
-			unsigned int iNumberofPoints = 0;
+			uint iNumberofPoints = 0;
 			do
 			{
 				if (iNumberofPoints++ > Skeleton.size())
@@ -1063,7 +1063,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 
 	int i;
 	int base_edge = 0;
-	for (unsigned int ring = 0; ring < polygon1.size(); ring++)
+	for (uint ring = 0; ring < polygon1.size(); ring++)
 	{
 		FLine3 poly1 = polygon1[ring];
 		FLine3 poly2;
@@ -1110,7 +1110,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 
 			if (base_edge+i == iHighlightEdge)
 			{
-				for (unsigned int j = 0; j < pLev->m_iStories; j++)
+				for (uint j = 0; j < pLev->m_iStories; j++)
 				{
 					AddHighlightSection(pEdge, quad);
 					quad[0].y += pLev->m_fStoryHeight;
@@ -1191,10 +1191,10 @@ void vtBuilding3d::Randomize(int iStories)
 	{
 		// unset color
 		// random pastel color
-		unsigned char r, g, b;
-		r = (unsigned char) (128 + random(127));
-		g = (unsigned char) (128 + random(127));
-		b = (unsigned char) (128 + random(127));
+		uchar r, g, b;
+		r = (uchar) (128 + random(127));
+		g = (uchar) (128 + random(127));
+		b = (uchar) (128 + random(127));
 		SetColor(BLD_BASIC, RGBi(r, g, b));
 	}
 

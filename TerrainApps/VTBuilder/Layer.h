@@ -131,7 +131,7 @@ class LayerArray : public vtArray<vtLayerPtr>
 {
 public:
 	// don't need explicit destructor here because Empty() is always called
-	virtual void DestructItems(unsigned int first, unsigned int last);
+	virtual void DestructItems(uint first, uint last);
 	vtLayer *FindByFilename(const wxString &name);
 };
 

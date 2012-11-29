@@ -335,7 +335,7 @@ void daylon::CRootTag::Write
 	daylon_assert(strlen(pszName) <= MAX_TAGNAMELEN);
 	daylon_assert(relationFlags <= (TAGRELATION_SIBLING | TAGRELATION_CHILD));
 
-	for(const unsigned char* psz = (const unsigned char*)pszName;
+	for(const uchar* psz = (const uchar*)pszName;
 		*psz != 0; psz++)
 	{
 		if(*psz < ' ' || *psz > 0x7F)
@@ -591,7 +591,7 @@ char* daylon::CRootTag::ValueString(const TAG& tag, char* psz)
 			break;
 
 		case VALKIND_UINT32:
-			sprintf(psz, "%u", (unsigned int)*((daylon::uint32*)&tag.value));
+			sprintf(psz, "%u", (uint)*((daylon::uint32*)&tag.value));
 			break;
 
 		case VALKIND_FLOAT:

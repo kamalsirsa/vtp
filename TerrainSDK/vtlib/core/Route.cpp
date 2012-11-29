@@ -53,7 +53,7 @@ vtRoute::vtRoute(vtTerrain* pT)
 
 vtRoute::~vtRoute()
 {
-	unsigned int i;
+	uint i;
 	for (i = 0; i < m_Nodes.GetSize(); i++)
 		delete m_Nodes[i];
 }
@@ -367,7 +367,7 @@ void vtRouteMap::BuildGeometry(vtHeightField3d *pHeightField)
 bool vtRouteMap::FindRouteFromNode(osg::Node *pNode, int &iOffset)
 {
 	bool bFound = false;
-	unsigned int i;
+	uint i;
 
 	for (i = 0; (i < GetSize()) & !bFound; i++)
 	{

@@ -266,7 +266,7 @@ bool EnviroOptions::WriteXML()
 	output << "<EnviroOptions>" << std::endl;
 
 	// Don't write data paths here, they are now written to vtp.xml
-	//for (unsigned int i = 0; i < m_oldDataPaths.size(); i++)
+	//for (uint i = 0; i < m_oldDataPaths.size(); i++)
 	//	WriteElem(output, STR_DATAPATH, m_oldDataPaths[i]);
 
 	WriteElemB(output, STR_EARTHVIEW, m_bEarthView);

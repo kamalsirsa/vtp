@@ -27,7 +27,7 @@ bool CScenarioListValidator::TransferToWindow()
 	if (NULL != pListBox)
 	{
 		pListBox->Clear();
-		for (unsigned int i = 0; i < m_pScenarios->size(); i++)
+		for (uint i = 0; i < m_pScenarios->size(); i++)
 		{
 			wxString str((*m_pScenarios)[i].GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
 			pListBox->Append(str);
@@ -228,13 +228,13 @@ void ScenarioSelectDialog::OnEditScenario( wxCommandEvent &event )
 		if (m_pTerrain->IsCreated())
 		{
 			LayerSet &layers = m_pTerrain->GetLayers();
-			for (unsigned int i = 0; i < layers.size(); i++)
+			for (uint i = 0; i < layers.size(); i++)
 				lnames.push_back(layers[i]->GetLayerName());
 		}
 		else
 		{
 			std::vector<vtTagArray> &layers = m_pTerrain->GetParams().m_Layers;
-			for (unsigned int i = 0; i < layers.size(); i++)
+			for (uint i = 0; i < layers.size(); i++)
 				lnames.push_back(layers[i].GetValueString("Filename"));
 		}
 

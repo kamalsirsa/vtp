@@ -171,7 +171,7 @@ void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 	// Populate Content files choices
 	GetContent()->Clear();
 	vtStringArray &paths = vtGetDataPath();
-	for (unsigned int i = 0; i < paths.size(); i++)
+	for (uint i = 0; i < paths.size(); i++)
 	{
 		vtString path = paths[i];
 		AddFilenamesToChoice(GetContent(), path, "*.vtco");

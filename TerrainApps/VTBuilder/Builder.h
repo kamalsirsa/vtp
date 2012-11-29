@@ -134,7 +134,7 @@ public:
 	bool SampleCurrentTerrains(vtElevLayer *pTarget);
 	float GetHeightFromTerrain(const DPoint2 &p);
 	void ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt);
-	unsigned int ElevLayerArray(std::vector<vtElevLayer*> &elevs);
+	uint ElevLayerArray(std::vector<vtElevLayer*> &elevs);
 	bool FillElevGaps(vtElevLayer *el, DRECT *area = NULL, int iMethod = -1);
 	void FlagStickyLayers(const std::vector<vtElevLayer*> &elevs);
 	vtElevLayer *ComputeDifference(vtElevLayer *pElev);

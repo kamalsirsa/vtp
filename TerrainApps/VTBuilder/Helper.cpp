@@ -26,7 +26,7 @@
 #endif
 
 void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
-					unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
+					uchar *rgb_bytes, vtMiniDatabuf &output_buf,
 					int iUncompressedSize, ImageGLCanvas *pCanvas)
 {
 	if (opts.bUseTextureCompression)
@@ -188,7 +188,7 @@ void* getGLExtensionFuncPtr(const char *funcName)
 }
 
 
-void DoTextureCompress(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf,
+void DoTextureCompress(uchar *rgb_bytes, vtMiniDatabuf &output_buf,
 					   GLuint &iTex, bool bAlpha)
 {
 	// Next, compress them to a DXT1 output file
@@ -316,7 +316,7 @@ void ImageGLCanvas::OnSize(wxSizeEvent& event)
 #if SUPPORT_SQUISH
 using namespace squish;
 
-void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool bFast)
+void DoTextureSquish(uchar *rgb_bytes, vtMiniDatabuf &output_buf, bool bFast)
 {
 	int flags = kDxt1;
 
@@ -341,10 +341,10 @@ void DoTextureSquish(unsigned char *rgb_bytes, vtMiniDatabuf &output_buf, bool b
 
 	// loop over blocks and compress them
 	u8* targetBlock = (u8 *) output_buf.data;
-	for( unsigned int y = 0; y < output_buf.ysize; y += 4 )
+	for( uint y = 0; y < output_buf.ysize; y += 4 )
 	{
 		// process a row of blocks
-		for( unsigned int x = 0; x < output_buf.xsize; x += 4 )
+		for( uint x = 0; x < output_buf.xsize; x += 4 )
 		{
 			// get the block data
 			u8 sourceRgba[16*4];

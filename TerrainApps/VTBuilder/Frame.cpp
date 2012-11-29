@@ -811,7 +811,7 @@ InstanceDlg *MainFrame::ShowInstanceDlg(bool bShow)
 		m_pInstanceDlg = new InstanceDlg(this, -1,
 			_("Structure Instances"), wxPoint(120, 80), wxSize(600, 200));
 
-		for (unsigned int i = 0; i < m_contents.size(); i++)
+		for (uint i = 0; i < m_contents.size(); i++)
 			m_pInstanceDlg->AddContent(m_contents[i]);
 		m_pInstanceDlg->SetProjection(m_proj);
 	}
@@ -882,7 +882,7 @@ void MainFrame::UpdateFeatureDialog(vtRawLayer *raw,
 	fdlg->SetLayer(raw);
 	fdlg->SetFeatureSet(pSetP2);
 	pSetP2->DePickAll();
-	for (unsigned int i = 0; i < found.GetSize(); i++)
+	for (uint i = 0; i < found.GetSize(); i++)
 		pSetP2->Pick(found[i]);
 	fdlg->ShowPicked();
 }
@@ -1019,7 +1019,7 @@ void MainFrame::ShowOptionsDialog()
 		vtElevLayer::m_draw = opt;
 
 		// tell them to redraw themselves
-		for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
+		for (uint i = 0; i < m_Layers.GetSize(); i++)
 		{
 			vtLayer *lp = m_Layers.GetAt(i);
 			if (lp->GetType() == LT_ELEVATION)

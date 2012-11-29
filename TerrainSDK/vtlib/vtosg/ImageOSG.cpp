@@ -233,8 +233,8 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB, bool b16bit)
 
 	setImage(w, h, 1,		// s, t, r
 	   internalFormat,		// int internalFormat,
-	   pixelFormat,			// unsigned int pixelFormat,
-	   GL_UNSIGNED_BYTE,	// unsigned int dataType,
+	   pixelFormat,			// uint pixelFormat,
+	   GL_UNSIGNED_BYTE,	// uint dataType,
 	   image,
 	   osg::Image::USE_NEW_DELETE);
 }
@@ -262,7 +262,7 @@ bool vtImage::_ReadPNG(const char *filename)
 {
 	FILE *fp = NULL;
 
-	unsigned char header[8];
+	uchar header[8];
 	png_structp png;
 	png_infop   info;
 	png_infop   endinfo;
@@ -368,7 +368,7 @@ bool vtImage::_ReadPNG(const char *filename)
 		fclose(fp);
 
 	int pixelFormat;
-	unsigned int internalFormat;
+	uint internalFormat;
 
 	if (iBitCount == 24)
 		pixelFormat = GL_RGB;
@@ -382,8 +382,8 @@ bool vtImage::_ReadPNG(const char *filename)
 
 	setImage(width, height, 1,
 	   internalFormat,		// int internalFormat,
-	   pixelFormat,			// unsigned int pixelFormat
-	   GL_UNSIGNED_BYTE,	// unsigned int dataType
+	   pixelFormat,			// uint pixelFormat
+	   GL_UNSIGNED_BYTE,	// uint dataType
 	   m_pPngData,
 	   osg::Image::USE_MALLOC_FREE);
 
@@ -392,24 +392,24 @@ bool vtImage::_ReadPNG(const char *filename)
 
 #endif	// USE_OSG_FOR_PNG
 
-unsigned char vtImage::GetPixel8(int x, int y) const
+uchar vtImage::GetPixel8(int x, int y) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = data(x, _t-1-y);
+	const uchar *buf = data(x, _t-1-y);
 	return *buf;
 }
 
-void vtImage::SetPixel8(int x, int y, unsigned char color)
+void vtImage::SetPixel8(int x, int y, uchar color)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = data(x, _t-1-y);
+	uchar *buf = data(x, _t-1-y);
 	*buf = color;
 }
 
 void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = data(x, _t-1-y);
+	const uchar *buf = data(x, _t-1-y);
 	rgb.r = buf[0];
 	rgb.g = buf[1];
 	rgb.b = buf[2];
@@ -418,7 +418,7 @@ void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
 void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = data(x, _t-1-y);
+	uchar *buf = data(x, _t-1-y);
 	buf[0] = rgb.r;
 	buf[1] = rgb.g;
 	buf[2] = rgb.b;
@@ -427,7 +427,7 @@ void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
 void vtImage::GetPixel32(int x, int y, RGBAi &rgba) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = data(x, _t-1-y);
+	const uchar *buf = data(x, _t-1-y);
 	rgba.r = buf[0];
 	rgba.g = buf[1];
 	rgba.b = buf[2];
@@ -437,24 +437,24 @@ void vtImage::GetPixel32(int x, int y, RGBAi &rgba) const
 void vtImage::SetPixel32(int x, int y, const RGBAi &rgba)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = data(x, _t-1-y);
+	uchar *buf = data(x, _t-1-y);
 	buf[0] = rgba.r;
 	buf[1] = rgba.g;
 	buf[2] = rgba.b;
 	buf[3] = rgba.a;
 }
 
-unsigned int vtImage::GetWidth() const
+uint vtImage::GetWidth() const
 {
 	return s();
 }
 
-unsigned int vtImage::GetHeight() const
+uint vtImage::GetHeight() const
 {
 	return t();
 }
 
-unsigned int vtImage::GetDepth() const
+uint vtImage::GetDepth() const
 {
 	return getPixelSizeInBits();
 }
@@ -463,24 +463,24 @@ unsigned int vtImage::GetDepth() const
 //////////////////////////////////////////////////////////////////////////
 // vtImageWrapper
 
-unsigned char vtImageWrapper::GetPixel8(int x, int y) const
+uchar vtImageWrapper::GetPixel8(int x, int y) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	const uchar *buf = m_image->data(x, m_image->t()-1-y);
 	return *buf;
 }
 
-void vtImageWrapper::SetPixel8(int x, int y, unsigned char color)
+void vtImageWrapper::SetPixel8(int x, int y, uchar color)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	uchar *buf = m_image->data(x, m_image->t()-1-y);
 	*buf = color;
 }
 
 void vtImageWrapper::GetPixel24(int x, int y, RGBi &rgb) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	const uchar *buf = m_image->data(x, m_image->t()-1-y);
 	rgb.r = buf[0];
 	rgb.g = buf[1];
 	rgb.b = buf[2];
@@ -489,7 +489,7 @@ void vtImageWrapper::GetPixel24(int x, int y, RGBi &rgb) const
 void vtImageWrapper::SetPixel24(int x, int y, const RGBi &rgb)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	uchar *buf = m_image->data(x, m_image->t()-1-y);
 	buf[0] = rgb.r;
 	buf[1] = rgb.g;
 	buf[2] = rgb.b;
@@ -498,7 +498,7 @@ void vtImageWrapper::SetPixel24(int x, int y, const RGBi &rgb)
 void vtImageWrapper::GetPixel32(int x, int y, RGBAi &rgba) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	const uchar *buf = m_image->data(x, m_image->t()-1-y);
 	rgba.r = buf[0];
 	rgba.g = buf[1];
 	rgba.b = buf[2];
@@ -508,7 +508,7 @@ void vtImageWrapper::GetPixel32(int x, int y, RGBAi &rgba) const
 void vtImageWrapper::SetPixel32(int x, int y, const RGBAi &rgba)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = m_image->data(x, m_image->t()-1-y);
+	uchar *buf = m_image->data(x, m_image->t()-1-y);
 	buf[0] = rgba.r;
 	buf[1] = rgba.g;
 	buf[2] = rgba.b;
@@ -519,24 +519,24 @@ void vtImageWrapper::SetPixel32(int x, int y, const RGBAi &rgba)
 //////////////////////////////////////////////////////////////////////////
 // Helpers
 
-unsigned char GetPixel8(const osg::Image *image, int x, int y)
+uchar GetPixel8(const osg::Image *image, int x, int y)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = image->data(x, image->t()-1-y);
+	const uchar *buf = image->data(x, image->t()-1-y);
 	return *buf;
 }
 
-void SetPixel8(osg::Image *image, int x, int y, unsigned char color)
+void SetPixel8(osg::Image *image, int x, int y, uchar color)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = image->data(x, image->t()-1-y);
+	uchar *buf = image->data(x, image->t()-1-y);
 	*buf = color;
 }
 
 void GetPixel24(const osg::Image *image, int x, int y, RGBi &rgb)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = image->data(x, image->t()-1-y);
+	const uchar *buf = image->data(x, image->t()-1-y);
 	rgb.r = buf[0];
 	rgb.g = buf[1];
 	rgb.b = buf[2];
@@ -545,7 +545,7 @@ void GetPixel24(const osg::Image *image, int x, int y, RGBi &rgb)
 void SetPixel24(osg::Image *image, int x, int y, const RGBi &rgb)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = image->data(x, image->t()-1-y);
+	uchar *buf = image->data(x, image->t()-1-y);
 	buf[0] = rgb.r;
 	buf[1] = rgb.g;
 	buf[2] = rgb.b;
@@ -554,7 +554,7 @@ void SetPixel24(osg::Image *image, int x, int y, const RGBi &rgb)
 void GetPixel32(const osg::Image *image, int x, int y, RGBAi &rgba)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	const unsigned char *buf = image->data(x, image->t()-1-y);
+	const uchar *buf = image->data(x, image->t()-1-y);
 	rgba.r = buf[0];
 	rgba.g = buf[1];
 	rgba.b = buf[2];
@@ -564,24 +564,24 @@ void GetPixel32(const osg::Image *image, int x, int y, RGBAi &rgba)
 void SetPixel32(osg::Image *image, int x, int y, const RGBAi &rgba)
 {
 	// OSG appears to reference y=0 as the bottom of the image
-	unsigned char *buf = image->data(x, image->t()-1-y);
+	uchar *buf = image->data(x, image->t()-1-y);
 	buf[0] = rgba.r;
 	buf[1] = rgba.g;
 	buf[2] = rgba.b;
 	buf[3] = rgba.a;
 }
 
-unsigned int GetWidth(const osg::Image *image)
+uint GetWidth(const osg::Image *image)
 {
 	return image->s();
 }
 
-unsigned int GetHeight(const osg::Image *image)
+uint GetHeight(const osg::Image *image)
 {
 	return image->t();
 }
 
-unsigned int GetDepth(const osg::Image *image)
+uint GetDepth(const osg::Image *image)
 {
 	return image->getPixelSizeInBits();
 }
@@ -627,11 +627,11 @@ bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 	GDALRasterBand *pBlue = NULL;
 	GDALRasterBand *pAlpha = NULL;
 	GDALColorTable *pTable;
-	unsigned char *pScanline = NULL;
-	unsigned char *pRedline = NULL;
-	unsigned char *pGreenline = NULL;
-	unsigned char *pBlueline = NULL;
-	unsigned char *pAlphaline = NULL;
+	uchar *pScanline = NULL;
+	uchar *pRedline = NULL;
+	uchar *pGreenline = NULL;
+	uchar *pBlueline = NULL;
+	uchar *pAlphaline = NULL;
 
 	CPLErr Err;
 	bool bColorPalette = false;
@@ -721,7 +721,7 @@ bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
 			nxBlocks = (iXSize + xBlockSize - 1) / xBlockSize;
 			nyBlocks = (iYSize + yBlockSize - 1) / yBlockSize;
-			if (NULL == (pScanline = new unsigned char[xBlockSize * yBlockSize]))
+			if (NULL == (pScanline = new uchar[xBlockSize * yBlockSize]))
 				throw "Couldnt allocate scan line.";
 		}
 
@@ -758,9 +758,9 @@ bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 			nxBlocks = (iXSize + xBlockSize - 1) / xBlockSize;
 			nyBlocks = (iYSize + yBlockSize - 1) / yBlockSize;
 
-			pRedline = new unsigned char[xBlockSize * yBlockSize];
-			pGreenline = new unsigned char[xBlockSize * yBlockSize];
-			pBlueline = new unsigned char[xBlockSize * yBlockSize];
+			pRedline = new uchar[xBlockSize * yBlockSize];
+			pGreenline = new uchar[xBlockSize * yBlockSize];
+			pBlueline = new uchar[xBlockSize * yBlockSize];
 		}
 
 		if (iRasterCount == 4)
@@ -815,10 +815,10 @@ bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 			nxBlocks = (iXSize + xBlockSize - 1) / xBlockSize;
 			nyBlocks = (iYSize + yBlockSize - 1) / yBlockSize;
 
-			pRedline = new unsigned char[xBlockSize * yBlockSize];
-			pGreenline = new unsigned char[xBlockSize * yBlockSize];
-			pBlueline = new unsigned char[xBlockSize * yBlockSize];
-			pAlphaline = new unsigned char[xBlockSize * yBlockSize];
+			pRedline = new uchar[xBlockSize * yBlockSize];
+			pGreenline = new uchar[xBlockSize * yBlockSize];
+			pBlueline = new uchar[xBlockSize * yBlockSize];
+			pAlphaline = new uchar[xBlockSize * yBlockSize];
 		}
 
 		// Allocate the image buffer
@@ -879,9 +879,9 @@ bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 							if (bColorPalette)
 							{
 								pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
-								rgb.r = (unsigned char) Ent.c1;
-								rgb.g = (unsigned char) Ent.c2;
-								rgb.b = (unsigned char) Ent.c3;
+								rgb.r = (uchar) Ent.c1;
+								rgb.g = (uchar) Ent.c2;
+								rgb.b = (uchar) Ent.c3;
 								SetPixel24(x + iX, y + iY, rgb);
 							}
 							else

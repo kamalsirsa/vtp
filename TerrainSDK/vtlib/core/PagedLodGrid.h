@@ -30,7 +30,7 @@ class vtPagedStructureLodGrid;
 
 struct StructureRef {
 	vtStructureArray3d *pArray;
-	unsigned int iIndex;
+	uint iIndex;
 };
 typedef std::vector<StructureRef> StructureRefVector;
 
@@ -100,7 +100,7 @@ protected:
 struct QueueEntry {
 	vtPagedStructureLOD *pLOD;
 	vtStructureArray3d *pStructureArray;
-	unsigned int iStructIndex;
+	uint iStructIndex;
 	float fDistance;
 };
 typedef std::vector<QueueEntry> QueueVector;
@@ -132,7 +132,7 @@ public:
 	void DoPaging(const FPoint3 &CamPos, int iMaxStructures, float fDeleteDistance);
 	bool AddToQueue(vtPagedStructureLOD *pLOD, vtStructureArray3d *pArray, int iIndex);
 	bool RemoveFromQueue(vtStructureArray3d *pArray, int iIndex);
-	unsigned int GetQueueSize() { return m_Queue.size(); }
+	uint GetQueueSize() { return m_Queue.size(); }
 	void SortQueue();
 	void ClearQueue(vtStructureArray3d *pArray);
 	void RefreshPaging(vtStructureArray3d *pArray);
@@ -146,7 +146,7 @@ public:
 
 	vtPagedStructureLOD *FindGroup(vtStructure *str);
 	void ConstructByIndex(vtPagedStructureLOD *pLOD, vtStructureArray3d *pArray,
-		unsigned int iStructIndex);
+		uint iStructIndex);
 
 protected:
 	void CullFarawayStructures(const FPoint3 &CamPos,

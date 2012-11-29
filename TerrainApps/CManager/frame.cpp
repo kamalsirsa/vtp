@@ -288,7 +288,7 @@ void vtFrame::ReadDataPath()
 
 	vtStringArray &dp = vtGetDataPath();
 	// Supply the special symbols {appdata} and {appdatacommon}
-	for (unsigned int i = 0; i < dp.size(); i++)
+	for (uint i = 0; i < dp.size(); i++)
 	{
 		dp[i].Replace("{appdata}", AppDataUser);
 		dp[i].Replace("{appdatacommon}", AppDataCommon);
@@ -462,7 +462,7 @@ void vtFrame::LoadContentsFile(const wxString &fname)
 void vtFrame::FreeContents()
 {
 	VTLOG("FreeContents\n");
-	for (unsigned int i = 0; i < m_Man.NumItems(); i++)
+	for (uint i = 0; i < m_Man.NumItems(); i++)
 	{
 		vtItem *item = m_Man.GetItem(i);
 		ItemGroup *ig = m_itemmap[item];
@@ -516,7 +516,7 @@ void vtFrame::AddModelFromFile(const wxString &fname1)
 	}
 	// Check if its on the known data path.
 	vtStringArray &paths = vtGetDataPath();
-	for (unsigned int i = 0; i < paths.size(); i++)
+	for (uint i = 0; i < paths.size(); i++)
 	{
 		int n = paths[i].GetLength();
 		if (SamePath(paths[i], fname.Left(n)))

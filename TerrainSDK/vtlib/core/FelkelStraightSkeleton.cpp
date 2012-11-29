@@ -274,7 +274,7 @@ void vtStraightSkeleton::FixSkeleton()
 {
 	// Search the skeleton list for consecutive pairs of incorrectly linked lines
 	CSkeleton::iterator s1 = m_skeleton.begin();
-	for (unsigned int i = 0; i < m_skeleton.size() - 2; i++, s1++)
+	for (uint i = 0; i < m_skeleton.size() - 2; i++, s1++)
 	{
 		CSkeletonLine& Lower = *s1++;
 		CSkeletonLine& Higher1 = *s1++;

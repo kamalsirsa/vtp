@@ -51,7 +51,7 @@ bool AttribMap::Load(const char *fname_att, const char *fname_bmp)
 
 	char buf[80];
 	int att;
-	unsigned int rgb;
+	uint rgb;
 
 	if (fscanf(fp, "types: %d\n", &m_iNumAttribs) != 1) return false;
 	m_AttribTable = new AttribTableEntry[m_iNumAttribs];
@@ -78,7 +78,7 @@ int AttribMap::GetAttribute(float utm_x, float utm_y)
 	int x_offset = (int) (((float)(utm_x - m_xmin) / (m_xmax - m_xmin)) * GetWidth());
 	int y_offset = (int) (((float)(m_ymax - utm_y) / (m_ymax - m_ymin)) * GetHeight());
 
-	unsigned int rgb = GetPixel24(x_offset, y_offset);
+	uint rgb = GetPixel24(x_offset, y_offset);
 	for (int i = 0; i < m_iNumAttribs; i++)
 	{
 		if (rgb == m_AttribTable[i].rgb)

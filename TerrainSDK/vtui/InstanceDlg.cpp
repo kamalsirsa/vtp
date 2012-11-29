@@ -123,7 +123,7 @@ void InstanceDlg::UpdateContentItems()
 			return;
 
 		wxString str;
-		for (unsigned int j = 0; j < mng->NumItems(); j++)
+		for (uint j = 0; j < mng->NumItems(); j++)
 		{
 			vtItem *item = mng->GetItem(j);
 			str = wxString(item->m_name, wxConvUTF8);
@@ -152,7 +152,7 @@ void InstanceDlg::AddContent(vtContentManager *mng)
 void InstanceDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetChoiceFile()->Clear();
-	for (unsigned int i = 0; i < m_contents.size(); i++)
+	for (uint i = 0; i < m_contents.size(); i++)
 	{
 		vtContentManager *mng = m_contents[i];
 		vtString str = mng->GetFilename();

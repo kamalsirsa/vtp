@@ -282,9 +282,9 @@ int file_exists(const char *filename)
 
 ///////////////////////////////////////////////////////////////////////
 
-int request_callback(int col,int row,const unsigned char *mapfile,int hlod,
-					 const unsigned char *texfile,int tlod,
-					  const unsigned char *fogfile, void *data,
+int request_callback(int col,int row,const uchar *mapfile,int hlod,
+					 const uchar *texfile,int tlod,
+					  const uchar *fogfile, void *data,
 					  databuf *hfield, databuf *texture, databuf *fogmap)
 {
 	vtTiledGeom *tg = (vtTiledGeom *) data;
@@ -356,7 +356,7 @@ void mini_error_handler(const char *file, int line, int fatal)
 	VTLOG("libMini error: file '%s', line %d, fatal %d\n", file, line, fatal);
 }
 
-void request_callback_async(const unsigned char *mapfile, databuf *map,
+void request_callback_async(const uchar *mapfile, databuf *map,
 							int istexture, int background, void *data)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
@@ -387,13 +387,13 @@ void request_callback_async(const unsigned char *mapfile, databuf *map,
 	}
 }
 
-int check_callback(const unsigned char *mapfile, int istexture, void *data)
+int check_callback(const uchar *mapfile, int istexture, void *data)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
 	return tg->CheckMapFile((char *)mapfile, istexture != 0);
 }
 
-int inquiry_callback(int col, int row, const unsigned char *mapfile, int hlod,
+int inquiry_callback(int col, int row, const uchar *mapfile, int hlod,
 					  void *data, float *minvalue, float *maxvalue)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
@@ -403,7 +403,7 @@ int inquiry_callback(int col, int row, const unsigned char *mapfile, int hlod,
 	return tg->CheckMapFile((char *)mapfile, false);
 }
 
-int query_callback(int col, int row, const unsigned char *texfile, int tlod,
+int query_callback(int col, int row, const uchar *texfile, int tlod,
 					void *data, int *tsizex, int *tsizey)
 {
 	vtTiledGeom *tg = (vtTiledGeom*) data;
@@ -645,8 +645,8 @@ void vtTiledGeom::SetVertexTarget(int iVertices)
 void vtTiledGeom::SetupMiniLoad(bool bThreading, bool bGradual)
 {
 	VTLOG("SetupMiniLoad: Calling miniload constructor(%d,%d,..)\n", cols, rows);
-	m_pMiniLoad = new miniload((const unsigned char **)hfields,
-		(const unsigned char **)textures,
+	m_pMiniLoad = new miniload((const uchar **)hfields,
+		(const uchar **)textures,
 		cols, rows,
 		coldim, rowdim,
 		m_fMaximumScale, center.x, center.y, center.z);

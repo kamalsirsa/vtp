@@ -455,8 +455,8 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 	}
 
 	FPoint3 pos;
-//	for (unsigned int i = 0; i < GetNumEntities(); i++)
-	unsigned int i = 0, j;	// only first entity
+//	for (uint i = 0; i < GetNumEntities(); i++)
+	uint i = 0, j;	// only first entity
 
 	FLine3 fline;
 	if (pSetLS2)
@@ -596,7 +596,7 @@ void vtAnimPathEngine::Eval()
 
 void vtAnimPathEngine::UpdateTargets()
 {
-	for (unsigned int i = 0; i < NumTargets(); i++)
+	for (uint i = 0; i < NumTargets(); i++)
 	{
 		osg::Referenced *target = GetTarget(i);
 		vtTransform *tr = dynamic_cast<vtTransform*>(target);

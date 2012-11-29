@@ -309,7 +309,7 @@ wxString MakeVegLayerString(vtPlantInstanceArray3d &pia)
 
 // Helper
 void MakeAbsLayerString(vtAbstractLayer *alay, wxString &str,
-						unsigned int &selected)
+						uint &selected)
 {
 	vtFeatureSet *fset = alay->GetFeatureSet();
 
@@ -344,7 +344,7 @@ void LayerDlg::RefreshTreeTerrain()
 
 	wxString str;
 	vtString vs;
-	unsigned int i, j;
+	uint i, j;
 	LayerSet &layers = terr->GetLayers();
 	for (i = 0; i < layers.size(); i++)
 	{
@@ -421,7 +421,7 @@ void LayerDlg::RefreshTreeTerrain()
 		if (alay)
 		{
 			wxString str;
-			unsigned int selected;
+			uint selected;
 			MakeAbsLayerString(alay, str, selected);
 
 			int icon = (selected != 0 ? ICON_RAW_YELLOW : ICON_RAW);
@@ -490,7 +490,7 @@ void LayerDlg::UpdateTreeTerrain()
 			if (data->m_alay)
 			{
 				wxString str;
-				unsigned int selected;
+				uint selected;
 				MakeAbsLayerString(data->m_alay, str, selected);
 				int icon = (selected != 0 ? ICON_RAW_YELLOW : ICON_RAW);
 
@@ -511,7 +511,7 @@ void LayerDlg::RefreshTreeSpace()
 	wxTreeItemId hRoot = m_pTree->AddRoot(_("Layers"), ICON_TOP, ICON_TOP);
 
 	GlobeLayerArray &glayers = globe->GetGlobeLayers();
-	for (unsigned int i = 0; i < glayers.GetSize(); i++)
+	for (uint i = 0; i < glayers.GetSize(); i++)
 	{
 		GlobeLayer *glay = glayers[i];
 		vtFeatureSet *feat = glay->m_pSet;
@@ -997,7 +997,7 @@ void LayerDlg::OnShowAll( wxCommandEvent &event )
 		if (!terr)
 			return;
 		LayerSet &layers = terr->GetLayers();
-		for (unsigned int i = 0; i < layers.size(); i++)
+		for (uint i = 0; i < layers.size(); i++)
 		{
 			vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(layers[i].get());
 			if (slay)

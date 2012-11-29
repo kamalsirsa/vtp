@@ -57,7 +57,7 @@ public:
 	vtGeode *GetGeom() { return m_pWireGeom; }
 
 	// Station set readers.
-	vtUtilNode *GetAt(unsigned int iter)
+	vtUtilNode *GetAt(uint iter)
 	{
 		return (iter < m_Nodes.GetSize() ? m_Nodes[iter] : NULL);
 	}
@@ -94,9 +94,9 @@ class vtRouteMap : public vtArray<vtRoute *>
 {
 public:
 	virtual ~vtRouteMap() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	void DestructItems(unsigned int first, unsigned int last)
+	void DestructItems(uint first, uint last)
 	{
-		for (unsigned int i = first; i <= last; i++)
+		for (uint i = first; i <= last; i++)
 			delete GetAt(i);
 	}
 

@@ -728,7 +728,7 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	double ratiox = (double)(gw-1)/(w-1), ratioy = (double)(gh-1)/(h-1);
 
 	float fRange = fMax - fMin;
-	unsigned int iGranularity = table.size()-1;
+	uint iGranularity = table.size()-1;
 	bool has_invalid = false;
 	RGBi nodata_24bit(nodata.r, nodata.g, nodata.b);
 	double x, y;
@@ -761,7 +761,7 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 				has_invalid = true;
 				continue;
 			}
-			unsigned int table_entry = (unsigned int) ((elev - fMin) / fRange * iGranularity);
+			uint table_entry = (uint) ((elev - fMin) / fRange * iGranularity);
 			if (table_entry > iGranularity-1)
 				table_entry = iGranularity-1;
 			if (depth == 32)
@@ -1006,10 +1006,10 @@ public:
 	{
 		m_w = w;
 		m_h = h;
-		m_data = new unsigned char*[m_w];
+		m_data = new uchar*[m_w];
 		int rows, cols;
 		for (cols = 0; cols < m_w; cols++)
-			m_data[cols] = new unsigned char[m_h];
+			m_data[cols] = new uchar[m_h];
 		for (cols = 0; cols < m_w; cols++)
 			for (rows = 0; rows < m_h ; rows++)
 				m_data[cols][rows] = 0;
@@ -1021,10 +1021,10 @@ public:
 			delete [] m_data[cols];
 		delete [] m_data;
 	}
-	void Set(int x, int y, unsigned char val) { m_data[x][y] = val; }
-	unsigned char Get(int x, int y) { return m_data[x][y]; }
+	void Set(int x, int y, uchar val) { m_data[x][y] = val; }
+	uchar Get(int x, int y) { return m_data[x][y]; }
 
-	unsigned char **m_data;
+	uchar **m_data;
 	int m_w, m_h;
 };
 

@@ -205,7 +205,7 @@ int VehicleSet::FindClosestVehicle(const FPoint3 &point, float &closest)
 {
 	closest = 1E9;
 	int vehicle = -1;
-	for (unsigned int i = 0; i < m_Engines.size(); i++)
+	for (uint i = 0; i < m_Engines.size(); i++)
 	{
 		FPoint3 vepos = m_Engines[i]->GetCurPos();
 		float dist = (point - vepos).Length();
@@ -233,8 +233,8 @@ void VehicleSet::VisualSelect(int vehicle)
 
 void VehicleSet::VisualDeselectAll()
 {
-	unsigned int size = m_Engines.size();
-	for (unsigned int i = 0; i < size; i++)
+	uint size = m_Engines.size();
+	for (uint i = 0; i < size; i++)
 	{
 		// Resume vehicle simulation while it is deselected
 		CarEngine *eng = m_Engines[i];

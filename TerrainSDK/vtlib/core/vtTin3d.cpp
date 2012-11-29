@@ -49,10 +49,10 @@ void vtTin3d::SetTextureMaterials(vtMaterialArray *pMats)
 
 void vtTin3d::MakeSurfaceMaterials()
 {
-	unsigned int iSurfTypes = m_surftypes.size();
+	uint iSurfTypes = m_surftypes.size();
 	bool bExplicitNormals = HasVertexNormals();
 
-	for (unsigned int i = 0; i < iSurfTypes; i++)
+	for (uint i = 0; i < iSurfTypes; i++)
 	{
 		bool bLighting = bExplicitNormals;
 		float fAmbient = 0.3f;
@@ -80,7 +80,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 {
 	bool bGeoSpecific = (m_pMats != NULL);
 
-	unsigned int iSurfTypes = m_surftypes.size();
+	uint iSurfTypes = m_surftypes.size();
 	bool bUseSurfaceTypes = (m_surfidx.GetSize() > 0 && iSurfTypes > 0);
 	bool bTextured = bGeoSpecific || bUseSurfaceTypes;
 	bool bExplicitNormals = HasVertexNormals();
@@ -133,14 +133,14 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 	sizey += 0.000002;
 
 	int divx, divy;		// number of x and y divisions
-	unsigned int dsize=0;
+	uint dsize=0;
 	Bin *bins = NULL;
-	unsigned int tris = NumTris();
+	uint tris = NumTris();
 	int bx, by;
 	DPoint2 gp;
 	vtArray<vtMesh *> pTypeMeshes;
 
-	unsigned int i, j, k;
+	uint i, j, k;
 	int divs = 4;
 	bool acceptable = false;
 	while (!acceptable)
@@ -188,7 +188,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 	FPoint3 light_dir(0.5, 1, 0);
 	light_dir.Normalize();
 
-	unsigned int in_bin;
+	uint in_bin;
 	int tri, vidx;
 
 	for (i = 0; i < dsize; i++)
@@ -415,7 +415,7 @@ bool vtTin3d::FindAltitudeAtPoint(const FPoint3 &input, float &fAltitude,
 	FPoint2 p1, p2, p3;
 	bool good;
 
-	for (unsigned int m = 0; m < m_Meshes.GetSize(); m++)
+	for (uint m = 0; m < m_Meshes.GetSize(); m++)
 	{
 		vtMesh *mesh = m_Meshes[m];
 		int tris = mesh->GetNumVertices() / 3;
@@ -512,7 +512,7 @@ bool vtTin3d::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 	float t, u, v, closest = 1E9;
 	int i;
 
-	for (unsigned int m = 0; m < m_Meshes.GetSize(); m++)
+	for (uint m = 0; m < m_Meshes.GetSize(); m++)
 	{
 		vtMesh *mesh = m_Meshes[m];
 
@@ -555,7 +555,7 @@ FPoint3 vtTin3d::FindVectorToClosestVertex(const FPoint3 &pos)
 	FPoint3 vert, diff, closest_diff;
 	float len, minlen = 1E9;
 
-	for (unsigned int m = 0; m < m_Meshes.GetSize(); m++)
+	for (uint m = 0; m < m_Meshes.GetSize(); m++)
 	{
 		vtMesh *mesh = m_Meshes[m];
 		int points = mesh->GetNumVertices();
