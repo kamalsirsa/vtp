@@ -196,8 +196,7 @@ bool vtTin::_ReadTinBody(FILE *fp)
 }
 
 /**
- * Read the TIN from a file.  This can either be an old-style or new-style
- * .tin format (custom VTP format)
+ * Read the TIN from a native TIN format (.itf) file.
  */
 bool vtTin::Read(const char *fname)
 {
@@ -217,7 +216,9 @@ bool vtTin::Read(const char *fname)
 }
 
 /**
- * Read the TIN header from a file.
+ * Read the TIN header from a native TIN format (.itf).  Reading the header is
+ * quick and lets you query properties (NumVerts, NumTris, GetEarthExtents)
+ * before loading the rest of the file.
  */
 bool vtTin::ReadHeader(const char *fname)
 {
@@ -236,7 +237,8 @@ bool vtTin::ReadHeader(const char *fname)
 }
 
 /**
- * Read the TIN body from a file.
+ * Read the TIN body from a native TIN format (.itf) file.  You should
+ * first call ReadHeader() if you are doing a two-part read.
  */
 bool vtTin::ReadBody(const char *fname)
 {
@@ -310,7 +312,7 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 
 bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 {
-	vtString tnxy_name = fname;
+	const vtString tnxy_name = fname;
 	if (tnxy_name.Right(6) != "xy.adf")
 		return false;
 
@@ -325,12 +327,12 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 		return false;
 
 	fseek(fp1, 0, SEEK_END);
-	int length_xy = ftell(fp1);
+	const int length_xy = ftell(fp1);
 	rewind(fp1);	// go back again
 	unsigned int num_points = length_xy / 16;	// X and Y, each 8 byte doubles
 
 	fseek(fp2, 0, SEEK_END);
-	int length_z = ftell(fp2);
+	const int length_z = ftell(fp2);
 	rewind(fp2);	// go back again
 	unsigned int num_heights = length_z / 4;		// Z is a 4 byte float
 
@@ -347,9 +349,9 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	}
 
 	fseek(fp3, 0, SEEK_END);
-	int length_od = ftell(fp3);
+	const int length_od = ftell(fp3);
 	rewind(fp3);	// go back again
-	unsigned int num_faces = length_od / 12;		// A B C as 4-byte ints
+	const unsigned int num_faces = length_od / 12;		// A B C as 4-byte ints
 
 	int v[3];
 	for (unsigned int i = 0; i < num_faces; i++)
@@ -521,14 +523,14 @@ bool vtTin::WriteGMS(const char *fname, bool progress_callback(int)) const
 	//fprintf(fp, "TNAM tin\n");	// "name" of the TIN; optional
 	//fprintf(fp, "MAT 1\n");		// "TIN material ID"; optional
 
-	int i, count = 0;
-	int verts = NumVerts();
-	int tris = NumTris();
-	int total = verts + tris;
+	int count = 0;
+	const int verts = NumVerts();
+	const int tris = NumTris();
+	const int total = verts + tris;
 
 	// write verts
 	fprintf(fp, "VERT %d\n", verts);
-	for (i = 0; i < verts; i++)
+	for (int i = 0; i < verts; i++)
 	{
 		fprintf(fp, "%lf %lf %f\n", m_vert[i].x, m_vert[i].y, m_z[i]);
 
@@ -537,7 +539,7 @@ bool vtTin::WriteGMS(const char *fname, bool progress_callback(int)) const
 	}
 	// write tris
 	fprintf(fp, "TRI %d\n", tris);
-	for (i = 0; i < tris; i++)
+	for (int i = 0; i < tris; i++)
 	{
 		// the indices in the file are 1-based, so add 1
 		fprintf(fp, "%d %d %d\n", m_tri[i*3+0]+1, m_tri[i*3+1]+1, m_tri[i*3+2]+1);
@@ -710,16 +712,16 @@ bool vtTin::WriteDAE(const char *fname, bool progress_callback(int)) const
 	fprintf(fp, "      <mesh>\n");
 	fprintf(fp, "        <source id=\"ID6\">\n");
 
-	int i, count = 0;
-	int verts = NumVerts();
-	int tris = NumTris();
-	int total = verts + tris;
+	int count = 0;
+	const int verts = NumVerts();
+	const int tris = NumTris();
+	const int total = verts + tris;
 
 	// Here are:   Count   and   Coordinates X Y Z...
 	fprintf(fp, "          <float_array id=\"ID10\" count=\"%d\">\n",verts);
 
 	// write verts
-	for (i = 0; i < verts; i++)
+	for (int i = 0; i < verts; i++)
 	{
 		fprintf(fp, "%lf %lf %f\n", m_vert[i].x, m_vert[i].y, m_z[i]);
 
@@ -757,7 +759,7 @@ bool vtTin::WriteDAE(const char *fname, bool progress_callback(int)) const
 
 	// write tris
 	//	fprintf(fp, "TRI %d\n", tris);
-	for (i = 0; i < tris; i++)
+	for (int i = 0; i < tris; i++)
 	{
 		// Here is     triangle definition (zero based)  A B C ...
 		// the indices in the file are 1-based, so add 1
@@ -1523,7 +1525,7 @@ void vtTin::MergeSharedVerts(bool progress_callback(int))
 	m_vert.SetSize(newsize);
 	m_z.SetSize(newsize);
 
-	// free up all the crud we allocated along the way
+	// free up all the stuff we allocated
 	delete [] m_bReplace;
 	delete [] m_vertbin;
 	delete [] m_tribin;

@@ -41,7 +41,6 @@ float angleNormal(float val)
 
  \param vehicle	The vehicle this engine will control.
  \param hf		The surface to drive on.
- \param wRadius Wheel radius.
  */
 CarEngine::CarEngine(Vehicle *vehicle, vtHeightField3d *hf)
 {

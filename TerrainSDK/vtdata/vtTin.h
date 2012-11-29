@@ -98,15 +98,15 @@ public:
 	bool ConvertProjection(const vtProjection &proj_new);
 
 	// Accessors
-	void GetVert(int v, DPoint2 &p, float &z) { p = m_vert.GetAt(v); z = m_z[v]; }
-	void GetTri(int t, int &v0, int &v1, int &v2) { v0 = m_tri[t*3]; v1 = m_tri[t*3+1]; v2 = m_tri[t*3+2]; }
-	int *GetAtTri(int t) { return m_tri.GetData() + (t*3); }
+	void GetVert(int v, DPoint2 &p, float &z) const { p = m_vert.GetAt(v); z = m_z[v]; }
+	void GetTri(int t, int &v0, int &v1, int &v2) const { v0 = m_tri[t*3]; v1 = m_tri[t*3+1]; v2 = m_tri[t*3+2]; }
+	int *GetAtTri(int t) const { return m_tri.GetData() + (t*3); }
 
 	// Implement required vtHeightField methods
-	virtual bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
+	virtual bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
+		bool bTrue = false) const;
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		bool bTrue = false, int iCultureFlags=0,
-		FPoint3 *vNormal = NULL) const;
+		bool bTrue = false, int iCultureFlags=0, FPoint3 *vNormal = NULL) const;
 
 	// Avoid implementing HeightField3d virtual methods
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
@@ -117,7 +117,7 @@ public:
 	void AppendFrom(vtTin *pTin);
 	double GetTriMaxEdgeLength(int iTri) const;
 	void MergeSharedVerts(bool progress_callback(int) = NULL);
-	bool HasVertexNormals() { return m_vert_normal.GetSize() != 0; }
+	bool HasVertexNormals() const { return m_vert_normal.GetSize() != 0; }
 	int RemoveTrianglesBySegment(const DPoint2 &ep1, const DPoint2 &ep2);
 	void SetupTriangleBins(int bins, bool progress_callback(int) = NULL);
 	int MemoryNeededToLoad() const;
