@@ -15,7 +15,6 @@
 
 #include "Builder.h"
 #include "Options.h"
-#include "Helper.h"
 #include "ElevLayer.h"
 #include "ImageLayer.h"
 #include "RenderOptions.h"

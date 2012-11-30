@@ -636,8 +636,14 @@ void SetProgressDialogParent(wxWindow *pParent)
 
 void OpenProgressDialog(const wxString &title, bool bCancellable, wxWindow *pParent)
 {
+	VTLOG1("OpenProgressDialog: ");
 	if (s_bOpen)
+	{
+		VTLOG1("already open, returning\n");
 		return;
+	}
+	else
+		VTLOG1("opening new dialog\n");
 	if (!IsGUIApp())
 		return;
 	if (!pParent)
@@ -658,6 +664,7 @@ void OpenProgressDialog(const wxString &title, bool bCancellable, wxWindow *pPar
 
 void CloseProgressDialog()
 {
+	VTLOG1("CloseProgressDialog\n");
 	if (g_pProg)
 	{
 		g_pProg->Destroy();
