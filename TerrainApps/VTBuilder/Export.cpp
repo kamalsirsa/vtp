@@ -13,6 +13,7 @@
 #endif
 
 #include <wx/progdlg.h>
+#include <wx/scopedptr.h>
 
 #include "vtdata/ChunkLOD.h"
 #include "vtdata/vtDIB.h"
@@ -1143,14 +1144,14 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	if (!vtCreateDir(dirname))
 		return false;
 
-	wxFrame *frame = new wxFrame;
+	wxScopedPtr<wxFrame> frame(new wxFrame);
 	ImageGLCanvas *pCanvas = NULL;
 #if USE_OPENGL
 	if (opts.bUseTextureCompression && opts.eCompressionType == TC_OPENGL)
 	{
 		frame->Create(m_pParentWindow, -1, _("Texture Compression OpenGL Context"),
 			wxPoint(100,400), wxSize(280, 300), wxCAPTION | wxCLIP_CHILDREN);
-		pCanvas = new ImageGLCanvas(frame);
+		pCanvas = new ImageGLCanvas(frame.get());
 	}
 #endif
 
@@ -1345,12 +1346,6 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 		LineBufferGDAL &buf = images[im]->GetImage()->m_linebuf;
 		VTLOG(" Image %d (size %d x %d): %d line reads, %d block reads\n", im,
 			buf.m_iXSize, buf.m_iYSize, buf.m_linereads, buf.m_blockreads);
-	}
-
-	if (frame)
-	{
-		frame->Close();
-		delete frame;
 	}
 	return true;
 }

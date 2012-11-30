@@ -607,13 +607,25 @@ static bool s_bOpen = false;
 wxProgressDialog *g_pProg = NULL;
 wxWindow *g_pProgParent = NULL;
 
+void YieldForIdle()
+{
+	// In some cases (including wxMSW 2.9.x) the progress dialog seems to
+	// starve the other windows of idle and redraw events.  We can
+	// explicitly ask wx to make those happen.
+	wxApp::GetInstance()->ProcessIdle();
+	wxYield();
+}
+
 bool progress_callback(int amount)
 {
 	bool value = false;
 	// Update() returns false if the Cancel button has been pushed
 	// but this functions return _true_ if user wants to cancel
 	if (g_pProg)
+	{
 		value = (g_pProg->Update(amount) == false);
+		YieldForIdle();
+	}
 	return value;
 }
 
@@ -667,7 +679,10 @@ bool UpdateProgressDialog(int amount, const wxString& newmsg)
 {
 	bool value = false;
 	if (g_pProg)
+	{
 		value = (g_pProg->Update(amount, newmsg) == false);
+		YieldForIdle();
+	}
 	return value;
 }
 
@@ -685,7 +700,10 @@ bool progress_callback2(int amount1, int amount2)
 	// Update() returns false if the Cancel button has been pushed
 	// but this functions return _true_ if user wants to cancel
 	if (g_pProg2)
+	{
 		value = (g_pProg2->Update(amount1, amount2) == false);
+		YieldForIdle();
+	}
 	return value;
 }
 
@@ -697,6 +715,7 @@ bool progress_callback_major(int amount)
 	if (g_pProg2)
 	{
 		value = (g_pProg2->Update(amount, -1) == false);
+		YieldForIdle();
 	}
 	return value;
 }
@@ -709,6 +728,7 @@ bool progress_callback_minor(int amount)
 	if (g_pProg2)
 	{
 		value = (g_pProg2->Update(-1, amount) == false);
+		YieldForIdle();
 	}
 	return value;
 }
@@ -768,6 +788,7 @@ bool UpdateProgressDialog2(int amount1, int amount2, const wxString& newmsg)
 	if (g_pProg2)
 	{
 		value = (g_pProg2->Update(amount1, amount2, newmsg) == false);
+		YieldForIdle();
 	}
 	return value;
 }

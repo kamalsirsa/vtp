@@ -187,7 +187,6 @@ void* getGLExtensionFuncPtr(const char *funcName)
 #endif
 }
 
-
 void DoTextureCompress(uchar *rgb_bytes, vtMiniDatabuf &output_buf,
 					   GLuint &iTex, bool bAlpha)
 {
@@ -236,8 +235,6 @@ void DoTextureCompress(uchar *rgb_bytes, vtMiniDatabuf &output_buf,
 		output_buf.type = 5;	// compressed RGB (S3TC DXT1)
 	output_buf.bytes = iSize;
 	output_buf.data = malloc(iSize);
-	
-	
 
 #ifdef __DARWIN_OSX__
 	typedef void (* PFNGLGETCOMPRESSEDTEXIMAGEARBPROC) (GLenum, GLint, GLvoid *);
@@ -265,12 +262,23 @@ ImageGLCanvas::ImageGLCanvas(wxWindow *parent, const wxWindowID id, const wxPoin
 {
 	m_iTex = 9999;
 
+	m_context = new wxGLContext(this);
+
 	// These two lines are needed for wxGTK (and possibly other platforms, but not wxMSW)
 	parent->Show(TRUE);
 }
 
+ImageGLCanvas::~ImageGLCanvas()
+{
+	delete m_context;
+}
+
 void ImageGLCanvas::OnPaint(wxPaintEvent& event)
 {
+    if(!IsShown())
+		return;
+
+	SetCurrent(*m_context);
 	wxPaintDC dc(this);
 	if (m_iTex == 9999)
 		return;
@@ -304,6 +312,7 @@ void ImageGLCanvas::OnPaint(wxPaintEvent& event)
 
 void ImageGLCanvas::OnSize(wxSizeEvent& event)
 {
+	SetCurrent(*m_context);
 	glViewport(0, 0, event.m_size.x, event.m_size.y);
 }
 #endif	// USE_OPENGL

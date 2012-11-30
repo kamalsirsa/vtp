@@ -38,11 +38,14 @@ public:
 	ImageGLCanvas(wxWindow *parent, const wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
 	  const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxT(""),
 	  int* gl_attrib = NULL);
+	~ImageGLCanvas();
+
 	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event);
 	void OnEraseBackground(wxEraseEvent& event) {}	// Do nothing, to avoid flashing.
 
 	GLuint m_iTex;
+    wxGLContext *m_context;
 protected:
 	DECLARE_EVENT_TABLE()
 };
