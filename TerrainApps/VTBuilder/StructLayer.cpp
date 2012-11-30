@@ -25,7 +25,6 @@
 #include "vtui/BuildingDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/Helper.h"
-#include "Helper.h"
 #include "ImportStructDlg.h"
 
 wxPen orangePen;

@@ -15,7 +15,6 @@
 #include "NodeDlg.h"
 #include "RoadDlg.h"
 #include "Builder.h"
-#include "Helper.h"
 #include "BuilderView.h"
 #include "vtui/Helper.h"
 

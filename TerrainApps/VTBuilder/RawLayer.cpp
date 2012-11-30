@@ -20,7 +20,6 @@
 
 #include "RawLayer.h"
 #include "BuilderView.h"
-#include "Helper.h"
 #include "Builder.h"
 #include "Options.h"
 // Dialogs

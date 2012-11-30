@@ -14,7 +14,6 @@
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
 #include "Builder.h"
-#include "Helper.h"
 
 // Layer headers
 #include "WaterLayer.h"

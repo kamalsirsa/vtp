@@ -26,7 +26,6 @@
 #include "vtui/ProjectionDlg.h"
 
 #include "Builder.h"
-#include "Helper.h"
 #include "FileFilters.h"
 #include "Tin2d.h"
 // Layers

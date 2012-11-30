@@ -1,7 +1,7 @@
 //
 // vtImage.cpp
 //
-// Copyright (c) 2002-2010 Virtual Terrain Project
+// Copyright (c) 2002-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,23 +11,22 @@
 #include "wx/wx.h"
 #endif
 
-#include "ImageLayer.h"
 #include "vtdata/vtLog.h"
-
 #include "vtui/Helper.h"
 #include "vtui/ProjectionDlg.h"
+#include "minidata/LocalDatabuf.h"
 
 #include "ogr_spatialref.h"
 #include "gdal_priv.h"
-#include "BuilderView.h"	// For grid marks
-#include "vtImage.h"
-#include "Helper.h"
-#include "Builder.h"
-#include "vtBitmap.h"
-#include "minidata/LocalDatabuf.h"
-#include "Options.h"
 
+#include "Builder.h"
+#include "BuilderView.h"	// For grid marks
 #include "ExtentDlg.h"
+#include "ImageGLCanvas.h"
+#include "ImageLayer.h"
+#include "Options.h"
+#include "vtBitmap.h"
+#include "vtImage.h"
 
 // static global
 bool vtImage::bTreatBlackAsTransparent = false;

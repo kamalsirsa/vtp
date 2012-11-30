@@ -15,7 +15,6 @@
 
 #include "WaterLayer.h"
 #include "ScaledView.h"
-#include "Helper.h"
 #include "ogrsf_frmts.h"
 
 
