@@ -15,7 +15,6 @@
 #include <wx/colordlg.h>
 #include "RenderDlg.h"
 #include "FileFilters.h"
-#include "Helper.h"
 
 #include "vtdata/DataPath.h"
 #include "vtdata/FilePath.h"

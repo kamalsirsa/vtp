@@ -12,7 +12,7 @@
 #endif
 
 #include "Builder.h"
-#include "Helper.h"
+#include "ImageGLCanvas.h"
 #include "vtdata/vtLog.h"
 #include "minidata/LocalDatabuf.h"
 #include "TilingOptions.h"

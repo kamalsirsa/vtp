@@ -19,7 +19,6 @@
 #include <float.h>	// for FLT_MIN
 
 #include "Builder.h"
-#include "Helper.h"
 #include "Tin2d.h"
 #include "VegGenOptions.h"
 #include "vtImage.h"

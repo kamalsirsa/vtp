@@ -25,7 +25,7 @@
 #include "Builder.h"
 #include "BuilderView.h"
 #include "FileFilters.h"
-#include "Helper.h"
+#include "ImageGLCanvas.h"
 #include "Options.h"
 #include "Tin2d.h"
 #include "vtBitmap.h"

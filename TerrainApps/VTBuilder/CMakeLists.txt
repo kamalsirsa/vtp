@@ -1,6 +1,6 @@
 # Add a library target called BuilderLib
 set(BUILDERLIB_SOURCE_FILES
-	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp Helper.cpp ImageLayer.cpp
+	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp ImageGLCanvas.cpp ImageLayer.cpp
 	Import.cpp ImportPointDlg.cpp ImportStructDlg.cpp ImportStructDlgOGR.cpp ImportVegDlg.cpp Layer.cpp NodeDlg.cpp RawDlg.cpp
 	RawLayer.cpp RenderOptionsDlg.cpp ResampleDlg.cpp RoadDlg.cpp RoadLayer.cpp RoadMapEdit.cpp RoadMapIO.cpp SampleImageDlg.cpp
 	ScaledView.cpp StructLayer.cpp TileDlg.cpp Tin2d.cpp UtilityLayer.cpp VegFieldsDlg.cpp VegLayer.cpp vtBitmap.cpp VTBuilder_UI.cpp
@@ -8,7 +8,7 @@ set(BUILDERLIB_SOURCE_FILES
 set(BUILDERLIB_SOURCE_FILES_NO_PCH
 	ElevDrawOptions.cpp)
 set(BUILDERLIB_HEADER_FILES
-	Builder.h BuilderView.h ChunkDlg.h ElevDrawOptions.h ElevLayer.h ExtentDlg.h Helper.h ImageLayer.h ImportPointDlg.h ImportStructDlg.h
+	Builder.h BuilderView.h ChunkDlg.h ElevDrawOptions.h ElevLayer.h ExtentDlg.h ImageGLCanvas.h ImageLayer.h ImportPointDlg.h ImportStructDlg.h
 	ImportStructDlgOGR.h ImportVegDlg.h Layer.h NodeDlg.h Options.h RawDlg.h RawLayer.h RenderOptionsDlg.h ResampleDlg.h RoadDlg.h
 	RoadLayer.h RoadMapEdit.h SampleImageDlg.h ScaledView.h StructLayer.h TileDlg.h Tin2d.h UtilityLayer.h VegFieldsDlg.h VegLayer.h
 	vtBitmap.h VTBuilder_UI.h vtImage.h WaterLayer.h)

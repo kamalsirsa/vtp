@@ -20,7 +20,6 @@
 #include "vtui/AutoDialog.h"
 #include "vtui/Helper.h"	// for progress dialog
 #include "FileFilters.h"	// for FSTRING filters
-#include "Helper.h"
 
 // WDR: class implementations
 

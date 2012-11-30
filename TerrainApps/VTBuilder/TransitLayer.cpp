@@ -16,7 +16,6 @@
 
 #include "TransitLayer.h"
 #include "ScaledView.h"
-#include "Helper.h"
 
 #if SUPPORT_TRANSIT
 #include "../5-16-joe-mods-15/portable/file-parser/file-parser.h"

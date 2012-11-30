@@ -39,7 +39,6 @@
 #include "BuilderView.h"
 #include "FileFilters.h"
 #include "Frame.h"
-#include "Helper.h"
 #include "MenuEnum.h"
 #include "Options.h"
 #include "Tin2d.h"

@@ -28,7 +28,7 @@
 #include "ElevLayer.h"
 #include "ExtentDlg.h"
 #include "FileFilters.h"
-#include "Helper.h"
+#include "ImageGLCanvas.h"
 #include "Options.h"
 #include "RawDlg.h"
 #include "Tin2d.h"

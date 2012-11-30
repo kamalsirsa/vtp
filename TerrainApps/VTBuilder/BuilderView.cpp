@@ -20,7 +20,6 @@
 #include "BuilderView.h"
 #include "Builder.h"
 #include "MenuEnum.h"
-#include "Helper.h"
 #include "VTBuilder_UI.h"
 // Layers
 #include "ElevLayer.h"
@@ -1940,10 +1939,6 @@ void BuilderView::OnSize(wxSizeEvent& event)
 //////////////////
 // Keyboard shortcuts
 
-//#include <wx/Dir.h>
-//#include <wx/File.h>
-//#include "vtdata/TripDub.h"
-//#include "vtdata/vtDIB.h"
 #include <map>
 
 void BuilderView::OnChar(wxKeyEvent& event)

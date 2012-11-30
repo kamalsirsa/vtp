@@ -20,7 +20,6 @@
 #include "vtdata/Icosa.h"
 #include "vtui/Helper.h"	// for ProgressDialog
 #include "vtui/SizeDlg.h"
-#include "Helper.h"			// for DisplayAndLog
 #include "Frame.h"
 #include "ElevLayer.h"
 #include "FileFilters.h"

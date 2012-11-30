@@ -27,7 +27,6 @@
 #include "TreeView.h"
 #include "MenuEnum.h"
 #include "App.h"
-#include "Helper.h"
 #include "BuilderView.h"
 #include "VegGenOptions.h"
 #include "vtImage.h"
