@@ -1072,9 +1072,9 @@ bool vtTin::WriteDXF(const char *fname, bool progress_callback(int)) const
 		fprintf(fp, " 22\n%lf\n", m_vert[v2].y);
 		fprintf(fp, " 32\n%f\n", m_z[v2]);
 		// DXF wants the last point duplicated to make 4 points.
-		fprintf(fp, " 12\n%lf\n", m_vert[v2].x);
-		fprintf(fp, " 22\n%lf\n", m_vert[v2].y);
-		fprintf(fp, " 32\n%f\n", m_z[v2]);
+		fprintf(fp, " 13\n%lf\n", m_vert[v2].x);
+		fprintf(fp, " 23\n%lf\n", m_vert[v2].y);
+		fprintf(fp, " 33\n%f\n", m_z[v2]);
 
 		if (progress_callback && (++count % 200) == 0)
 			progress_callback(count * 99 / total);
