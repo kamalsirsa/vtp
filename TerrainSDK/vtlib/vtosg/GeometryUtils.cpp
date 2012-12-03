@@ -14,9 +14,9 @@
 #include "vtdata/DataPath.h"
 #include "vtlib/core/Light.h"
 
-namespace OSGGeometryUtils {
+namespace OSGGeomUtils {
 
-DrawArrayLengthsTriangleFan::DrawArrayLengthsTriangleFan(const int VertexType, const osg::PrimitiveSet::Mode Mode)
+DALTriangleFan::DALTriangleFan(const int VertexType, const osg::PrimitiveSet::Mode Mode)
 {
 	m_VertexType = VertexType;
 	setMode(Mode);
@@ -27,7 +27,7 @@ DrawArrayLengthsTriangleFan::DrawArrayLengthsTriangleFan(const int VertexType, c
 		m_TexCoords = new osg::Vec2Array;
 }
 
-DrawArrayLengthsLineStrip::DrawArrayLengthsLineStrip(const int VertexType, const osg::PrimitiveSet::Mode Mode)
+DALLineStrip::DALLineStrip(const int VertexType, const osg::PrimitiveSet::Mode Mode)
 {
 	m_VertexType = VertexType;
 	setMode(Mode);
@@ -38,7 +38,7 @@ DrawArrayLengthsLineStrip::DrawArrayLengthsLineStrip(const int VertexType, const
 		m_TexCoords = new osg::Vec2Array;
 }
 
-DrawArraysTriangles::DrawArraysTriangles(const int VertexType, const osg::PrimitiveSet::Mode Mode)
+DATriangles::DATriangles(const int VertexType, const osg::PrimitiveSet::Mode Mode)
 {
 	m_VertexType = VertexType;
 	setMode(Mode);
@@ -49,7 +49,7 @@ DrawArraysTriangles::DrawArraysTriangles(const int VertexType, const osg::Primit
 		m_TexCoords = new osg::Vec2Array;
 }
 
-osg::PrimitiveSet* MakeMeAPrimitiveSet(const int VertexType, const osg::PrimitiveSet::Type Type, const osg::PrimitiveSet::Mode Mode)
+osg::PrimitiveSet* MakeAPrimitiveSet(const int VertexType, const osg::PrimitiveSet::Type Type, const osg::PrimitiveSet::Mode Mode)
 {
 	osg::PrimitiveSet* pPrimitiveSet = NULL;
 
@@ -59,7 +59,7 @@ osg::PrimitiveSet* MakeMeAPrimitiveSet(const int VertexType, const osg::Primitiv
 		switch (Mode)
 		{
 			case osg::PrimitiveSet::TRIANGLES:
-				pPrimitiveSet = new DrawArraysTriangles(VertexType, Mode);
+				pPrimitiveSet = new DATriangles(VertexType, Mode);
 			break;
 		}
 		break;
@@ -67,10 +67,10 @@ osg::PrimitiveSet* MakeMeAPrimitiveSet(const int VertexType, const osg::Primitiv
 		switch (Mode)
 		{
 			case osg::PrimitiveSet::LINE_STRIP:
-				pPrimitiveSet = new DrawArrayLengthsLineStrip(VertexType, Mode);
+				pPrimitiveSet = new DALLineStrip(VertexType, Mode);
 			break;
 			case osg::PrimitiveSet::TRIANGLE_FAN:
-				pPrimitiveSet = new DrawArrayLengthsTriangleFan(VertexType, Mode);
+				pPrimitiveSet = new DALTriangleFan(VertexType, Mode);
 			break;
 		}
 		break;
@@ -78,27 +78,30 @@ osg::PrimitiveSet* MakeMeAPrimitiveSet(const int VertexType, const osg::Primitiv
 	return pPrimitiveSet;
 }
 
-osg::PrimitiveSet* PrimitiveSetCache::FindOrCreatePrimitive(const int VertexType, const vtMaterial* pMaterial, const osg::PrimitiveSet::Type Type,
-																	const osg::PrimitiveSet::Mode Mode)
+osg::PrimitiveSet* PrimSetCache::FindOrCreatePrimitive(const int VertexType,
+	const vtMaterial* pMaterial, const osg::PrimitiveSet::Type Type,
+	const osg::PrimitiveSet::Mode Mode)
 {
-	const_iterator PrimitiveSetCacheItr; 
-	for (PrimitiveSetCacheItr = begin(); PrimitiveSetCacheItr != end(); PrimitiveSetCacheItr++)
+	const_iterator PrimSetCacheItr;
+	for (PrimSetCacheItr = begin(); PrimSetCacheItr != end(); PrimSetCacheItr++)
 	{
-		if (((*PrimitiveSetCacheItr)->m_pPrimitiveSet->getType() == Type) &&
-			((*PrimitiveSetCacheItr)->m_pPrimitiveSet->getMode() == Mode))
+		if (((*PrimSetCacheItr)->m_pPrimitiveSet->getType() == Type) &&
+			((*PrimSetCacheItr)->m_pPrimitiveSet->getMode() == Mode))
 			break;
 	}
-	if (PrimitiveSetCacheItr != end())
-		return (*PrimitiveSetCacheItr)->m_pPrimitiveSet.get();
-	PrimitiveSetCacheEntry* pPrimitiveSetCacheEntry = new PrimitiveSetCacheEntry(MakeMeAPrimitiveSet(VertexType, Type, Mode));
-	push_back(pPrimitiveSetCacheEntry);
-	return pPrimitiveSetCacheEntry->m_pPrimitiveSet.get();
+	if (PrimSetCacheItr != end())
+		return (*PrimSetCacheItr)->m_pPrimitiveSet.get();
+	PrimSetCacheEntry* pPrimSetCacheEntry = new PrimSetCacheEntry(
+		MakeAPrimitiveSet(VertexType, Type, Mode));
+	push_back(pPrimSetCacheEntry);
+	return pPrimSetCacheEntry->m_pPrimitiveSet.get();
 }
 
-osg::PrimitiveSet* StateSetCache::FindOrCreatePrimitive(const int VertexType, vtMaterial* pMaterial, const osg::PrimitiveSet::Type Type,
-																	const osg::PrimitiveSet::Mode Mode)
+osg::PrimitiveSet* StateSetCache::FindOrCreatePrimitive(const int VertexType,
+	vtMaterial* pMaterial, const osg::PrimitiveSet::Type Type,
+	const osg::PrimitiveSet::Mode Mode)
 {
-	const_iterator StateSetCacheItr; 
+	const_iterator StateSetCacheItr;
 	for (StateSetCacheItr = begin(); StateSetCacheItr != end(); StateSetCacheItr++)
 	{
 		if ((*StateSetCacheItr)->m_StateSet == *pMaterial)
@@ -109,31 +112,32 @@ osg::PrimitiveSet* StateSetCache::FindOrCreatePrimitive(const int VertexType, vt
 		push_back(new StateSetCacheEntry(*pMaterial));
 		StateSetCacheItr = end() - 1;
 	}
-	return (*StateSetCacheItr)->m_pPrimitiveSetCache->FindOrCreatePrimitive(VertexType, pMaterial, Type, Mode);
+	return (*StateSetCacheItr)->m_pPrimSetCache->FindOrCreatePrimitive(VertexType,
+		pMaterial, Type, Mode);
 }
 
-DrawArraysTriangles* PrimitiveCache::FindOrCreateDrawArraysTriangles(const int VertexType, vtMaterial* pMaterial)
+DATriangles* PrimitiveCache::FindOrCreateDATriangles(const int VertexType, vtMaterial* pMaterial)
 {
-	return static_cast<DrawArraysTriangles*>(FindOrCreatePrimitive(VertexType, pMaterial, osg::PrimitiveSet::DrawArraysPrimitiveType,
+	return static_cast<DATriangles*>(FindOrCreatePrimitive(VertexType, pMaterial, osg::PrimitiveSet::DrawArraysPrimitiveType,
 																	osg::PrimitiveSet::TRIANGLES));
 }
 
-DrawArrayLengthsLineStrip* PrimitiveCache::FindOrCreateDrawArrayLengthsLineStrip(const int VertexType, vtMaterial* pMaterial)
+DALLineStrip* PrimitiveCache::FindOrCreateDALLineStrip(const int VertexType, vtMaterial* pMaterial)
 {
-	return static_cast<DrawArrayLengthsLineStrip*>(FindOrCreatePrimitive(VertexType, pMaterial, osg::PrimitiveSet::DrawArrayLengthsPrimitiveType,
+	return static_cast<DALLineStrip*>(FindOrCreatePrimitive(VertexType, pMaterial, osg::PrimitiveSet::DrawArrayLengthsPrimitiveType,
 																	osg::PrimitiveSet::LINE_STRIP));
 }
 
-DrawArrayLengthsTriangleFan* PrimitiveCache::FindOrCreateDrawArrayLengthsTriangleFan(const int VertexType, vtMaterial* pMaterial)
+DALTriangleFan* PrimitiveCache::FindOrCreateDALTriangleFan(const int VertexType, vtMaterial* pMaterial)
 {
-	return static_cast<DrawArrayLengthsTriangleFan*>(FindOrCreatePrimitive(VertexType, pMaterial, osg::PrimitiveSet::DrawArrayLengthsPrimitiveType,
+	return static_cast<DALTriangleFan*>(FindOrCreatePrimitive(VertexType, pMaterial, osg::PrimitiveSet::DrawArrayLengthsPrimitiveType,
 																	osg::PrimitiveSet::TRIANGLE_FAN));
 }
 
 osg::PrimitiveSet* PrimitiveCache::FindOrCreatePrimitive(const int VertexType, vtMaterial* pMaterial, const osg::PrimitiveSet::Type Type,
 														 const osg::PrimitiveSet::Mode Mode)
 {
-	const_iterator VertexTypeCacheItr; 
+	const_iterator VertexTypeCacheItr;
 	for (VertexTypeCacheItr = begin(); VertexTypeCacheItr != end(); VertexTypeCacheItr++)
 	{
 		if ((*VertexTypeCacheItr)->m_VertexType == VertexType)
@@ -149,9 +153,9 @@ osg::PrimitiveSet* PrimitiveCache::FindOrCreatePrimitive(const int VertexType, v
 
 vtGeode* PrimitiveCache::Realise(bool bUseVertexBufferObjects) const
 {
-	osg::ref_ptr<vtGeode> pGeode = new vtGeode; 
+	osg::ref_ptr<vtGeode> pGeode = new vtGeode;
 
-	const_iterator VertexTypeCacheItr; 
+	const_iterator VertexTypeCacheItr;
 	// For each vertex type create the relevant buffers buffers which will be shared
 	// between all the geometry drawables that are created for this vertex type
 	for (VertexTypeCacheItr = begin(); VertexTypeCacheItr != end(); VertexTypeCacheItr++)
@@ -184,79 +188,79 @@ vtGeode* PrimitiveCache::Realise(bool bUseVertexBufferObjects) const
 			// For each PrimitiveSet add the associated vertices to the shared arrays,
 			// update the offsets and counts in the primitive sets as needed,
 			// and add the primitive sets to the osg::Geometry
-			PrimitiveSetCache::const_iterator PrimitiveSetCacheItr;
-			PrimitiveSetCache *pPrimitiveSetCache = (*StateSetCacheItr)->m_pPrimitiveSetCache.get();
-			DrawArraysTriangles* pDrawArraysTriangles;
-			DrawArrayLengthsLineStrip* pDrawArrayLengthsLineStrip;
-			DrawArrayLengthsTriangleFan* pDrawArrayLengthsTriangleFan;
-			for (PrimitiveSetCacheItr = pPrimitiveSetCache->begin(); PrimitiveSetCacheItr != pPrimitiveSetCache->end(); PrimitiveSetCacheItr++)
+			PrimSetCache::const_iterator PrimSetCacheItr;
+			PrimSetCache *pPrimSetCache = (*StateSetCacheItr)->m_pPrimSetCache.get();
+			DATriangles* pDATriangles;
+			DALLineStrip* pDALLineStrip;
+			DALTriangleFan* pDALTriangleFan;
+			for (PrimSetCacheItr = pPrimSetCache->begin(); PrimSetCacheItr != pPrimSetCache->end(); PrimSetCacheItr++)
 			{
-				pGeometry->addPrimitiveSet((*PrimitiveSetCacheItr)->m_pPrimitiveSet.get());
-				switch((*PrimitiveSetCacheItr)->m_pPrimitiveSet->getType())
+				pGeometry->addPrimitiveSet((*PrimSetCacheItr)->m_pPrimitiveSet.get());
+				switch((*PrimSetCacheItr)->m_pPrimitiveSet->getType())
 				{
 					case osg::PrimitiveSet::DrawArraysPrimitiveType:
-						switch ((*PrimitiveSetCacheItr)->m_pPrimitiveSet->getMode())
+						switch ((*PrimSetCacheItr)->m_pPrimitiveSet->getMode())
 						{
 							case osg::PrimitiveSet::TRIANGLES:
-								pDrawArraysTriangles = static_cast<DrawArraysTriangles*>((*PrimitiveSetCacheItr)->m_pPrimitiveSet.get());
-								pDrawArraysTriangles->setFirst(pVertices->size());
-								pDrawArraysTriangles->setCount(pDrawArraysTriangles->m_Vertices->size());
-								for (osg::Vec3Array::const_iterator iTr = pDrawArraysTriangles->m_Vertices->begin();
-											iTr != pDrawArraysTriangles->m_Vertices->end(); iTr++)
+								pDATriangles = static_cast<DATriangles*>((*PrimSetCacheItr)->m_pPrimitiveSet.get());
+								pDATriangles->setFirst(pVertices->size());
+								pDATriangles->setCount(pDATriangles->m_Vertices->size());
+								for (osg::Vec3Array::const_iterator iTr = pDATriangles->m_Vertices->begin();
+											iTr != pDATriangles->m_Vertices->end(); iTr++)
 									pVertices->push_back(*iTr);
 								if ((*VertexTypeCacheItr)->m_VertexType & VT_Normals)
 								{
-									for (osg::Vec3Array::const_iterator iTr = pDrawArraysTriangles->m_Normals->begin();
-												iTr != pDrawArraysTriangles->m_Normals->end(); iTr++)
+									for (osg::Vec3Array::const_iterator iTr = pDATriangles->m_Normals->begin();
+												iTr != pDATriangles->m_Normals->end(); iTr++)
 										pNormals->push_back(*iTr);
 								}
 								if ((*VertexTypeCacheItr)->m_VertexType & VT_TexCoords)
 								{
-									for (osg::Vec2Array::const_iterator iTr = pDrawArraysTriangles->m_TexCoords->begin();
-												iTr != pDrawArraysTriangles->m_TexCoords->end(); iTr++)
+									for (osg::Vec2Array::const_iterator iTr = pDATriangles->m_TexCoords->begin();
+												iTr != pDATriangles->m_TexCoords->end(); iTr++)
 										pTexCoords->push_back(*iTr);
 								}
 								break;
 						}
 						break;
 					case osg::PrimitiveSet::DrawArrayLengthsPrimitiveType:
-						switch ((*PrimitiveSetCacheItr)->m_pPrimitiveSet->getMode())
+						switch ((*PrimSetCacheItr)->m_pPrimitiveSet->getMode())
 						{
 							case osg::PrimitiveSet::LINE_STRIP:
-								pDrawArrayLengthsLineStrip = static_cast<DrawArrayLengthsLineStrip*>((*PrimitiveSetCacheItr)->m_pPrimitiveSet.get());
-								pDrawArrayLengthsLineStrip->setFirst(pVertices->size());
-								for (osg::Vec3Array::const_iterator iTr = pDrawArrayLengthsLineStrip->m_Vertices->begin();
-											iTr != pDrawArrayLengthsLineStrip->m_Vertices->end(); iTr++)
+								pDALLineStrip = static_cast<DALLineStrip*>((*PrimSetCacheItr)->m_pPrimitiveSet.get());
+								pDALLineStrip->setFirst(pVertices->size());
+								for (osg::Vec3Array::const_iterator iTr = pDALLineStrip->m_Vertices->begin();
+											iTr != pDALLineStrip->m_Vertices->end(); iTr++)
 									pVertices->push_back(*iTr);
 								if ((*VertexTypeCacheItr)->m_VertexType & VT_Normals)
 								{
-									for (osg::Vec3Array::const_iterator iTr = pDrawArrayLengthsLineStrip->m_Normals->begin();
-												iTr != pDrawArrayLengthsLineStrip->m_Normals->end(); iTr++)
+									for (osg::Vec3Array::const_iterator iTr = pDALLineStrip->m_Normals->begin();
+												iTr != pDALLineStrip->m_Normals->end(); iTr++)
 										pNormals->push_back(*iTr);
 								}
 								if ((*VertexTypeCacheItr)->m_VertexType & VT_TexCoords)
 								{
-									for (osg::Vec2Array::const_iterator iTr = pDrawArrayLengthsLineStrip->m_TexCoords->begin();
-												iTr != pDrawArrayLengthsLineStrip->m_TexCoords->end(); iTr++)
+									for (osg::Vec2Array::const_iterator iTr = pDALLineStrip->m_TexCoords->begin();
+												iTr != pDALLineStrip->m_TexCoords->end(); iTr++)
 										pTexCoords->push_back(*iTr);
 								}
 								break;
 							case osg::PrimitiveSet::TRIANGLE_FAN:
-								pDrawArrayLengthsTriangleFan = static_cast<DrawArrayLengthsTriangleFan*>((*PrimitiveSetCacheItr)->m_pPrimitiveSet.get());
-								pDrawArrayLengthsTriangleFan->setFirst(pVertices->size());
-								for (osg::Vec3Array::const_iterator iTr = pDrawArrayLengthsTriangleFan->m_Vertices->begin();
-											iTr != pDrawArrayLengthsTriangleFan->m_Vertices->end(); iTr++)
+								pDALTriangleFan = static_cast<DALTriangleFan*>((*PrimSetCacheItr)->m_pPrimitiveSet.get());
+								pDALTriangleFan->setFirst(pVertices->size());
+								for (osg::Vec3Array::const_iterator iTr = pDALTriangleFan->m_Vertices->begin();
+											iTr != pDALTriangleFan->m_Vertices->end(); iTr++)
 									pVertices->push_back(*iTr);
 								if ((*VertexTypeCacheItr)->m_VertexType & VT_Normals)
 								{
-									for (osg::Vec3Array::const_iterator iTr = pDrawArrayLengthsTriangleFan->m_Normals->begin();
-												iTr != pDrawArrayLengthsTriangleFan->m_Normals->end(); iTr++)
+									for (osg::Vec3Array::const_iterator iTr = pDALTriangleFan->m_Normals->begin();
+												iTr != pDALTriangleFan->m_Normals->end(); iTr++)
 										pNormals->push_back(*iTr);
 								}
 								if ((*VertexTypeCacheItr)->m_VertexType & VT_TexCoords)
 								{
-									for (osg::Vec2Array::const_iterator iTr = pDrawArrayLengthsTriangleFan->m_TexCoords->begin();
-												iTr != pDrawArrayLengthsTriangleFan->m_TexCoords->end(); iTr++)
+									for (osg::Vec2Array::const_iterator iTr = pDALTriangleFan->m_TexCoords->begin();
+												iTr != pDALTriangleFan->m_TexCoords->end(); iTr++)
 										pTexCoords->push_back(*iTr);
 								}
 								break;
@@ -271,7 +275,7 @@ vtGeode* PrimitiveCache::Realise(bool bUseVertexBufferObjects) const
 	return pGeode.release();
 }
 
-vtGeode* GenerateBuildingGeometry::Generate()
+vtGeode* GeometryBuilder::Generate()
 {
 	m_pPrimitiveCache = new PrimitiveCache;
 
@@ -360,7 +364,7 @@ vtGeode* GenerateBuildingGeometry::Generate()
 	return pGeode;
 }
 
-void GenerateBuildingGeometry::AddFlatRoof(const FPolygon3 &pp,  const vtLevel *pLev)
+void GeometryBuilder::AddFlatRoof(const FPolygon3 &pp,  const vtLevel *pLev)
 {
 	FPoint3 up(0.0f, 1.0f, 0.0f);	// vector pointing up
 	int rings = pp.size();
@@ -368,14 +372,14 @@ void GenerateBuildingGeometry::AddFlatRoof(const FPolygon3 &pp,  const vtLevel *
 	int i, j;
 	FPoint2 uv;
 
-	// Use the material of the first edge 
+	// Use the material of the first edge
 	vtEdge *pEdge = pLev->GetEdge(0);
 	const vtString& Material = *pEdge->m_pMaterial;
 	int MaterialIndex = FindMatIndex(Material, pEdge->m_Color);
 	vtMaterialDescriptor *md = s_MaterialDescriptors.FindMaterialDescriptor(Material, pEdge->m_Color);
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
-	DrawArraysTriangles* pTriangles = m_pPrimitiveCache->FindOrCreateDrawArraysTriangles(VT_Normals|VT_TexCoords, pMaterial);
+	DATriangles* pTriangles = m_pPrimitiveCache->FindOrCreateDATriangles(VT_Normals|VT_TexCoords, pMaterial);
 
 	if (outer_corners > 4 || rings > 1)
 	{
@@ -473,7 +477,7 @@ void GenerateBuildingGeometry::AddFlatRoof(const FPolygon3 &pp,  const vtLevel *
 // about the exact material/windows of the buildings.  We create
 // optimized geometry in which each whole wall is a single quad.
 //
-void GenerateBuildingGeometry::CreateUniformLevel(int iLevel, float fHeight,
+void GeometryBuilder::CreateUniformLevel(int iLevel, float fHeight,
 	int iHighlightEdge)
 {
 	const vtLevel *pLev = m_Building.GetLevel(iLevel);
@@ -543,7 +547,7 @@ void GenerateBuildingGeometry::CreateUniformLevel(int iLevel, float fHeight,
 	}
 }
 
-bool GenerateBuildingGeometry::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
+bool GeometryBuilder::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 {
 	// Paint a facade on this edge
 	// Add the facade image to the materials array
@@ -576,7 +580,7 @@ bool GenerateBuildingGeometry::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stori
 
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
-	DrawArrayLengthsTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDrawArrayLengthsTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
+	DALTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDALTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
 
 	float v = (float) stories;
 	pTriangleFan->m_Vertices->push_back(osg::Vec3(quad[0].x, quad[0].y, quad[0].z));
@@ -595,7 +599,7 @@ bool GenerateBuildingGeometry::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stori
 	return true;
 }
 
-osg::Vec3 GenerateBuildingGeometry::Normal(const vtVec3 &p0, const vtVec3 &p1, const vtVec3 &p2)
+osg::Vec3 GeometryBuilder::Normal(const vtVec3 &p0, const vtVec3 &p1, const vtVec3 &p2)
 {
 	osg::Vec3 a = p0 - p1;
 	osg::Vec3 b = p2 - p1;
@@ -608,7 +612,7 @@ osg::Vec3 GenerateBuildingGeometry::Normal(const vtVec3 &p0, const vtVec3 &p1, c
  * Builds a wall, given material index, starting and end points, height, and
  * starting height.
  */
-void GenerateBuildingGeometry::AddWallSection(vtEdge *pEdge, bool bUniform,
+void GeometryBuilder::AddWallSection(vtEdge *pEdge, bool bUniform,
 	const FLine3 &quad, float vf1, float vf2, float hf1)
 {
 	// determine 4 points at corners of wall section
@@ -626,7 +630,7 @@ void GenerateBuildingGeometry::AddWallSection(vtEdge *pEdge, bool bUniform,
 		MaterialIndex = FindMatIndex(*pEdge->m_pMaterial, pEdge->m_Color);
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
-	DrawArrayLengthsTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDrawArrayLengthsTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
+	DALTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDALTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
 
 	// determine normal and primary axes of the face
 	osg::Vec3 norm = Normal(p0, p1, p2);
@@ -684,7 +688,7 @@ void GenerateBuildingGeometry::AddWallSection(vtEdge *pEdge, bool bUniform,
 /**
  * Creates geometry for a highlighted area (an edge).
  */
-void GenerateBuildingGeometry::AddHighlightSection(vtEdge *pEdge,
+void GeometryBuilder::AddHighlightSection(vtEdge *pEdge,
 	const FLine3 &quad)
 {
 	// determine 4 points at corners of wall section
@@ -696,7 +700,7 @@ void GenerateBuildingGeometry::AddHighlightSection(vtEdge *pEdge,
 	int MaterialIndex = FindMatIndex(BMAT_NAME_PLAIN, RGBi(255,255,255));
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
-	DrawArrayLengthsLineStrip* pLineStrip = m_pPrimitiveCache->FindOrCreateDrawArrayLengthsLineStrip(0, pMaterial);
+	DALLineStrip* pLineStrip = m_pPrimitiveCache->FindOrCreateDALLineStrip(0, pMaterial);
 
 	// determine normal (not used for shading)
 	vtVec3 norm = Normal(p0,p1,p2);
@@ -729,7 +733,7 @@ void GenerateBuildingGeometry::AddHighlightSection(vtEdge *pEdge,
 	MaterialIndex = FindMatIndex(BMAT_NAME_PLAIN, RGBi(255,0,0));
 	pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
-	pLineStrip = m_pPrimitiveCache->FindOrCreateDrawArrayLengthsLineStrip(0, pMaterial);
+	pLineStrip = m_pPrimitiveCache->FindOrCreateDALLineStrip(0, pMaterial);
 
 	pLineStrip->m_Vertices->push_back(p0 + norm);
 	pLineStrip->m_Vertices->push_back(p1 + norm);
@@ -738,7 +742,7 @@ void GenerateBuildingGeometry::AddHighlightSection(vtEdge *pEdge,
 	pLineStrip->m_Vertices->push_back(p0 + norm);
 }
 
-float GenerateBuildingGeometry::MakeFelkelRoof(const FPolygon3 &EavePolygons, const vtLevel *pLev)
+float GeometryBuilder::MakeFelkelRoof(const FPolygon3 &EavePolygons, const vtLevel *pLev)
 {
 	vtStraightSkeleton StraightSkeleton;
 	CSkeleton Skeleton;
@@ -847,7 +851,7 @@ float GenerateBuildingGeometry::MakeFelkelRoof(const FPolygon3 &EavePolygons, co
 			vtMaterialDescriptor *pMd = s_MaterialDescriptors.FindMaterialDescriptor(Material, points[pi].m_Color);
 			vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
-			DrawArraysTriangles* pTriangles = m_pPrimitiveCache->FindOrCreateDrawArraysTriangles(VT_Normals|VT_TexCoords, pMaterial);
+			DATriangles* pTriangles = m_pPrimitiveCache->FindOrCreateDATriangles(VT_Normals|VT_TexCoords, pMaterial);
 
 			osg::ref_ptr<osg::Vec3Array> pVertexArray = new osg::Vec3Array;
 			osg::ref_ptr<osg::Vec3Array> pNormalArray = new osg::Vec3Array;
@@ -1032,7 +1036,7 @@ float GenerateBuildingGeometry::MakeFelkelRoof(const FPolygon3 &EavePolygons, co
 	return fMaxHeight;
 }
 
-bool GenerateBuildingGeometry::Collinear2d(const FPoint3& Previous, const FPoint3& Current, const FPoint3& Next)
+bool GeometryBuilder::Collinear2d(const FPoint3& Previous, const FPoint3& Current, const FPoint3& Next)
 {
 	FPoint3 l1 = Previous - Current;
 	FPoint3 l2 = Next - Current;
@@ -1056,7 +1060,7 @@ bool GenerateBuildingGeometry::Collinear2d(const FPoint3& Previous, const FPoint
 		return false;
 }
 
-void GenerateBuildingGeometry::CreateUpperPolygon(const vtLevel *lev, FPolygon3 &polygon,
+void GeometryBuilder::CreateUpperPolygon(const vtLevel *lev, FPolygon3 &polygon,
 									  FPolygon3 &polygon2)
 {
 	int i, prev, next;
@@ -1135,7 +1139,7 @@ void GenerateBuildingGeometry::CreateUpperPolygon(const vtLevel *lev, FPolygon3 
 //
 // Edges are created from a series of features ("panels", "sections")
 //
-void GenerateBuildingGeometry::CreateEdgeGeometry(const vtLevel *pLev, const FPolygon3 &polygon1,
+void GeometryBuilder::CreateEdgeGeometry(const vtLevel *pLev, const FPolygon3 &polygon1,
 									  const FPolygon3 &polygon2, int iEdge, bool bShowEdge)
 {
 	// Get edge from complete list
@@ -1228,7 +1232,7 @@ void GenerateBuildingGeometry::CreateEdgeGeometry(const vtLevel *pLev, const FPo
 	}
 }
 
-void GenerateBuildingGeometry::AddWallNormal(vtEdge *pEdge, vtEdgeFeature *pFeat,
+void GeometryBuilder::AddWallNormal(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	const FLine3 &quad)
 {
 	float vf1 = pFeat->m_vf1;
@@ -1237,7 +1241,7 @@ void GenerateBuildingGeometry::AddWallNormal(vtEdge *pEdge, vtEdgeFeature *pFeat
 }
 
 //builds a window section.  builds the wall below and above a window too.
-void GenerateBuildingGeometry::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
+void GeometryBuilder::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	const FLine3 &quad)
 {
 	float vf1 = pFeat->m_vf1;
@@ -1260,7 +1264,7 @@ void GenerateBuildingGeometry::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pF
 	int MaterialIndex = MaterialIndex = FindMatIndex(BMAT_NAME_WINDOW, pEdge->m_Color);
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
-	DrawArrayLengthsTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDrawArrayLengthsTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
+	DALTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDALTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
 
 	// determine normal (flat shading, all vertices have the same normal)
 	osg::Vec3  norm = Normal(p0,p1,p2);
@@ -1284,7 +1288,7 @@ void GenerateBuildingGeometry::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pF
  * Builds a door section.  will also build the wall above the door to ceiling
  * height.
  */
-void GenerateBuildingGeometry::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
+void GeometryBuilder::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	const FLine3 &quad)
 {
 	float vf1 = 0;
@@ -1301,7 +1305,7 @@ void GenerateBuildingGeometry::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFea
 	int MaterialIndex = MaterialIndex = FindMatIndex(BMAT_NAME_DOOR, pEdge->m_Color);
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
-	DrawArrayLengthsTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDrawArrayLengthsTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
+	DALTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDALTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
 
 	// determine normal (flat shading, all vertices have the same normal)
 	osg::Vec3 norm = Normal(p0, p1, p2);
@@ -1324,7 +1328,7 @@ void GenerateBuildingGeometry::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFea
 	AddWallSection(pEdge, false, quad, vf2, 1.0f);
 }
 
-int GenerateBuildingGeometry::FindVertex(FPoint3 Point, FLine3 &RoofSection3D,
+int GeometryBuilder::FindVertex(FPoint3 Point, FLine3 &RoofSection3D,
 	vtArray<int> &iaVertices)
 {
 	int iSize = RoofSection3D.GetSize();
@@ -1369,7 +1373,8 @@ class osg::Geometry* FindOrCreateGeometryObject(osg::Geode *pGeode, vtMaterial& 
 			{
 				if (pGeometry->getNormalArray() == NULL)
 					continue;
-				assert(pGeometry->getVertexArray()->getNumElements() == pGeometry->getNormalArray()->getNumElements());
+				assert(pGeometry->getVertexArray()->getNumElements() ==
+					   pGeometry->getNormalArray()->getNumElements());
 			}
 			else
 				if (pGeometry->getNormalArray() != NULL)
@@ -1378,7 +1383,8 @@ class osg::Geometry* FindOrCreateGeometryObject(osg::Geode *pGeode, vtMaterial& 
 			{
 				if (pGeometry->getColorArray() == NULL)
 					continue;
-				assert(pGeometry->getVertexArray()->getNumElements() == pGeometry->getColorArray()->getNumElements());
+				assert(pGeometry->getVertexArray()->getNumElements() ==
+					   pGeometry->getColorArray()->getNumElements());
 			}
 			else
 				if (pGeometry->getColorArray() != NULL)
@@ -1388,7 +1394,8 @@ class osg::Geometry* FindOrCreateGeometryObject(osg::Geode *pGeode, vtMaterial& 
 			{
 				if (pGeometry->getTexCoordArray(0) == NULL)
 					continue;
-				assert(pGeometry->getVertexArray()->getNumElements() == pGeometry->getTexCoordArray(0)->getNumElements());
+				assert(pGeometry->getVertexArray()->getNumElements() ==
+					   pGeometry->getTexCoordArray(0)->getNumElements());
 			}
 			else
 				if (pGeometry->getTexCoordArray(0) != NULL)
@@ -1476,10 +1483,8 @@ class osg::PrimitiveSet* FindOrCreatePrimitiveSet(osg::Geometry* pGeometry, cons
 			return (*PrimitiveSet).get();
 	}
 
-
-
 	osg::PrimitiveSet* pPrimSet;
-	
+
 	switch(Type)
 	{
 		case osg::PrimitiveSet::DrawArraysPrimitiveType:
@@ -1508,4 +1513,4 @@ class osg::PrimitiveSet* FindOrCreatePrimitiveSet(osg::Geometry* pGeometry, cons
 	return pPrimSet;
 }
 
-} // using namespace OSGGeometryUtils
+} // using namespace OSGGeomUtils

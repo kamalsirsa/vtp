@@ -169,7 +169,8 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 #if USE_EXPERIMENTAL_BUILDING_GEOMETRY_GENERATOR
 	UpdateWorldLocation(pHeightField);
 
-	osg::ref_ptr<OSGGeometryUtils::GenerateBuildingGeometry> pGenerator = new OSGGeometryUtils::GenerateBuildingGeometry(*this);
+	osg::ref_ptr<OSGGeomUtils::GenerateBuildingGeometry> pGenerator =
+		new OSGGeomUtils::GenerateBuildingGeometry(*this);
 	m_pGeode = pGenerator->Generate();
 #else
 	PolyChecker PolyChecker;
