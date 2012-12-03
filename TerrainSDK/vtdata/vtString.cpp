@@ -1016,7 +1016,7 @@ int vtString::Delete(int iIndex, int nCount)
 		int nCharsToCopy = nLength-(iIndex+nCount)+1;
 		memmove( m_pchData+iIndex, m_pchData+iIndex+nCount, nCharsToCopy );
 
-		// BD added to fix a bug where the end of string is moved in, but vtString 
+		// BD added to fix a bug where the end of string is moved in, but vtString
 		//  still thinks the string is full length.
 		GetData()->nDataLength -= nCount;
 	}
@@ -1113,7 +1113,7 @@ vtString UTF8ToLocal(const char *string_utf8)
 	vtString str = ws.mb_str();
 
 #if 0
-	// In theory, this code should be better, because it does not rely on 
+	// In theory, this code should be better, because it does not rely on
 	//  the fixed-size static buffer in wstring2::mb_str(), but wcsrtombs
 	//  does not behave well.
 	int len = ws.length();

@@ -448,7 +448,7 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 			VTLOG1("\n");
 			return false;
 		}
-	}	
+	}
 
 	m_iColumns = ncols;
 	m_iRows = nrows;

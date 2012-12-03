@@ -24,7 +24,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for ContourDlg
 	wxChoice *LayerChoice() { return m_choice_layer; }
 	void UpdateEnabling();
@@ -37,7 +37,7 @@ public:
 
 private:
 	// WDR: member variable declarations for ContourDlg
-	
+
 private:
 	// WDR: handler declarations for ContourDlg
 	void OnRadio( wxCommandEvent &event );

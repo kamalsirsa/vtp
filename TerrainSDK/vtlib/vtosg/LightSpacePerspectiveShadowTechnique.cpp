@@ -15,7 +15,7 @@
 #include <osg/Texture3D>
 #include <sstream>
 
-CLightSpacePerspectiveShadowTechnique::CLightSpacePerspectiveShadowTechnique() 
+CLightSpacePerspectiveShadowTechnique::CLightSpacePerspectiveShadowTechnique()
 {
 	// Override shaders here
 	_mainVertexShader = NULL;
@@ -23,18 +23,18 @@ CLightSpacePerspectiveShadowTechnique::CLightSpacePerspectiveShadowTechnique()
 	_shadowFragmentShader = NULL;
 	_mainFragmentShader = NULL;
 
-	int MaxFragmentShaderTextureUnits; 
+	int MaxFragmentShaderTextureUnits;
 	glGetIntegerv(0x8872, &MaxFragmentShaderTextureUnits);
 	m_JitterTextureUnit = MaxFragmentShaderTextureUnits - 1;
 }
 
-void CLightSpacePerspectiveShadowTechnique::ViewData::init(ThisClass * st, osgUtil::CullVisitor * cv)           
+void CLightSpacePerspectiveShadowTechnique::ViewData::init(ThisClass * st, osgUtil::CullVisitor * cv)
 {
 	// Reset the main shader
 	st->_mainFragmentShader = new osg::Shader( osg::Shader::FRAGMENT, st->GenerateFragmentShaderSource());
 	BaseClass::ViewData::init( st, cv );
 	// The base class init has set up a fake texture for the base texture unit
-	// so add this texture to any of the other active units 
+	// so add this texture to any of the other active units
 	osg::Texture* pFakeTex = dynamic_cast<osg::Texture*>(_stateset->getTextureAttribute(st->_baseTextureUnit, osg::StateAttribute::TEXTURE));
 	osg::ref_ptr<osg::IntArray> UnitArray = new osg::IntArray;
 	for (std::map<uint, uint>::iterator iTr = st->m_AdditionalTerrainTextureUnits.begin();
@@ -151,10 +151,10 @@ std::string CLightSpacePerspectiveShadowTechnique::GenerateFragmentShaderSource(
 		// be zero or one. This appears not to be the case when the mag filter is set
 		// to LINEAR when it looks like some PCF filtering is done. This may only apply on
 		// certain GPUs.
-		<< "  float shadow = 0.0;" << std::endl 
-		<< "  float shadow2 = 0.0;" << std::endl 
-		<< "  int totalSamples = 64;" << std::endl 
-		<< "  int testSamples = 8;" << std::endl  
+		<< "  float shadow = 0.0;" << std::endl
+		<< "  float shadow2 = 0.0;" << std::endl
+		<< "  int totalSamples = 64;" << std::endl
+		<< "  int testSamples = 8;" << std::endl
 		<< "  vec4 shadowMapCoord = gl_TexCoord[" << _shadowTextureUnit << "];" << std::endl
 		<< "  vec4 smCoord = shadowMapCoord;" << std::endl
 		// shadowMapCoord.w holds the distance this fragment is from the shadow
@@ -164,20 +164,20 @@ std::string CLightSpacePerspectiveShadowTechnique::GenerateFragmentShaderSource(
 		<< "  float penumbraWidth = PENUMBRA_SIZE_FACTOR * shadowMapCoord.w;" << std::endl
 		<< "  vec3 jitterCoord = vec3( gl_FragCoord.xy/JITTER_MAP_TILING, 0.0 );" << std::endl
 		<< "  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);" << std::endl
-		<< "  for(int i = 0; i < testSamples/2; i++)" << std::endl 
-		<< "  {" << std::endl 
+		<< "  for(int i = 0; i < testSamples/2; i++)" << std::endl
+		<< "  {" << std::endl
 		<< "    vec4 offset = (2.0 * texture3D(VTPJitterTextureUnit, jitterCoord)) - 1.0;" << std::endl
-		<< "    jitterCoord.z += 1.0/32.0;" << std::endl 
-		<< "    smCoord.xy = offset.xy * penumbraWidth + shadowMapCoord.xy;" << std::endl 
-		<< "    shadow += shadow2DProj(shadowTexture, smCoord).r;" << std::endl 
-		<< "    smCoord.xy = offset.zw * penumbraWidth + shadowMapCoord.xy;" << std::endl 
-		<< "    shadow += shadow2DProj(shadowTexture, smCoord).r;" << std::endl 
+		<< "    jitterCoord.z += 1.0/32.0;" << std::endl
+		<< "    smCoord.xy = offset.xy * penumbraWidth + shadowMapCoord.xy;" << std::endl
+		<< "    shadow += shadow2DProj(shadowTexture, smCoord).r;" << std::endl
+		<< "    smCoord.xy = offset.zw * penumbraWidth + shadowMapCoord.xy;" << std::endl
+		<< "    shadow += shadow2DProj(shadowTexture, smCoord).r;" << std::endl
 		<< "  }" << std::endl
-		<< "  shadow /= testSamples;" << std::endl 
-		<< "  if((shadow - 1) * shadow != 0)" << std::endl 
-		<< "  {" << std::endl 
-		<< "    for(int i = 0; i < (totalSamples - testSamples)/2; i++)" << std::endl 
-		<< "    {" << std::endl 
+		<< "  shadow /= testSamples;" << std::endl
+		<< "  if((shadow - 1) * shadow != 0)" << std::endl
+		<< "  {" << std::endl
+		<< "    for(int i = 0; i < (totalSamples - testSamples)/2; i++)" << std::endl
+		<< "    {" << std::endl
 		<< "      vec4 offset = (2.0 * texture3D(VTPJitterTextureUnit, jitterCoord)) - 1.0;" << std::endl
 		<< "      jitterCoord.z += 1.0/32.0;" << std::endl
 		<< "      smCoord.xy = offset.xy * penumbraWidth + shadowMapCoord.xy;" << std::endl

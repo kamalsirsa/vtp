@@ -925,7 +925,7 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius_start, int radius_stop, 
  * Restricts the fill-in operation to concavities with a diameter of less than radius^2+1 pixels.
  *
  * Adapted subset from original code by: Stefan Roettger.
- * 
+ *
  * \return The number of no-data heixels that were filled.
  *		Returns -1 on error, for example if there was not enought memory to
  *		create the temporary buffers.
@@ -1102,7 +1102,7 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 				{
 					for (n=-sizey/2; n<=sizey/2; n++)
 					{
-						if (i+m>=0 && i+m < m_iColumns && 
+						if (i+m>=0 && i+m < m_iColumns &&
 							j+n>=0 && j+n < m_iRows)
 						{
 							v1=GetFValue(i+m,j+n);

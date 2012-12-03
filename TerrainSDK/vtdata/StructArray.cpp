@@ -1568,7 +1568,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 	double deltaX, deltaY;
 	double alpha, beta, gamma, focale;
 	double CX, CY, EX, EY, EZ;
-	double numPixelX, numPixelY, PixelRapp; 	
+	double numPixelX, numPixelY, PixelRapp;
 	int groupName =1, numero =-1;
 	int iii;
 	float fElev;
@@ -1584,12 +1584,12 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 		return false;
 	}
 
-	x1 = area->left; 
+	x1 = area->left;
 	y1 = area->bottom;
 	x2 = area->right;
 	y2 = area->top;
 
-	fprintf(fp3DV, "version 1\n");	
+	fprintf(fp3DV, "version 1\n");
 
 	uint i, j, count = GetSize(), record = 0;
 	for (i = 0; i < count; i++)	//for each coordinate
@@ -1604,7 +1604,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 		double *dX = new double[total];
 		double *dY = new double[total];
 
-		minX =  1E9; 
+		minX =  1E9;
 		minY =  1E9;
 		maxX = -1E9;
 		maxY = -1E9;
@@ -1614,8 +1614,8 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 		{
 			DPoint2 pt = poly.GetAt(j);
 
-			if (pHF != NULL)		
-				pHF->FindAltitudeOnEarth(pt, fElev);			
+			if (pHF != NULL)
+				pHF->FindAltitudeOnEarth(pt, fElev);
 			else
 				fElev = 0.00;
 
@@ -1634,15 +1634,15 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 		dY[vert] = pt.y;
 		vert++;
 
-		//	float h = bld->GetHeight();		
+		//	float h = bld->GetHeight();
 		float h = bld->GetTotalHeight();
 
 		double Hight = h;
 
 		//    WriteTranslationSweep();  quello che segue
-		centerX = (maxX + minX)/2.; 
-		centerY = (maxY + minY)/2.; 
-		centerZ = 0.00; 
+		centerX = (maxX + minX)/2.;
+		centerY = (maxY + minY)/2.;
+		centerZ = 0.00;
 
 		//VTLOG("EXPORTTOCANOMA center %lf %lf\n", centerX, centerY);
 		numero++;
@@ -1651,22 +1651,22 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 			centerY > y1 &&
 			centerX < x2 &&
 			centerY < y2 )
-		{ 
-			//    	VTLOG("EXPORTTOCANOMA building contained\n"); 
+		{
+			//    	VTLOG("EXPORTTOCANOMA building contained\n");
 			fprintf(fp3DV, "translationsweep TSW_%d 2 %d { \n",  numero, vert-1);
 			fprintf(fp3DV, "	state { \n");
 			fprintf(fp3DV, "		alpha { 0.00000 f } \n");
 			fprintf(fp3DV, "		beta { 0.00000 f } \n");
 			fprintf(fp3DV, "		gamma { 0.00000 f } \n");
-			fprintf(fp3DV, "		X0 { %lf f } \n", (centerX - x1) / SCALE); 
+			fprintf(fp3DV, "		X0 { %lf f } \n", (centerX - x1) / SCALE);
 			fprintf(fp3DV, "		Y0 { %lf f } \n", (centerY - y1) / SCALE);
 			fprintf(fp3DV, "		Z0 { %lf f } \n", fElev / SCALE);
-			fprintf(fp3DV, "		majorAxis { %lf f }\n", Hight /SCALE); 
+			fprintf(fp3DV, "		majorAxis { %lf f }\n", Hight /SCALE);
 
 			for (iii = 0; iii < vert-1; iii++)
 			{
-				fprintf(fp3DV, "		u%d { %lf f }\n", iii, (centerX - dX[iii]  ) / SCALE ); 
-				fprintf(fp3DV, "		v%d { %lf f }\n", iii, (dY[iii] - centerY  ) / SCALE ); 
+				fprintf(fp3DV, "		u%d { %lf f }\n", iii, (centerX - dX[iii]  ) / SCALE );
+				fprintf(fp3DV, "		v%d { %lf f }\n", iii, (dY[iii] - centerY  ) / SCALE );
 			}  // End For
 
 			fprintf(fp3DV, "		} \n");
@@ -1684,31 +1684,31 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 	deltaX = x2-x1;
 	deltaY = y2-y1;
 
-	EX = deltaX/2.; //((x2 - x1) /2.); //+ x1; 
+	EX = deltaX/2.; //((x2 - x1) /2.); //+ x1;
 	EX = EX / SCALE;
-	EY = deltaY/2.; //((y2 - y1) /2.); //+ y1;  
-	EY = EY / SCALE; 
+	EY = deltaY/2.; //((y2 - y1) /2.); //+ y1;
+	EY = EY / SCALE;
 	EZ = 202.020865;
 
-	alpha = -3.14159; //0.000000; // -2.85841;  // 0.000000; 
-	beta = 0.000000;  // 0.03926;    // 1.110737; 
-	gamma = -3.14159; // 3.14159;   // 0.000000; 
+	alpha = -3.14159; //0.000000; // -2.85841;  // 0.000000;
+	beta = 0.000000;  // 0.03926;    // 1.110737;
+	gamma = -3.14159; // 3.14159;   // 0.000000;
 	focale = 60.343804;
-	CX = 0.000000; 
-	CY = 0.000000; 		   
+	CX = 0.000000;
+	CY = 0.000000;
 
-	fprintf(fp3DV, "rectangle Floor {\n"); 
+	fprintf(fp3DV, "rectangle Floor {\n");
 	fprintf(fp3DV, "	state { \n");
 	fprintf(fp3DV, "		alpha { 0.00000 f } \n");
 	fprintf(fp3DV, "		beta { 0.00000 f } \n");
 	fprintf(fp3DV, "		gamma { 0.00000 f } \n");
-	fprintf(fp3DV, "		X0 { %lf f }\n", deltaX/2. /SCALE); 
-	fprintf(fp3DV, "		Y0 { %lf f }\n", deltaY/2. /SCALE);  
-	fprintf(fp3DV, "		Z0 { 0.00000 f }\n");  
-	fprintf(fp3DV, "		L { %lf f }\n",deltaX /SCALE); 
-	fprintf(fp3DV, "		W { %lf f }\n",deltaY /SCALE); 
-	fprintf(fp3DV, "		}\n");  
-	fprintf(fp3DV, "	} \n"); 
+	fprintf(fp3DV, "		X0 { %lf f }\n", deltaX/2. /SCALE);
+	fprintf(fp3DV, "		Y0 { %lf f }\n", deltaY/2. /SCALE);
+	fprintf(fp3DV, "		Z0 { 0.00000 f }\n");
+	fprintf(fp3DV, "		L { %lf f }\n",deltaX /SCALE);
+	fprintf(fp3DV, "		W { %lf f }\n",deltaY /SCALE);
+	fprintf(fp3DV, "		}\n");
+	fprintf(fp3DV, "	} \n");
 
 	fprintf(fp3DV, "camera { \n");
 	fprintf(fp3DV, "	state { \n");
@@ -1728,7 +1728,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 	PixelRapp = deltaY / numPixelY;
 	numPixelX = deltaX / PixelRapp;
 
-	fprintf(fp3DV, "controls {\n"); 
+	fprintf(fp3DV, "controls {\n");
 	fprintf(fp3DV, "	Point Floor 0 0.00000 0.00000 GEImage.jpg ;\n");
 	fprintf(fp3DV, "	Point Floor 6 %lf 0.00000 GEImage.jpg ;\n", numPixelX);
 	fprintf(fp3DV, "	Point Floor 9 %lf %lf GEImage.jpg ;\n", numPixelX, numPixelY);
@@ -1752,7 +1752,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 	fprintf(fp3DV, "	{ %lf %lf } \n", numPixelX, numPixelY);
 	fprintf(fp3DV, "	} \n");
 	fprintf(fp3DV, "selection GEImage.jpg Floor n \n");
-	fprintf(fp3DV, "calibration 1.00000 \n");	
+	fprintf(fp3DV, "calibration 1.00000 \n");
 
 	fclose(fp3DV);
 

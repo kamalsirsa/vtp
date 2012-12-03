@@ -89,7 +89,7 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 
 	if (m_bExtentComputed)
 		rect = m_Extents;
-	else 
+	else
 	{
 		if (!m_pSet->ComputeExtent(rect))
 			return false;

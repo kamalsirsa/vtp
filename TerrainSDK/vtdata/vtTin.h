@@ -80,11 +80,11 @@ public:
 	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadADF(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadGMS(const char *fname, bool progress_callback(int) = NULL);
-	bool ReadPLY(const char *fname, bool progress_callback(int) = NULL);	
+	bool ReadPLY(const char *fname, bool progress_callback(int) = NULL);
 	bool WriteGMS(const char *fname, bool progress_callback(int) = NULL) const;
 	bool WriteDAE(const char *fname, bool progress_callback(int) = NULL) const;
 	bool WriteWRL(const char *fname, bool progress_callback(int) = NULL) const;
-	bool WriteOBJ(const char *fname, bool progress_callback(int) = NULL) const;  
+	bool WriteOBJ(const char *fname, bool progress_callback(int) = NULL) const;
 	bool WritePLY(const char *fname, bool progress_callback(int) = NULL) const;
 	bool WriteDXF(const char *fname, bool progress_callback(int) = NULL) const;
 	void FreeData();

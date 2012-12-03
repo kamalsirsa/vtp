@@ -84,7 +84,11 @@ public:
 // 0. RGB wireframe crosshair
 // 1. yellow sphere, one directional white light
 // 2. yellow sphere, one directional white light moving around it in a circle
-// 3. 
+// 3. red light, orbiting, box to show its location
+// 4. second orbiting light
+// 5. a LOD object
+// 6. many LOD objects
+// 7. Shader
 
 //
 // Create the 3d scene: prepare for user interaction.

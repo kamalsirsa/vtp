@@ -54,7 +54,7 @@ bool vtOSGEventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActio
 
 void vtOSGEventHandler::handleResize(const osgGA::GUIEventAdapter& ea)
 {
-	// With OSG 3.0.1, it seems in some cases we can get a continuous stream 
+	// With OSG 3.0.1, it seems in some cases we can get a continuous stream
 	// of RESIZE events even though the size is not changing.  Check for that.
 	int x = ea.getWindowWidth(), y = ea.getWindowHeight();
 	if (x != last_x || y != last_y)

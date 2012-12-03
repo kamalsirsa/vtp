@@ -227,7 +227,7 @@ protected:
 	<td>Texture</td>
 	<td>Int</td>
 	<td>0</td>
-	<td>Enumeration for source of ground texture. 0=none, 1=single, 
+	<td>Enumeration for source of ground texture. 0=none, 1=single,
 		3=derived from elevation, 4=tileset</td>
 </tr>
 <tr>

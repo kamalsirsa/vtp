@@ -878,7 +878,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 	{
 		m_pTin = new vtTin2d;
 		success = m_pTin->ReadPLY(fname, progress_callback);
-	}	
+	}
 	else
 	{
 		if (m_pGrid == NULL)

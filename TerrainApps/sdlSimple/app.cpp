@@ -248,7 +248,7 @@ int App::main(int argc, char **argv)
         exit(1);
     }
     atexit(SDL_Quit);
-    
+
     // Starting with SDL 1.2.10, passing in 0 will use the system's current resolution.
     unsigned int windowWidth = 0;
     unsigned int windowHeight = 0;
@@ -272,11 +272,11 @@ int App::main(int argc, char **argv)
     }
 
     SDL_EnableUNICODE(1);
-    
+
     // If we used 0 to set the fields, query the values so we can pass it to osgViewer
     windowWidth = screen->w;
     windowHeight = screen->h;
-    
+
 	VTLOG("Initializing vtlib/OSG..\n");
 	vtGetScene()->Init(argc, argv);
     vtGetScene()->getViewer()->setThreadingModel(osgViewer::Viewer::SingleThreaded);

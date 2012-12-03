@@ -2237,20 +2237,20 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 				return;
 			OpenProgressDialog(_T("Writing OBJ"), false, this);
 			success = pEL->GetTin()->WriteOBJ(fname, progress_callback);
-			break;  
+			break;
 		case 5:
 			fname = pEL->GetExportFilename(FSTRING_PLY);
 			if (fname == "")
 				return;
 			OpenProgressDialog(_T("Writing PLY"), false, this);
 			success = pEL->GetTin()->WritePLY(fname, progress_callback);
-			break;                        
-		}	
+			break;
+		}
 		CloseProgressDialog();
 		if (success)
 			DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 		else
-			DisplayAndLog("Error writing file.");     
+			DisplayAndLog("Error writing file.");
 	}
 }
 

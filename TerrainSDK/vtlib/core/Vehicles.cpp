@@ -108,7 +108,7 @@ Vehicle *VehicleManager::CreateVehicleFromNode(osg::Node *node, const RGBf &cCol
 	pNewVehicle->m_pFrontLeft = new vtTransform;
 	pNewVehicle->m_pFrontLeft->setName("front_left_xform");
 	InsertNodeBelow(pFrontLeft->asGroup(), pNewVehicle->m_pFrontLeft);
-	
+
 	pNewVehicle->m_pFrontRight = new vtTransform;
 	pNewVehicle->m_pFrontRight->setName("front_right_xform");
 	InsertNodeBelow(pFrontRight->asGroup(), pNewVehicle->m_pFrontRight);

@@ -1080,7 +1080,7 @@ void vtMesh::AddLine(int p0, int p1)
 	}
 	else if (PrimType == osg::PrimitiveSet::LINE_STRIP)
 	{
-		// This seems a bit pointless 
+		// This seems a bit pointless
 		pDrawElements = new osg::DrawElementsUShort(PrimType, 2);
 		addPrimitiveSet(pDrawElements);
 	}

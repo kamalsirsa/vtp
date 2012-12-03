@@ -309,7 +309,7 @@ double DLine2::Length() const
 }
 
 /** Centroid (centre of gravity/mass) of the polygon
- * 
+ *
  * Note: I've observed some numerical precision issues with this method.
  * With 7-digit coordinates (e.g. x=2388836, y=4690396) the centroid computed
  * may be several units away from its correct location, in fact even outside

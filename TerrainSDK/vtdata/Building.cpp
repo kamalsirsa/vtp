@@ -1132,7 +1132,7 @@ vtLevel *vtBuilding::CreateLevel(const DPolygon2 &footprint)
 
 	// keep 2d and 3d in synch
 	DetermineLocalFootprints();
-	
+
 	return pLev;
 }
 

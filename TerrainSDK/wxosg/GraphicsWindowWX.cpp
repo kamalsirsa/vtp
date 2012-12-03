@@ -103,7 +103,7 @@ void GraphicsWindowWX::swapBuffersImplementation()
 #endif
 	return true;
 }
-	
+
 void GraphicsWindowWX::closeImplementation()
 {
 	VTLOG1("5. closeImplementation()\n");

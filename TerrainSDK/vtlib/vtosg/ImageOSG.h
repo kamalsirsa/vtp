@@ -82,7 +82,7 @@ public:
 	void SetPixel24(int x, int y, const RGBi &rgb);
 	void SetPixel32(int x, int y, const RGBAi &rgba);
 
-	uint GetWidth() const { return m_image->s(); } 
+	uint GetWidth() const { return m_image->s(); }
 	uint GetHeight() const { return m_image->t(); }
 	uint GetDepth() const { return m_image->getPixelSizeInBits(); }
 
