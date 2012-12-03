@@ -1,7 +1,7 @@
 //
 // GeometryUtils.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2011-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -118,7 +118,7 @@ protected:
 };
 
 class GeometryBuilder : public osg::Referenced,
-								 public vtStructure3d // subclass vtStructure3d to get hold of shared material functions 
+						public vtStructure3d // subclass vtStructure3d to get hold of shared material functions 
 {
 public:
 	GeometryBuilder(const vtBuilding3d& Building) : m_Building(Building) {}

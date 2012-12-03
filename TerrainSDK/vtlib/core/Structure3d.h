@@ -94,7 +94,11 @@ public:
 	{
 		return s_MaterialDescriptors;
 	}
-
+	static vtMaterialDescriptor *FindMaterialDescriptor(const vtString &name,
+		const RGBf &color = RGBf(), int type = -1)
+	{
+		return s_MaterialDescriptors.FindMaterialDescriptor(name, color, type);
+	}
 	static void InitializeMaterialArrays();
 
 	// all fences share the same set of materials

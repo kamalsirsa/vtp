@@ -538,7 +538,7 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, bool bUniform,
 		float u2 = (p2 - p0).Dot(axis0);
 		float u3 = (p3 - p0).Dot(axis0);
 		float v2 = (p2 - p0).Dot(axis1);
-		vtMaterialDescriptor *md = s_MaterialDescriptors.FindMaterialDescriptor(*pEdge->m_pMaterial, pEdge->m_Color);
+		vtMaterialDescriptor *md = FindMaterialDescriptor(*pEdge->m_pMaterial, pEdge->m_Color);
 		uv0.Set(0, 0);
 		uv1.Set(u1, 0);
 		uv2.Set(u2, v2);
@@ -653,7 +653,7 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 	vtEdge *pEdge = pLev->GetEdge(0);
 	const vtString& Material = *pEdge->m_pMaterial;
 	vtMesh *mesh = FindMatMesh(Material, pEdge->m_Color, osg::PrimitiveSet::TRIANGLES);
-	vtMaterialDescriptor *md = s_MaterialDescriptors.FindMaterialDescriptor(Material, pEdge->m_Color);
+	vtMaterialDescriptor *md = FindMaterialDescriptor(Material, pEdge->m_Color);
 
 	if (outer_corners > 4 || rings > 1)
 	{
@@ -833,7 +833,7 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 			// and build the vertex array
 			const vtString bmat = *points[pi].m_pMaterial;
 			vtMesh *pMesh = FindMatMesh(bmat, points[pi].m_Color, osg::PrimitiveSet::TRIANGLES);
-			vtMaterialDescriptor *pMd = s_MaterialDescriptors.FindMaterialDescriptor(bmat, points[pi].m_Color);
+			vtMaterialDescriptor *pMd = FindMaterialDescriptor(bmat, points[pi].m_Color);
 			FPoint2 UVScale;
 			if (NULL != pMd)
 				UVScale = pMd->GetUVScale();

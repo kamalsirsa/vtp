@@ -117,7 +117,7 @@ void vtFence3d::AddFlatConnectionMesh(const FLine3 &p3)
 {
 	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords, 100);
 
-	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+	vtMaterialDescriptor *desc = FindMaterialDescriptor(m_Params.m_ConnectMaterial);
 	if (!desc)
 	{
 		VTLOG1("Warning: could not find material:");
@@ -160,7 +160,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords | VT_Normals, 100);
 
 	// a solid block, with top/left/right sides, made of 3 strips
-	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+	vtMaterialDescriptor *desc = FindMaterialDescriptor(m_Params.m_ConnectMaterial);
 	if (!desc)
 	{
 		VTLOG1("Warning: could not find material: ");
@@ -335,7 +335,7 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP,
 		VT_TexCoords | VT_Normals, iEstimateVerts);
 
-	vtMaterialDescriptor *desc = s_MaterialDescriptors.FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+	vtMaterialDescriptor *desc = FindMaterialDescriptor(m_Params.m_ConnectMaterial);
 	if (!desc)
 	{
 		VTLOG1("Warning: could not find material: ");
