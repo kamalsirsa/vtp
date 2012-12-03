@@ -217,7 +217,7 @@ bool EnviroApp::OnInit()
 		//  of them even before we call vtlib.
 		RefreshTerrainList();
 
-		VTLOG("Opening the Startup dialog.\n");
+		VTLOG1("Opening the Startup dialog.\n");
 		wxString appname(STRING_APPNAME, wxConvUTF8);
 		appname += _T(" v");
 		appname += _T(VTP_VERSION);
@@ -227,6 +227,7 @@ bool EnviroApp::OnInit()
 		StartDlg.GetOptionsFrom(g_Options);
 		StartDlg.CenterOnParent();
 		int result = StartDlg.ShowModal();
+		VTLOG1("Startup dialog returned from ShowModal.\n");
 		if (result == wxID_CANCEL)
 			return false;
 
@@ -415,6 +416,10 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
 	vtGetScene()->Init(MyArgc, MyArgv, g_Options.m_bStereo, g_Options.m_iStereoMode);
 	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
+
+	// Only use the spacenavigator if the user wants
+	if (g_Options.m_bUseSpaceNav)
+		frame->m_canvas->EnableSpaceNav();
 
 #if VISUAL_IMPACT_CALCULATOR
 	// Initialise Visual Impact Calculator - this can only be done after the
