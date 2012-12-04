@@ -215,12 +215,20 @@ vtMaterialArray *vtIcoGlobe::CreateMaterialsFromFiles(const vtString &strImagePr
 			VTLOG("\t\tnot found on data paths.\n");
 			index = -1;
 		}
-		ImagePtr img = osgDB::readImageFile((const char *)fullpath);
-		index = mats->AddTextureMaterial(img,
-					 bCulling, bLighting,
-					 GetDepth(img) == 32, false,	// transp, additive
-					 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
-					 false, true, false);		// texgen, clamp, mipmap
+		else
+		{
+			ImagePtr img = osgDB::readImageFile((const char *)fullpath);
+			if (img.valid())
+			{
+				index = mats->AddTextureMaterial(img,
+							bCulling, bLighting,
+							GetDepth(img) == 32, false,	// transp, additive
+							0.1f, 1.0f, 1.0f, 0.0f,		// ambient, diffuse, alpha, emmisive
+							false, true, false);		// texgen, clamp, mipmap
+			}
+			else
+				index = -1;
+		}
 		if (index == -1)
 		{
 			VTLOG("\t\ttexture load failed, using red material.\n");
