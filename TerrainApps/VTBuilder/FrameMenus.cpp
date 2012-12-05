@@ -320,10 +320,10 @@ EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
 EVT_MENU(ID_AREA_ZOOM_LAYER,		MainFrame::OnAreaZoomLayer)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
 EVT_MENU(ID_AREA_MATCH,				MainFrame::OnAreaMatch)
-EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
-EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
-EVT_MENU(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnAreaOptimizedElevTileset)
-EVT_MENU(ID_AREA_EXPORT_IMAGE_OPT,	MainFrame::OnAreaOptimizedImageTileset)
+EVT_MENU(ID_AREA_SAMPLE_ELEV,		MainFrame::OnAreaExportElev)
+EVT_MENU(ID_AREA_SAMPLE_IMAGE,		MainFrame::OnAreaExportImage)
+EVT_MENU(ID_AREA_SAMPLE_ELEV_OPT,	MainFrame::OnAreaOptimizedElevTileset)
+EVT_MENU(ID_AREA_SAMPLE_IMAGE_OPT,	MainFrame::OnAreaOptimizedImageTileset)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 EVT_MENU(ID_AREA_VEG_DENSITY,		MainFrame::OnAreaVegDensity)
 EVT_MENU(ID_AREA_REQUEST_WFS,		MainFrame::OnAreaRequestWFS)
@@ -333,10 +333,10 @@ EVT_MENU(ID_AREA_REQUEST_TSERVE,	MainFrame::OnAreaRequestTServe)
 EVT_UPDATE_UI(ID_AREA_ZOOM_ALL,		MainFrame::OnUpdateAreaZoomAll)
 EVT_UPDATE_UI(ID_AREA_ZOOM_LAYER,	MainFrame::OnUpdateAreaZoomLayer)
 EVT_UPDATE_UI(ID_AREA_MATCH,		MainFrame::OnUpdateAreaMatch)
-EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
-EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV_SPARSE,MainFrame::OnUpdateAreaExportElev)
-EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE_OPT,MainFrame::OnUpdateAreaExportImage)
-EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE,	MainFrame::OnUpdateAreaExportImage)
+EVT_UPDATE_UI(ID_AREA_SAMPLE_ELEV,	MainFrame::OnUpdateAreaExportElev)
+EVT_UPDATE_UI(ID_AREA_SAMPLE_ELEV_OPT,MainFrame::OnUpdateAreaExportElev)
+EVT_UPDATE_UI(ID_AREA_SAMPLE_IMAGE_OPT,MainFrame::OnUpdateAreaExportImage)
+EVT_UPDATE_UI(ID_AREA_SAMPLE_IMAGE,	MainFrame::OnUpdateAreaExportImage)
 EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 EVT_UPDATE_UI(ID_AREA_VEG_DENSITY,	MainFrame::OnUpdateAreaVegDensity)
 EVT_UPDATE_UI(ID_AREA_REQUEST_WFS,	MainFrame::OnUpdateAreaRequestWMS)
@@ -623,9 +623,9 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_MATCH, _("Match Area and Tiling to Layer"),
 		_("Set the Area Tool rectangle by matching the resolution of a layer."));
 	areaMenu->AppendSeparator();
-	areaMenu->Append(ID_AREA_EXPORT_ELEV, _("Merge && Resample &Elevation"),
+	areaMenu->Append(ID_AREA_SAMPLE_ELEV, _("Sample &Elevation"),
 		_("Sample all elevation data within the Area Tool to produce a single, new elevation."));
-	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _("Merge && Resample &Imagery"),
+	areaMenu->Append(ID_AREA_SAMPLE_IMAGE, _("Sample &Imagery"),
 		_("Sample imagery within the Area Tool to produce a single, new image."));
 	areaMenu->Append(ID_AREA_GENERATE_VEG, _("Generate Vegetation"),
 		_("Generate Vegetation File (*.vf) containing plant distribution."));
@@ -637,9 +637,9 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _("Request Image from Terraserver"));
 #endif // SUPPORT_CURL
 	areaMenu->AppendSeparator();
-	areaMenu->Append(ID_AREA_EXPORT_ELEV_SPARSE, _("Optimized Resample Elevation to Tileset"),
+	areaMenu->Append(ID_AREA_SAMPLE_ELEV_OPT, _("Optimized Sample Elevation to Tileset"),
 		_("Sample all elevation data within the Area Tool efficiently to produce an elevation tileset."));
-	areaMenu->Append(ID_AREA_EXPORT_IMAGE_OPT, _("Optimized Resample Imagery to Tileset"),
+	areaMenu->Append(ID_AREA_SAMPLE_IMAGE_OPT, _("Optimized Sample Imagery to Tileset"),
 		_("Sample all image data within the Area Tool efficiently to produce an image tileset."));
 	m_pMenuBar->Append(areaMenu, _("&Area Tool"));
 	menu_num++;

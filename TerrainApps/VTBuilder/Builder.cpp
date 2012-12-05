@@ -1187,7 +1187,7 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 	}
 
 	// Open the Resample dialog
-	ResampleDlg dlg(m_pParentWindow, -1, _("Merge and Resample Elevation"));
+	ResampleDlg dlg(m_pParentWindow, -1, _("Sample Elevation"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
@@ -1293,7 +1293,7 @@ void Builder::MergeResampleImages(BuilderView *pView)
 	}
 
 	// Open the Resample dialog
-	SampleImageDlg dlg(m_pParentWindow, -1, _("Merge and Resample Imagery"));
+	SampleImageDlg dlg(m_pParentWindow, -1, _("Sample Imagery"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
