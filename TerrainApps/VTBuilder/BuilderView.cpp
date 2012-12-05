@@ -1861,6 +1861,11 @@ void BuilderView::OnMouseWheel(wxMouseEvent& event)
 
 void BuilderView::OnIdle(wxIdleEvent& event)
 {
+	// Prevent re-entrance, which may happen on Idle -> ProgressDialog -> Idle
+	static bool s_in = false;
+	if (s_in) return;
+	s_in = true;
+
 	if (!m_bGotFirstIdle)
 	{
 		m_bGotFirstIdle = true;
@@ -1904,6 +1909,7 @@ void BuilderView::OnIdle(wxIdleEvent& event)
 		CloseProgressDialog2();
 		Refresh(true);
 	}
+	s_in = false;
 }
 
 void BuilderView::OnSize(wxSizeEvent& event)
