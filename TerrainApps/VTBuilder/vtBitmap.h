@@ -10,7 +10,9 @@
 
 #include "vtdata/vtDIB.h"
 
-#if WIN32
+// wxWidgets 2.9.x and USE_DIBSECTIONS draws upside-down bitmaps.  Until it's
+// figured out, we disable DIBSECTIONS for newer wx.
+#if WIN32 && (wxVERSION_NUMBER < 2900)
 #define USE_DIBSECTIONS 1
 #endif
 
