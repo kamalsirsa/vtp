@@ -1,7 +1,7 @@
 //
 // Trees.h
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,6 +25,59 @@ class vtHeightField3d;
 #include "\dism\xfrog2dism\xfrog2dism.h"
 #endif
 
+class PlantShaderDrawable : public osg::Drawable
+{
+public:
+	PlantShaderDrawable() { setUseDisplayList(false); }
+
+	/** Copy constructor using CopyOp to manage deep vs shallow copy.*/
+	PlantShaderDrawable(const PlantShaderDrawable& PlantShaderDrawable,
+						const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY) :
+		osg::Drawable(PlantShaderDrawable,copyop) {}
+
+	META_Object(osg,PlantShaderDrawable)
+
+	typedef std::vector<osg::Vec4> VecVec4;
+
+	virtual void drawImplementation(osg::RenderInfo &renderInfo) const
+	{
+		for (VecVec4::const_iterator itr = _psizelist.begin();
+			itr != _psizelist.end(); ++itr)
+		{
+			renderInfo.getState()->Color((*itr)[0],(*itr)[1],(*itr)[2],(*itr)[3]);
+			_geometry->draw(renderInfo);
+		}
+	}
+
+	virtual osg::BoundingBox computeBound() const
+	{
+		osg::BoundingBox geom_box = _geometry->getBound();
+		osg::BoundingBox bb;
+		for (VecVec4::const_iterator itr = _psizelist.begin();
+			 itr != _psizelist.end(); ++itr)
+		{
+			bb.expandBy(geom_box.corner(0)*(*itr)[3] +
+				osg::Vec3( (*itr)[0], (*itr)[1], (*itr)[2] ));
+			bb.expandBy(geom_box.corner(7)*(*itr)[3] +
+				osg::Vec3( (*itr)[0], (*itr)[1], (*itr)[2] ));
+		}
+		return bb;
+	}
+	void setGeometry(osg::Geometry* geometry)
+	{
+		_geometry = geometry;
+	}
+	void addPlant(const osg::Vec4& pos_height)
+	{
+		_psizelist.push_back(pos_height);
+	}
+
+protected:
+	virtual ~PlantShaderDrawable() {}
+	osg::ref_ptr<osg::Geometry> _geometry;
+	VecVec4 _psizelist;
+};
+
 /**
  * This class extends vtPlantAppearance with the ability to construct 3D
  * geometry for an appearance.
@@ -46,8 +99,11 @@ public:
 	static float s_fPlantScale;
 	static bool  s_bPlantShadows;
 
+	// Shader support
+	osg::StateSet *GetOrCreateShaderStateset();
+
 protected:
-	vtMesh *CreateTreeMesh(float fTreeScale, bool bShadows);
+	vtMesh *CreateTreeMesh(float fTreeScale);
 	void _Defaults();
 
 	osg::ref_ptr<vtMaterialArray> m_pMats;
@@ -60,6 +116,9 @@ protected:
 #endif
 	bool m_bAvailable;
 	bool m_bCreated;
+
+	// Shader support
+	osg::StateSet *m_pShaderStateset;
 };
 
 /**
@@ -101,10 +160,8 @@ public:
 	int CheckAvailability();
 	void CreatePlantSurfaces();
 
-	// override / replace a few methods of vtSpeciesList
+	// override a method of vtSpeciesList
 	vtPlantSpecies3d *GetSpecies(uint i) const;
-
-//	vtGeode *plant_nursery(vtHeightField *pHeightField, float lat, float lon);
 };
 
 /**
@@ -125,6 +182,8 @@ public:
 	vtGeode		*m_pHighlight;	// The wireframe highlight
 };
 
+typedef std::map<vtPlantAppearance3d*, PlantShaderDrawable*> PlantShaderMap;
+
 /**
  * This class extends vtPlantInstanceArray with the ability to construct and
  * manage 3D representations of the plants.
@@ -140,6 +199,8 @@ public:
 	int CreatePlantNodes(bool progress_dialog(int) = NULL);
 	bool CreatePlantNode(uint i);
 	int NumOffTerrain() { return m_iOffTerrain; }
+
+	int CreatePlantShaderNodes(bool progress_dialog(int) = NULL);
 
 	vtTransform *GetPlantNode(uint i) const;
 	vtPlantInstance3d *GetInstance3d(uint i) const;
@@ -164,6 +225,16 @@ public:
 	void UpdateTransform(uint i);
 
 	bool FindPlantFromNode(osg::Node *pNode, int &iOffset);
+
+	// Shader support
+	void AddShaderGeometryForPlant(vtPlantSpecies3d *ps, const FPoint3 &pos, float size);
+	PlantShaderDrawable *MakePlantShaderDrawable(vtPlantAppearance3d *ps);
+
+	// Shader support: each potential plant appearance (texture) needs its own
+	// drawable per terrain.  We have only one vtPlantInstanceArray3d per
+	// terrain, so we use a map here to keep track of the drawables.
+	vtGroupPtr m_group;
+	PlantShaderMap m_ShaderDrawables;
 
 protected:
 	vtArray<vtPlantInstance3d*>	m_Instances3d;

@@ -574,22 +574,6 @@ int vtMaterialArray::AddRGBMaterial1(const RGBf &diffuse,
 }
 
 /**
- * Create and add a "shadow" material, which is a black material with
- * transparency, suitable for drawing a shadow under an object.
- *
- * \param fOpacity Ranges from 0 (fully transparent) to 1 (fully opaque).
- */
-void vtMaterialArray::AddShadowMaterial(float fOpacity)
-{
-	vtMaterial *pMat = new vtMaterial;
-	pMat->SetCulling(true);
-	pMat->SetLighting(false);
-	pMat->SetTransparent(true);
-	pMat->SetDiffuse(0.0f, 0.0f, 0.0f, fOpacity);
-	AppendMaterial(pMat);
-}
-
-/**
  * Copies all the materials from one vtMaterialArray to another.
  *
  * The materials copied from the source are simply appending to this

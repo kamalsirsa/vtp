@@ -9,7 +9,7 @@
 // vtPlantInstance3d
 // vtPlantInstanceArray3d
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -69,6 +69,7 @@ void vtPlantAppearance3d::_Defaults()
 	m_pExternal = NULL;
 	m_bAvailable = false;
 	m_bCreated = false;
+	m_pShaderStateset = NULL;
 }
 
 // Helper
@@ -132,14 +133,8 @@ void vtPlantAppearance3d::LoadAndCreate()
 			m_bCreated = true;
 		}
 
-		if (s_bPlantShadows)
-		{
-			// create shadow material (1)
-			m_pMats->AddShadowMaterial(m_shadow_darkness);
-		}
-
 		// create a surface object to represent the tree
-		m_pMesh = CreateTreeMesh(s_fPlantScale, s_bPlantShadows);
+		m_pMesh = CreateTreeMesh(s_fPlantScale);
 		m_pGeode = new vtGeode;
 		m_pGeode->SetMaterials(m_pMats);
 		m_pGeode->AddMesh(m_pMesh, m_iMatIdx);
@@ -170,74 +165,35 @@ void vtPlantAppearance3d::LoadAndCreate()
  * Create an object to represent a textured plant billboard.
  * Makes two intersecting polygons (4 triangles).
  */
-vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows)
+vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale)
 {
-	// first determine how many vertices we'll need for this mesh
-	int vtx_count = 0;
-	if (bShadows && m_shadow_radius > 0.0f) vtx_count += 6;
-	vtx_count += 8;
+	// How many vertices we'll need for this mesh
+	const int vtx_count = 8;
 
 	// make a mesh
 	vtMesh *pTreeMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords, vtx_count);
 
 	// size of textured, upright portion
-	float w2 = (m_width * fTreeScale) / 2.0f;
-	float h = m_height * fTreeScale;
+	const float w2 = (m_width * fTreeScale) / 2.0f;
+	const float h = m_height * fTreeScale;
 
-	// keep a count of how many vertices we've added
-	int vcount = 0, vstart;
-
-#if 0	// This code would need to be re-written to use a separate mesh for
-		// the shadow.  However, it's probably not worth it as a polygon
-		// plant shadow is at best a poor visual effect.
-	// do shadow first, so it will be drawn first
-	if (bShadows && m_shadow_radius > 0.0f)
-	{
-		vstart = vcount;
-
-		// shadow, on the ground
-		float h1 = w2 * m_shadow_radius * 2.0f;
-		float h2 = w2 * m_shadow_radius;
-		float gr = SHADOW_HEIGHT;
-		pTreeMesh->SetVtxPos(vcount++, FPoint3(-h1, gr,  h2));
-		pTreeMesh->SetVtxPos(vcount++, FPoint3(0.0f, gr,  h1));
-		pTreeMesh->SetVtxPos(vcount++, FPoint3(h1, gr,  h2));
-		pTreeMesh->SetVtxPos(vcount++, FPoint3(h1, gr, -h2));
-		pTreeMesh->SetVtxPos(vcount++, FPoint3(0.0f, gr, -h1));
-		pTreeMesh->SetVtxPos(vcount++, FPoint3(-h1, gr, -h2));
-
-		pTreeMesh->AddFan(vcount, vcount+1, vcount+2, vcount+3, vcount+4, vcount+5);
-	}
-#endif
-
-	// the do the rest of the billboard geometry: two squares
-	vstart = vcount;
-
-	pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, 0.0f, 0), 0.0f, 0.0f);
-	pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, 0.0f, 0), 1.0f, 0.0f);
-	pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, h, 0), 0.0f, 1.0f);
-	pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, h, 0), 1.0f, 1.0f);
+	// The billboard geometry: 2 squares
+	pTreeMesh->SetVtxPUV(0, FPoint3(-w2, 0.0f, 0), 0.0f, 0.0f);
+	pTreeMesh->SetVtxPUV(1, FPoint3( w2, 0.0f, 0), 1.0f, 0.0f);
+	pTreeMesh->SetVtxPUV(2, FPoint3(-w2, h, 0), 0.0f, 1.0f);
+	pTreeMesh->SetVtxPUV(3, FPoint3( w2, h, 0), 1.0f, 1.0f);
 	//
-	pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f, -w2), 0.0f, 0.0f);
-	pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f,  w2), 1.0f, 0.0f);
-	pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h, -w2), 0.0f, 1.0f);
-	pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h,  w2), 1.0f, 1.0f);
+	pTreeMesh->SetVtxPUV(4, FPoint3(0, 0.0f, -w2), 0.0f, 0.0f);
+	pTreeMesh->SetVtxPUV(5, FPoint3(0, 0.0f,  w2), 1.0f, 0.0f);
+	pTreeMesh->SetVtxPUV(6, FPoint3(0, h, -w2), 0.0f, 1.0f);
+	pTreeMesh->SetVtxPUV(7, FPoint3(0, h,  w2), 1.0f, 1.0f);
 
-#if 0
-	// 4 triangles
-	pTreeMesh->AddTri(0, vstart+0, vstart+1, vstart+2);
-	pTreeMesh->AddTri(0, vstart+2, vstart+1, vstart+3);
-	pTreeMesh->AddTri(0, vstart+4, vstart+5, vstart+6);
-	pTreeMesh->AddTri(0, vstart+6, vstart+5, vstart+7);
-#else
 	// 2 fans
-	pTreeMesh->AddFan(vstart+0, vstart+1, vstart+3, vstart+2);
-	pTreeMesh->AddFan(vstart+4, vstart+5, vstart+7, vstart+6);
-#endif
+	pTreeMesh->AddFan(0, 1, 3, 2);
+	pTreeMesh->AddFan(4, 5, 7, 6);
 
 	return pTreeMesh;
 }
-
 
 bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 {
@@ -263,6 +219,85 @@ bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 		}
 	}
 	return false;
+}
+
+osg::StateSet *MakeTextureStatesetForPlantBillboard(const char *fname)
+{
+	osg::Texture2D *tex = new osg::Texture2D;
+	tex->setWrap( osg::Texture2D::WRAP_S, osg::Texture2D::CLAMP );
+	tex->setWrap( osg::Texture2D::WRAP_T, osg::Texture2D::CLAMP );
+	tex->setImage(osgDB::readImageFile(fname));
+
+	osg::StateSet *dstate = new osg::StateSet;
+	dstate->setTextureAttributeAndModes(0, tex, osg::StateAttribute::ON );
+	dstate->setTextureAttribute(0, new osg::TexEnv );
+	dstate->setAttributeAndModes( new osg::BlendFunc, osg::StateAttribute::ON );
+
+	osg::AlphaFunc *alphaFunc = new osg::AlphaFunc;
+	alphaFunc->setFunction(osg::AlphaFunc::GEQUAL,0.05f);
+	dstate->setAttributeAndModes( alphaFunc, osg::StateAttribute::ON );
+	dstate->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+	dstate->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
+
+	return dstate;
+}
+
+osg::StateSet *vtPlantAppearance3d::GetOrCreateShaderStateset()
+{
+	// We may have already created it
+	if (m_pShaderStateset)
+		return m_pShaderStateset;
+
+	// We don't have to call LoadAndCreate on the appearance, because we'll be
+	// created it a different way.
+	vtString fname = FindPlantModel(m_filename);
+	if (fname == "")
+		return NULL;
+
+	VTLOG(" Making shader stateset/drawable for plant '%s'\n", (const char *)fname);
+
+	osg::StateSet *stateset = MakeTextureStatesetForPlantBillboard(fname);
+
+    osg::Program* program = new osg::Program;
+    stateset->setAttribute(program);
+
+    ///////////////////////////////////////////////////////////////////
+    // vertex shader using just Vec4 coefficients
+    char vertexShaderSource[] = 
+        "varying vec2 texcoord;\n"
+        "\n"
+        "void main(void)\n"
+        "{\n"
+        "    vec3 position = gl_Vertex.xyz * gl_Color.w + gl_Color.xyz;\n"
+        "    gl_Position     = gl_ModelViewProjectionMatrix * vec4(position,1.0);\n"
+        "    gl_FrontColor = vec4(1.0,1.0,1.0,1.0);\n"
+        "    texcoord = gl_MultiTexCoord0.st;\n"
+        "}\n";
+
+    //////////////////////////////////////////////////////////////////
+    // fragment shader
+    //
+    char fragmentShaderSource[] = 
+        "uniform sampler2D baseTexture; \n"
+        "varying vec2 texcoord; \n"
+        "\n"
+        "void main(void) \n"
+        "{ \n"
+        "    gl_FragColor = texture2D(baseTexture, texcoord); \n"
+        "}\n";
+
+    osg::Shader* vertex_shader = new osg::Shader(osg::Shader::VERTEX, vertexShaderSource);
+    program->addShader(vertex_shader);
+
+    osg::Shader* fragment_shader = new osg::Shader(osg::Shader::FRAGMENT, fragmentShaderSource);
+    program->addShader(fragment_shader);
+    
+    osg::Uniform* baseTextureSampler = new osg::Uniform("baseTexture",0);
+    stateset->addUniform(baseTextureSampler);
+
+	// Store it
+	m_pShaderStateset = stateset;
+	return m_pShaderStateset;
 }
 
 
@@ -594,6 +629,118 @@ int vtPlantInstanceArray3d::CreatePlantNodes(bool progress_dialog(int))
 	return created;
 }
 
+osg::Geometry* createOrthogonalQuadsNoColor( const osg::Vec3& pos, float w, float h)
+{
+	// set up the coords
+	osg::Vec3Array &v = *(new osg::Vec3Array(8));
+	osg::Vec2Array &t = *(new osg::Vec2Array(8));
+    
+	float rotation = random(osg::PI/2.0f);
+	float sw = sinf(rotation)*w*0.5f;
+	float cw = cosf(rotation)*w*0.5f;
+
+	v[0].set(pos.x()-sw, pos.y(),   pos.z()-cw);
+	v[1].set(pos.x()+sw, pos.y(),   pos.z()+cw);
+	v[2].set(pos.x()+sw, pos.y()+h, pos.z()+cw);
+	v[3].set(pos.x()-sw, pos.y()+h, pos.z()-cw);
+						 			  			
+	v[4].set(pos.x()-cw, pos.y(),   pos.z()+sw);
+	v[5].set(pos.x()+cw, pos.y(),   pos.z()-sw);
+	v[6].set(pos.x()+cw, pos.y()+h, pos.z()-sw);
+	v[7].set(pos.x()-cw, pos.y()+h, pos.z()+sw);
+
+	t[0].set(0.0f,0.0f);
+	t[1].set(1.0f,0.0f);
+	t[2].set(1.0f,1.0f);
+	t[3].set(0.0f,1.0f);
+
+	t[4].set(0.0f,0.0f);
+	t[5].set(1.0f,0.0f);
+	t[6].set(1.0f,1.0f);
+	t[7].set(0.0f,1.0f);
+
+	osg::Geometry *geom = new osg::Geometry;
+	geom->setVertexArray(&v);
+	geom->setTexCoordArray(0, &t);
+	geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,8));
+	return geom;
+}
+
+void vtPlantInstanceArray3d::AddShaderGeometryForPlant(vtPlantSpecies3d *ps,
+	const FPoint3 &p3, float size)
+{
+	vtPlantAppearance3d *pa = ps->GetAppearanceByHeight(size);
+	if (!pa)
+		return;
+
+	// Do we already have a shader geometry for this species appearance?
+	PlantShaderDrawable *psd;
+	PlantShaderMap::iterator it = m_ShaderDrawables.find(pa);
+	if (it == m_ShaderDrawables.end())
+	{
+		// Create and add to map
+		psd = MakePlantShaderDrawable(pa);
+		m_ShaderDrawables[pa] = psd;
+	}
+	else
+	{
+		psd = it->second;
+	}
+	psd->addPlant(osg::Vec4(p3.x, p3.y, p3.z, size));
+}
+
+PlantShaderDrawable *vtPlantInstanceArray3d::MakePlantShaderDrawable(vtPlantAppearance3d *pa)
+{
+	osg::StateSet *stateset = pa->GetOrCreateShaderStateset();
+
+	osg::Geometry* shared_geometry = createOrthogonalQuadsNoColor(
+		osg::Vec3(0.0f,0.0f,0.0f),1.0f,1.0f);
+
+	PlantShaderDrawable *shader_drawable = new PlantShaderDrawable;
+	shader_drawable->setGeometry(shared_geometry);
+
+	osg::Geode* geode = new osg::Geode;
+	geode->setStateSet(stateset);
+	geode->addDrawable(shader_drawable);
+
+	// Add the geode to the InstanceArray's scenegraph, which is later added to
+	// the terrain's scenegraph.
+	m_group->addChild(geode);
+
+	return shader_drawable;
+}
+
+int vtPlantInstanceArray3d::CreatePlantShaderNodes(bool progress_dialog(int))
+{
+	VTLOG1(" Creating OpenGL shader based vegetation...\n");
+	m_group = new vtGroup;
+	m_group->setName("VegGroup");
+
+	// Time the operation
+	clock_t tm1 = clock();
+
+	float size;
+	short species_id;
+	FPoint3 p3;
+	uint num_plants = GetNumEntities();
+	for (uint i = 0; i < num_plants; i++)
+	{
+		GetPlant(i, size, species_id);
+		m_pHeightField->ConvertEarthToSurfacePoint(GetPoint(i), p3);
+
+		vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(species_id);
+		if (!ps)
+			return false;
+
+		AddShaderGeometryForPlant(ps, p3, size);
+
+		if (progress_dialog != NULL && ((i%2000)==0))
+			progress_dialog(i * 99 / num_plants);
+	}
+
+	return GetNumEntities();
+}
+
 bool vtPlantInstanceArray3d::CreatePlantNode(uint i)
 {
 	// If it was already constructed, destruct so we can build again
@@ -650,7 +797,6 @@ bool vtPlantInstanceArray3d::CreatePlantNode(uint i)
 		float random_rotation = random(PI2f);
 		inst3d->m_pContainer->RotateLocal(FPoint3(0,1,0), random_rotation);
 	}
-
 	return true;
 }
 
