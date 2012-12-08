@@ -409,6 +409,11 @@ void vtGLCanvas::OnMouseCaptureLost(wxMouseCaptureLostEvent& event1)
 
 void vtGLCanvas::OnIdle(wxIdleEvent &event)
 {
+	// Prevent re-entrance
+	static bool s_in = false;
+	if (s_in) return;
+	s_in = true;
+
 	// We use the "Refresh on Idle" approach to continuous rendering.
 	if (m_bRunning)
 #ifdef __WXMAC__
@@ -429,5 +434,6 @@ void vtGLCanvas::OnIdle(wxIdleEvent &event)
 #else
 		Refresh(FALSE);
 #endif
+	s_in = false;
 }
 

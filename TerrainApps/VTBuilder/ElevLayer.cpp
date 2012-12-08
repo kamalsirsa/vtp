@@ -423,8 +423,7 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 
 	bool bDrawNormal = true;
 #if (wxVERSION_NUMBER > 2900)
-	wxMemoryDC temp_dc;
-    temp_dc.SelectObject(*m_pBitmap->m_pBitmap);
+	wxMemoryDC temp_dc(*(m_pBitmap->m_pBitmap));
 	pDC->StretchBlit(destRect.x, destRect.y,
 		destRect.width, destRect.height,
 		&temp_dc,
