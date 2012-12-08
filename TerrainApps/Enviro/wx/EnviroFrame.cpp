@@ -615,12 +615,10 @@ void EnviroFrame::CreateMenus()
 
 	// shortcuts:
 	// Ctrl+A Show Axes
-	// Ctrl+C Cull Every Frame
 	// Ctrl+D Measure Distances
 	// Ctrl+E Flatten
 	// Ctrl+F Fullscreen
 	// Ctrl+G Go to Terrain
-	// Ctrl+K Cull Once
 	// Ctrl+I Time
 	// Ctrl+L Store/Recall Locations
 	// Ctrl+N Save Numbered Snapshot
@@ -631,7 +629,7 @@ void EnviroFrame::CreateMenus()
 	// Ctrl+T Top-Down
 	// Ctrl+U Unfold
 	// Ctrl+W Wireframe
-	// Ctrl+Z Framerate Chart
+	//
 	// A Maintain height above ground
 	// D Toggle Grab-Pivot
 	// F Faster
@@ -704,8 +702,8 @@ void EnviroFrame::CreateMenus()
 
 	m_pTerrainMenu = new wxMenu;
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _("LOD Terrain Surface\tF3"));
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_CULLEVERY, _("Cull every frame\tCtrl+C"));
-	m_pTerrainMenu->Append(ID_TERRAIN_CULLONCE, _("Cull once\tCtrl+K"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_CULLEVERY, _("Cull every frame"));
+	m_pTerrainMenu->Append(ID_TERRAIN_CULLONCE, _("Cull once"));
 	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _("Show Sky\tF4"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_HORIZON, _("Show Horizon"));
