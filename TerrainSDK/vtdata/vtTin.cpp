@@ -405,6 +405,9 @@ bool vtTin::ReadADF(const char *fname, bool progress_callback(int))
 	return true;
 }
 
+/**
+ * Write the TIN to the Aquaveo GMS format.
+ */
 bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 {
 	FILE *fp = vtFileOpen(fname, "rb");
@@ -510,6 +513,10 @@ bool vtTin::ReadGMS(const char *fname, bool progress_callback(int))
 	return true;
 }
 
+/**
+ * Write the TIN to the GMS format.  Historically GMS stood for 'Groundwater
+ * Modeling System' from the EMS-I company, now called Aquaveo.
+ */
 bool vtTin::WriteGMS(const char *fname, bool progress_callback(int)) const
 {
 	FILE *fp = vtFileOpen(fname, "wb");
