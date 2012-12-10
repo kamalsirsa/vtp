@@ -14,6 +14,8 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtlib/vtosg/GroupLOD.h"
+
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
 #include "vtdata/FilePath.h"
@@ -531,13 +533,6 @@ vtPlantInstance3d::vtPlantInstance3d()
 	m_pHighlight = NULL;
 }
 
-vtPlantInstance3d::~vtPlantInstance3d()
-{
-	// Don't release the instance's nodes here.  They will either be released
-	//  by DeletePlant(), or automatically as the whole scene graph is
-	//  destructed at the time the terrain is destructed.
-}
-
 void vtPlantInstance3d::ShowBounds(bool bShow)
 {
 	if (bShow)
@@ -580,6 +575,148 @@ void vtPlantInstance3d::ReleaseContents()
 	m_pContainer->Identity();
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// Cell used to divide the PlantInstances into a heirarchy of LOD nodes,
+// for culling by distance.
+//
+
+void PlantCell::computeBound()
+{
+    _bb.init();
+    for(CellList::iterator citr=_cells.begin();
+        citr!=_cells.end();
+        ++citr)
+    {
+        (*citr)->computeBound();
+        _bb.expandBy((*citr)->_bb);
+    }
+
+    for(TreeList::iterator titr=_trees.begin();
+        titr!=_trees.end();
+        ++titr)
+    {
+        _bb.expandBy((*titr).m_position);
+    }
+}
+
+bool PlantCell::divide(unsigned int maxNumTreesPerCell)
+{
+    if (_trees.size() <= maxNumTreesPerCell)
+		return false;
+
+    computeBound();
+
+    float radius = _bb.radius();
+    float divide_distance = radius*0.7f;
+    if (divide((_bb.xMax()-_bb.xMin())>divide_distance,
+			   (_bb.yMax()-_bb.yMin())>divide_distance,
+			   (_bb.zMax()-_bb.zMin())>divide_distance))
+    {
+        // recusively divide the new cells till maxNumTreesPerCell is met.
+        for(CellList::iterator citr=_cells.begin(); citr!=_cells.end(); ++citr)
+        {
+            (*citr)->divide(maxNumTreesPerCell);
+        }
+        return true;
+   }
+   else
+        return false;
+}
+
+bool PlantCell::divide(bool xAxis, bool yAxis, bool zAxis)
+{
+    if (!(xAxis || yAxis || zAxis))
+		return false;
+
+    if (_cells.empty())
+        _cells.push_back(new PlantCell(_bb));
+
+    if (xAxis)
+    {
+        unsigned int numCellsToDivide = _cells.size();
+        for(unsigned int i=0; i < numCellsToDivide; ++i)
+        {
+            PlantCell* orig_cell = _cells[i].get();
+            PlantCell* new_cell = new PlantCell(orig_cell->_bb);
+
+            float xCenter = (orig_cell->_bb.xMin()+orig_cell->_bb.xMax())*0.5f;
+            orig_cell->_bb.xMax() = xCenter;
+            new_cell->_bb.xMin() = xCenter;
+
+            _cells.push_back(new_cell);
+        }
+    }
+    if (yAxis)
+    {
+        unsigned int numCellsToDivide = _cells.size();
+        for(unsigned int i=0; i < numCellsToDivide; ++i)
+        {
+            PlantCell* orig_cell = _cells[i].get();
+            PlantCell* new_cell = new PlantCell(orig_cell->_bb);
+
+            float yCenter = (orig_cell->_bb.yMin()+orig_cell->_bb.yMax())*0.5f;
+            orig_cell->_bb.yMax() = yCenter;
+            new_cell->_bb.yMin() = yCenter;
+
+            _cells.push_back(new_cell);
+        }
+    }
+    if (zAxis)
+    {
+        unsigned int numCellsToDivide = _cells.size();
+        for(unsigned int i=0; i < numCellsToDivide; ++i)
+        {
+            PlantCell* orig_cell = _cells[i].get();
+            PlantCell* new_cell = new PlantCell(orig_cell->_bb);
+
+            float zCenter = (orig_cell->_bb.zMin()+orig_cell->_bb.zMax())*0.5f;
+            orig_cell->_bb.zMax() = zCenter;
+            new_cell->_bb.zMin() = zCenter;
+
+            _cells.push_back(new_cell);
+        }
+    }
+    bin();
+    return true;
+}
+
+void PlantCell::bin()
+{   
+    // put trees in appropriate cells.
+    TreeList treesNotAssigned;
+    for(TreeList::iterator titr=_trees.begin(); titr!=_trees.end(); ++titr)
+    {
+        const vtPlantInstanceShader &tree = *titr;
+        bool assigned = false;
+        for(CellList::iterator citr=_cells.begin();
+            citr!=_cells.end() && !assigned;
+            ++citr)
+        {
+            if ((*citr)->contains(tree.m_position))
+            {
+                (*citr)->addTree(tree);
+                assigned = true;
+            }
+        }
+        if (!assigned) treesNotAssigned.push_back(tree);
+    }
+
+    // put the unassigned trees back into the original local tree list.
+    _trees.swap(treesNotAssigned);
+
+
+    // prune empty cells.
+    CellList cellsNotEmpty;
+    for(CellList::iterator citr=_cells.begin(); citr!=_cells.end(); ++citr)
+    {
+        if (!((*citr)->_trees.empty()))
+        {
+            cellsNotEmpty.push_back(*citr);
+        }
+    }
+    _cells.swap(cellsNotEmpty);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // vtPlantInstanceArray3d
@@ -666,30 +803,35 @@ osg::Geometry* createOrthogonalQuadsNoColor( const osg::Vec3& pos, float w, floa
 	return geom;
 }
 
-void vtPlantInstanceArray3d::AddShaderGeometryForPlant(vtPlantSpecies3d *ps,
-	const FPoint3 &p3, float size)
+void vtPlantInstanceArray3d::AddShaderGeometryForPlant(PlantCell *cell,
+	vtPlantInstanceShader &pis)
 {
-	vtPlantAppearance3d *pa = ps->GetAppearanceByHeight(size);
+	vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(pis.m_species_id);
+	if (!ps)
+		return;
+
+	vtPlantAppearance3d *pa = ps->GetAppearanceByHeight(pis.m_size);
 	if (!pa)
 		return;
 
 	// Do we already have a shader geometry for this species appearance?
 	PlantShaderDrawable *psd;
-	PlantShaderMap::iterator it = m_ShaderDrawables.find(pa);
-	if (it == m_ShaderDrawables.end())
+	PlantShaderMap::iterator it = cell->m_ShaderDrawables.find(pa);
+	if (it == cell->m_ShaderDrawables.end())
 	{
 		// Create and add to map
-		psd = MakePlantShaderDrawable(pa);
-		m_ShaderDrawables[pa] = psd;
+		psd = MakePlantShaderDrawable(cell, pa);
+		cell->m_ShaderDrawables[pa] = psd;
 	}
 	else
-	{
 		psd = it->second;
-	}
-	psd->addPlant(osg::Vec4(p3.x, p3.y, p3.z, size));
+
+	psd->addPlant(osg::Vec4(pis.m_position.x(), pis.m_position.y(),
+		pis.m_position.z(), pis.m_size));
 }
 
-PlantShaderDrawable *vtPlantInstanceArray3d::MakePlantShaderDrawable(vtPlantAppearance3d *pa)
+PlantShaderDrawable *vtPlantInstanceArray3d::MakePlantShaderDrawable(PlantCell *cell,
+	vtPlantAppearance3d *pa)
 {
 	osg::StateSet *stateset = pa->GetOrCreateShaderStateset();
 
@@ -705,38 +847,87 @@ PlantShaderDrawable *vtPlantInstanceArray3d::MakePlantShaderDrawable(vtPlantAppe
 
 	// Add the geode to the InstanceArray's scenegraph, which is later added to
 	// the terrain's scenegraph.
-	m_group->addChild(geode);
+	cell->m_group->addChild(geode);
+	cell->computeBound();
+	cell->m_group->setDistance(cell->_bb.radius());
 
 	return shader_drawable;
 }
 
+void LogCellGraph(const PlantCell *cell, int indent)
+{
+	for (int i = 0; i < indent; i++) VTLOG1(" ");
+	VTLOG("Cell %d children %d trees\n", cell->_cells.size(), cell->_trees.size());
+
+	for (uint i = 0; i < cell->_cells.size(); i++)
+		LogCellGraph(cell->_cells[i].get(), indent + 1);
+}
+
+osg::Node *vtPlantInstanceArray3d::CreateCellNodes(PlantCell *cell)
+{
+	bool needGroup = !(cell->_cells.empty());
+	bool needTrees = !(cell->_trees.empty());
+
+	cell->m_group = new osg::GroupLOD;
+
+	if (needTrees)
+	{
+		for (TreeList::iterator itr=cell->_trees.begin();
+			itr!=cell->_trees.end(); ++itr)
+		{
+			vtPlantInstanceShader& tree = *itr;
+			AddShaderGeometryForPlant(cell, tree);
+		}
+	}
+	else if (needGroup)
+	{
+		for (PlantCell::CellList::iterator itr=cell->_cells.begin();
+			itr!=cell->_cells.end(); ++itr)
+		{
+			cell->m_group->addChild(CreateCellNodes(itr->get()));
+		}
+    }
+
+	cell->computeBound();
+	cell->m_group->setDistance(cell->_bb.radius());
+	cell->m_group->setCenter(cell->_bb.center());
+
+	return cell->m_group;
+}
+
+const int kMaxPlantsPerCell = 4000;
+
 int vtPlantInstanceArray3d::CreatePlantShaderNodes(bool progress_dialog(int))
 {
 	VTLOG1(" Creating OpenGL shader based vegetation...\n");
-	m_group = new vtGroup;
-	m_group->setName("VegGroup");
 
-	// Time the operation
-	clock_t tm1 = clock();
-
-	float size;
-	short species_id;
 	FPoint3 p3;
 	uint num_plants = GetNumEntities();
+
+	// Create cell subdivision
+	osg::ref_ptr<PlantCell> cell = new PlantCell;
+	cell->reserveTrees(num_plants);
+
+	vtPlantInstanceShader pi;
 	for (uint i = 0; i < num_plants; i++)
 	{
-		GetPlant(i, size, species_id);
+		GetPlant(i, pi.m_size, pi.m_species_id);
 		m_pHeightField->ConvertEarthToSurfacePoint(GetPoint(i), p3);
+		pi.m_position.set(p3.x, p3.y, p3.z);
 
-		vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(species_id);
-		if (!ps)
-			return false;
-
-		AddShaderGeometryForPlant(ps, p3, size);
-
-		if (progress_dialog != NULL && ((i%2000)==0))
-			progress_dialog(i * 99 / num_plants);
+		cell->addTree(pi);
 	}
+	cell->divide(kMaxPlantsPerCell);
+#if VTDEBUG
+	LogCellGraph(cell.get(), 0);
+#endif
+
+	CreateCellNodes(cell.get());
+
+	// Add top node to scene graph
+	m_group = new vtGroup;
+	m_group->setName("VegGroup");
+	m_group->addChild(cell->m_group);
 
 	return GetNumEntities();
 }
@@ -786,7 +977,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(uint i)
 	UpdateTransform(i);
 
 	// We need to scale the model to produce the desired size, not the
-	//  size of the appearance but of the instance.
+	//  size of the appearance but the size of the instance.
 	float scale = size / pApp->m_height;
 	inst3d->m_pContainer->Scale(scale);
 

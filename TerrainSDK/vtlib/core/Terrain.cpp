@@ -6,6 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtlib/vtosg/GroupLOD.h"
 
 #include "vtdata/vtLog.h"
 #include "vtdata/CubicSpline.h"
@@ -1415,7 +1416,8 @@ void vtTerrain::_SetupVegGrid(float fLODDistance)
 void vtTerrain::_CreateVegetation()
 {
 	// The vegetation nodes will be contained in an LOD Grid
-	_SetupVegGrid((float) m_Params.GetValueInt(STR_VEGDISTANCE));
+	float fVegDistance = m_Params.GetValueInt(STR_VEGDISTANCE);
+	_SetupVegGrid(fVegDistance);
 
 	m_PIA.SetHeightField(m_pHeightField);
 
@@ -1458,8 +1460,9 @@ void vtTerrain::_CreateVegetation()
 				VTLOG("\tCouldn't load VF file.\n");
 		}
 	}
-	VTLOG1("  Creating Plant geometry..\n");
+	VTLOG1(" Creating Plant geometry..\n");
 	// Create the 3d plants
+#if 1
 	int created = m_PIA.CreatePlantNodes(m_progress_callback);
 	VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetNumEntities());
 	if (m_PIA.NumOffTerrain())
@@ -1474,6 +1477,12 @@ void vtTerrain::_CreateVegetation()
 		if (pTrans)
 			AddNodeToVegGrid(pTrans);
 	}
+#else
+	osg::GroupLOD::setGroupDistance(fVegDistance);
+	int created = m_PIA.CreatePlantShaderNodes(m_progress_callback);
+	m_pTerrainGroup->addChild(m_PIA.m_group);
+#endif
+
 	VTLOG(" Vegetation: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 }
 
@@ -2746,6 +2755,7 @@ void vtTerrain::SetLODDistance(TFType ftype, float fDistance)
 	case TFT_VEGETATION:
 		if (m_pVegGrid)
 			m_pVegGrid->SetDistance(fDistance);
+		osg::GroupLOD::setGroupDistance(fDistance);
 		break;
 	case TFT_STRUCTURES:
 		if (m_pStructGrid)
@@ -2775,6 +2785,8 @@ float vtTerrain::GetLODDistance(TFType ftype)
 	case TFT_VEGETATION:
 		if (m_pVegGrid)
 			return m_pVegGrid->GetDistance();
+		else
+			return osg::GroupLOD::getGroupDistance();
 		break;
 	case TFT_STRUCTURES:
 		if (m_pStructGrid)

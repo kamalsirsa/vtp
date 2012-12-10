@@ -173,7 +173,6 @@ class vtPlantInstance3d
 {
 public:
 	vtPlantInstance3d();
-	~vtPlantInstance3d();
 
 	void ShowBounds(bool bShow);
 	void ReleaseContents();
@@ -182,7 +181,52 @@ public:
 	vtGeode		*m_pHighlight;	// The wireframe highlight
 };
 
+struct vtPlantInstanceShader : public osg::Referenced
+{
+	osg::Vec3 m_position;
+	float m_size;
+	short m_species_id;
+};
+
+typedef std::vector< vtPlantInstanceShader > TreeList;
 typedef std::map<vtPlantAppearance3d*, PlantShaderDrawable*> PlantShaderMap;
+namespace osg { class GroupLOD; }
+
+/**
+ * A helper class used by vtPlantInstanceArray3d to distribute its
+ * plants in a tree of LOD nodes, for efficient culling.
+ */
+class PlantCell : public osg::Referenced
+{
+public:
+    typedef std::vector< osg::ref_ptr<PlantCell> > CellList;
+
+    PlantCell() : _parent(0) {}
+    PlantCell(osg::BoundingBox& bb) : _parent(0), _bb(bb) {}
+        
+    void addCell(PlantCell* cell) { cell->_parent=this; _cells.push_back(cell); }
+	void reserveTrees(uint number) { _trees.reserve(number); }
+    void addTree(vtPlantInstanceShader tree) { _trees.push_back(tree); }
+    bool contains(const osg::Vec3& position) const { return _bb.contains(position); }
+        
+    void computeBound();
+    bool divide(unsigned int maxNumTreesPerCell=10);
+    bool divide(bool xAxis, bool yAxis, bool zAxis);
+    void bin();
+
+    PlantCell*        _parent;
+    osg::BoundingBox  _bb;
+    CellList          _cells;
+    TreeList          _trees;
+
+	// Shader support: each potential plant appearance (texture) needs its own
+	// drawable per cell, so we use a map here to keep track of the drawables.
+	PlantShaderMap m_ShaderDrawables;
+
+	// The Cell only points to its nodes, it doesn't own (refcount) them; they
+	// are held in the scenegraph instead.
+	osg::GroupLOD *m_group;
+};
 
 /**
  * This class extends vtPlantInstanceArray with the ability to construct and
@@ -200,12 +244,11 @@ public:
 	bool CreatePlantNode(uint i);
 	int NumOffTerrain() { return m_iOffTerrain; }
 
-	int CreatePlantShaderNodes(bool progress_dialog(int) = NULL);
 
 	vtTransform *GetPlantNode(uint i) const;
 	vtPlantInstance3d *GetInstance3d(uint i) const;
 
-	/// Indicate the heightfield which will be used for the structures in this array
+	/// Indicate the heightfield which will be used for the plants in this array
 	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
 
 	/// Indicate the Plant List to use
@@ -227,14 +270,12 @@ public:
 	bool FindPlantFromNode(osg::Node *pNode, int &iOffset);
 
 	// Shader support
-	void AddShaderGeometryForPlant(vtPlantSpecies3d *ps, const FPoint3 &pos, float size);
-	PlantShaderDrawable *MakePlantShaderDrawable(vtPlantAppearance3d *ps);
+	void AddShaderGeometryForPlant(PlantCell *cell, vtPlantInstanceShader &pis);
+	PlantShaderDrawable *MakePlantShaderDrawable(PlantCell *cell, vtPlantAppearance3d *ps);
+	osg::Node *CreateCellNodes(PlantCell *cell);
+	int CreatePlantShaderNodes(bool progress_dialog(int) = NULL);
 
-	// Shader support: each potential plant appearance (texture) needs its own
-	// drawable per terrain.  We have only one vtPlantInstanceArray3d per
-	// terrain, so we use a map here to keep track of the drawables.
 	vtGroupPtr m_group;
-	PlantShaderMap m_ShaderDrawables;
 
 protected:
 	vtArray<vtPlantInstance3d*>	m_Instances3d;
