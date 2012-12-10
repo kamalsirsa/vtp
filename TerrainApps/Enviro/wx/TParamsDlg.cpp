@@ -253,6 +253,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_DT_NAME, &m_strDetailName);
 	AddNumValidator(this, ID_DT_SCALE, &m_fDetailScale);
 	AddNumValidator(this, ID_DT_DISTANCE, &m_fDetailDistance);
+	AddValidator(this, ID_TREES_USE_SHADERS, &m_bTreesUseShaders);
 
 	// culture page
 	AddValidator(this, ID_PLANTS, &m_bPlants);
@@ -418,6 +419,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bPlants =			Params.GetValueBool(STR_TREES);
 	m_strVegFile = wxString(Params.GetValueString(STR_TREEFILE), wxConvUTF8);
 	m_iVegDistance =	Params.GetValueInt(STR_VEGDISTANCE);
+	m_bTreesUseShaders = Params.GetValueBool(STR_TREES_USE_SHADERS);
 
 	m_bFog =			Params.GetValueBool(STR_FOG);
 	m_fFogDistance =	Params.GetValueFloat(STR_FOGDISTANCE);
@@ -580,6 +582,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_TREES, m_bPlants);
 	Params.SetValueString(STR_TREEFILE, (const char *) m_strVegFile.mb_str(wxConvUTF8));
 	Params.SetValueInt(STR_VEGDISTANCE, m_iVegDistance);
+	Params.SetValueBool(STR_TREES_USE_SHADERS, m_bTreesUseShaders);
 
 	Params.SetValueBool(STR_FOG, m_bFog);
 	Params.SetValueFloat(STR_FOGDISTANCE, m_fFogDistance);
@@ -672,6 +675,7 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_DT_DISTANCE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
 
 	FindWindow(ID_TREEFILE)->Enable(m_bPlants);
+	FindWindow(ID_TREES_USE_SHADERS)->Enable(m_bPlants);
 //  FindWindow(ID_VEGDISTANCE)->Enable(m_bPlants); // user might want to adjust
 
 	FindWindow(ID_ROADFILE)->Enable(m_bRoads);

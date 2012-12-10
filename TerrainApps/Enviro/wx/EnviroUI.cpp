@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Oct 12 2011)
+// C++ code generated with wxFormBuilder (version Sep  8 2010)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -1130,6 +1130,9 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer41->Add( m_text15, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	sbSizer9->Add( bSizer41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	
+	m_checkBox64 = new wxCheckBox( TParamsPanel3, ID_TREES_USE_SHADERS, _("Use Shaders for Plants"), wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer9->Add( m_checkBox64, 0, wxALL, 5 );
 	
 	bSizer39->Add( sbSizer9, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	

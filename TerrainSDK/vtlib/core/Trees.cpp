@@ -760,7 +760,7 @@ int vtPlantInstanceArray3d::CreatePlantNodes(bool progress_dialog(int))
 		if (CreatePlantNode(i))
 			created++;
 
-		if (progress_dialog != NULL)
+		if (progress_dialog != NULL && ((i%4000)==0))
 			progress_dialog(i * 100 / size);
 	}
 	return created;

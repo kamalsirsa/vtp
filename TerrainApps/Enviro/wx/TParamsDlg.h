@@ -114,9 +114,11 @@ public:
 	bool	m_bTexRoads;
 	bool	m_bRoadCulture;
 
+	// vegetation
 	bool	m_bPlants;
 	wxString   m_strVegFile;
 	int	 m_iVegDistance;
+	bool    m_bTreesUseShaders;
 
 	bool	m_bFog;
 	float   m_fFogDistance;

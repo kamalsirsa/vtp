@@ -295,6 +295,7 @@ Road_Culture
 Trees
 Tree_File
 Tree_Distance
+Trees_Use_Shaders
 Fog
 Fog_Distance
 Fog_Color
@@ -442,6 +443,7 @@ protected:
 #define STR_TREES "Trees"
 #define STR_TREEFILE "Tree_File"
 #define STR_VEGDISTANCE "Tree_Distance"
+#define STR_TREES_USE_SHADERS "Trees_Use_Shaders"
 
 #define STR_FOG "Fog"
 #define STR_FOGDISTANCE "Fog_Distance"

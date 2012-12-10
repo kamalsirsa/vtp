@@ -73,6 +73,7 @@ vtTerrain::vtTerrain()
 	m_pRoadGroup = NULL;
 
 	// vegetation
+	m_pVegGroup = NULL;
 	m_pVegGrid = NULL;
 	m_pPlantList = NULL;
 
@@ -130,6 +131,9 @@ vtTerrain::~vtTerrain()
 
 	if (m_pStructGrid)
 		m_pTerrainGroup->removeChild(m_pStructGrid);
+
+	if (m_pVegGroup)
+		m_pTerrainGroup->removeChild(m_pVegGroup);
 
 	if (m_pVegGrid)
 		m_pTerrainGroup->removeChild(m_pVegGrid);
@@ -1422,8 +1426,7 @@ void vtTerrain::_CreateVegetation()
 	m_PIA.SetHeightField(m_pHeightField);
 
 	// In case we don't load any plants, or fail to load, we will start with
-	// an empty plant array, which needs to match the projection of the rest
-	// of the terrain.
+	// an empty plant array, which inherits the CRS of the rest of the terrain.
 	m_PIA.SetProjection(GetProjection());
 
 	clock_t r1 = clock();	// start timing
@@ -1440,7 +1443,7 @@ void vtTerrain::_CreateVegetation()
 		vtString plants_path = FindFileOnPaths(vtGetDataPath(), plants_fname);
 		if (plants_path == "")
 		{
-			VTLOG("\tNot found.\n");
+			VTLOG1("\tNot found.\n");
 		}
 		else
 		{
@@ -1453,36 +1456,39 @@ void vtTerrain::_CreateVegetation()
 				success = m_PIA.ReadVF(plants_path);
 			if (success)
 			{
-				VTLOG("\tLoaded plants file.\n");
+				VTLOG("\tLoaded plants file, %d plants.\n", m_PIA.GetNumEntities());
 				m_PIA.SetFilename(plants_path);
 			}
 			else
-				VTLOG("\tCouldn't load VF file.\n");
+				VTLOG1("\tCouldn't load plants file.\n");
 		}
 	}
-	VTLOG1(" Creating Plant geometry..\n");
 	// Create the 3d plants
-#if 1
-	int created = m_PIA.CreatePlantNodes(m_progress_callback);
-	VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetNumEntities());
-	if (m_PIA.NumOffTerrain())
-		VTLOG("\t%d were off the terrain.\n", m_PIA.NumOffTerrain());
-
-	int i, size = m_PIA.GetNumEntities();
-	for (i = 0; i < size; i++)
+	VTLOG1(" Creating Plant geometry..\n");
+	if (m_Params.GetValueBool(STR_TREES_USE_SHADERS))
 	{
-		vtTransform *pTrans = m_PIA.GetPlantNode(i);
-
-		// add tree to scene graph
-		if (pTrans)
-			AddNodeToVegGrid(pTrans);
+		osg::GroupLOD::setGroupDistance(fVegDistance);
+		int created = m_PIA.CreatePlantShaderNodes(m_progress_callback);
+		m_pVegGroup = m_PIA.m_group;
+		m_pTerrainGroup->addChild(m_pVegGroup);
 	}
-#else
-	osg::GroupLOD::setGroupDistance(fVegDistance);
-	int created = m_PIA.CreatePlantShaderNodes(m_progress_callback);
-	m_pTerrainGroup->addChild(m_PIA.m_group);
-#endif
+	else
+	{
+		int created = m_PIA.CreatePlantNodes(m_progress_callback);
+		VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetNumEntities());
+		if (m_PIA.NumOffTerrain())
+			VTLOG("\t%d were off the terrain.\n", m_PIA.NumOffTerrain());
 
+		int i, size = m_PIA.GetNumEntities();
+		for (i = 0; i < size; i++)
+		{
+			vtTransform *pTrans = m_PIA.GetPlantNode(i);
+
+			// add tree to scene graph
+			if (pTrans)
+				AddNodeToVegGrid(pTrans);
+		}
+	}
 	VTLOG(" Vegetation: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 }
 
@@ -2697,6 +2703,8 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 			m_pOceanGeom->SetEnabled(bOn);
 		break;
 	case TFT_VEGETATION:
+		if (m_pVegGroup)
+			m_pVegGroup->SetEnabled(bOn);
 		if (m_pVegGrid)
 			m_pVegGrid->SetEnabled(bOn);
 		break;
@@ -2732,6 +2740,8 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 	case TFT_VEGETATION:
 		if (m_pVegGrid)
 			return m_pVegGrid->GetEnabled();
+		else if (m_pVegGroup)
+			return m_pVegGroup->GetEnabled();
 		break;
 	case TFT_STRUCTURES:
 		if (m_pStructGrid)

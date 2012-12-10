@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Oct 12 2011)
+// C++ code generated with wxFormBuilder (version Sep  8 2010)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -155,158 +155,159 @@
 #define ID_PLANTS 1108
 #define ID_TREEFILE 1109
 #define ID_VEGDISTANCE 1110
-#define ID_ROADS 1111
-#define ID_ROADFILE 1112
-#define ID_ROADHEIGHT 1113
-#define ID_ROADDISTANCE 1114
-#define ID_TEXROADS 1115
-#define ID_ROADCULTURE 1116
-#define ID_HIGHWAYS 1117
-#define ID_PAVED 1118
-#define ID_DIRT 1119
-#define ID_CONTENT_FILE 1120
-#define ID_STRUCTFILES 1121
-#define ID_STRUCT_DISTANCE 1122
-#define ID_CHECK_STRUCTURE_SHADOWS 1123
-#define ID_CHOICE_SHADOW_REZ 1124
-#define ID_DARKNESS 1125
-#define ID_SHADOWS_DEFAULT_ON 1126
-#define ID_SHADOWS_EVERY_FRAME 1127
-#define ID_SHADOW_LIMIT 1128
-#define ID_SHADOW_LIMIT_RADIUS 1129
-#define ID_CHECK_STRUCTURE_PAGING 1130
-#define ID_PAGING_MAX_STRUCTURES 1131
-#define ID_PAGE_OUT_DISTANCE 1132
-#define ID_OCEANPLANE 1133
-#define ID_OCEANPLANEOFFSET 1134
-#define ID_WATER 1135
-#define ID_FILENAME_WATER 1136
-#define ID_DEPRESSOCEAN 1137
-#define ID_DEPRESSOCEANOFFSET 1138
-#define ID_SKY 1139
-#define ID_SKYTEXTURE 1140
-#define ID_HORIZON 1141
-#define ID_FOG 1142
-#define ID_FOG_DISTANCE 1143
-#define ID_COLOR3 1144
-#define ID_BGCOLOR 1145
-#define ID_TEXT_INIT_TIME 1146
-#define ID_SET_INIT_TIME 1147
-#define ID_TIMEMOVES 1148
-#define ID_TIMESPEED 1149
-#define ID_RAWFILES 1150
-#define ID_STYLE 1151
-#define ID_IMAGEFILES 1152
-#define ID_OVERLAY_FILE 1153
-#define ID_OVERLAY_DOTDOTDOT 1154
-#define ID_OVERLAY_X 1155
-#define ID_OVERLAY_Y 1156
-#define ID_CHECK_OVERVIEW 1157
-#define ID_CHECK_COMPASS 1158
-#define ID_NAV_STYLE 1159
-#define ID_MINHEIGHT 1160
-#define ID_NAVSPEED 1161
-#define ID_ALLOW_ROLL 1162
-#define ID_LOCFILE 1163
-#define ID_INIT_LOCATION 1164
-#define ID_HITHER 1165
-#define ID_ANIM_PATHS 1166
-#define ID_SCENARIO_LIST 1167
-#define ID_NEW_SCENARIO 1168
-#define ID_DELETE_SCENARIO 1169
-#define ID_EDIT_SCENARIO 1170
-#define ID_MOVEUP_SCENARIO 1171
-#define ID_MOVEDOWN_SCENARIO 1172
-#define ID_CHOICE_SCENARIO 1173
-#define ID_TREECTRL 1174
-#define ID_ADD_PATH 1175
-#define ID_ADD_TERRAIN 1176
-#define ID_COPY 1177
-#define ID_DELETE 1178
-#define ID_EDIT_PARAMS 1179
-#define ID_FULLSCREEN 1180
-#define ID_STEREO 1181
-#define ID_STEREO1 1182
-#define ID_STEREO2 1183
-#define ID_STEREO3 1184
-#define ID_STEREO4 1185
-#define ID_WINX 1186
-#define ID_WINY 1187
-#define ID_WIN_XSIZE 1188
-#define ID_WIN_YSIZE 1189
-#define ID_SIZE_INSIDE 1190
-#define ID_TEXTURE_COMPRESSION 1191
-#define ID_DISABLE_MIPMAPS 1192
-#define ID_DIRECT_PICKING 1193
-#define ID_SELECTION_CUTOFF 1194
-#define ID_SELECTION_RADIUS 1195
-#define ID_PLANTSIZE 1196
-#define ID_ONLY_AVAILABLE_SPECIES 1197
-#define ID_CHOICE_CONTENT 1198
-#define ID_TERRAIN_PROGRESS 1199
-#define ID_FLY_IN 1200
-#define ID_ENABLE_JOYSTICK 1201
-#define ID_ENABLE_SPACENAV 1202
-#define ID_SCENARIO_NAME 1203
-#define ID_SCENARIO_VISIBLE_LAYERS 1204
-#define ID_SCENARIO_ADD_VISIBLE_LAYER 1205
-#define ID_SCENARIO_REMOVE_VISIBLE_LAYER 1206
-#define ID_SCENARIO_AVAILABLE_LAYERS 1207
-#define ID_SCENARIO_PREVIOUS 1208
-#define ID_SCENARIO_NEXT 1209
-#define ID_CHOICE_VEHICLES 1210
-#define ID_SET_VEHICLE_COLOR 1211
-#define ID_FEATURE_TYPE 1212
-#define ID_ENABLE_OBJECT_GEOM 1213
-#define ID_RADIO1 1214
-#define ID_OBJECT_GEOM_COLOR 1215
-#define ID_RADIO_USE_OBJECT_COLOR_FIELD 1216
-#define ID_OBJECT_COLOR_FIELD 1217
-#define ID_OBJECT_GEOM_HEIGHT 1218
-#define ID_OBJECT_GEOM_SIZE 1219
-#define ID_ENABLE_LINE_GEOM 1220
-#define ID_RADIO2 1221
-#define ID_LINE_GEOM_COLOR 1222
-#define ID_RADIO_USE_LINE_COLOR_FIELD 1223
-#define ID_LINE_COLOR_FIELD 1224
-#define ID_LINE_GEOM_HEIGHT 1225
-#define ID_LINE_WIDTH 1226
-#define ID_TESSELLATE 1227
-#define ID_ENABLE_TEXT_LABELS 1228
-#define ID_RADIO3 1229
-#define ID_TEXT_COLOR 1230
-#define ID_RADIO_USE_TEXT_COLOR_FIELD 1231
-#define ID_TEXT_COLOR_FIELD 1232
-#define ID_TEXT_FIELD 1233
-#define ID_LABEL_HEIGHT 1234
-#define ID_LABEL_SIZE 1235
-#define ID_FONT 1236
-#define ID_ENABLE_TEXTURE_OVERLAY 1237
-#define ID_TEXTURE_MODE 1238
-#define ID_PANEL1 1239
-#define ID_TARGET 1240
-#define ID_CURRENT 1241
-#define ID_SLIDER_PRANGE 1242
-#define ID_TEXT_PRANGE 1243
-#define ID_PANEL2 1244
-#define ID_TILE_STATUS 1245
-#define ID_TEXT_PAGEOUT 1246
-#define ID_SLIDER_PAGEOUT 1247
-#define ID_COUNT_CURRENT 1248
-#define ID_COUNT_MAXIMUM 1249
-#define ID_PANEL3 1250
-#define ID_SLIDER_FOG_DISTANCE 1251
-#define ID_SHADOWS 1252
-#define ID_AMBIENT_BIAS 1253
-#define ID_SLIDER_AMBIENT_BIAS 1254
-#define ID_TEXT_WIND_DIRECTION 1255
-#define ID_SLIDER_WIND_DIRECTION 1256
-#define ID_TEXT_WIND_SPEED 1257
-#define ID_SLIDER_WIND_SPEED 1258
-#define ID_PM_LISTCTRL 1259
-#define ID_TURN 1260
-#define ID_DISTANCE 1261
-#define ID_VIF_RECALCULATE 1262
+#define ID_TREES_USE_SHADERS 1111
+#define ID_ROADS 1112
+#define ID_ROADFILE 1113
+#define ID_ROADHEIGHT 1114
+#define ID_ROADDISTANCE 1115
+#define ID_TEXROADS 1116
+#define ID_ROADCULTURE 1117
+#define ID_HIGHWAYS 1118
+#define ID_PAVED 1119
+#define ID_DIRT 1120
+#define ID_CONTENT_FILE 1121
+#define ID_STRUCTFILES 1122
+#define ID_STRUCT_DISTANCE 1123
+#define ID_CHECK_STRUCTURE_SHADOWS 1124
+#define ID_CHOICE_SHADOW_REZ 1125
+#define ID_DARKNESS 1126
+#define ID_SHADOWS_DEFAULT_ON 1127
+#define ID_SHADOWS_EVERY_FRAME 1128
+#define ID_SHADOW_LIMIT 1129
+#define ID_SHADOW_LIMIT_RADIUS 1130
+#define ID_CHECK_STRUCTURE_PAGING 1131
+#define ID_PAGING_MAX_STRUCTURES 1132
+#define ID_PAGE_OUT_DISTANCE 1133
+#define ID_OCEANPLANE 1134
+#define ID_OCEANPLANEOFFSET 1135
+#define ID_WATER 1136
+#define ID_FILENAME_WATER 1137
+#define ID_DEPRESSOCEAN 1138
+#define ID_DEPRESSOCEANOFFSET 1139
+#define ID_SKY 1140
+#define ID_SKYTEXTURE 1141
+#define ID_HORIZON 1142
+#define ID_FOG 1143
+#define ID_FOG_DISTANCE 1144
+#define ID_COLOR3 1145
+#define ID_BGCOLOR 1146
+#define ID_TEXT_INIT_TIME 1147
+#define ID_SET_INIT_TIME 1148
+#define ID_TIMEMOVES 1149
+#define ID_TIMESPEED 1150
+#define ID_RAWFILES 1151
+#define ID_STYLE 1152
+#define ID_IMAGEFILES 1153
+#define ID_OVERLAY_FILE 1154
+#define ID_OVERLAY_DOTDOTDOT 1155
+#define ID_OVERLAY_X 1156
+#define ID_OVERLAY_Y 1157
+#define ID_CHECK_OVERVIEW 1158
+#define ID_CHECK_COMPASS 1159
+#define ID_NAV_STYLE 1160
+#define ID_MINHEIGHT 1161
+#define ID_NAVSPEED 1162
+#define ID_ALLOW_ROLL 1163
+#define ID_LOCFILE 1164
+#define ID_INIT_LOCATION 1165
+#define ID_HITHER 1166
+#define ID_ANIM_PATHS 1167
+#define ID_SCENARIO_LIST 1168
+#define ID_NEW_SCENARIO 1169
+#define ID_DELETE_SCENARIO 1170
+#define ID_EDIT_SCENARIO 1171
+#define ID_MOVEUP_SCENARIO 1172
+#define ID_MOVEDOWN_SCENARIO 1173
+#define ID_CHOICE_SCENARIO 1174
+#define ID_TREECTRL 1175
+#define ID_ADD_PATH 1176
+#define ID_ADD_TERRAIN 1177
+#define ID_COPY 1178
+#define ID_DELETE 1179
+#define ID_EDIT_PARAMS 1180
+#define ID_FULLSCREEN 1181
+#define ID_STEREO 1182
+#define ID_STEREO1 1183
+#define ID_STEREO2 1184
+#define ID_STEREO3 1185
+#define ID_STEREO4 1186
+#define ID_WINX 1187
+#define ID_WINY 1188
+#define ID_WIN_XSIZE 1189
+#define ID_WIN_YSIZE 1190
+#define ID_SIZE_INSIDE 1191
+#define ID_TEXTURE_COMPRESSION 1192
+#define ID_DISABLE_MIPMAPS 1193
+#define ID_DIRECT_PICKING 1194
+#define ID_SELECTION_CUTOFF 1195
+#define ID_SELECTION_RADIUS 1196
+#define ID_PLANTSIZE 1197
+#define ID_ONLY_AVAILABLE_SPECIES 1198
+#define ID_CHOICE_CONTENT 1199
+#define ID_TERRAIN_PROGRESS 1200
+#define ID_FLY_IN 1201
+#define ID_ENABLE_JOYSTICK 1202
+#define ID_ENABLE_SPACENAV 1203
+#define ID_SCENARIO_NAME 1204
+#define ID_SCENARIO_VISIBLE_LAYERS 1205
+#define ID_SCENARIO_ADD_VISIBLE_LAYER 1206
+#define ID_SCENARIO_REMOVE_VISIBLE_LAYER 1207
+#define ID_SCENARIO_AVAILABLE_LAYERS 1208
+#define ID_SCENARIO_PREVIOUS 1209
+#define ID_SCENARIO_NEXT 1210
+#define ID_CHOICE_VEHICLES 1211
+#define ID_SET_VEHICLE_COLOR 1212
+#define ID_FEATURE_TYPE 1213
+#define ID_ENABLE_OBJECT_GEOM 1214
+#define ID_RADIO1 1215
+#define ID_OBJECT_GEOM_COLOR 1216
+#define ID_RADIO_USE_OBJECT_COLOR_FIELD 1217
+#define ID_OBJECT_COLOR_FIELD 1218
+#define ID_OBJECT_GEOM_HEIGHT 1219
+#define ID_OBJECT_GEOM_SIZE 1220
+#define ID_ENABLE_LINE_GEOM 1221
+#define ID_RADIO2 1222
+#define ID_LINE_GEOM_COLOR 1223
+#define ID_RADIO_USE_LINE_COLOR_FIELD 1224
+#define ID_LINE_COLOR_FIELD 1225
+#define ID_LINE_GEOM_HEIGHT 1226
+#define ID_LINE_WIDTH 1227
+#define ID_TESSELLATE 1228
+#define ID_ENABLE_TEXT_LABELS 1229
+#define ID_RADIO3 1230
+#define ID_TEXT_COLOR 1231
+#define ID_RADIO_USE_TEXT_COLOR_FIELD 1232
+#define ID_TEXT_COLOR_FIELD 1233
+#define ID_TEXT_FIELD 1234
+#define ID_LABEL_HEIGHT 1235
+#define ID_LABEL_SIZE 1236
+#define ID_FONT 1237
+#define ID_ENABLE_TEXTURE_OVERLAY 1238
+#define ID_TEXTURE_MODE 1239
+#define ID_PANEL1 1240
+#define ID_TARGET 1241
+#define ID_CURRENT 1242
+#define ID_SLIDER_PRANGE 1243
+#define ID_TEXT_PRANGE 1244
+#define ID_PANEL2 1245
+#define ID_TILE_STATUS 1246
+#define ID_TEXT_PAGEOUT 1247
+#define ID_SLIDER_PAGEOUT 1248
+#define ID_COUNT_CURRENT 1249
+#define ID_COUNT_MAXIMUM 1250
+#define ID_PANEL3 1251
+#define ID_SLIDER_FOG_DISTANCE 1252
+#define ID_SHADOWS 1253
+#define ID_AMBIENT_BIAS 1254
+#define ID_SLIDER_AMBIENT_BIAS 1255
+#define ID_TEXT_WIND_DIRECTION 1256
+#define ID_SLIDER_WIND_DIRECTION 1257
+#define ID_TEXT_WIND_SPEED 1258
+#define ID_SLIDER_WIND_SPEED 1259
+#define ID_PM_LISTCTRL 1260
+#define ID_TURN 1261
+#define ID_DISTANCE 1262
+#define ID_VIF_RECALCULATE 1263
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class StartupDlgBase
@@ -333,7 +334,7 @@ class StartupDlgBase : public wxDialog
 	
 	public:
 		
-		StartupDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 364,241 ), long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		StartupDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 364,241 ), long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~StartupDlgBase();
 	
 };
@@ -368,7 +369,7 @@ class PlantDlgBase : public wxDialog
 	
 	public:
 		
-		PlantDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		PlantDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~PlantDlgBase();
 	
 };
@@ -416,7 +417,7 @@ class LocationDlgBase : public wxDialog
 	
 	public:
 		
-		LocationDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		LocationDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~LocationDlgBase();
 	
 };
@@ -469,7 +470,7 @@ class CameraDlgBase : public wxDialog
 	
 	public:
 		
-		CameraDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		CameraDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~CameraDlgBase();
 	
 };
@@ -487,7 +488,7 @@ class TextDlgBase : public wxDialog
 	
 	public:
 		
-		TextDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		TextDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~TextDlgBase();
 	
 };
@@ -505,7 +506,7 @@ class UtilDlgBase : public wxDialog
 	
 	public:
 		
-		UtilDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		UtilDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~UtilDlgBase();
 	
 };
@@ -579,6 +580,7 @@ class TParamsDlgBase : public wxDialog
 		wxStaticText* m_text14;
 		wxTextCtrl* mmegdistance;
 		wxStaticText* m_text15;
+		wxCheckBox* m_checkBox64;
 		wxCheckBox* id_roads;
 		wxStaticText* m_text16;
 		wxComboBox* m_roadfile;
@@ -701,7 +703,7 @@ class TParamsDlgBase : public wxDialog
 	
 	public:
 		
-		TParamsDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		TParamsDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~TParamsDlgBase();
 	
 };
@@ -727,7 +729,7 @@ class TerrManDlgBase : public wxDialog
 	
 	public:
 		
-		TerrManDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		TerrManDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~TerrManDlgBase();
 	
 };
@@ -782,7 +784,7 @@ class OptionsDlgBase : public wxDialog
 	
 	public:
 		
-		OptionsDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		OptionsDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~OptionsDlgBase();
 	
 };
@@ -806,7 +808,7 @@ class ScenariosPaneBase : public wxDialog
 	
 	public:
 		
-		ScenariosPaneBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		ScenariosPaneBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~ScenariosPaneBase();
 	
 };
@@ -832,7 +834,7 @@ class ScenarioParamsDlgBase : public wxDialog
 	
 	public:
 		
-		ScenarioParamsDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		ScenarioParamsDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~ScenarioParamsDlgBase();
 	
 };
@@ -859,7 +861,7 @@ class ScenarioSelectDlgBase : public wxDialog
 	
 	public:
 		
-		ScenarioSelectDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		ScenarioSelectDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~ScenarioSelectDlgBase();
 	
 };
@@ -883,7 +885,7 @@ class TextureDlgBase : public wxDialog
 	
 	public:
 		
-		TextureDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		TextureDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~TextureDlgBase();
 	
 };
@@ -906,7 +908,7 @@ class LayerAnimDlgBase : public wxDialog
 	
 	public:
 		
-		LayerAnimDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		LayerAnimDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~LayerAnimDlgBase();
 	
 };
@@ -926,7 +928,7 @@ class VehicleDlgBase : public wxDialog
 	
 	public:
 		
-		VehicleDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 164,92 ), long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		VehicleDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 164,92 ), long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~VehicleDlgBase();
 	
 };
@@ -996,7 +998,7 @@ class StyleDlgBase : public wxDialog
 	
 	public:
 		
-		StyleDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 480,-1 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER ); 
+		StyleDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 480,-1 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
 		~StyleDlgBase();
 	
 };
@@ -1049,7 +1051,7 @@ class PagingDlgBase : public wxDialog
 	
 	public:
 		
-		PagingDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		PagingDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~PagingDlgBase();
 	
 };
@@ -1095,7 +1097,7 @@ class EphemDlgBase : public wxDialog
 	
 	public:
 		
-		EphemDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL ); 
+		EphemDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~EphemDlgBase();
 	
 };
@@ -1117,7 +1119,7 @@ class PerformanceMonitorDlgBase : public wxDialog
 	
 	public:
 		
-		PerformanceMonitorDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Performance Monitor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
+		PerformanceMonitorDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Performance Monitor"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
 		~PerformanceMonitorDlgBase();
 	
 };
@@ -1152,7 +1154,7 @@ class DriveDlgBase : public wxDialog
 	
 	public:
 		
-		DriveDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Drive"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		DriveDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Drive"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~DriveDlgBase();
 	
 };
@@ -1181,7 +1183,7 @@ class VIADlgBase : public wxDialog
 	public:
 		wxString m_VIF; 
 		
-		VIADlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Visual Impact Calculation"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		VIADlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Visual Impact Calculation"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~VIADlgBase();
 	
 };
@@ -1216,7 +1218,7 @@ class VIAGDALOptionsDlgBase : public wxDialog
 		wxString m_DataType; 
 		wxString m_ScaleFactor; 
 		
-		VIAGDALOptionsDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Creation Options"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 692,594 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		VIAGDALOptionsDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Creation Options"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 692,594 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~VIAGDALOptionsDlgBase();
 	
 };
