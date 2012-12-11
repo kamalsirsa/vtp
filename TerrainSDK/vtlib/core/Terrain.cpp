@@ -26,7 +26,6 @@
 #include "SMTerrain.h"
 #include "BruteTerrain.h"
 #include "SRTerrain.h"
-#include "DemeterTerrain.h"
 #include "TiledGeom.h"
 #include "vtlib/vtosg/ExternalHeightField3d.h"
 // add your own terrain method header here!
@@ -673,10 +672,6 @@ bool vtTerrain::_CreateDynamicTerrain()
 	}
 	else if (method == LM_DEMETER)
 	{
-#if 0	// disabled until its working
-		m_pDynGeom = new DemeterTerrain;
-		m_pDynGeom->setName("Demeter Geom");
-#endif
 	}
 	else if (method == LM_BRUTE)
 	{

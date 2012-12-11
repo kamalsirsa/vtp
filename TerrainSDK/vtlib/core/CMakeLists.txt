@@ -8,7 +8,6 @@ set(VTLIB_CORE_SOURCE_FILES
 		../core/Content3d.cpp
 		../core/Contours.cpp
 		../core/BruteTerrain.cpp
-		../core/DemeterTerrain.cpp
 		../core/DynTerrain.cpp
 		../core/Elastic.cpp
 		../core/Engine.cpp
@@ -60,7 +59,6 @@ set(VTLIB_CORE_HEADER_FILES
 		../core/Content3d.h
 		../core/Contours.h
 		../core/BruteTerrain.h
-		../core/DemeterTerrain.h
 		../core/DynTerrain.h
 		../core/Elastic.h
 		../core/Engine.h

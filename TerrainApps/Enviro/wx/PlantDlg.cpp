@@ -18,7 +18,7 @@
 
 #include "PlantDlg.h"
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Trees.h"
+#include "vtlib/core/Plants3d.h"
 #include "vtdata/vtLog.h"
 #include "EnviroGUI.h"
 
