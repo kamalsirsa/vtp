@@ -1,12 +1,12 @@
 //
-// Trees.h
+// Plants3d.h
 //
 // Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
-#ifndef TERRAINTREESH
-#define TERRAINTREESH
+#ifndef VTLIB_PLANTS3D_H
+#define VTLIB_PLANTS3D_H
 
 /** \defgroup veg Vegetation
  * These classes are used for vegetation.  Vegetation in the vtlib library
@@ -289,5 +289,5 @@ protected:
 
 /*@}*/	// Group veg
 
-#endif	// TERRAINTREESH
+#endif	// VTLIB_PLANTS3D_H
 

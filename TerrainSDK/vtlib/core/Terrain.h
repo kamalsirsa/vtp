@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,7 +22,7 @@
 #include "TextureUnitManager.h"
 #include "TiledGeom.h"
 #include "TParams.h"
-#include "Trees.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
+#include "Plants3d.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
 #include "vtTin3d.h"
 
 #include <memory>

@@ -1,5 +1,5 @@
 //
-// Trees.cpp
+// Plants3d.cpp
 //
 // Implementation for the following classes:
 //
@@ -20,7 +20,7 @@
 #include "vtdata/DataPath.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/HeightField.h"
-#include "Trees.h"
+#include "Plants3d.h"
 #include "Light.h"
 #include "GeomUtil.h"	// for CreateBoundSphereGeom
 

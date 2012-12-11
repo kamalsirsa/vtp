@@ -23,6 +23,7 @@ set(VTLIB_CORE_SOURCE_FILES
 		../core/NavEngines.cpp
 		../core/PagedLodGrid.cpp
 		../core/PickEngines.cpp
+		../core/Plants3d.cpp
 		../core/Roads.cpp
 		../core/Route.cpp
 		../core/SkyDome.cpp
@@ -37,7 +38,6 @@ set(VTLIB_CORE_SOURCE_FILES
 		../core/TiledGeom.cpp
 		../core/TimeEngines.cpp
 		../core/TParams.cpp
-		../core/Trees.cpp
 		../core/TVTerrain.cpp 
 		../core/Vehicles.cpp
 		../core/vtSOG.cpp 
@@ -79,8 +79,9 @@ set(VTLIB_CORE_HEADER_FILES
 		../core/LodGrid.h
 		../core/MapOverviewEngine.h
 		../core/NavEngines.h
-		../core/PickEngines.h
 		../core/PagedLodGrid.h
+		../core/PickEngines.h
+		../core/Plants3d.h
 		../core/Roads.h
 		../core/Route.h
 		../core/SkyDome.h
@@ -96,7 +97,6 @@ set(VTLIB_CORE_HEADER_FILES
 		../core/TiledGeom.h
 		../core/TimeEngines.h
 		../core/TParams.h
-		../core/Trees.h
 		../core/TVTerrain.h
 		../core/Vehicles.h
 		../vtlib.h
