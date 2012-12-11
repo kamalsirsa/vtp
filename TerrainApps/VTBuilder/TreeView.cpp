@@ -185,11 +185,6 @@ void MyTreeCtrl::RefreshTreeItems(Builder *pBuilder)
 	wxTreeItemId waterId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Water, _("Water"));
 	SetItemData(waterId, new MyTreeItemData(LT_WATER));
 
-#if SUPPORT_TRANSIT
-	wxTreeItemId transId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Transit, _("Transit"));
-	SetItemData(transId, new MyTreeItemData(LT_TRANSIT));
-#endif
-
 	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, _("Utilities"));
 	SetItemData(utilityId, new MyTreeItemData(LT_UTILITY));
 
@@ -229,11 +224,6 @@ void MyTreeCtrl::RefreshTreeItems(Builder *pBuilder)
 			case LT_WATER:
 				hItem = AppendItem(waterId, str, image, imageSel);
 				break;
-#if SUPPORT_TRANSIT
-			case LT_TRANSIT:
-				hItem = AppendItem(transId, str, image, imageSel);
-				break;
-#endif
 			case LT_UTILITY:
 				hItem = AppendItem(utilityId, str, image, imageSel);
 				break;
@@ -264,9 +254,6 @@ void MyTreeCtrl::RefreshTreeItems(Builder *pBuilder)
 	Expand(buildId);
 	Expand(vegId);
 	Expand(waterId);
-#if SUPPORT_TRANSIT
-	Expand(transId);
-#endif
 	Expand(utilityId);
 	Expand(rawId);
 

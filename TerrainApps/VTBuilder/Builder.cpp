@@ -104,9 +104,6 @@ Builder::Builder()
 		vtLayer::LayerTypeNames.Add(_("Water"));
 		vtLayer::LayerTypeNames.Add(_("Vegetation"));
 		vtLayer::LayerTypeNames.Add(_("Utility"));
-#if SUPPORT_TRANSIT
-		vtLayer::LayerTypeNames.Add(_("Transit"));
-#endif
 	}
 
 	// We might need libMini's conversion hook, so set that up
@@ -333,14 +330,6 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 		else
 			delete pEL;
 	}
-#if SUPPORT_TRANSIT
-	if (ext.CmpNoCase(_T("xml")) == 0)
-	{
-		vtTransitLayer *pTL = new vtTransitLayer;
-		if (pTL->Load(fname))
-			pLayer = pTL;
-	}
-#endif
 	if (ext.CmpNoCase(_T("vtst")) == 0 ||
 		fname.Right(8).CmpNoCase(_T(".vtst.gz")) == 0)
 	{

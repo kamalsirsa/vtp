@@ -22,7 +22,6 @@
 #include "RoadLayer.h"
 #include "StructLayer.h"
 #include "VegLayer.h"
-#include "TransitLayer.h"
 #include "UtilityLayer.h"
 #include "RawLayer.h"
 
@@ -36,9 +35,6 @@ const wxChar *vtLayer::LayerFileExtension[LAYER_TYPES] =
 	_T(".vtst"),
 	_T(".hyd"),
 	_T(".vf"),
-#if SUPPORT_TRANSIT
-	_T(".utl"),
-#endif
 	_T(".xml")
 };
 
@@ -248,11 +244,6 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 	case LT_VEG:
 		pLayer = new vtVegLayer;
 		break;
-#if SUPPORT_TRANSIT
-	case LT_TRANSIT:
-		pLayer = new vtTransitLayer;
-		break;
-#endif
 	}
 	return pLayer;
 }

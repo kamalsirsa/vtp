@@ -22,9 +22,6 @@ enum LayerType
 	LT_WATER,
 	LT_VEG,
 	LT_UTILITY,
-#if SUPPORT_TRANSIT
-	LT_TRANSIT,
-#endif
 	LAYER_TYPES
 };
 

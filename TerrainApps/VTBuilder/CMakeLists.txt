@@ -21,7 +21,7 @@ else(MSVC)
 endif(MSVC)
 
 # Specify common preprocessor definitions for this target
-set_property(TARGET BuilderLib APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANSIT=0 USE_OPENGL=1)
+set_property(TARGET BuilderLib APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL=1)
 
 # Windows specific stuff
 if (WIN32)
@@ -30,7 +30,7 @@ endif (WIN32)
 
 
 set(VTBUILDER_SOURCE_FILES
-	App.cpp Frame.cpp FrameMenus.cpp Geocode.cpp RoadFix.cpp Special.cpp StatusBar.cpp TransitLayer.cpp TreeView.cpp)
+	App.cpp Frame.cpp FrameMenus.cpp Geocode.cpp RoadFix.cpp Special.cpp StatusBar.cpp TreeView.cpp)
 set(VTBUILDER_DIALOG_SOURCE_FILES
 	DistanceDlg2d.cpp DistribVegDlg.cpp FeatInfoDlg.cpp GenGridDlg.cpp GeocodeDlg.cpp ImageMapDlg.cpp LayerPropDlg.cpp
 	MapServerDlg.cpp MatchDlg.cpp NodeDlg.cpp OptionsDlg.cpp PrefDlg.cpp RenderDlg.cpp SelectDlg.cpp
@@ -38,7 +38,7 @@ set(VTBUILDER_DIALOG_SOURCE_FILES
 set(VTBUILDER_HEADER_FILES
 	App.h DistanceDlg2d.h DistribVegDlg.h FeatInfoDlg.h FileFilters.h Frame.h GenGridDlg.h GeocodeDlg.h ImageMapDlg.h
 	LayerPropDlg.h MapServerDlg.h MatchDlg.h MenuEnum.h OptionsDlg.h PrefDlg.h RenderDlg.h RoadMapEdit.h
-	SelectDlg.h StatusBar.h TransitLayer.h TreeView.h TSDlg.h VegDlg.h VegPointOptions.h)
+	SelectDlg.h StatusBar.h TreeView.h TSDlg.h VegDlg.h VegPointOptions.h)
 set(VTBUILDER_RC_FILES
 	VTBuilder.rc)
 if(MSVC)
@@ -59,7 +59,7 @@ install(TARGETS VTBuilder RUNTIME DESTINATION bin
 target_link_libraries(VTBuilder BuilderLib vtui vtdata xmlhelper minidata unzip)
 
 # Specify common preprocessor definitions for this target
-set_property(TARGET VTBuilder APPEND PROPERTY COMPILE_DEFINITIONS SUPPORT_TRANSIT=0 USE_OPENGL=1)
+set_property(TARGET VTBuilder APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL=1)
 
 # Windows specific stuff
 if (WIN32)
