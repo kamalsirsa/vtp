@@ -260,42 +260,42 @@ osg::StateSet *vtPlantAppearance3d::GetOrCreateShaderStateset()
 
 	osg::StateSet *stateset = MakeTextureStatesetForPlantBillboard(fname);
 
-    osg::Program* program = new osg::Program;
-    stateset->setAttribute(program);
+	osg::Program* program = new osg::Program;
+	stateset->setAttribute(program);
 
-    ///////////////////////////////////////////////////////////////////
-    // vertex shader using just Vec4 coefficients
-    char vertexShaderSource[] = 
-        "varying vec2 texcoord;\n"
-        "\n"
-        "void main(void)\n"
-        "{\n"
-        "    vec3 position = gl_Vertex.xyz * gl_Color.w + gl_Color.xyz;\n"
-        "    gl_Position     = gl_ModelViewProjectionMatrix * vec4(position,1.0);\n"
-        "    gl_FrontColor = vec4(1.0,1.0,1.0,1.0);\n"
-        "    texcoord = gl_MultiTexCoord0.st;\n"
-        "}\n";
+	///////////////////////////////////////////////////////////////////
+	// vertex shader using just Vec4 coefficients
+	char vertexShaderSource[] = 
+		"varying vec2 texcoord;\n"
+		"\n"
+		"void main(void)\n"
+		"{\n"
+		"	vec3 position = gl_Vertex.xyz * gl_Color.w + gl_Color.xyz;\n"
+		"	gl_Position	 = gl_ModelViewProjectionMatrix * vec4(position,1.0);\n"
+		"	gl_FrontColor = vec4(1.0,1.0,1.0,1.0);\n"
+		"	texcoord = gl_MultiTexCoord0.st;\n"
+		"}\n";
 
-    //////////////////////////////////////////////////////////////////
-    // fragment shader
-    //
-    char fragmentShaderSource[] = 
-        "uniform sampler2D baseTexture; \n"
-        "varying vec2 texcoord; \n"
-        "\n"
-        "void main(void) \n"
-        "{ \n"
-        "    gl_FragColor = texture2D(baseTexture, texcoord); \n"
-        "}\n";
+	//////////////////////////////////////////////////////////////////
+	// fragment shader
+	//
+	char fragmentShaderSource[] = 
+		"uniform sampler2D baseTexture; \n"
+		"varying vec2 texcoord; \n"
+		"\n"
+		"void main(void) \n"
+		"{ \n"
+		"	gl_FragColor = texture2D(baseTexture, texcoord); \n"
+		"}\n";
 
-    osg::Shader* vertex_shader = new osg::Shader(osg::Shader::VERTEX, vertexShaderSource);
-    program->addShader(vertex_shader);
+	osg::Shader* vertex_shader = new osg::Shader(osg::Shader::VERTEX, vertexShaderSource);
+	program->addShader(vertex_shader);
 
-    osg::Shader* fragment_shader = new osg::Shader(osg::Shader::FRAGMENT, fragmentShaderSource);
-    program->addShader(fragment_shader);
-    
-    osg::Uniform* baseTextureSampler = new osg::Uniform("baseTexture",0);
-    stateset->addUniform(baseTextureSampler);
+	osg::Shader* fragment_shader = new osg::Shader(osg::Shader::FRAGMENT, fragmentShaderSource);
+	program->addShader(fragment_shader);
+	
+	osg::Uniform* baseTextureSampler = new osg::Uniform("baseTexture",0);
+	stateset->addUniform(baseTextureSampler);
 
 	// Store it
 	m_pShaderStateset = stateset;
@@ -583,139 +583,139 @@ void vtPlantInstance3d::ReleaseContents()
 
 void PlantCell::computeBound()
 {
-    _bb.init();
-    for(CellList::iterator citr=_cells.begin();
-        citr!=_cells.end();
-        ++citr)
-    {
-        (*citr)->computeBound();
-        _bb.expandBy((*citr)->_bb);
-    }
+	_bb.init();
+	for(CellList::iterator citr=_cells.begin();
+		citr!=_cells.end();
+		++citr)
+	{
+		(*citr)->computeBound();
+		_bb.expandBy((*citr)->_bb);
+	}
 
-    for(TreeList::iterator titr=_trees.begin();
-        titr!=_trees.end();
-        ++titr)
-    {
-        _bb.expandBy((*titr).m_position);
-    }
+	for(TreeList::iterator titr=_trees.begin();
+		titr!=_trees.end();
+		++titr)
+	{
+		_bb.expandBy((*titr).m_pos);
+	}
 }
 
 bool PlantCell::divide(unsigned int maxNumTreesPerCell)
 {
-    if (_trees.size() <= maxNumTreesPerCell)
+	if (_trees.size() <= maxNumTreesPerCell)
 		return false;
 
-    computeBound();
+	computeBound();
 
-    float radius = _bb.radius();
-    float divide_distance = radius*0.7f;
-    if (divide((_bb.xMax()-_bb.xMin())>divide_distance,
+	float radius = _bb.radius();
+	float divide_distance = radius*0.7f;
+	if (divide((_bb.xMax()-_bb.xMin())>divide_distance,
 			   (_bb.yMax()-_bb.yMin())>divide_distance,
 			   (_bb.zMax()-_bb.zMin())>divide_distance))
-    {
-        // recusively divide the new cells till maxNumTreesPerCell is met.
-        for(CellList::iterator citr=_cells.begin(); citr!=_cells.end(); ++citr)
-        {
-            (*citr)->divide(maxNumTreesPerCell);
-        }
-        return true;
+	{
+		// recusively divide the new cells till maxNumTreesPerCell is met.
+		for(CellList::iterator citr=_cells.begin(); citr!=_cells.end(); ++citr)
+		{
+			(*citr)->divide(maxNumTreesPerCell);
+		}
+		return true;
    }
    else
-        return false;
+		return false;
 }
 
 bool PlantCell::divide(bool xAxis, bool yAxis, bool zAxis)
 {
-    if (!(xAxis || yAxis || zAxis))
+	if (!(xAxis || yAxis || zAxis))
 		return false;
 
-    if (_cells.empty())
-        _cells.push_back(new PlantCell(_bb));
+	if (_cells.empty())
+		_cells.push_back(new PlantCell(_bb));
 
-    if (xAxis)
-    {
-        unsigned int numCellsToDivide = _cells.size();
-        for(unsigned int i=0; i < numCellsToDivide; ++i)
-        {
-            PlantCell* orig_cell = _cells[i].get();
-            PlantCell* new_cell = new PlantCell(orig_cell->_bb);
+	if (xAxis)
+	{
+		unsigned int numCellsToDivide = _cells.size();
+		for(unsigned int i=0; i < numCellsToDivide; ++i)
+		{
+			PlantCell* orig_cell = _cells[i].get();
+			PlantCell* new_cell = new PlantCell(orig_cell->_bb);
 
-            float xCenter = (orig_cell->_bb.xMin()+orig_cell->_bb.xMax())*0.5f;
-            orig_cell->_bb.xMax() = xCenter;
-            new_cell->_bb.xMin() = xCenter;
+			float xCenter = (orig_cell->_bb.xMin()+orig_cell->_bb.xMax())*0.5f;
+			orig_cell->_bb.xMax() = xCenter;
+			new_cell->_bb.xMin() = xCenter;
 
-            _cells.push_back(new_cell);
-        }
-    }
-    if (yAxis)
-    {
-        unsigned int numCellsToDivide = _cells.size();
-        for(unsigned int i=0; i < numCellsToDivide; ++i)
-        {
-            PlantCell* orig_cell = _cells[i].get();
-            PlantCell* new_cell = new PlantCell(orig_cell->_bb);
+			_cells.push_back(new_cell);
+		}
+	}
+	if (yAxis)
+	{
+		unsigned int numCellsToDivide = _cells.size();
+		for(unsigned int i=0; i < numCellsToDivide; ++i)
+		{
+			PlantCell* orig_cell = _cells[i].get();
+			PlantCell* new_cell = new PlantCell(orig_cell->_bb);
 
-            float yCenter = (orig_cell->_bb.yMin()+orig_cell->_bb.yMax())*0.5f;
-            orig_cell->_bb.yMax() = yCenter;
-            new_cell->_bb.yMin() = yCenter;
+			float yCenter = (orig_cell->_bb.yMin()+orig_cell->_bb.yMax())*0.5f;
+			orig_cell->_bb.yMax() = yCenter;
+			new_cell->_bb.yMin() = yCenter;
 
-            _cells.push_back(new_cell);
-        }
-    }
-    if (zAxis)
-    {
-        unsigned int numCellsToDivide = _cells.size();
-        for(unsigned int i=0; i < numCellsToDivide; ++i)
-        {
-            PlantCell* orig_cell = _cells[i].get();
-            PlantCell* new_cell = new PlantCell(orig_cell->_bb);
+			_cells.push_back(new_cell);
+		}
+	}
+	if (zAxis)
+	{
+		unsigned int numCellsToDivide = _cells.size();
+		for(unsigned int i=0; i < numCellsToDivide; ++i)
+		{
+			PlantCell* orig_cell = _cells[i].get();
+			PlantCell* new_cell = new PlantCell(orig_cell->_bb);
 
-            float zCenter = (orig_cell->_bb.zMin()+orig_cell->_bb.zMax())*0.5f;
-            orig_cell->_bb.zMax() = zCenter;
-            new_cell->_bb.zMin() = zCenter;
+			float zCenter = (orig_cell->_bb.zMin()+orig_cell->_bb.zMax())*0.5f;
+			orig_cell->_bb.zMax() = zCenter;
+			new_cell->_bb.zMin() = zCenter;
 
-            _cells.push_back(new_cell);
-        }
-    }
-    bin();
-    return true;
+			_cells.push_back(new_cell);
+		}
+	}
+	bin();
+	return true;
 }
 
 void PlantCell::bin()
 {   
-    // put trees in appropriate cells.
-    TreeList treesNotAssigned;
-    for(TreeList::iterator titr=_trees.begin(); titr!=_trees.end(); ++titr)
-    {
-        const vtPlantInstanceShader &tree = *titr;
-        bool assigned = false;
-        for(CellList::iterator citr=_cells.begin();
-            citr!=_cells.end() && !assigned;
-            ++citr)
-        {
-            if ((*citr)->contains(tree.m_position))
-            {
-                (*citr)->addTree(tree);
-                assigned = true;
-            }
-        }
-        if (!assigned) treesNotAssigned.push_back(tree);
-    }
+	// put trees in appropriate cells.
+	TreeList treesNotAssigned;
+	for(TreeList::iterator titr=_trees.begin(); titr!=_trees.end(); ++titr)
+	{
+		const vtPlantInstanceShader &tree = *titr;
+		bool assigned = false;
+		for(CellList::iterator citr=_cells.begin();
+			citr!=_cells.end() && !assigned;
+			++citr)
+		{
+			if ((*citr)->contains(tree.m_pos))
+			{
+				(*citr)->addTree(tree);
+				assigned = true;
+			}
+		}
+		if (!assigned) treesNotAssigned.push_back(tree);
+	}
 
-    // put the unassigned trees back into the original local tree list.
-    _trees.swap(treesNotAssigned);
+	// put the unassigned trees back into the original local tree list.
+	_trees.swap(treesNotAssigned);
 
 
-    // prune empty cells.
-    CellList cellsNotEmpty;
-    for(CellList::iterator citr=_cells.begin(); citr!=_cells.end(); ++citr)
-    {
-        if (!((*citr)->_trees.empty()))
-        {
-            cellsNotEmpty.push_back(*citr);
-        }
-    }
-    _cells.swap(cellsNotEmpty);
+	// prune empty cells.
+	CellList cellsNotEmpty;
+	for(CellList::iterator citr=_cells.begin(); citr!=_cells.end(); ++citr)
+	{
+		if (!((*citr)->_trees.empty()))
+		{
+			cellsNotEmpty.push_back(*citr);
+		}
+	}
+	_cells.swap(cellsNotEmpty);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -766,35 +766,37 @@ int vtPlantInstanceArray3d::CreatePlantNodes(bool progress_dialog(int))
 	return created;
 }
 
-osg::Geometry* createOrthogonalQuadsNoColor( const osg::Vec3& pos, float w, float h)
+osg::Geometry *MakeOrthogonalQuads(float w, float h)
 {
 	// set up the coords
 	osg::Vec3Array &v = *(new osg::Vec3Array(8));
 	osg::Vec2Array &t = *(new osg::Vec2Array(8));
-    
+	
+	// This provides a random orientation, but due to the way we're re-using
+	// the geometry, it's only random per PlantCell.
 	float rotation = random(osg::PI/2.0f);
 	float sw = sinf(rotation)*w*0.5f;
 	float cw = cosf(rotation)*w*0.5f;
 
-	v[0].set(pos.x()-sw, pos.y(),   pos.z()-cw);
-	v[1].set(pos.x()+sw, pos.y(),   pos.z()+cw);
-	v[2].set(pos.x()+sw, pos.y()+h, pos.z()+cw);
-	v[3].set(pos.x()-sw, pos.y()+h, pos.z()-cw);
-						 			  			
-	v[4].set(pos.x()-cw, pos.y(),   pos.z()+sw);
-	v[5].set(pos.x()+cw, pos.y(),   pos.z()-sw);
-	v[6].set(pos.x()+cw, pos.y()+h, pos.z()-sw);
-	v[7].set(pos.x()-cw, pos.y()+h, pos.z()+sw);
+	v[0].set(-sw, 0.0f, -cw);
+	v[1].set(+sw, 0.0f,  cw);
+	v[2].set(+sw, h,	 cw);
+	v[3].set(-sw, h,	-cw);
 
-	t[0].set(0.0f,0.0f);
-	t[1].set(1.0f,0.0f);
-	t[2].set(1.0f,1.0f);
-	t[3].set(0.0f,1.0f);
+	v[4].set(-cw, 0.0f,  sw);
+	v[5].set(+cw, 0.0f, -sw);
+	v[6].set(+cw, h,	-sw);
+	v[7].set(-cw, h,	 sw);
 
-	t[4].set(0.0f,0.0f);
-	t[5].set(1.0f,0.0f);
-	t[6].set(1.0f,1.0f);
-	t[7].set(0.0f,1.0f);
+	t[0].set(0.0f, 0.0f);
+	t[1].set(1.0f, 0.0f);
+	t[2].set(1.0f, 1.0f);
+	t[3].set(0.0f, 1.0f);
+				   
+	t[4].set(0.0f, 0.0f);
+	t[5].set(1.0f, 0.0f);
+	t[6].set(1.0f, 1.0f);
+	t[7].set(0.0f, 1.0f);
 
 	osg::Geometry *geom = new osg::Geometry;
 	geom->setVertexArray(&v);
@@ -804,13 +806,13 @@ osg::Geometry* createOrthogonalQuadsNoColor( const osg::Vec3& pos, float w, floa
 }
 
 void vtPlantInstanceArray3d::AddShaderGeometryForPlant(PlantCell *cell,
-	vtPlantInstanceShader &pis)
+	vtPlantInstanceShader &pi)
 {
-	vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(pis.m_species_id);
+	vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(pi.m_species_id);
 	if (!ps)
 		return;
 
-	vtPlantAppearance3d *pa = ps->GetAppearanceByHeight(pis.m_size);
+	vtPlantAppearance3d *pa = ps->GetAppearanceByHeight(pi.m_size);
 	if (!pa)
 		return;
 
@@ -826,8 +828,7 @@ void vtPlantInstanceArray3d::AddShaderGeometryForPlant(PlantCell *cell,
 	else
 		psd = it->second;
 
-	psd->addPlant(osg::Vec4(pis.m_position.x(), pis.m_position.y(),
-		pis.m_position.z(), pis.m_size));
+	psd->addPlant(osg::Vec4(pi.m_pos.x(), pi.m_pos.y(), pi.m_pos.z(), pi.m_size));
 }
 
 PlantShaderDrawable *vtPlantInstanceArray3d::MakePlantShaderDrawable(PlantCell *cell,
@@ -835,11 +836,13 @@ PlantShaderDrawable *vtPlantInstanceArray3d::MakePlantShaderDrawable(PlantCell *
 {
 	osg::StateSet *stateset = pa->GetOrCreateShaderStateset();
 
-	osg::Geometry* shared_geometry = createOrthogonalQuadsNoColor(
-		osg::Vec3(0.0f,0.0f,0.0f),1.0f,1.0f);
+	// We will scale later by height, so make our quad with height=1.0 with
+	// proportional width.
+	const float width = pa->m_width / pa->m_height;
+	osg::Geometry* two_quads = MakeOrthogonalQuads(width, 1.0f);
 
 	PlantShaderDrawable *shader_drawable = new PlantShaderDrawable;
-	shader_drawable->setGeometry(shared_geometry);
+	shader_drawable->setGeometry(two_quads);
 
 	osg::Geode* geode = new osg::Geode;
 	geode->setStateSet(stateset);
@@ -886,7 +889,7 @@ osg::Node *vtPlantInstanceArray3d::CreateCellNodes(PlantCell *cell)
 		{
 			cell->m_group->addChild(CreateCellNodes(itr->get()));
 		}
-    }
+	}
 
 	cell->computeBound();
 	cell->m_group->setDistance(cell->_bb.radius());
@@ -895,6 +898,7 @@ osg::Node *vtPlantInstanceArray3d::CreateCellNodes(PlantCell *cell)
 	return cell->m_group;
 }
 
+// Divide the cells until there are no more than this many plants in each cell.
 const int kMaxPlantsPerCell = 4000;
 
 int vtPlantInstanceArray3d::CreatePlantShaderNodes(bool progress_dialog(int))
@@ -913,7 +917,7 @@ int vtPlantInstanceArray3d::CreatePlantShaderNodes(bool progress_dialog(int))
 	{
 		GetPlant(i, pi.m_size, pi.m_species_id);
 		m_pHeightField->ConvertEarthToSurfacePoint(GetPoint(i), p3);
-		pi.m_position.set(p3.x, p3.y, p3.z);
+		pi.m_pos.set(p3.x, p3.y, p3.z);
 
 		cell->addTree(pi);
 	}
@@ -995,9 +999,7 @@ void vtPlantInstanceArray3d::ReleasePlantGeometry(uint i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (inst3d)
-	{
 		inst3d->ReleaseContents();
-	}
 }
 
 vtTransform *vtPlantInstanceArray3d::GetPlantNode(uint i) const
@@ -1062,7 +1064,6 @@ void vtPlantInstanceArray3d::UpdateTransform(uint i)
 
 	inst3d->m_pContainer->SetTrans(p3);
 }
-
 
 //
 // Note you must remove the plant from the scene graph before deleting it!

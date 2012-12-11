@@ -181,9 +181,13 @@ public:
 	vtGeode		*m_pHighlight;	// The wireframe highlight
 };
 
+/**
+ * A simple structure (used by value) which stores just the information about 
+ * each plant that we need to place it into a Cell and construct it.
+ */
 struct vtPlantInstanceShader : public osg::Referenced
 {
-	osg::Vec3 m_position;
+	osg::Vec3 m_pos;
 	float m_size;
 	short m_species_id;
 };
