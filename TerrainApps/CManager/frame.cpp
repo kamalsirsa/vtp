@@ -36,6 +36,7 @@
 #include "ModelDlg.h"
 #include "LightDlg.h"
 #include "wxosg/SceneGraphDlg.h"
+#include "wxosg/GraphicsWindowWX.h"
 
 #include "osgUtil/SmoothingVisitor"
 
@@ -125,6 +126,7 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_VIEW_RULERS, vtFrame::OnUpdateViewRulers)
 	EVT_MENU(ID_VIEW_WIREFRAME, vtFrame::OnViewWireframe)
 	EVT_UPDATE_UI(ID_VIEW_WIREFRAME, vtFrame::OnUpdateViewWireframe)
+	EVT_MENU(ID_VIEW_STATS, vtFrame::OnViewStats)
 	EVT_MENU(ID_VIEW_LIGHTS, vtFrame::OnViewLights)
 
 	EVT_UPDATE_UI(ID_ITEM_SAVESOG, vtFrame::OnUpdateItemSaveSOG)
@@ -330,6 +332,7 @@ void vtFrame::CreateMenus()
 	viewMenu->AppendCheckItem(ID_VIEW_ORIGIN, _T("Show Local Origin"));
 	viewMenu->AppendCheckItem(ID_VIEW_RULERS, _T("Show Rulers"));
 	viewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("&Wireframe\tCtrl+W"));
+	viewMenu->Append(ID_VIEW_STATS, _T("Statistics (cycle)\tx"));
 	viewMenu->Append(ID_VIEW_LIGHTS, _T("Lights"));
 
 	wxMenu *helpMenu = new wxMenu;
@@ -362,6 +365,8 @@ void vtFrame::CreateToolbar()
 	AddTool(ID_VIEW_ORIGIN, wxBITMAP(axes), _("Show Axes"), true);
 	AddTool(ID_VIEW_RULERS, wxBITMAP(rulers), _("Show Rulers"), true);
 	AddTool(ID_VIEW_WIREFRAME, wxBITMAP(wireframe), _("Wireframe"), true);
+	m_pToolbar->AddSeparator();
+	AddTool(ID_VIEW_STATS, wxBITMAP(stats), _("Statistics (cycle)"), false);
 
 	m_pToolbar->Realize();
 }
@@ -932,6 +937,17 @@ void vtFrame::OnViewWireframe(wxCommandEvent& event)
 void vtFrame::OnUpdateViewWireframe(wxUpdateUIEvent& event)
 {
 	event.Check(m_bWireframe);
+}
+
+void vtFrame::OnViewStats(wxCommandEvent& event)
+{
+#ifdef USE_OSG_STATS
+	// Yes, this is a hack, but it doesn't seem that StatsHandler can be cycled
+	//  any other way than by key event.
+	GraphicsWindowWX* pGW = (GraphicsWindowWX*)vtGetScene()->GetGraphicsContext();
+	if ((NULL != pGW) && pGW->valid())
+		pGW->getEventQueue()->keyPress('x');
+#endif
 }
 
 void vtFrame::OnViewLights(wxCommandEvent& event)

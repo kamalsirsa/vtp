@@ -83,6 +83,7 @@ protected:
 	void OnUpdateViewRulers(wxUpdateUIEvent& event);
 	void OnViewWireframe(wxCommandEvent& event);
 	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
+	void OnViewStats(wxCommandEvent& event);
 	void OnViewLights(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
 
