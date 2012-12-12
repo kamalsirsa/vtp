@@ -384,7 +384,7 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 		VTLOG("Couldn't open file %s\n", (const char *) fname);
 		return false;
 	}
-	bool bIsDB = !strExt.Left(2).CmpNoCase(_T("db"));
+	bool bIsDB = (strExt.Len() == 2 && !strExt.Left(2).CmpNoCase(_T("db")));
 	if (bIsDB)
 	{
 		// Get type from DB file
