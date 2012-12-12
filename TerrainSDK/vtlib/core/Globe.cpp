@@ -349,7 +349,7 @@ void vtIcoGlobe::SetCulling(bool bCull)
 
 void vtIcoGlobe::SetLighting(bool bLight)
 {
-	for (int i = 0; i < 10; i++)
+	for (uint i = 0; i < m_earthmats->size(); i++)
 	{
 		vtMaterial *pApp = m_earthmats->at(m_globe_mat[i]);
 		pApp->SetLighting(bLight);
