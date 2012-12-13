@@ -39,7 +39,6 @@ set(VTLIB_CORE_SOURCE_FILES
 		../core/TParams.cpp
 		../core/TVTerrain.cpp 
 		../core/Vehicles.cpp
-		../core/vtSOG.cpp 
 		../core/vtTin3d.cpp
 		PARENT_SCOPE)
 
@@ -98,6 +97,5 @@ set(VTLIB_CORE_HEADER_FILES
 		../core/TVTerrain.h
 		../core/Vehicles.h
 		../vtlib.h
-		../core/vtSOG.h
 		../core/vtTin3d.h
 		PARENT_SCOPE)
