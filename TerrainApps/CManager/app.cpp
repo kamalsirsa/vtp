@@ -16,7 +16,6 @@
 // Header for the vtlib librarys
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
-#include "vtlib/core/vtSOG.h"
 #include "vtui/Helper.h"	// for ConvertArgcArgv
 #include "vtui/LogCatcher.h"
 #include "wxosg/GraphicsWindowWX.h"
@@ -122,34 +121,6 @@ bool vtApp::OnInit(void)
 	m_pRoot->addChild(pMovLight);
 
 	frame->UseLight(pMovLight);
-
-	// SOG testing, currently disabled
-#if 0
-#if 0
-	// make a yellow sphere
-	vtMaterialArray *pMats = new vtMaterialArray;
-	pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), RGBf(0.0f, 0.0f, 1.0f));
-	vtGeode *pGeode = CreateSphereGeom(pMats, 0, VT_Normals, 0.5, 16);
-	pGeode->setName("Yellow Sphere");
-	pMats->Release();
-
-	OutputSOG osog;
-
-	FILE *fp = fopen("output.sog", "wb");
-	osog.WriteHeader(fp);
-	osog.WriteSingleGeometry(fp, pGeode);
-	fclose(fp);
-	m_pRoot->addChild(pGeode);
-#else
-	InputSOG isog;
-
-	FILE *fp = fopen("output.sog", "rb");
-	vtGroup *pGroup = new vtGroup;
-	bool success = isog.ReadContents(fp, pGroup);
-	fclose(fp);
-	m_pRoot->addChild(pGroup);
-#endif
-#endif
 
 	// make a trackball controller for the camera
 	VTLOG(" creating trackball\n");

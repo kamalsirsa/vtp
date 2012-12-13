@@ -20,7 +20,7 @@
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
 #include "vtdata/Version.h"
-#include "vtui/Helper.h"	// for ProgressDialog
+#include "vtui/Helper.h"	// for ProgressDialog and AddType
 
 #include "xmlhelper/easyxml.hpp"
 
@@ -116,9 +116,7 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_ITEM_SET_AMBIENT, vtFrame::OnUpdateItemModelExists)
 	EVT_MENU(ID_ITEM_SMOOTHING, vtFrame::OnItemSmoothing)
 	EVT_UPDATE_UI(ID_ITEM_SMOOTHING, vtFrame::OnUpdateItemModelExists)
-	EVT_MENU(ID_ITEM_SAVESOG, vtFrame::OnItemSaveSOG)
-	EVT_MENU(ID_ITEM_SAVEOSG, vtFrame::OnItemSaveOSG)
-	EVT_MENU(ID_ITEM_SAVEIVE, vtFrame::OnItemSaveIVE)
+	EVT_MENU(ID_ITEM_SAVE, vtFrame::OnItemSave)
 
 	EVT_MENU(ID_VIEW_ORIGIN, vtFrame::OnViewOrigin)
 	EVT_UPDATE_UI(ID_VIEW_ORIGIN, vtFrame::OnUpdateViewOrigin)
@@ -129,7 +127,6 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_MENU(ID_VIEW_STATS, vtFrame::OnViewStats)
 	EVT_MENU(ID_VIEW_LIGHTS, vtFrame::OnViewLights)
 
-	EVT_UPDATE_UI(ID_ITEM_SAVESOG, vtFrame::OnUpdateItemSaveSOG)
 	EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
 END_EVENT_TABLE()
 
@@ -324,9 +321,7 @@ void vtFrame::CreateMenus()
 	itemMenu->Append(ID_ITEM_SET_AMBIENT, _T("Set materials' ambient from diffuse"));
 	itemMenu->Append(ID_ITEM_SMOOTHING, _T("Fix normals (apply smoothing)"));
 	itemMenu->AppendSeparator();
-	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"));
-	itemMenu->Append(ID_ITEM_SAVEOSG, _T("Save Model as OSG"));
-	itemMenu->Append(ID_ITEM_SAVEIVE, _T("Save Model as IVE"));
+	itemMenu->Append(ID_ITEM_SAVE, _T("Save Model"));
 
 	wxMenu *viewMenu = new wxMenu;
 	viewMenu->AppendCheckItem(ID_VIEW_ORIGIN, _T("Show Local Origin"));
@@ -765,52 +760,7 @@ void vtFrame::OnItemSmoothing(wxCommandEvent& event)
 	node->accept(smoother);
 }
 
-#include "vtlib/core/vtSOG.h"
-
-vtString GetSaveName(const char *format, const char *wildcard)
-{
-	wxString msg, filter;
-
-	msg = _("Save ");
-	msg += wxString(format, wxConvUTF8);
-	filter = wxString(format, wxConvUTF8);
-	filter += _(" Files (");
-	filter += wxString(wildcard, wxConvUTF8);
-	filter += _T(")|");
-	filter += wxString(wildcard, wxConvUTF8);
-
-	wxFileDialog saveFile(NULL, msg, _T(""), _T(""), filter, wxFD_SAVE);
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	if (!bResult)
-		return vtString("");
-
-	vtString vs = (const char *) saveFile.GetPath().mb_str(wxConvUTF8);
-	return vs;
-}
-
-void vtFrame::OnItemSaveSOG(wxCommandEvent& event)
-{
-	vtTransform *trans = m_nodemap[m_pCurrentModel];
-	if (!trans)
-		return;
-	vtGeode *geode = dynamic_cast<vtGeode*>(trans->getChild(0));
-	if (!geode)
-		return;
-
-	vtString fname = GetSaveName("SOG", "*.sog");
-	if (fname == "")
-		return;
-
-	OpenProgressDialog(_T("Writing file"), false, this);
-	OutputSOG osog;
-	FILE *fp = fopen(fname, "wb");
-	osog.WriteHeader(fp);
-	osog.WriteSingleGeometry(fp, geode);
-	fclose(fp);
-	CloseProgressDialog();
-}
-
-void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
+void vtFrame::OnItemSave(wxCommandEvent& event)
 {
 	vtTransform *trans = m_nodemap[m_pCurrentModel];
 	if (!trans)
@@ -819,7 +769,69 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 	if (!node.valid())
 		return;
 
-	vtString fname = GetSaveName("OSG", "*.osg");
+#if 0
+	// To be elegant, we could ask OSG for all formats that it knows how to write.
+	// This code does that, but it isn't reliable because osgDB::queryPlugin
+	// only works if the plugin wasn't already loaded.
+	// This also needs the headers osgDB/ReaderWriter and osgDB/PluginQuery.
+    osgDB::FileNameList plugins = osgDB::listAllAvailablePlugins();
+	int count = 0;
+    for (osgDB::FileNameList::iterator itr = plugins.begin();
+         itr != plugins.end(); ++itr)
+    {
+		count++;
+		const std::string& fileName = *itr;
+
+		osgDB::ReaderWriterInfoList infoList;
+		if (osgDB::queryPlugin(fileName, infoList))
+		{
+			VTLOG("Got query of: %s, %d entries\n", fileName.c_str(), infoList.size());
+			for(osgDB::ReaderWriterInfoList::iterator rwi_itr = infoList.begin();
+				rwi_itr != infoList.end(); ++rwi_itr)
+			{
+				// Each ReaderWrite has one or more features (like readNode, writeObject)
+				// and one or more extensions (like .png, .osgb)
+				osgDB::ReaderWriterInfo& info = *(*rwi_itr);
+
+				// Features:
+				if (info.features & osgDB::ReaderWriter::FEATURE_WRITE_NODE)
+				{
+					osgDB::ReaderWriter::FormatDescriptionMap::iterator fdm_itr;
+					for (fdm_itr = info.extensions.begin();
+						 fdm_itr != info.extensions.end();
+					 	 ++fdm_itr)
+					{
+						VTLOG("%s (%s) " fdm_itr->first.c_str(), fdm_itr->second.c_str());
+					}
+					VTLOG1("\n");
+				}
+			}
+		}
+    }
+	VTLOG("Total plugins: %d\n", count);
+#else
+	// Just hard-code the formats we expect to be writable with OSG 3.x
+	wxString filter = _("All Files|*.*");
+	AddType(filter, "OpenSceneGraph Ascii file format (*.osg)|*.osg");
+	AddType(filter, "OpenSceneGraph native binary format (*.ive)|*.ive");
+	AddType(filter, "OpenSceneGraph extendable binary format (*.osgb)|*.osgb");
+	AddType(filter, "OpenSceneGraph extendable Ascii format (*.osgt)|*.osgt");
+	AddType(filter, "OpenSceneGraph extendable XML format (*.osgx)|*.osgx");
+	AddType(filter, "3D Studio model format (*.3ds)|*.3ds");
+	AddType(filter, "Alias Wavefront OBJ format (*.obj)|*.obj");
+	AddType(filter, "OpenFlight format (*.flt)|*.flt");
+	AddType(filter, "STL ASCII format (*.sta)|*.sta");
+	AddType(filter, "STL binary format (*.stl)|*.stl");
+#endif
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _("Export"), _T(""), _T(""),
+		filter, wxFD_SAVE);
+	saveFile.SetFilterIndex(1);
+	if (saveFile.ShowModal() != wxID_OK)
+		return;
+	wxString path = saveFile.GetPath();
+	vtString fname = (const char *) path.mb_str(wxConvUTF8);
 	if (fname == "")
 		return;
 
@@ -839,52 +851,6 @@ void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
 		wxMessageBox(_("File saved.\n"));
 	else
 		wxMessageBox(_("Error in writing file.\n"));
-}
-
-void vtFrame::OnItemSaveIVE(wxCommandEvent& event)
-{
-	vtTransform *trans = m_nodemap[m_pCurrentModel];
-	if (!trans)
-		return;
-	osg::Node *node = dynamic_cast<osg::Node*>(trans->getChild(0));
-	if (!node)
-		return;
-
-	vtString fname = GetSaveName("IVE", "*.ive");
-	if (fname == "")
-		return;
-
-	OpenProgressDialog(_T("Writing file"), false, this);
-
-	// OSG/IVE has a different axis convention that VTLIB does (Z up, not Y up)
-	//  So we must rotate before saving, then rotate back again
-	ApplyVertexRotation(node, FPoint3(1,0,0), PID2f);
-
-	bool success = vtSaveModel(node, fname);
-
-	// Rotate back again
-	ApplyVertexRotation(node, FPoint3(1,0,0), -PID2f);
-
-	CloseProgressDialog();
-	if (success)
-		wxMessageBox(_("File saved.\n"));
-	else
-		wxMessageBox(_("Error in writing file.\n"));
-}
-
-void vtFrame::OnUpdateItemSaveSOG(wxUpdateUIEvent& event)
-{
-	vtTransform *trans;
-	vtGeode *geode;
-
-	bool enable = true;
-	if (m_pCurrentModel == NULL)
-		enable = false;
-	if (enable && !(trans = m_nodemap[m_pCurrentModel]))
-		enable = false;
-	if (enable && !(geode = dynamic_cast<vtGeode*>(trans->getChild(0))))
-		enable = false;
-	event.Enable(enable);
 }
 
 void vtFrame::UpdateWidgets()

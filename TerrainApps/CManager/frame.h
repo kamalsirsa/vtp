@@ -73,9 +73,7 @@ protected:
 	void OnItemRotModel(wxCommandEvent& event);
 	void OnItemSetAmbient(wxCommandEvent& event);
 	void OnItemSmoothing(wxCommandEvent& event);
-	void OnItemSaveSOG(wxCommandEvent& event);
-	void OnItemSaveOSG(wxCommandEvent& event);
-	void OnItemSaveIVE(wxCommandEvent& event);
+	void OnItemSave(wxCommandEvent& event);
 	void OnSceneGraph(wxCommandEvent& event);
 	void OnViewOrigin(wxCommandEvent& event);
 	void OnUpdateViewOrigin(wxUpdateUIEvent& event);
@@ -89,7 +87,6 @@ protected:
 
 	void OnUpdateItemAddModel(wxUpdateUIEvent& event);
 	void OnUpdateItemModelExists(wxUpdateUIEvent& event);
-	void OnUpdateItemSaveSOG(wxUpdateUIEvent& event);
 
 	void SaveContentsFile(const wxString &fname);
 	void FreeContents();
