@@ -314,11 +314,11 @@ void DrawRectangle(wxDC *pDC, const wxRect &rect, bool bCrossed)
 
 //////////////////////////////////////
 
-#if WIN32 && (wxVERSION_NUMBER < 2900)
-
+#if WIN32
 //
-// Win32 allows us to do a real StrectBlt operation, although it still won't
-// do a StretchBlt with a mask.
+// Win32 allows us to do a real StretchBlt operation directly from a bitmap
+// (which is not a function that wxWidgets exposes) although it still won't
+// do a StretchBlt with a mask, so this is no-mask only.
 //
 void wxDC2::StretchBlit(const wxBitmap &bmp,
 						wxCoord x, wxCoord y,
@@ -332,17 +332,6 @@ void wxDC2::StretchBlit(const wxBitmap &bmp,
 	HDC memdc = ::CreateCompatibleDC( cdc );
 	HBITMAP hbitmap = (HBITMAP) bmp.GetHBITMAP( );
 
-	COLORREF old_textground = ::GetTextColor(cdc);
-	COLORREF old_background = ::GetBkColor(cdc);
-	if (m_textForegroundColour.Ok())
-	{
-		::SetTextColor(cdc, m_textForegroundColour.GetPixel() );
-	}
-	if (m_textBackgroundColour.Ok())
-	{
-		::SetBkColor(cdc, m_textBackgroundColour.GetPixel() );
-	}
-
 	HGDIOBJ hOldBitmap = ::SelectObject( memdc, hbitmap );
 
 //	int bwidth = bmp.GetWidth(), bheight = bmp.GetHeight();
@@ -350,11 +339,7 @@ void wxDC2::StretchBlit(const wxBitmap &bmp,
 
 	::SelectObject( memdc, hOldBitmap );
 	::DeleteDC( memdc );
-
-	::SetTextColor(cdc, old_textground);
-	::SetBkColor(cdc, old_background);
 }
-
 #endif // WIN32
 
 ///////////////////////////////////////////////////////////////////////

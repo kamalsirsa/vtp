@@ -422,16 +422,7 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 #endif
 
 	bool bDrawNormal = true;
-#if (wxVERSION_NUMBER > 2900)
-	wxMemoryDC temp_dc(*(m_pBitmap->m_pBitmap));
-	pDC->StretchBlit(destRect.x, destRect.y,
-		destRect.width, destRect.height,
-		&temp_dc,
-		srcRect.x, srcRect.y,
-		srcRect.width, srcRect.height,
-		wxCOPY, m_bHasMask);
-	bDrawNormal = false;
-#elif WIN32
+#if WIN32
 	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
 
 	if (!m_bHasMask)
@@ -681,6 +672,8 @@ void vtElevLayer::RenderBitmap()
 				m_draw.m_fAmbient, m_draw.m_fGamma, true, progress_callback_minor);
 	}
 
+	m_pBitmap->ContentsChanged();
+
 	if (has_invalid && m_draw.m_bDoMask)
 	{
 		m_pMask = new wxMask(*m_pBitmap->m_pBitmap, wxColour(255, 0, 0));
@@ -694,7 +687,6 @@ void vtElevLayer::RenderBitmap()
 	float time = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
 	VTLOG("RenderBitmap: %.3f seconds.\n", time);
 
-	m_pBitmap->ContentsChanged();
 	m_bBitmapRendered = true;
 }
 

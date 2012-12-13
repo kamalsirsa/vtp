@@ -49,7 +49,7 @@ void DrawRectangle(wxDC *pDC, const wxRect &rect, bool bCrossed = false);
 
 /////
 
-#if WIN32 && (wxVERSION_NUMBER < 2900)
+#if WIN32
 /**
  * Win32 allows us to do a real StretchBlt operation, although it still won't
  * do a StretchBlt with a mask.
