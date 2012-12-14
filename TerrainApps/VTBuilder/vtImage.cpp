@@ -408,13 +408,13 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 	//  most appropriate to draw
 	double dRes = 1.0 / pView->GetScale();
 	DPoint2 spacing = GetSpacing();
-	double diff = 1E9;
+	double spacing_diff = 1E9;
 	for (uint i = 0; i < m_Bitmaps.size(); i++)
 	{
 		double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
-		if (d2 < diff && m_Bitmaps[i].m_pBitmap)
+		if (d2 < spacing_diff && m_Bitmaps[i].m_pBitmap)
 		{
-			diff = d2;
+			spacing_diff = d2;
 			pBitmap = m_Bitmaps[i].m_pBitmap;
 		}
 	}
@@ -424,6 +424,17 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 
 	wxRect screenrect = pView->WorldToCanvas(m_Extents);
 	wxRect destRect = screenrect;
+
+	if (!bDrawImage)
+	{
+		// Draw placeholder yellow frame
+		wxPen yellow(wxColor(255,255,0), 1, wxSOLID);
+		pDC->SetLogicalFunction(wxCOPY);
+		pDC->SetPen(yellow);
+
+		DrawRectangle(pDC, screenrect, true);
+		return;
+	}
 
 	//clip stuff, so we only blit what we need
 	int client_width, client_height;
@@ -439,98 +450,77 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 		(destRect.y > client2.y))
 		return;		//image completely off screen
 
-	if (bDrawImage)
+	wxRect srcRect(0, 0, pBitmap->GetWidth(), pBitmap->GetHeight());
+	double ratio_x = (double) srcRect.width / destRect.width;
+	double ratio_y = (double) srcRect.height / destRect.height;
+
+	int diff, diff_source;
+
+	// clip left
+	diff = client1.x - destRect.x;
+	diff_source = (int)(diff * ratio_x); // round to number of whole pixels
+	diff = (int) (diff_source / ratio_x);
+	if (diff > 0)
 	{
-		wxRect srcRect(0, 0, pBitmap->GetWidth(), pBitmap->GetHeight());
-		double ratio_x = (double) srcRect.width / destRect.width;
-		double ratio_y = (double) srcRect.height / destRect.height;
+		destRect.x += diff;
+		destRect.width -= diff;
+		srcRect.x += diff_source;
+		srcRect.width -= diff_source;
+	}
 
-		int diff, diff_source;
+	// clip top
+	diff = client1.y - destRect.y;
+	diff_source = (int)(diff * ratio_y); // round to number of whole pixels
+	diff = (int) (diff_source / ratio_y);
+	if (diff > 0)
+	{
+		destRect.y += diff;
+		destRect.height -= diff;
+		srcRect.y += diff_source;
+		srcRect.height -= diff_source;
+	}
 
-		// clip left
-		diff = client1.x - destRect.x;
-		diff_source = (int)(diff * ratio_x); // round to number of whole pixels
-		diff = (int) (diff_source / ratio_x);
-		if (diff > 0)
-		{
-			destRect.x += diff;
-			destRect.width -= diff;
-			srcRect.x += diff_source;
-			srcRect.width -= diff_source;
-		}
+	// clip right
+	diff = destRect.x + destRect.width - client2.x;
+	diff_source = (int)(diff * ratio_x); // round to number of whole pixels
+	diff = (int) (diff_source / ratio_x);
+	if (diff > 0)
+	{
+		destRect.width -= diff;
+		srcRect.width -= diff_source;
+	}
 
-		// clip top
-		diff = client1.y - destRect.y;
-		diff_source = (int)(diff * ratio_y); // round to number of whole pixels
-		diff = (int) (diff_source / ratio_y);
-		if (diff > 0)
-		{
-			destRect.y += diff;
-			destRect.height -= diff;
-			srcRect.y += diff_source;
-			srcRect.height -= diff_source;
-		}
+	// clip bottom
+	diff = destRect.y + destRect.height - client2.y;
+	diff_source = (int)(diff * ratio_y); // round to number of whole pixels
+	diff = (int) (diff_source / ratio_y);
+	if (diff > 0)
+	{
+		destRect.height -= diff;
+		srcRect.height -= diff_source;
+	}
 
-		// clip right
-		diff = destRect.x + destRect.width - client2.x;
-		diff_source = (int)(diff * ratio_x); // round to number of whole pixels
-		diff = (int) (diff_source / ratio_x);
-		if (diff > 0)
-		{
-			destRect.width -= diff;
-			srcRect.width -= diff_source;
-		}
+#if WIN32
+	// Using StretchBlit is much faster and has less scaling/roundoff
+	//  problems than using the wx method DrawBitmap
+	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
 
-		// clip bottom
-		diff = destRect.y + destRect.height - client2.y;
-		diff_source = (int)(diff * ratio_y); // round to number of whole pixels
-		diff = (int) (diff_source / ratio_y);
-		if (diff > 0)
-		{
-			destRect.height -= diff;
-			srcRect.height -= diff_source;
-		}
-
-#if (wxVERSION_NUMBER > 2900)
-		wxMemoryDC temp_dc;
-		temp_dc.SelectObject(*pBitmap->m_pBitmap);
-		pDC->StretchBlit(destRect.x, destRect.y,
-			destRect.width, destRect.height,
-			&temp_dc,
-			srcRect.x, srcRect.y,
-			srcRect.width, srcRect.height,
-			wxCOPY);
-#elif WIN32
-		// Using StretchBlit is much faster and has less scaling/roundoff
-		//  problems than using the wx method DrawBitmap
-		::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
-
-		wxDC2 *pDC2 = (wxDC2 *) pDC;
-		pDC2->StretchBlit(*pBitmap->m_pBitmap, destRect.x, destRect.y,
-			destRect.width, destRect.height, srcRect.x, srcRect.y,
-			srcRect.width, srcRect.height);
+	wxDC2 *pDC2 = (wxDC2 *) pDC;
+	pDC2->StretchBlit(*pBitmap->m_pBitmap, destRect.x, destRect.y,
+		destRect.width, destRect.height, srcRect.x, srcRect.y,
+		srcRect.width, srcRect.height);
 #else
-		// scale and draw the bitmap
-		// must use SetUserScale since StretchBlt is not available
-		double scale_x = 1.0/ratio_x;
-		double scale_y = 1.0/ratio_y;
-		pDC->SetUserScale(scale_x, scale_y);
-		pDC->DrawBitmap(*pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
-			(int) (destRect.y/scale_y), false);
+	// scale and draw the bitmap
+	// must use SetUserScale since StretchBlt is not available
+	double scale_x = 1.0/ratio_x;
+	double scale_y = 1.0/ratio_y;
+	pDC->SetUserScale(scale_x, scale_y);
+	pDC->DrawBitmap(*pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
+		(int) (destRect.y/scale_y), false);
 
-		// restore
-		pDC->SetUserScale(1.0, 1.0);
+	// restore
+	pDC->SetUserScale(1.0, 1.0);
 #endif
-	}
-	else
-	{
-		// Draw placeholder yellow frame
-		wxPen yellow(wxColor(255,255,0), 1, wxSOLID);
-		pDC->SetLogicalFunction(wxCOPY);
-		pDC->SetPen(yellow);
-
-		DrawRectangle(pDC, screenrect, true);
-	}
 }
 
 bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,

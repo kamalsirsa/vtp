@@ -174,8 +174,6 @@ void RenderDlg::OnDotdotdot( wxCommandEvent &event )
 	filter += FSTRING_JPEG;
 	filter += _T("|");
 	filter += FSTRING_TIF;
-	filter += _T("|");
-	filter += FSTRING_ECW;
 
 	// ask the user for a filename
 	wxFileDialog saveFile(NULL, _("Specify image file"), _T(""), _T(""),
