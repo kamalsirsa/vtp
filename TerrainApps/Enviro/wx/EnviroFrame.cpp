@@ -3314,8 +3314,7 @@ void EnviroFrame::UpdateLODInfo()
 {
 	if (!m_pLODDlg)
 		return;
-	if (!m_pLODDlg->IsShown())
-		return;
+
 	vtTerrain *terr = g_App.GetCurrentTerrain();
 	if (!terr)
 		return;

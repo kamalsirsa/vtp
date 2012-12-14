@@ -33,7 +33,7 @@ public:
 
 	// WDR: method declarations for LODDlg
 	wxTextCtrl* GetTileStatus()  { return (wxTextCtrl*) FindWindow( ID_TILE_STATUS ); }
-	wxSpinCtrl* GetTarget()  { return (wxSpinCtrl*) FindWindow( ID_TARGET ); }
+	wxTextCtrl* GetTarget()  { return (wxTextCtrl*) FindWindow( ID_TARGET ); }
 	wxTextCtrl* GetCurrent()  { return (wxTextCtrl*) FindWindow( ID_CURRENT ); }
 	wxPanel* GetPanel1()  { return (wxPanel*) FindWindow( ID_PANEL1 ); }
 	wxPanel* GetPanel2()  { return (wxPanel*) FindWindow( ID_PANEL2 ); }

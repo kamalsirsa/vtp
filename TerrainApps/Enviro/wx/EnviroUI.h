@@ -36,7 +36,7 @@
 #include <wx/panel.h>
 #include <wx/statbmp.h>
 #include <wx/notebook.h>
-#include <wx/spinctrl.h>
+#include <wx/spinbutt.h>
 #include <wx/listctrl.h>
 #include <wx/scrolwin.h>
 #include <wx/valtext.h>
@@ -286,28 +286,29 @@
 #define ID_TEXTURE_MODE 1239
 #define ID_PANEL1 1240
 #define ID_TARGET 1241
-#define ID_CURRENT 1242
-#define ID_SLIDER_PRANGE 1243
-#define ID_TEXT_PRANGE 1244
-#define ID_PANEL2 1245
-#define ID_TILE_STATUS 1246
-#define ID_TEXT_PAGEOUT 1247
-#define ID_SLIDER_PAGEOUT 1248
-#define ID_COUNT_CURRENT 1249
-#define ID_COUNT_MAXIMUM 1250
-#define ID_PANEL3 1251
-#define ID_SLIDER_FOG_DISTANCE 1252
-#define ID_SHADOWS 1253
-#define ID_AMBIENT_BIAS 1254
-#define ID_SLIDER_AMBIENT_BIAS 1255
-#define ID_TEXT_WIND_DIRECTION 1256
-#define ID_SLIDER_WIND_DIRECTION 1257
-#define ID_TEXT_WIND_SPEED 1258
-#define ID_SLIDER_WIND_SPEED 1259
-#define ID_PM_LISTCTRL 1260
-#define ID_TURN 1261
-#define ID_DISTANCE 1262
-#define ID_VIF_RECALCULATE 1263
+#define ID_SPIN 1242
+#define ID_CURRENT 1243
+#define ID_SLIDER_PRANGE 1244
+#define ID_TEXT_PRANGE 1245
+#define ID_PANEL2 1246
+#define ID_TILE_STATUS 1247
+#define ID_TEXT_PAGEOUT 1248
+#define ID_SLIDER_PAGEOUT 1249
+#define ID_COUNT_CURRENT 1250
+#define ID_COUNT_MAXIMUM 1251
+#define ID_PANEL3 1252
+#define ID_SLIDER_FOG_DISTANCE 1253
+#define ID_SHADOWS 1254
+#define ID_AMBIENT_BIAS 1255
+#define ID_SLIDER_AMBIENT_BIAS 1256
+#define ID_TEXT_WIND_DIRECTION 1257
+#define ID_SLIDER_WIND_DIRECTION 1258
+#define ID_TEXT_WIND_SPEED 1259
+#define ID_SLIDER_WIND_SPEED 1260
+#define ID_PM_LISTCTRL 1261
+#define ID_TURN 1262
+#define ID_DISTANCE 1263
+#define ID_VIF_RECALCULATE 1264
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class StartupDlgBase
@@ -1015,7 +1016,8 @@ class PagingDlgBase : public wxDialog
 		wxPanel* SurfaceLODPanel;
 		wxPanel* m_panel1;
 		wxStaticText* m_text187;
-		wxSpinCtrl* m_target;
+		wxTextCtrl* m_textCtrl84;
+		wxSpinButton* m_spinBtn1;
 		wxStaticText* m_text188;
 		wxTextCtrl* m_current;
 		wxStaticText* m_text189;

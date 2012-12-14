@@ -2949,12 +2949,15 @@ PagingDlgBase::PagingDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	wxBoxSizer* bSizer287;
 	bSizer287 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text187 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("Target Count"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text187 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("Number of Triangles"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text187->Wrap( -1 );
 	bSizer287->Add( m_text187, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_target = new wxSpinCtrl( SurfaceLODPanel, ID_TARGET, wxT("1000"), wxDefaultPosition, wxSize( 100,-1 ), wxSP_ARROW_KEYS, 1000, 150000, 1000 );
-	bSizer287->Add( m_target, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_textCtrl84 = new wxTextCtrl( SurfaceLODPanel, ID_TARGET, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer287->Add( m_textCtrl84, 0, wxTOP|wxBOTTOM|wxLEFT, 5 );
+	
+	m_spinBtn1 = new wxSpinButton( SurfaceLODPanel, ID_SPIN, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer287->Add( m_spinBtn1, 0, wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT, 5 );
 	
 	m_text188 = new wxStaticText( SurfaceLODPanel, ID_TEXT, _("Current"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text188->Wrap( 0 );

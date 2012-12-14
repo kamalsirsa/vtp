@@ -12,6 +12,8 @@
 #include "wx/wx.h"
 #endif
 
+#include "wx/spinctrl.h"
+
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TiledGeom.h"
 #include "vtlib/core/PagedLodGrid.h"
@@ -38,8 +40,8 @@
 
 BEGIN_EVENT_TABLE(LODDlg, PagingDlgBase)
 	EVT_INIT_DIALOG (LODDlg::OnInitDialog)
-	EVT_SPIN_UP( ID_TARGET, LODDlg::OnSpinTargetUp )
-	EVT_SPIN_DOWN( ID_TARGET, LODDlg::OnSpinTargetDown )
+	EVT_SPIN_UP( ID_SPIN, LODDlg::OnSpinTargetUp )
+	EVT_SPIN_DOWN( ID_SPIN, LODDlg::OnSpinTargetDown )
 	EVT_TEXT( ID_TARGET, LODDlg::OnTarget )
 	EVT_TEXT( ID_TEXT_PRANGE, LODDlg::OnText )
 	EVT_SLIDER( ID_SLIDER_PRANGE, LODDlg::OnRangeSlider )
@@ -100,6 +102,13 @@ void LODDlg::SetPagingRange(float fmin, float fmax)
 void LODDlg::Refresh(float res0, float res, float res1, int target,
 					 int count, float prange)
 {
+	bool bNeedRefresh = false;
+	if (target != m_iTarget)
+	{
+		m_iTarget = target;
+		bNeedRefresh = true;
+	}
+
 	// don't bother updating if window isn't shown
 	if (!IsShown())
 		return;
@@ -109,9 +118,8 @@ void LODDlg::Refresh(float res0, float res, float res1, int target,
 		return;
 
 	wxString str;
-	if (target != m_iTarget)
+	if (bNeedRefresh)
 	{
-		m_iTarget = target;
 		str.Printf(_T("%d"), m_iTarget);
 		GetTarget()->SetValue(str);
 	}
