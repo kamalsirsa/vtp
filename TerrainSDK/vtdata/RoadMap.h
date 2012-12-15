@@ -59,9 +59,6 @@ struct LinkConnect
 {
 	TLink *pLink;
 
-	// True if the link starts at this node, false if it ends
-	bool bStart;
-
 	// intersection types of the link at this node.
 	IntersectionType eIntersection;
 
@@ -84,20 +81,21 @@ public:
 	//copies internal variables from another node.
 	void Copy(TNode* node);
 
-	TLink *GetLink(int n);
-	int AddLink(TLink *pR, bool bStart);		// attaches a link to the node
-	void DetachLink(TLink *pR, bool bStart);	// detaches the link from the node
+	TLink *GetLink(uint n) const;
+	int NumLinks() const { return m_connect.size(); }
+	int AddLink(TLink *pR);		// attaches a link to the node
+	void DetachLink(TLink *pR);	// detaches the link from the node
 	void DetermineLinkAngles();	// resulting angles > 0
-	float GetLinkAngle(int iLinkNum);
+	float GetLinkAngle(uint iLinkNum);
 	void SortLinksByAngle();	// sorts the internal links by angle.
 	DPoint2 GetAdjacentLinkPoint2d(int iLinkNum);  //returns the 2nd point on the link from the node.
 
-	int GetLinkNum(TLink *link, bool bStart);
+	int GetLinkNum(TLink *link);
 	LinkConnect &GetLinkConnect(int iLinkNum) { return m_connect[iLinkNum]; }
 
 	//sets intersection type for node.  returns false if link is invalid
-	bool SetIntersectType(int linkNum, IntersectionType type);  //linkNum is internal index within the node
-	IntersectionType GetIntersectType(int linkNum); //returns the intersection type of given link index (not ID)
+	bool SetIntersectType(uint linkNum, IntersectionType type);  //linkNum is internal index within the node
+	IntersectionType GetIntersectType(uint linkNum); //returns the intersection type of given link index (not ID)
 
 	bool HasLights();
 	bool IsControlled();	// true if any stopsigns or stoplights
@@ -105,16 +103,24 @@ public:
 	//adjust the light relationship of the links at the node (if the intersection is has a signal light.)
 	void AdjustForLights();
 
-	DPoint2 m_p;	// utm coordinates of center
-	int m_iLinks;	// number of links meeting here
-
-	TNode *m_pNext;
-
 	// only used while reading from DLG/RMF/OSM
 	int FindLink(int linkID);	// returns internal number of link with given ID.  -1 if not found.
 	int m_id;
 
+	// Linked list
+	void SetNext(TNode *next) { m_pNext = next; }
+	TNode *GetNext() const { return m_pNext; }
+
+	// Position
+	void SetPos(const DPoint2 &pos) { m_p = pos; }
+	void SetPos(const double x, const double y) { m_p.Set(x, y); }
+	DPoint2 &Pos() { return m_p; }
+	const DPoint2 &Pos() const { return m_p; }
+
 protected:
+	DPoint2 m_p;	// utm coordinates of center
+	TNode *m_pNext;
+
 	// Information about the links that connect to or from this node.
 	std::vector<LinkConnect> m_connect;
 
@@ -163,7 +169,6 @@ public:
 	unsigned short m_iLanes; // number of lanes
 	SurfaceType m_Surface;
 	short	m_iHwy;			// highway number: -1 for normal links
-	TLink	*m_pNext;		// the next Link, if links are maintained in link list form
 	short	m_iFlags;		// a flag to be used to holding any addition info.
 	int		m_id;			// only used during file reading
 	float	m_fSidewalkWidth;
@@ -172,7 +177,11 @@ public:
 	float	m_fLaneWidth;
 	float	m_fParkingWidth;
 
+	TLink *GetNext() const { return m_pNext; }
+	void SetNext(TLink *next) { m_pNext = next; }
+
 protected:
+	TLink	*m_pNext;		// Next in linked list
 	TNode	*m_pNode[2];	// "from" and "to" nodes
 	float	m_fHeight[2];
 };
@@ -210,12 +219,12 @@ public:
 
 	void	AddNode(TNode *pNode)
 	{
-		pNode->m_pNext = m_pFirstNode;
+		pNode->SetNext(m_pFirstNode);
 		m_pFirstNode = pNode;
 	}
 	void	AddLink(TLink *pLink)
 	{
-		pLink->m_pNext = m_pFirstLink;
+		pLink->SetNext(m_pFirstLink);
 		m_pFirstLink = pLink;
 	}
 

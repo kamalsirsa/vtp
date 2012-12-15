@@ -1751,17 +1751,17 @@ int Builder::ImportDataFromTIGER(const wxString &strDirName)
 						pLineString->getY(j)));
 				}
 				TNode *n1 = pRL->NewNode();
-				n1->m_p.Set(pLineString->getX(0), pLineString->getY(0));
+				n1->SetPos(pLineString->getX(0), pLineString->getY(0));
 
 				TNode *n2 = pRL->NewNode();
-				n2->m_p.Set(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
+				n2->SetPos(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
 
 				pRL->AddNode(n1);
 				pRL->AddNode(n2);
 				r->SetNode(0, n1);
 				r->SetNode(1, n2);
-				n1->AddLink(r, true);
-				n2->AddLink(r, false);
+				n1->AddLink(r);
+				n2->AddLink(r);
 
 				//set bounding box for the road
 				r->ComputeExtent();

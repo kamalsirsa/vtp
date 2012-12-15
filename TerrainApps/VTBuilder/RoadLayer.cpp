@@ -102,8 +102,8 @@ bool vtRoadLayer::AppendDataFrom(vtLayer *pL)
 	TNode *n = pFrom->GetFirstNode();
 	while (n)
 	{
-		TNode *next = n->m_pNext;
-		n->m_pNext = m_pFirstNode;
+		TNode *next = n->GetNext();
+		n->SetNext(m_pFirstNode);
 		m_pFirstNode = n;
 		n = next;
 	}
@@ -111,8 +111,8 @@ bool vtRoadLayer::AppendDataFrom(vtLayer *pL)
 	TLink *r = pFrom->GetFirstLink();
 	while (r)
 	{
-		TLink *next = r->m_pNext;
-		r->m_pNext = m_pFirstLink;
+		TLink *next = r->GetNext();
+		r->SetNext(m_pFirstLink);
 		m_pFirstLink = r;
 		r = next;
 	}
@@ -187,7 +187,7 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 			trans->Transform(1, &(l->GetAt(i).x), &(l->GetAt(i).y));
 	}
 	for (n = GetFirstNode(); n; n=n->GetNext())
-		trans->Transform(1, &(n->m_p.x), &(n->m_p.y));
+		trans->Transform(1, &(n->Pos().x), &(n->Pos().y));
 
 	delete trans;
 
@@ -236,24 +236,24 @@ void vtRoadLayer::Offset(const DPoint2 &p)
 		link->m_bSidesComputed = false;
 		if (bSelLinks && !bSelNodes)
 		{
-			link->GetNode(0)->m_p += p;
-			link->GetNode(1)->m_p += p;
+			link->GetNode(0)->Pos() += p;
+			link->GetNode(1)->Pos() += p;
 		}
 	}
 	for (NodeEdit *node = GetFirstNode(); node; node=node->GetNext())
 	{
 		if (bSelected && !node->IsSelected())
 			continue;
-		node->m_p += p;
+		node->Pos() += p;
 		if (!bSelLinks && bSelNodes)
 		{
-			for (int i = 0; i < node->m_iLinks; i++)
+			for (int i = 0; i < node->NumLinks(); i++)
 			{
 				TLink *l1 = node->GetLink(i);
 				if (l1->GetNode(0) == node)
-					l1->SetAt(0, node->m_p);
+					l1->SetAt(0, node->Pos());
 				else
-					l1->SetAt(l1->GetSize()-1, node->m_p);
+					l1->SetAt(l1->GetSize()-1, node->Pos());
 			}
 		}
 	}
@@ -362,8 +362,8 @@ void vtRoadLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
 			node = le->GetNode(1);
 		if (node)
 		{
-			node->m_p = p;
-			for (int i = 0; i < node->m_iLinks; i++)
+			node->SetPos(p);
+			for (int i = 0; i < node->NumLinks(); i++)
 			{
 				LinkEdit *link = node->GetLink(i);
 				if (link->GetNode(0) == node)
@@ -430,7 +430,7 @@ bool vtRoadLayer::EditNodeProperties(BuilderView *pView, const DPoint2 &point, f
 	NodeEdit *node = (NodeEdit *) FindNodeAtPoint(point, epsilon);
 	if (node)
 	{
-		DPoint2 p = node->m_p;
+		DPoint2 p = node->Pos();
 		bound.SetRect(p.x-epsilon, p.y+epsilon, p.x+epsilon, p.y-epsilon);
 		return node->EditProperties(pView, this);
 	}

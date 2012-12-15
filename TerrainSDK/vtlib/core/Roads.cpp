@@ -98,7 +98,7 @@ const FPoint3 &NodeGeom::GetAdjacentRoadpoint(int iLinkNumber)
 {
 	LinkConnect &lc = m_connect[iLinkNumber];
 	LinkGeom *lg = (LinkGeom*) lc.pLink;
-	if (lc.bStart)
+	if (lg->GetNode(0) == this)
 		return lg->m_centerline[1];
 	else
 		return lg->m_centerline[lg->GetSize() - 2];
@@ -117,11 +117,11 @@ void NodeGeom::BuildIntersection()
 	SortLinksByAngle();
 
 	// how many links meet here?
-	if (m_iLinks == 0)
+	if (NumLinks() == 0)
 	{
 		; // bogus case (put a breakpoint here)
 	}
-	else if (m_iLinks == 1)
+	else if (NumLinks() == 1)
 	{
 		// dead end: only need 2 vertices for this node
 		m_iVerts = 2;
@@ -139,7 +139,7 @@ void NodeGeom::BuildIntersection()
 
 		one++;
 	}
-	else if (m_iLinks == 2)
+	else if (NumLinks() == 2)
 	{
 		// only need 2 vertices for this node; no intersection
 		m_iVerts = 2;
@@ -161,7 +161,7 @@ void NodeGeom::BuildIntersection()
 	else
 	{
 		// intersection: need 2 vertices for each link meeting here
-		m_iVerts = 2 * m_iLinks;
+		m_iVerts = 2 * NumLinks();
 		m_v.SetSize(m_iVerts);
 
 		// For each pairs of links, find the places where the link edges
@@ -171,14 +171,14 @@ void NodeGeom::BuildIntersection()
 		//  x = minimum distance which avoids intersection with next link
 		//  y = minimum distance which avoids intersection with previous link
 		//  z = greater of x or y.
-		FLine3 distance_to_intersection(m_iLinks);
+		FLine3 distance_to_intersection(NumLinks());
 
 		// Go through the links once, colling the minimum distances
 		int i;
-		for (i = 0; i < m_iLinks; i++)
+		for (i = 0; i < NumLinks(); i++)
 		{
 			// indices of the next and previous links
-			int i_next = (i == m_iLinks-1) ? 0 : i+1;
+			int i_next = (i == NumLinks()-1) ? 0 : i+1;
 
 			TLink *pL = GetLink(i);
 			TLink *pL_next = GetLink(i_next);
@@ -223,14 +223,14 @@ void NodeGeom::BuildIntersection()
 			}
 		}
 		// Go through the links again, picking the largest minimum
-		for (i = 0; i < m_iLinks; i++)
+		for (i = 0; i < NumLinks(); i++)
 		{
 			distance_to_intersection[i].z = std::max(distance_to_intersection[i].x,
 				distance_to_intersection[i].y);
 		}
 		// Now we can finally set the two points where this link meets the
 		//  intersection without overlapping with the other links
-		for (i = 0; i < m_iLinks; i++)
+		for (i = 0; i < NumLinks(); i++)
 		{
 			TLink *pL = GetLink(i);
 			v = GetUnitLinkVector(i);
@@ -256,12 +256,12 @@ void NodeGeom::BuildIntersection()
 //
 void NodeGeom::FindVerticesForLink(TLink *pL, bool bStart, FPoint3 &p0, FPoint3 &p1)
 {
-	if (m_iLinks == 1)
+	if (NumLinks() == 1)
 	{
 		p0 = m_v[0];
 		p1 = m_v[1];
 	}
-	else if (m_iLinks == 2)
+	else if (NumLinks() == 2)
 	{
 		if (pL == m_connect[0].pLink)
 		{
@@ -276,9 +276,9 @@ void NodeGeom::FindVerticesForLink(TLink *pL, bool bStart, FPoint3 &p0, FPoint3 
 	}
 	else
 	{
-		for (int i = 0; i < m_iLinks; i++)
+		for (int i = 0; i < NumLinks(); i++)
 		{
-			if (m_connect[i].pLink == pL && m_connect[i].bStart == bStart)
+			if (m_connect[i].pLink == pL)
 			{
 				p0 = m_v[i*2];
 				p1 = m_v[i*2+1];
@@ -293,13 +293,13 @@ void NodeGeom::FindVerticesForLink(TLink *pL, bool bStart, FPoint3 &p0, FPoint3 
 
 vtMesh *NodeGeom::GenerateGeometry()
 {
-	if (m_iLinks < 3)
+	if (NumLinks() < 3)
 		return NULL;
 
 	int j;
 	FPoint3 p, upvector(0.0f, 1.0f, 0.0f);
 
-	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords | VT_Normals, m_iLinks*2 + 1);
+	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords | VT_Normals, NumLinks()*2 + 1);
 	int verts = 0;
 
 	// find the approximate center of the junction
@@ -310,7 +310,7 @@ vtMesh *NodeGeom::GenerateGeometry()
 	pMesh->SetVtxNormal(verts, upvector);
 	verts++;
 
-	for (j = 0; j < m_iLinks; j++)
+	for (j = 0; j < NumLinks(); j++)
 	{
 		pMesh->SetVtxPUV(verts, m_v[j*2+1], 0.0, 1.0f);
 		pMesh->SetVtxPUV(verts+1, m_v[j*2], 1.0, 1.0f);
@@ -323,7 +323,7 @@ vtMesh *NodeGeom::GenerateGeometry()
 	verts = 0;
 	int idx[100];
 	idx[verts++] = 0;
-	for (j = 0; j < m_iLinks; j++)
+	for (j = 0; j < NumLinks(); j++)
 	{
 		idx[verts++] = (j*2+1);
 		idx[verts++] = (j*2+2);
@@ -756,7 +756,7 @@ vtRoadMap3d::~vtRoadMap3d()
 void vtRoadMap3d::BuildIntersections()
 {
 	int count = 0;
-	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
+	for (NodeGeom *pN = GetFirstNode(); pN; pN = pN->GetNext())
 	{
 		pN->BuildIntersection();
 		count++;
@@ -847,7 +847,7 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture, bool progress_callback(i
 
 	vtMesh *pMesh;
 	int count = 0, total = NumLinks() + NumNodes();
-	for (LinkGeom *pL = GetFirstLink(); pL; pL=(LinkGeom *)pL->m_pNext)
+	for (LinkGeom *pL = GetFirstLink(); pL; pL = pL->GetNext())
 	{
 		pL->GenerateGeometry(this);
 		count++;
@@ -855,7 +855,7 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture, bool progress_callback(i
 			progress_callback(count * 100 / total);
 	}
 	count = 0;
-	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
+	for (NodeGeom *pN = GetFirstNode(); pN; pN = pN->GetNext())
 	{
 		pMesh = pN->GenerateGeometry();
 		if (pMesh)
@@ -961,9 +961,9 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 		VTLOG("Couldn't find stopsign and stoplight.\n");
 		return;
 	}
-	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
+	for (NodeGeom *pN = GetFirstNode(); pN; pN = pN->GetNext())
 	{
-		for (int r = 0; r < pN->m_iLinks; r++)
+		for (int r = 0; r < pN->NumLinks(); r++)
 		{
 			osg::Node *shape = NULL;
 			if (pN->GetIntersectType(r) == IT_STOPSIGN && stopsign)
@@ -1112,7 +1112,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 	{
 		bool all_same_height = true;
 		height = pN->GetLink(0)->GetHeightAt(pN);
-		for (int r = 1; r < pN->m_iLinks; r++)
+		for (int r = 1; r < pN->NumLinks(); r++)
 		{
 			if (pN->GetLink(r)->GetHeightAt(pN) != height)
 			{
@@ -1123,7 +1123,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 		if (!all_same_height)
 		{
 			pNew = new NodeGeom;
-			for (r = 1; r < pN->m_iLinks; r++)
+			for (r = 1; r < pN->NumLinks(); r++)
 			{
 				LinkGeom *pL = pN->GetLink(r);
 				if (pL->GetHeightAt(pN) != height)
@@ -1135,18 +1135,18 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 		}
 	}
 #endif
-	for (pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
+	for (pN = GetFirstNode(); pN; pN = pN->GetNext())
 	{
-		pHeightField->ConvertEarthToSurfacePoint(pN->m_p, pN->m_p3);
+		pHeightField->ConvertEarthToSurfacePoint(pN->Pos(), pN->m_p3);
 #if 0
-		if (pN->m_iLinks > 0)
+		if (pN->NumLinks() > 0)
 		{
 			height = pN->GetLink(0)->GetHeightAt(pN);
 			pN->m_p3.y += height;
 		}
 #endif
 	}
-	for (LinkGeom *pL = GetFirstLink(); pL; pL = (LinkGeom *)pL->m_pNext)
+	for (LinkGeom *pL = GetFirstLink(); pL; pL = pL->GetNext())
 	{
 		pL->m_centerline.SetSize(pL->GetSize());
 		for (uint j = 0; j < pL->GetSize(); j++)

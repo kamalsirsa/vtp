@@ -39,7 +39,6 @@ float diffAngle(float a, float b)
 TNode::TNode()
 {
 	m_pNext = NULL;
-	m_iLinks = 0;
 	m_id = -1;
 }
 
@@ -49,9 +48,9 @@ TNode::~TNode()
 
 bool TNode::operator==(TNode &ref)
 {
-	if (m_iLinks != ref.m_iLinks)
+	if (NumLinks() != ref.NumLinks())
 		return false;
-	for (int i = 0; i < m_iLinks; i++)
+	for (size_t i = 0; i < m_connect.size(); i++)
 	{
 		if (m_connect[i].eIntersection != ref.m_connect[i].eIntersection)
 			return false;
@@ -62,15 +61,14 @@ bool TNode::operator==(TNode &ref)
 void TNode::Copy(TNode *node)
 {
 	m_p = node->m_p;
-	m_iLinks = node->m_iLinks;
 	m_id = node->m_id;
 	m_connect = node->m_connect;
 	m_pNext = NULL;	//don't copy this
 }
 
-TLink *TNode::GetLink(int n)
+TLink *TNode::GetLink(uint n) const
 {
-	if (n >= 0 && n < m_iLinks)	// safety check
+	if (n >= 0 && n < m_connect.size())	// safety check
 		return m_connect[n].pLink;
 	else
 		return NULL;
@@ -78,7 +76,7 @@ TLink *TNode::GetLink(int n)
 
 int TNode::FindLink(int linkID)
 {
-	for (int i = 0; i < m_iLinks; i++)
+	for (size_t i = 0; i < m_connect.size(); i++)
 	{
 		if (m_connect[i].pLink->m_id == linkID)
 			return i;
@@ -86,13 +84,10 @@ int TNode::FindLink(int linkID)
 	return -1;
 }
 
-int TNode::AddLink(TLink *pL, bool bStart)
+int TNode::AddLink(TLink *pL)
 {
-	m_iLinks++;
-
 	// fill in the entry for the new link
 	LinkConnect lc;
-	lc.bStart = bStart;
 	lc.pLink = pL;
 	lc.eIntersection = IT_NONE;
 	m_connect.push_back(lc);
@@ -100,15 +95,14 @@ int TNode::AddLink(TLink *pL, bool bStart)
 	return m_connect.size() - 1;
 }
 
-void TNode::DetachLink(TLink *pL, bool bStart)
+void TNode::DetachLink(TLink *pL)
 {
-	for (int i = 0; i < m_iLinks; i++)
+	for (size_t i = 0; i < m_connect.size(); i++)
 	{
-		if (m_connect[i].pLink == pL && m_connect[i].bStart == bStart)
+		if (m_connect[i].pLink == pL)
 		{
 			// found it
 			m_connect.erase(m_connect.begin() + i);
-			m_iLinks = m_connect.size();
 			return;
 		}
 	}
@@ -118,7 +112,7 @@ void TNode::DetachLink(TLink *pL, bool bStart)
 void TNode::DetermineLinkAngles()
 {
 	DPoint2 pn0, pn1, diff;
-	for (int i = 0; i < m_iLinks; i++)
+	for (size_t i = 0; i < m_connect.size(); i++)
 	{
 		pn0 = m_p;
 		pn1 = GetAdjacentLinkPoint2d(i);
@@ -131,7 +125,7 @@ void TNode::DetermineLinkAngles()
 	}
 }
 
-float TNode::GetLinkAngle(int iLinkNum)
+float TNode::GetLinkAngle(uint iLinkNum)
 {
 	return m_connect[iLinkNum].fLinkAngle;
 }
@@ -147,7 +141,7 @@ void TNode::SortLinksByAngle()
 	while (!sorted)
 	{
 		sorted = true;
-		for (int i = 0; i < m_iLinks-1; i++)
+		for (size_t i = 0; i < m_connect.size()-1; i++)
 		{
 			if (m_connect[i].fLinkAngle > m_connect[i+1].fLinkAngle)
 			{
@@ -165,35 +159,35 @@ void TNode::SortLinksByAngle()
 DPoint2 TNode::GetAdjacentLinkPoint2d(int iLinkNum)
 {
 	LinkConnect &lc = m_connect[iLinkNum];
-	if (lc.bStart)
+	if (lc.pLink->GetNode(0) == this)
 		return lc.pLink->GetAt(1);			// link starts here
 	else
 		return lc.pLink->GetAt(lc.pLink->GetSize() - 2);	// link ends here
 }
 
-int TNode::GetLinkNum(TLink *link, bool bStart)
+int TNode::GetLinkNum(TLink *link)
 {
-	for (int i = 0; i < m_iLinks; i++)
+	for (size_t i = 0; i < m_connect.size(); i++)
 	{
-		if (m_connect[i].pLink == link && m_connect[i].bStart == bStart)
+		if (m_connect[i].pLink == link)
 			return i;
 	}
 	return -1;
 }
 
 //traffic control
-bool TNode::SetIntersectType(int linkNum, IntersectionType type)
+bool TNode::SetIntersectType(uint linkNum, IntersectionType type)
 {
-	if (linkNum < 0 || linkNum >= m_iLinks)
+	if (linkNum < 0 || linkNum >= m_connect.size())
 		return false;
 
 	m_connect[linkNum].eIntersection = type;
 	return true;
 }
 
-IntersectionType TNode::GetIntersectType(int linkNum)
+IntersectionType TNode::GetIntersectType(uint linkNum)
 {
-	if (linkNum < 0 || linkNum >= m_iLinks)
+	if (linkNum < 0 || linkNum >= m_connect.size())
 		return IT_NONE;
 
 	return m_connect[linkNum].eIntersection;
@@ -201,7 +195,7 @@ IntersectionType TNode::GetIntersectType(int linkNum)
 
 bool TNode::HasLights()
 {
-	for (int i = 0; i < m_iLinks; i++)
+	for (size_t i = 0; i < m_connect.size(); i++)
 	{
 		if (GetIntersectType(i) == IT_LIGHT)
 			return true;
@@ -211,7 +205,7 @@ bool TNode::HasLights()
 
 bool TNode::IsControlled()
 {
-	for (int i = 0; i < m_iLinks; i++)
+	for (size_t i = 0; i < m_connect.size(); i++)
 	{
 		if (GetIntersectType(i) != IT_NONE)
 			return true;
@@ -224,12 +218,11 @@ void TNode::AdjustForLights()
 	if (!HasLights())
 		return;
 
-	int i;
-	for (i = 0; i< m_iLinks; i++) {
+	for (size_t i = 0; i< m_connect.size(); i++) {
 		SetIntersectType(i, IT_LIGHT);
 	}
 //if the intersection has signal lights, determine light relationships.
-	switch (m_iLinks) {
+	switch (m_connect.size()) {
 	case 0:
 	case 1:
 	case 2:
@@ -245,10 +238,10 @@ void TNode::AdjustForLights()
 
 		//go through all link pairs and see what is the difference of their angles.
 		//we're shooting for difference of PI.
-		for (i = 0; i < m_iLinks - 1; i++)
+		for (size_t i = 0; i < m_connect.size() - 1; i++)
 		{
 			//since angles are sorted, angle i < angle j (not sure if that helps.)
-			for (int j = i+1; j < m_iLinks; j++)
+			for (size_t j = i+1; j < m_connect.size(); j++)
 			{
 				if (i != j)
 				{
@@ -477,7 +470,7 @@ void vtRoadMap::DeleteElements()
 	TLink *nextR;
 	while (m_pFirstLink)
 	{
-		nextR = m_pFirstLink->m_pNext;
+		nextR = m_pFirstLink->GetNext();
 		delete m_pFirstLink;
 		m_pFirstLink = nextR;
 	}
@@ -485,7 +478,7 @@ void vtRoadMap::DeleteElements()
 	TNode *nextN;
 	while (m_pFirstNode)
 	{
-		nextN = m_pFirstNode->m_pNext;
+		nextN = m_pFirstNode->GetNext();
 		delete m_pFirstNode;
 		m_pFirstNode = nextN;
 	}
@@ -493,7 +486,7 @@ void vtRoadMap::DeleteElements()
 
 TNode *vtRoadMap::FindNodeByID(int id)
 {
-	for (TNode *pN = m_pFirstNode; pN; pN = pN->m_pNext)
+	for (TNode *pN = m_pFirstNode; pN; pN = pN->GetNext())
 	{
 		if (pN->m_id == id)
 			return pN;
@@ -512,11 +505,11 @@ TNode *vtRoadMap::FindNodeAtPoint(const DPoint2 &point, double epsilon)
 
 	// a target rectangle, to quickly cull points too far away
 	DRECT target(point.x-epsilon, point.y+epsilon, point.x+epsilon, point.y-epsilon);
-	for (TNode *curNode = GetFirstNode(); curNode; curNode = curNode->m_pNext)
+	for (TNode *curNode = GetFirstNode(); curNode; curNode = curNode->GetNext())
 	{
-		if (!target.ContainsPoint(curNode->m_p))
+		if (!target.ContainsPoint(curNode->Pos()))
 			continue;
-		result = (curNode->m_p - point).Length();
+		result = (curNode->Pos() - point).Length();
 		if (result < dist)
 		{
 			closest = curNode;
@@ -529,7 +522,7 @@ TNode *vtRoadMap::FindNodeAtPoint(const DPoint2 &point, double epsilon)
 int	vtRoadMap::NumLinks() const
 {
 	int count = 0;
-	for (TLink *pL = m_pFirstLink; pL; pL = pL->m_pNext)
+	for (TLink *pL = m_pFirstLink; pL; pL = pL->GetNext())
 		count++;
 	return count;
 }
@@ -537,7 +530,7 @@ int	vtRoadMap::NumLinks() const
 int	vtRoadMap::NumNodes() const
 {
 	int count = 0;
-	for (TNode *pN = m_pFirstNode; pN; pN = pN->m_pNext)
+	for (TNode *pN = m_pFirstNode; pN; pN = pN->GetNext())
 		count++;
 	return count;
 }
@@ -563,7 +556,7 @@ void vtRoadMap::ComputeExtents()
 
 	// iterate through all elements accumulating extents
 	m_extents.SetRect(1E9, -1E9, -1E9, 1E9);
-	for (TLink *pL = m_pFirstLink; pL; pL = pL->m_pNext)
+	for (TLink *pL = m_pFirstLink; pL; pL = pL->GetNext())
 	{
 		// links are a subclass of line, so we can treat them as lines
 		DLine2 *dl = pL;
@@ -586,12 +579,12 @@ int vtRoadMap::RemoveUnusedNodes()
 	while (pN)
 	{
 		total++;
-		next = pN->m_pNext;
-		if (pN->m_iLinks == 0)
+		next = pN->GetNext();
+		if (pN->NumLinks() == 0)
 		{
 			// delete it
 			if (prev)
-				prev->m_pNext = next;
+				prev->SetNext(next);
 			else
 				m_pFirstNode = next;
 			delete pN;
@@ -615,12 +608,12 @@ void vtRoadMap::RemoveNode(TNode *pNode)
 
 	while (pN)
 	{
-		next = pN->m_pNext;
+		next = pN->GetNext();
 		if (pNode == pN)
 		{
 			// delete it
 			if (prev)
-				prev->m_pNext = next;
+				prev->SetNext(next);
 			else
 				m_pFirstNode = next;
 			delete pN;
@@ -643,12 +636,12 @@ void vtRoadMap::RemoveLink(TLink *pLink)
 
 	while (pL)
 	{
-		next = pL->m_pNext;
+		next = pL->GetNext();
 		if (pLink == pL)
 		{
 			// delete it
 			if (prev)
-				prev->m_pNext = next;
+				prev->SetNext(next);
 			else
 				m_pFirstLink = next;
 			delete pL;
@@ -783,15 +776,15 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		quiet = fread(&(tmpNode->m_id), intSize, 1, fp);
 		if (version < 1.8f)
 		{
-			quiet = fread(&ivalue, intSize, 1, fp);
-			tmpNode->m_p.x = ivalue;
-			quiet = fread(&ivalue, intSize, 1, fp);
-			tmpNode->m_p.y = ivalue;
+			int x, y;
+			quiet = fread(&x, intSize, 1, fp);
+			quiet = fread(&y, intSize, 1, fp);
+			tmpNode->SetPos(DPoint2(x, y));
 		}
 		else
 		{
-			quiet = fread(&tmpNode->m_p.x, doubleSize, 1, fp);
-			quiet = fread(&tmpNode->m_p.y, doubleSize, 1, fp);
+			quiet = fread(&tmpNode->Pos().x, doubleSize, 1, fp);
+			quiet = fread(&tmpNode->Pos().y, doubleSize, 1, fp);
 		}
 		//add node to list
 		AddNode(tmpNode);
@@ -912,8 +905,8 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		}
 
 		// Inform the Nodes to which it belongs
-		tmpLink->GetNode(0)->AddLink(tmpLink, true);	// true: starts at this node
-		tmpLink->GetNode(1)->AddLink(tmpLink, false);	// false: ends at this node
+		tmpLink->GetNode(0)->AddLink(tmpLink);
+		tmpLink->GetNode(1)->AddLink(tmpLink);
 
 		// Add to list
 		AddLink(tmpLink);
@@ -1009,12 +1002,12 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	// go through and set id numbers for the nodes and links
 	while (curNode) {
 		curNode->m_id = i++;
-		curNode = curNode->m_pNext;
+		curNode = curNode->GetNext();
 	}
 	i=1;
 	while (curLink) {
 		curLink->m_id = i++;
-		curLink = curLink->m_pNext;
+		curLink = curLink->GetNext();
 	}
 
 	curNode = GetFirstNode();
@@ -1044,9 +1037,9 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	while (curNode)
 	{
 		FWrite(&(curNode->m_id), intSize);		// id
-		FWrite(&curNode->m_p.x, doubleSize);	// coordinate
-		FWrite(&curNode->m_p.y, doubleSize);
-		curNode = curNode->m_pNext;
+		FWrite(&curNode->Pos().x, doubleSize);	// coordinate
+		FWrite(&curNode->Pos().y, doubleSize);
+		curNode = curNode->GetNext();
 	}
 	FWrite("Roads:",7);
 	//write links
@@ -1076,7 +1069,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		FWrite(&(curLink->GetNode(0)->m_id), intSize);	//what link is at the end point?
 		FWrite(&(curLink->GetNode(1)->m_id), intSize);
 
-		curLink = curLink->m_pNext;
+		curLink = curLink->GetNext();
 	}
 
 	int dummy = 0;
@@ -1090,17 +1083,18 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		if (curNode->m_id < 1 || curNode->m_id > numNodes)
 			return false;
 
+		int num_links = curNode->NumLinks();
 		FWrite(&(curNode->m_id), intSize);	//node ID
 		FWrite(&(dummy), intSize); //node traffic behavior
-		FWrite(&(curNode->m_iLinks), intSize); //node traffic behavior
-		for (i = 0; i < curNode->m_iLinks; i++) {
+		FWrite(&(num_links), intSize); //node traffic behavior
+		for (i = 0; i < num_links; i++) {
 			IntersectionType type = curNode->GetIntersectType(i);
 			int lStatus = 0;
 			FWrite(&(curNode->GetLink(i)->m_id), intSize);  //link ID
 			FWrite(&type, intSize);  //get the intersection type associated with that link
 			FWrite(&lStatus,intSize);
 		}
-		curNode = curNode->m_pNext;
+		curNode = curNode->GetNext();
 	}
 
 	//EOF

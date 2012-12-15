@@ -72,7 +72,7 @@ void VisitorOSM::SetSignalLights()
 			TNode *tnode = m_pMap->FindNodeByID(node.id);
 			if (tnode)
 			{
-				for (int j = 0; j < tnode->m_iLinks; j++)
+				for (int j = 0; j < tnode->NumLinks(); j++)
 					tnode->SetIntersectType(j, IT_LIGHT);
 			}
 		}
@@ -256,7 +256,7 @@ void VisitorOSM::endElement(const char *name)
 			{
 				// doesn't exist, create it
 				node0 = m_pMap->NewNode();
-				node0->m_p = m_nodes[idx_first].p;
+				node0->SetPos(m_nodes[idx_first].p);
 				node0->m_id = m_nodes[idx_first].id;
 				m_pMap->AddNode(node0);
 			}
@@ -267,7 +267,7 @@ void VisitorOSM::endElement(const char *name)
 			{
 				// doesn't exist, create it
 				node1 = m_pMap->NewNode();
-				node1->m_p = m_nodes[idx_last].p;
+				node1->SetPos(m_nodes[idx_last].p);
 				node1->m_id = m_nodes[idx_last].id;
 				m_pMap->AddNode(node1);
 			}
@@ -283,8 +283,8 @@ void VisitorOSM::endElement(const char *name)
 			m_pMap->AddLink(m_pLink);
 
 			// point node to links
-			node0->AddLink(m_pLink, true);
-			node1->AddLink(m_pLink, false);
+			node0->AddLink(m_pLink);
+			node1->AddLink(m_pLink);
 
 			m_pLink->ComputeExtent();
 

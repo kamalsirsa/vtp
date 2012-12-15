@@ -29,18 +29,18 @@ void NodeDlgView::OnDraw(wxDC &dc)
 		return;
 
 	wxPoint center;
-	screen(m_pNode->m_p, center);
+	screen(m_pNode->Pos(), center);
 	m_pNode->Draw(&dc, this);
 
 	wxString string;
-	for (int i = 0; i < m_pNode->m_iLinks; i++)
+	for (int i = 0; i < m_pNode->NumLinks(); i++)
 	{
 		LinkEdit *pR = m_pNode->GetLink(i);
 		pR->Draw(&dc, this);
 
 		//we need to use the original node here because the roads point to it.
-		DPoint2 close = m_pNode->GetAdjacentLinkPoint2d(i);
-		DPoint2 vector = close - m_pNode->m_p;
+		const DPoint2 close = m_pNode->GetAdjacentLinkPoint2d(i);
+		DPoint2 vector = close - m_pNode->Pos();
 		vector.Normalize();
 		IPoint2 vec;
 
@@ -154,7 +154,7 @@ void NodeDlg::SetNode(NodeEdit *pSingleNode, vtRoadLayer *pLayer)
 	m_pLayer = pLayer;
 	m_pView->m_pNode = m_pNode;
 	if (NULL != m_pNode)
-		m_pView->ZoomToPoint(m_pNode->m_p);
+		m_pView->ZoomToPoint(m_pNode->Pos());
 }
 
 // WDR: handler implementations for NodeDlg
@@ -215,21 +215,21 @@ void NodeDlg::ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype)
 	{
 	case VIT_NONE:
 		//make all intersections uncontrolled
-		for (i = 0; i < pNode->m_iLinks; i++) {
+		for (i = 0; i < pNode->NumLinks(); i++) {
 			pNode->SetIntersectType(i, IT_NONE);
 		}
 		GetBehavior()->SetSelection(IT_NONE);
 		break;
 	case VIT_ALLSTOPS:
 		//make all intersections stop signs
-		for (i = 0; i < pNode->m_iLinks; i++) {
+		for (i = 0; i < pNode->NumLinks(); i++) {
 			pNode->SetIntersectType(i, IT_STOPSIGN);
 		}
 		GetBehavior()->SetSelection(IT_STOPSIGN);
 		break;
 	case VIT_ALLLIGHTS:
 		//make all intersections lights
-		for (i = 0; i < pNode->m_iLinks; i++) {
+		for (i = 0; i < pNode->NumLinks(); i++) {
 			pNode->SetIntersectType(i, IT_LIGHT);
 		}
 		GetBehavior()->SetSelection(IT_LIGHT);
@@ -269,12 +269,12 @@ void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
 	{
 		// single road
 		wxString string;
-		for (int i = 0; i < m_pNode->m_iLinks; i++)
+		for (int i = 0; i < m_pNode->NumLinks(); i++)
 		{
 			string.Printf(_T("%i"), i);
 			GetLinkNum()->Append(string);
 		}
-		if (m_pNode->m_iLinks > 0)
+		if (m_pNode->NumLinks() > 0)
 			GetLinkNum()->SetSelection(0);
 		GetIntType()->SetSelection(m_pNode->GetVisual());
 		int itype = m_pNode->GetIntersectType(0);

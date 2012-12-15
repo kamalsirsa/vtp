@@ -43,6 +43,7 @@ public:
 	FPoint3 GetLinkVector(int i);
 	FPoint3 GetUnitLinkVector(int i);
 	const FPoint3 &GetAdjacentRoadpoint(int iLinkNumber);
+	NodeGeom *GetNext() { return (NodeGeom*) m_pNext; }
 
 	int m_iVerts;
 	FLine3 m_v;		// vertices of the polygon

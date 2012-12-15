@@ -160,7 +160,7 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		// create new node
 		pN = new NodeEdit;
 		pN->m_id = id++;
-		pN->m_p = dnode.m_p;
+		pN->SetPos(dnode.m_p);
 
 		AddNode(pN);
 
@@ -232,8 +232,8 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		AddLink(pL);
 
 		// inform the Nodes to which it belongs
-		pL->GetNode(0)->AddLink(pL, true);
-		pL->GetNode(1)->AddLink(pL, false);
+		pL->GetNode(0)->AddLink(pL);
+		pL->GetNode(1)->AddLink(pL);
 		pL->m_fLength = pL->Length();
 	}
 
@@ -255,12 +255,12 @@ void RoadMapEdit::GuessIntersectionTypes()
 	LinkEdit* curRoad;
 	while (pN)
 	{
-		if (pN->m_iLinks <= 2)
+		if (pN->NumLinks() <= 2)
 		{
 			pN->SetVisual(VIT_NONE);
-			if (pN->m_iLinks > 0)
+			if (pN->NumLinks() > 0)
 				assert(pN->SetIntersectType(0,IT_NONE));
-			if (pN->m_iLinks == 2)
+			if (pN->NumLinks() == 2)
 				assert(pN->SetIntersectType(1,IT_NONE));
 		}
 		else
@@ -270,7 +270,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 			int lowPriority = topPriority;
 
 			//analyze the links intersecting at the node
-			for (i = 0; i < pN->m_iLinks; i++)
+			for (i = 0; i < pN->NumLinks(); i++)
 			{
 				curRoad = (LinkEdit*)(pN->GetLink(i));
 				if (curRoad->m_iPriority == topPriority) {
@@ -285,7 +285,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 
 			IntersectionType bType;
 			//all links have same priority
-			if (topCount == pN->m_iLinks)
+			if (topCount == pN->NumLinks())
 			{
 				if (topPriority <= 2) {
 					//big roads.  use lights
@@ -300,7 +300,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 					bType = IT_STOPSIGN;
 					pN->SetVisual(VIT_ALLSTOPS);
 				}
-				for (i = 0; i < pN->m_iLinks; i++)
+				for (i = 0; i < pN->NumLinks(); i++)
 				{
 					pN->SetIntersectType(i, bType);
 				}
@@ -312,7 +312,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 				{
 					//big roads, use lights
 					pN->SetVisual(VIT_ALLLIGHTS);
-					for (i = 0; i < pN->m_iLinks; i++)
+					for (i = 0; i < pN->NumLinks(); i++)
 					{
 						pN->SetIntersectType(i, IT_LIGHT);
 					}
@@ -321,7 +321,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 				{
 					//top priority links have right of way
 					pN->SetVisual(VIT_STOPSIGN);
-					for (i = 0; i < pN->m_iLinks; i++)
+					for (i = 0; i < pN->NumLinks(); i++)
 					{
 						curRoad = (LinkEdit*)(pN->GetLink(i));
 						if (curRoad->m_iPriority == topPriority) {
@@ -490,16 +490,14 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 
 		// create 2 new nodes (begin/end) and a new line
 		pN1 = new NodeEdit;
-		pN1->m_p.x = psShape->padfX[0];
-		pN1->m_p.y = psShape->padfY[0];
+		pN1->SetPos(psShape->padfX[0], psShape->padfY[0]);
 		pN1->SetVisual(VIT_NONE);
 
 		// add to list
 		AddNode(pN1);
 
 		pN2 = new NodeEdit;
-		pN2->m_p.x = psShape->padfX[npoints-1];
-		pN2->m_p.y = psShape->padfY[npoints-1];
+		pN2->SetPos(psShape->padfX[npoints-1], psShape->padfY[npoints-1]);
 		pN2->SetVisual(VIT_NONE);
 
 		// add to list
@@ -533,8 +531,8 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 		AddLink(pL);
 
 		// inform the Nodes to which it belongs
-		pL->GetNode(0)->AddLink(pL, true);
-		pL->GetNode(1)->AddLink(pL, false);
+		pL->GetNode(0)->AddLink(pL);
+		pL->GetNode(1)->AddLink(pL);
 		pL->m_fLength = pL->Length();
 
 		SHPDestroyObject(psShape);
@@ -639,8 +637,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pN = new NodeEdit;
 				pN->m_id = id++;
 
-				pN->m_p.x = pPoint->getX();
-				pN->m_p.y = pPoint->getY();
+				pN->SetPos(pPoint->getX(), pPoint->getY());
 
 				AddNode(pN);
 
@@ -745,8 +742,8 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				AddLink(pL);
 
 				// inform the Nodes to which it belongs
-				pL->GetNode(0)->AddLink(pL, true);
-				pL->GetNode(1)->AddLink(pL, false);
+				pL->GetNode(0)->AddLink(pL);
+				pL->GetNode(1)->AddLink(pL);
 			}
 		}
 		else if (!bIsSDTS)
@@ -895,16 +892,14 @@ void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
 
 	// create 2 new nodes (begin/end) and a new line
 	pN1 = new NodeEdit;
-	pN1->m_p.x = pLineString->getX(0);
-	pN1->m_p.y = pLineString->getY(0);
+	pN1->SetPos(pLineString->getX(0), pLineString->getY(0));
 	pN1->SetVisual(VIT_NONE);
 
 	// add to list
 	AddNode(pN1);
 
 	pN2 = new NodeEdit;
-	pN2->m_p.x = pLineString->getX(num_points-1);
-	pN2->m_p.y = pLineString->getY(num_points-1);
+	pN2->SetPos(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
 	pN2->SetVisual(VIT_NONE);
 
 	// add to list
@@ -921,7 +916,7 @@ void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
 	AddLink(pL);
 
 	// point node to links
-	pL->GetNode(0)->AddLink(pL, true);
-	pL->GetNode(1)->AddLink(pL, false);
+	pL->GetNode(0)->AddLink(pL);
+	pL->GetNode(1)->AddLink(pL);
 }
 

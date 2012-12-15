@@ -36,7 +36,7 @@ float fmin(float a, float b, float c, float d)
 void NodeEdit::EnforceLinkEndpoints()
 {
 	//for the roads that now end in pN2, move it's end point as well.
-	for (int k = 0; k < m_iLinks; k++)
+	for (int k = 0; k < NumLinks(); k++)
 	{
 		TLink *r = GetLink(k);
 		if (r->GetNode(0) == this)
@@ -87,14 +87,14 @@ int RoadMapEdit::MergeRedundantNodes(bool bDegrees, bool progress_callback(int))
 
 	NodeEdit *pN, *pN2;
 
-	for (pN = GetFirstNode(); pN && pN->m_pNext; pN = next)
+	for (pN = GetFirstNode(); pN && pN->GetNext(); pN = next)
 	{
 		count1++;
 		next = pN->GetNext();
 		bool remove = false;
 		for (pN2 = next; pN2; pN2 = pN2->GetNext())
 		{
-			diff = pN2->m_p - pN->m_p;
+			diff = pN2->Pos() - pN->Pos();
 			if (diff.LengthSquared() < tolerance_squared)
 			{
 				remove = true;
@@ -112,8 +112,7 @@ int RoadMapEdit::MergeRedundantNodes(bool bDegrees, bool progress_callback(int))
 		{
 			// we've got a pair that need to be merged
 			//new point is placed between the 2 original points
-			pN2->m_p.x = (pN2->m_p.x + pN->m_p.x) / 2;
-			pN2->m_p.y = (pN2->m_p.y + pN->m_p.y) / 2;
+			pN2->SetPos((pN2->Pos() + pN->Pos()) / 2.0f);
 
 			// we're going to remove the "pN" node
 			// inform any roads which may have referenced it
@@ -121,7 +120,7 @@ int RoadMapEdit::MergeRedundantNodes(bool bDegrees, bool progress_callback(int))
 
 			// to remove pN, link around it
 			if (prev)
-				prev->m_pNext = next;
+				prev->SetNext(next);
 			else
 				m_pFirstNode = next;
 			delete pN;
@@ -173,13 +172,13 @@ int RoadMapEdit::RemoveDegenerateLinks()
 		{
 			// remove it
 			if (prevL)
-				prevL->m_pNext = nextL;
+				prevL->SetNext(nextL);
 			else
 				m_pFirstLink = nextL;
 
 			// notify the nodes that the road is gone
-			pL->GetNode(0)->DetachLink(pL, true);
-			pL->GetNode(1)->DetachLink(pL, false);
+			pL->GetNode(0)->DetachLink(pL);
+			pL->GetNode(1)->DetachLink(pL);
 
 			delete pL;
 			count++;
@@ -216,7 +215,7 @@ int RoadMapEdit::CleanLinkPoints()
 {
 	int count = 0;
 
-	for (NodeEdit *pN = GetFirstNode(); pN && pN->m_pNext; pN = pN->GetNext())
+	for (NodeEdit *pN = GetFirstNode(); pN && pN->GetNext(); pN = pN->GetNext())
 		pN->EnforceLinkEndpoints();
 
 	for (LinkEdit *pR = GetFirstLink(); pR; pR = pR->GetNext())
@@ -259,12 +258,12 @@ int RoadMapEdit::DeleteDanglingLinks()
 		{
 			//delete the road!
 			if (prev)
-				prev->m_pNext = next;
+				prev->SetNext(next);
 			else
 				m_pFirstLink = next;
 
-			pN1->DetachLink(pR, true);
-			pN2->DetachLink(pR, false);
+			pN1->DetachLink(pR);
+			pN2->DetachLink(pR);
 			delete pR;
 			count++;
 		}
@@ -291,9 +290,9 @@ int RoadMapEdit::FixOverlappedLinks(bool bDegrees)
 	else
 		tolerance = TOLERANCE_METERS/8;
 
-	for (NodeEdit *pN = GetFirstNode(); pN && pN->m_pNext; pN = pN->GetNext())
+	for (NodeEdit *pN = GetFirstNode(); pN && pN->GetNext(); pN = pN->GetNext())
 	{
-		roads = pN->m_iLinks;
+		roads = pN->NumLinks();
 
 		if (roads < 2) continue;
 
@@ -362,9 +361,9 @@ int RoadMapEdit::FixExtraneousParallels()
 	int removed = 0, i, j, roads;
 	LinkEdit *pR1=NULL, *pR2=NULL;
 
-	for (NodeEdit *pN = GetFirstNode(); pN && pN->m_pNext; pN = pN->GetNext())
+	for (NodeEdit *pN = GetFirstNode(); pN && pN->GetNext(); pN = pN->GetNext())
 	{
-		roads = pN->m_iLinks;
+		roads = pN->NumLinks();
 
 		if (roads < 3) continue;
 
@@ -390,13 +389,13 @@ int RoadMapEdit::FixExtraneousParallels()
 		{
 			int leads_to[2];
 			if (pR1->GetNode(0) == pN)
-				leads_to[0] = pR1->GetNode(1)->m_iLinks;
+				leads_to[0] = pR1->GetNode(1)->NumLinks();
 			else
-				leads_to[0] = pR1->GetNode(0)->m_iLinks;
+				leads_to[0] = pR1->GetNode(0)->NumLinks();
 			if (pR2->GetNode(0) == pN)
-				leads_to[1] = pR2->GetNode(1)->m_iLinks;
+				leads_to[1] = pR2->GetNode(1)->NumLinks();
 			else
-				leads_to[1] = pR2->GetNode(0)->m_iLinks;
+				leads_to[1] = pR2->GetNode(0)->NumLinks();
 			if (leads_to[0] == 1 && leads_to[1] > 1)
 			{
 				// delete R1
