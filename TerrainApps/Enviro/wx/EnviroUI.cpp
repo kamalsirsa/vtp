@@ -2968,8 +2968,8 @@ PagingDlgBase::PagingDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	
 	bSizer286->Add( bSizer287, 0, wxALIGN_CENTER, 5 );
 	
-	wxStaticBoxSizer* sbSizer55;
-	sbSizer55 = new wxStaticBoxSizer( new wxStaticBox( SurfaceLODPanel, wxID_ANY, _("Tileset Texture Status") ), wxVERTICAL );
+	wxStaticBoxSizer* sbSizer222;
+	sbSizer222 = new wxStaticBoxSizer( new wxStaticBox( SurfaceLODPanel, ID_TILESET_STATUS, _("Tileset Texture Status") ), wxVERTICAL );
 	
 	wxBoxSizer* bSizer288;
 	bSizer288 = new wxBoxSizer( wxVERTICAL );
@@ -3056,9 +3056,9 @@ PagingDlgBase::PagingDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	m_tile_status = new wxTextCtrl( SurfaceLODPanel, ID_TILE_STATUS, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
 	bSizer288->Add( m_tile_status, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
-	sbSizer55->Add( bSizer288, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	sbSizer222->Add( bSizer288, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	bSizer286->Add( sbSizer55, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	bSizer286->Add( sbSizer222, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	SurfaceLODPanel->SetSizer( bSizer286 );
 	SurfaceLODPanel->Layout();

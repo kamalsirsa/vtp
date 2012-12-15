@@ -24172,7 +24172,7 @@
                         <object class="notebookpage" expanded="0">
                             <property name="bitmap"></property>
                             <property name="label">Object Geometry</property>
-                            <property name="select">0</property>
+                            <property name="select">1</property>
                             <object class="wxPanel" expanded="0">
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
@@ -25000,7 +25000,7 @@
                         <object class="notebookpage" expanded="0">
                             <property name="bitmap"></property>
                             <property name="label">Line Geometry</property>
-                            <property name="select">1</property>
+                            <property name="select">0</property>
                             <object class="wxPanel" expanded="0">
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
@@ -27669,11 +27669,11 @@
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
                                             </object>
-                                            <object class="sizeritem" expanded="1">
+                                            <object class="sizeritem" expanded="0">
                                                 <property name="border">5</property>
                                                 <property name="flag">wxTOP|wxBOTTOM|wxLEFT</property>
                                                 <property name="proportion">0</property>
-                                                <object class="wxTextCtrl" expanded="1">
+                                                <object class="wxTextCtrl" expanded="0">
                                                     <property name="bg"></property>
                                                     <property name="context_help"></property>
                                                     <property name="context_menu">1</property>
@@ -27729,11 +27729,11 @@
                                                     <event name="OnUpdateUI"></event>
                                                 </object>
                                             </object>
-                                            <object class="sizeritem" expanded="1">
+                                            <object class="sizeritem" expanded="0">
                                                 <property name="border">5</property>
                                                 <property name="flag">wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT</property>
                                                 <property name="proportion">0</property>
-                                                <object class="wxSpinButton" expanded="1">
+                                                <object class="wxSpinButton" expanded="0">
                                                     <property name="bg"></property>
                                                     <property name="context_help"></property>
                                                     <property name="context_menu">1</property>
@@ -27909,10 +27909,10 @@
                                         <property name="flag">wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL</property>
                                         <property name="proportion">1</property>
                                         <object class="wxStaticBoxSizer" expanded="0">
-                                            <property name="id">wxID_ANY</property>
+                                            <property name="id">ID_TILESET_STATUS</property>
                                             <property name="label">Tileset Texture Status</property>
                                             <property name="minimum_size"></property>
-                                            <property name="name">sbSizer55</property>
+                                            <property name="name">sbSizer222</property>
                                             <property name="orient">wxVERTICAL</property>
                                             <property name="permission">none</property>
                                             <event name="OnUpdateUI"></event>
@@ -29657,7 +29657,7 @@
                                             <property name="enabled">1</property>
                                             <property name="fg"></property>
                                             <property name="font"></property>
-                                            <property name="hidden"></property>
+                                            <property name="hidden">0</property>
                                             <property name="id">ID_PANEL3</property>
                                             <property name="maximum_size"></property>
                                             <property name="minimum_size"></property>

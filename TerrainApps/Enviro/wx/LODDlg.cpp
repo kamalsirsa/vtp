@@ -60,6 +60,7 @@ LODDlg::LODDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iCountMax = 0;
 	m_fPageout = 0.0f;
 	m_fRange = 0.0f;
+	m_bShowTilesetStatus = false;
 
 	// Work around wxFormDesigner's lack of support for limiting to smallest size
 	GetSizer()->SetSizeHints(this);
@@ -117,11 +118,23 @@ void LODDlg::Refresh(float res0, float res, float res1, int target,
 	if (GetNotebook()->GetSelection() != 0)
 		return;
 
+	// Hide the tileset status if our current terrain has no tileset.
+	bool bshow = (prange != -1);
+	GetTilesetBox()->GetContainingSizer()->Show(bshow);
+	if (bshow != m_bShowTilesetStatus)
+	{
+		Layout();
+		GetSizer()->Fit( this );
+		m_bShowTilesetStatus = bshow;
+	}
+
 	wxString str;
 	if (bNeedRefresh)
 	{
 		str.Printf(_T("%d"), m_iTarget);
+		m_bSet = true;
 		GetTarget()->SetValue(str);
+		m_bSet = false;
 	}
 
 	str.Printf(_T("%d"), count);
@@ -541,6 +554,9 @@ void LODDlg::OnSpinTargetDown( wxSpinEvent &event )
 
 void LODDlg::OnTarget( wxCommandEvent &event )
 {
+	if (m_bSet)
+		return;
+
 	// User typed something into the Target control
 	TransferDataFromWindow();
 	m_pFrame->SetTerrainDetail(m_iTarget);

@@ -38,6 +38,7 @@ public:
 	wxPanel* GetPanel1()  { return (wxPanel*) FindWindow( ID_PANEL1 ); }
 	wxPanel* GetPanel2()  { return (wxPanel*) FindWindow( ID_PANEL2 ); }
 	wxPanel* GetPanel3()  { return (wxPanel*) FindWindow( ID_PANEL3 ); }
+	wxStaticBox* GetTilesetBox() { return (wxStaticBox*) FindWindow(ID_TILESET_STATUS); }
 	wxNotebook *GetNotebook() { return (wxNotebook*) FindWindow( ID_NOTEBOOK ); }
 
 	void Refresh(float res0, float res, float res1, int target, int count,
@@ -53,6 +54,7 @@ private:
 	bool m_bHaveRange;
 	bool m_bHaveRangeVal;
 	bool m_bSet;
+	bool m_bShowTilesetStatus;
 	int m_iTarget;
 	EnviroFrame *m_pFrame;
 	int m_iRange;
