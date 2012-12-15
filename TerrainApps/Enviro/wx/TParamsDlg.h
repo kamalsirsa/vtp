@@ -148,7 +148,6 @@ public:
 	wxString   m_strFilenameWater;
 	bool	m_bDepressOcean;
 	float   m_fDepressOceanLevel;
-	bool	m_bHorizon;
 	wxColor	m_BgColor;
 
 //	bool	m_bVehicles;

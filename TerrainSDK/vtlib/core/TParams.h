@@ -314,7 +314,6 @@ Ocean_Plane
 Ocean_Plane_Level
 Depress_Ocean
 Depress_Ocean_Level
-Horizon
 Background_Color
 Distance_Tool_Height
 HUD_Overlay
@@ -481,7 +480,6 @@ protected:
 #define STR_WATERFILE "Water_File"
 #define STR_DEPRESSOCEAN "Depress_Ocean"
 #define STR_DEPRESSOCEANLEVEL "Depress_Ocean_Level"
-#define STR_HORIZON "Horizon"
 #define STR_BGCOLOR "Background_Color"
 
 #define STR_ROUTEENABLE "Route_Enable"	// not used yet

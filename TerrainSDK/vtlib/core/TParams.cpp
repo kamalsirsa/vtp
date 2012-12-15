@@ -146,7 +146,6 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_OCEANPLANELEVEL, "-20");
 	AddTag(STR_DEPRESSOCEAN, "false");
 	AddTag(STR_DEPRESSOCEANLEVEL, "-40");
-	AddTag(STR_HORIZON, "false");
 	AddTag(STR_BGCOLOR, "0 0 0");	// black
 
 	AddTag(STR_ROUTEENABLE, "false");	// not used yet

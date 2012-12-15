@@ -251,7 +251,6 @@ EVT_MENU(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnDynamic)
 EVT_MENU(ID_TERRAIN_CULLEVERY,	EnviroFrame::OnCullEvery)
 EVT_MENU(ID_TERRAIN_CULLONCE,	EnviroFrame::OnCullOnce)
 EVT_MENU(ID_TERRAIN_SKY,		EnviroFrame::OnSky)
-EVT_MENU(ID_TERRAIN_HORIZON,	EnviroFrame::OnHorizon)
 EVT_MENU(ID_TERRAIN_OCEAN,		EnviroFrame::OnOcean)
 EVT_MENU(ID_TERRAIN_PLANTS,		EnviroFrame::OnPlants)
 EVT_MENU(ID_TERRAIN_STRUCTURES,	EnviroFrame::OnStructures)
@@ -271,7 +270,6 @@ EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, EnviroFrame::OnUpdateCullEvery)
 EVT_UPDATE_UI(ID_TERRAIN_CULLONCE,	EnviroFrame::OnUpdateIsDynTerrain)
 EVT_UPDATE_UI(ID_TERRAIN_SKY,		EnviroFrame::OnUpdateSky)
-EVT_UPDATE_UI(ID_TERRAIN_HORIZON,	EnviroFrame::OnUpdateHorizon)
 EVT_UPDATE_UI(ID_TERRAIN_OCEAN,		EnviroFrame::OnUpdateOcean)
 EVT_UPDATE_UI(ID_TERRAIN_PLANTS,	EnviroFrame::OnUpdatePlants)
 EVT_UPDATE_UI(ID_TERRAIN_STRUCTURES, EnviroFrame::OnUpdateStructures)
@@ -706,7 +704,6 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->Append(ID_TERRAIN_CULLONCE, _("Cull once"));
 	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _("Show Sky\tF4"));
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_HORIZON, _("Show Horizon"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _("Show Ocean\tF5"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_PLANTS, _("Show Plants\tF6"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_STRUCTURES, _("Show Structures\tF7"));
@@ -2563,7 +2560,6 @@ void EnviroFrame::OnSceneEphemeris(wxCommandEvent& event)
 	m_pEphemDlg->m_strSkyTexture = wxString(param.GetValueString(STR_SKYTEXTURE), wxConvUTF8);
 	m_pEphemDlg->m_bOceanPlane = terr->GetFeatureVisible(TFT_OCEAN);
 	m_pEphemDlg->m_fOceanPlaneLevel = param.GetValueFloat(STR_OCEANPLANELEVEL);
-	m_pEphemDlg->m_bHorizon = terr->GetFeatureVisible(TFT_HORIZON);
 	m_pEphemDlg->m_bFog = terr->GetFog();
 	m_pEphemDlg->m_fFogDistance = param.GetValueFloat(STR_FOGDISTANCE) * 1000;
 	RGBi col = terr->GetBgColor();
@@ -2587,7 +2583,6 @@ void EnviroFrame::OnSceneEphemeris(wxCommandEvent& event)
 	ts->UpdateSkydomeForTerrain(terr);
 	terr->SetFeatureVisible(TFT_OCEAN, dlg.m_bOceanPlane);
 	terr->SetWaterLevel(dlg.m_fOceanPlaneLevel);
-	terr->SetFeatureVisible(TFT_HORIZON, dlg.m_bHorizon);
 	terr->SetFog(dlg.m_bFog);
 	terr->SetFogDistance(dlg.m_fFogDistance);
 	col.Set(dlg.m_BgColor.Red(), dlg.m_BgColor.Green(), dlg.m_BgColor.Blue());
@@ -2681,22 +2676,6 @@ void EnviroFrame::OnUpdateSky(wxUpdateUIEvent& event)
 	bool on = sky->GetEnabled();
 	event.Check(on);
 	event.Enable(GetCurrentTerrain() != NULL);
-}
-
-void EnviroFrame::OnHorizon(wxCommandEvent& event)
-{
-	vtTerrain *t = GetCurrentTerrain();
-	if (t) t->SetFeatureVisible(TFT_HORIZON, !t->GetFeatureVisible(TFT_HORIZON));
-}
-
-void EnviroFrame::OnUpdateHorizon(wxUpdateUIEvent& event)
-{
-	vtTerrain *t = GetCurrentTerrain();
-	bool on = false;
-	if (t)
-		on = t->GetFeatureVisible(TFT_HORIZON);
-	event.Enable(t != NULL);
-	event.Check(on);
 }
 
 void EnviroFrame::OnOcean(wxCommandEvent& event)

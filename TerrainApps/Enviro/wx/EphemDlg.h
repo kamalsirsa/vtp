@@ -47,7 +47,6 @@ public:
 	wxString m_strSkyTexture;
 	bool m_bOceanPlane;
 	float m_fOceanPlaneLevel;
-	bool m_bHorizon;
 	// fog
 	bool m_bFog;
 	float m_fFogDistance;

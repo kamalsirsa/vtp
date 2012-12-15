@@ -1172,7 +1172,6 @@ void Enviro::StoreTerrainParameters()
 	//par.SetValueFloat(STR_OCEANPLANELEVEL);	// already set dynamically
 	//par.SetValueBool(STR_DEPRESSOCEAN);
 	//par.SetValueFloat(STR_DEPRESSOCEANLEVEL);
-	par.SetValueBool(STR_HORIZON,  terr->GetFeatureVisible(TFT_HORIZON));
 	RGBi col = terr->GetBgColor();
 	par.SetValueRGBi(STR_BGCOLOR, col);
 

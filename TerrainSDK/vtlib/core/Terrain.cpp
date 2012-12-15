@@ -59,7 +59,6 @@ vtTerrain::vtTerrain()
 	m_pDetailMats = new vtMaterialArray;
 	m_pEphemMats = new vtMaterialArray;
 	m_idx_water = -1;
-	m_idx_horizon = -1;
 	m_bBothSides = false;
 
 	m_pHeightField = NULL;
@@ -67,7 +66,6 @@ vtTerrain::vtTerrain()
 	m_pScaledFeatures = NULL;
 	m_pFeatureLoader = NULL;
 
-	m_pHorizonGeom = NULL;
 	m_pOceanGeom = NULL;
 	m_pRoadGroup = NULL;
 
@@ -121,9 +119,6 @@ vtTerrain::~vtTerrain()
 
 	if (m_pRoadGroup)
 		m_pTerrainGroup->removeChild(m_pRoadGroup);
-
-	if (m_pHorizonGeom)
-		m_pTerrainGroup->removeChild(m_pHorizonGeom);
 
 	if (m_pOceanGeom)
 		m_pTerrainGroup->removeChild(m_pOceanGeom);
@@ -860,26 +855,16 @@ void vtTerrain::SaveRoute()
 }
 
 /**
- * Create a horizontal plane at sea level.
- *
- * If the terrain has a large body of water on 1 or more sides, this method
- * is useful for extending the water to the horizon by creating additional
- * ocean plane geometry.
- *
- * \param fAltitude The height (Y-value) of the horizontal plane.
- * \param bWater True for a watery material, false for a land material
- * \param bHorizon If true, create tiles extending from the terrain extents
- *		to the horizon.
- * \param bCenter If true, create a tile in the center (covering the terrain
- *		extents).
+ * Create a horizontal water plane at sea level.  It can be moved up and down
+ * with a transform.
  */
-void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHorizon,
-										bool bCenter)
+void vtTerrain::CreateWaterPlane()
 {
-	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	// Unless it's already made.
+	if (m_pOceanGeom)
+		return;
 
-	int VtxType = VT_Normals;
+	MakeWaterMaterial();
 
 	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint2 world_size(world_extents.Width(), world_extents.Height());
@@ -887,75 +872,32 @@ void vtTerrain::CreateArtificialHorizon(float fAltitude, bool bWater, bool bHori
 	// You can adjust these factors:
 	const int STEPS = 5;
 	const int TILING = 1;
+	const float fUVTiling = 5.0f;
 
-	if (bWater)
+	vtGeode *geode = new vtGeode;
+	geode->SetMaterials(m_pEphemMats);
+
+	FPoint2 tile_size = world_size;
+	for (int i = -STEPS; i < (STEPS+1); i++)
 	{
-		vtGeode *pOceanGeom = new vtGeode;
-		pOceanGeom->SetMaterials(m_pEphemMats);
-
-		FPoint2 tile_size = world_size / TILING;
-		for (int i = -STEPS*TILING; i < (STEPS+1)*TILING; i++)
+		for (int j = -(STEPS); j < (STEPS+1); j++)
 		{
-			for (int j = -(STEPS)*TILING; j < (STEPS+1)*TILING; j++)
-			{
-				// skip center tile
-				if (i >= 0 && i < TILING &&
-					j >= 0 && j < TILING)
-				{
-					// we are in the middle
-					if (!bCenter) continue;
-				}
-				else {
-					if (!bHorizon) continue;
-				}
+			FPoint2 base;
+			base.x = world_extents.left + (i * tile_size.x);
+			base.y = world_extents.top - ((j+1) * tile_size.y);
 
-				FPoint2 base;
-				base.x = world_extents.left + (i * tile_size.x);
-				base.y = world_extents.top - ((j+1) * tile_size.y);
+			vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP,
+				VT_Normals | VT_TexCoords, 4);
+			mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
+				0.0, fUVTiling);
 
-				vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, 4);
-				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
-					0, 5.0f);
-
-				pOceanGeom->AddMesh(mesh, m_idx_water);
-			}
+			geode->AddMesh(mesh, m_idx_water);
 		}
-		m_pOceanGeom = new vtMovGeode(pOceanGeom);
-		m_pOceanGeom->setName("Ocean plane");
-		m_pOceanGeom->SetCastShadow(false);
-		m_pTerrainGroup->addChild(m_pOceanGeom);
 	}
-	if (bHorizon)
-	{
-		vtGeode *pHorizonGeom = new vtGeode;
-		pHorizonGeom->SetMaterials(m_pEphemMats);
-
-		FPoint2 tile_size = world_size;
-		for (int i = -STEPS; i < (STEPS+1); i++)
-		{
-			for (int j = -(STEPS); j < (STEPS+1); j++)
-			{
-				// skip center tile
-				if (i == 0 && j == 0)
-					// we are in the middle
-					continue;
-
-				FPoint2 base;
-				base.x = world_extents.left + (i * tile_size.x);
-				base.y = world_extents.top - ((j+1) * tile_size.y);
-
-				vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Normals, 4);
-				mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+tile_size,
-					fAltitude, 5.0f);
-
-				pHorizonGeom->AddMesh(mesh, m_idx_horizon);
-			}
-		}
-		m_pHorizonGeom = new vtMovGeode(pHorizonGeom);
-		m_pHorizonGeom->setName("Horizon plane");
-		m_pHorizonGeom->SetCastShadow(false);
-		m_pTerrainGroup->addChild(m_pHorizonGeom);
-	}
+	m_pOceanGeom = new vtMovGeode(geode);
+	m_pOceanGeom->setName("Ocean plane");
+	m_pOceanGeom->SetCastShadow(false);
+	m_pTerrainGroup->addChild(m_pOceanGeom);
 }
 
 void vtTerrain::SetWaterLevel(float fElev)
@@ -963,6 +905,59 @@ void vtTerrain::SetWaterLevel(float fElev)
 	m_Params.SetValueFloat(STR_OCEANPLANELEVEL, fElev);
 	if (m_pOceanGeom)
 		m_pOceanGeom->SetTrans(FPoint3(0, fElev, 0));
+}
+
+void vtTerrain::MakeWaterMaterial()
+{
+	if (m_idx_water == -1)
+	{
+		// Water material: texture waves
+		vtString fname = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
+		m_idx_water = m_pEphemMats->AddTextureMaterial2(fname,
+			false, false,		// culling, lighting
+			false,				// the texture itself has no alpha
+			false,				// additive
+			TERRAIN_AMBIENT,	// ambient
+			1.0f,				// diffuse
+			0.5,				// alpha
+			TERRAIN_EMISSIVE,	// emissive
+			false,				// texgen
+			false,				// clamp
+			false);				// don't mipmap: allowing texture aliasing to
+								// occur, it actually looks more water-like
+	}
+}
+
+void vtTerrain::CreateWaterHeightfield(const vtString &fname)
+{
+	// add water surface to scene graph
+	m_pWaterTin3d = new vtTin3d;
+	bool success = m_pWaterTin3d->Read(fname);
+	if (!success)
+	{
+		VTLOG("Couldn't read  water file: '%s'\n", (const char *) fname);
+		return;
+	}
+
+	MakeWaterMaterial();
+	m_pWaterTin3d->SetTextureMaterials(m_pEphemMats);
+	vtGeode *wsgeom = m_pWaterTin3d->CreateGeometry(false, m_idx_water);
+	wsgeom->setName("Water surface");
+	wsgeom->SetCastShadow(false);
+
+	// We require that the TIN has a compatible CRS with the base
+	//  terrain, but the extents may be different.  If they are,
+	//  we may need to offset the TIN to be in the correct place.
+	DRECT ext1 = m_pHeightField->GetEarthExtents();
+	DRECT ext2 = m_pWaterTin3d->GetEarthExtents();
+	DPoint2 offset = ext2.LowerLeft() - ext1.LowerLeft();
+	float x, z;
+	g_Conv.ConvertVectorFromEarth(offset, x, z);
+	vtTransform *xform = new vtTransform;
+	xform->Translate1(FPoint3(x, 0, z));
+
+	xform->addChild(wsgeom);
+	m_pTerrainGroup->addChild(xform);
 }
 
 //
@@ -2452,81 +2447,21 @@ bool vtTerrain::CreateStep5()
 
 	_CreateCulture();
 
-	bool bOcean = m_Params.GetValueBool(STR_OCEANPLANE);
-	bool bHorizon = m_Params.GetValueBool(STR_HORIZON);
-	bool bWater = m_Params.GetValueBool(STR_WATER);
-
-	// Water material: texture waves
-	vtString fname = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
-	m_idx_water = m_pEphemMats->AddTextureMaterial2(fname,
-		false, false,		// culling, lighting
-		false,				// the texture itself has no alpha
-		false,				// additive
-		TERRAIN_AMBIENT,	// ambient
-		1.0f,				// diffuse
-		0.5,				// alpha
-		TERRAIN_EMISSIVE,	// emissive
-		false,				// texgen
-		false,				// clamp
-		false);				// don't mipmap: allowing texture aliasing to
-							// occur, it actually looks more water-like
-
-	// Ground plane (horizon) material
-	m_idx_horizon = m_pEphemMats->AddRGBMaterial1(RGBf(1.0f, 0.8f, 0.6f),
-		false, true, false);		// cull, light, wire
-
-	float minh, maxh;
-	m_pHeightField->GetHeightExtents(minh, maxh);
-	if (minh == INVALID_ELEVATION)
-		minh = 0.0f;
-
-	if (bOcean || bHorizon)
+	if (m_Params.GetValueBool(STR_OCEANPLANE))
 	{
-		bool bCenter = bOcean;
-		CreateArtificialHorizon(minh, bOcean, bHorizon, bCenter);
+		CreateWaterPlane();
 		SetWaterLevel(m_Params.GetValueFloat(STR_OCEANPLANELEVEL));
 	}
 
-	if (bWater)
+	if (m_Params.GetValueBool(STR_WATER))
 	{
 		vtString prefix = "Elevation/";
 		vtString wfile = m_Params.GetValueString(STR_WATERFILE);
 		vtString wpath = FindFileOnPaths(vtGetDataPath(), prefix + wfile);
 		if (wpath == "")
-		{
-			VTLOG("Couldn't find  water file: %s\n", (const char *) wfile);
-		}
+			VTLOG("Couldn't find  water elevation file: %s\n", (const char *) wfile);
 		else
-		{
-			// add water surface to scene graph
-			m_pWaterTin3d = new vtTin3d;
-			bool status = m_pWaterTin3d->Read(wpath);
-			if (status)
-			{
-				m_pWaterTin3d->SetTextureMaterials(m_pEphemMats);
-				vtGeode *wsgeom = m_pWaterTin3d->CreateGeometry(false, m_idx_water);
-				wsgeom->setName("Water surface");
-				wsgeom->SetCastShadow(false);
-
-				// We require that the TIN has a compatible CRS with the base
-				//  terrain, but the extents may be different.  If they are,
-				//  we may need to offset the TIN to be in the correct place.
-				DRECT ext1 = m_pHeightField->GetEarthExtents();
-				DRECT ext2 = m_pWaterTin3d->GetEarthExtents();
-				DPoint2 offset = ext2.LowerLeft() - ext1.LowerLeft();
-				float x, z;
-				g_Conv.ConvertVectorFromEarth(offset, x, z);
-				vtTransform *xform = new vtTransform;
-				xform->Translate1(FPoint3(x, 0, z));
-
-				xform->addChild(wsgeom);
-				m_pTerrainGroup->addChild(xform);
-			}
-			else
-			{
-				VTLOG("Couldn't read  water file: %s\n", (const char *) wpath);
-			}
-		}
+			CreateWaterHeightfield(wpath);
 	}
 
 	_CreateAbstractLayers();
@@ -2689,13 +2624,9 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 		else if (m_pTiledGeom)
 			m_pTiledGeom->SetEnabled(bOn);
 		break;
-	case TFT_HORIZON:
-		if (m_pHorizonGeom)
-			m_pHorizonGeom->SetEnabled(bOn);
-		break;
 	case TFT_OCEAN:
-		if (m_pOceanGeom)
-			m_pOceanGeom->SetEnabled(bOn);
+		CreateWaterPlane();
+		m_pOceanGeom->SetEnabled(bOn);
 		break;
 	case TFT_VEGETATION:
 		if (m_pVegGroup)
@@ -2723,10 +2654,6 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 			return m_pDynGeom->GetEnabled();
 		else if (m_pTiledGeom)
 			return m_pTiledGeom->GetEnabled();
-		break;
-	case TFT_HORIZON:
-		if (m_pHorizonGeom)
-			return m_pHorizonGeom->GetEnabled();
 		break;
 	case TFT_OCEAN:
 		if (m_pOceanGeom)

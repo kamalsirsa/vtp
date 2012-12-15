@@ -36,7 +36,6 @@ EVT_INIT_DIALOG (EphemDlg::OnInitDialog)
 EVT_CHECKBOX( ID_OCEANPLANE, EphemDlg::OnCheckBox )
 EVT_CHECKBOX( ID_SKY, EphemDlg::OnCheckBox )
 EVT_COMBOBOX( ID_SKYTEXTURE, EphemDlg::OnSkyTexture )
-EVT_CHECKBOX( ID_HORIZON, EphemDlg::OnCheckBox )
 EVT_CHECKBOX( ID_FOG, EphemDlg::OnCheckBox )
 
 EVT_CHECKBOX( ID_SHADOWS, EphemDlg::OnCheckBox )
@@ -71,7 +70,6 @@ EphemDlg::EphemDlg(wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddValidator(this, ID_OCEANPLANE, &m_bOceanPlane);
 	AddNumValidator(this, ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
-	AddValidator(this, ID_HORIZON, &m_bHorizon);
 
 	// fog
 	AddValidator(this, ID_FOG, &m_bFog);
@@ -157,7 +155,6 @@ void EphemDlg::SetToScene()
 	ts->UpdateSkydomeForTerrain(terr);
 	terr->SetFeatureVisible(TFT_OCEAN, m_bOceanPlane);
 	terr->SetWaterLevel(m_fOceanPlaneLevel);
-	terr->SetFeatureVisible(TFT_HORIZON, m_bHorizon);
 	terr->SetFog(m_bFog);
 	terr->SetFogDistance(m_fFogDistance);
 	// shadows

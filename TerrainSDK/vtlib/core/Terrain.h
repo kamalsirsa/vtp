@@ -45,7 +45,6 @@ class vtExternalHeightField3d;
 enum TFType
 {
 	TFT_TERRAINSURFACE,
-	TFT_HORIZON,
 	TFT_OCEAN,
 	TFT_VEGETATION,
 	TFT_STRUCTURES,
@@ -386,8 +385,10 @@ protected:
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
-	void CreateArtificialHorizon(float fAltitude, bool bWater, bool bHorizon,
-		bool bCenter);
+
+	void CreateWaterPlane();
+	void MakeWaterMaterial();
+	void CreateWaterHeightfield(const vtString &fname);
 
 	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtBitmapBase *dib,
 		const FPoint3 &light_dir, bool progress_callback(int) = NULL);
@@ -432,10 +433,9 @@ protected:
 	vtLocationSaver	m_LocSaver;
 	vtAnimContainer m_AnimContainer;
 
-	// horizon, water, and fog
+	// Ocean, shadow and fog
 	vtFogPtr	m_pFog;
 	vtShadowPtr	m_pShadow;
-	vtMovGeodePtr m_pHorizonGeom;
 	vtMovGeodePtr m_pOceanGeom;
 	bool		m_bFog;
 	RGBf		m_fog_color;
@@ -457,7 +457,6 @@ protected:
 	vtMaterialArrayPtr m_pDetailMats;	// and detail texture
 	vtMaterialArrayPtr m_pEphemMats;	// and ephemeris
 	int				m_idx_water;
-	int				m_idx_horizon;
 	bool			m_bBothSides;	// show both sides of terrain materials
 
 	// abstract layers

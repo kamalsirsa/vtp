@@ -1453,10 +1453,6 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	sbSizer12->Add( bSizer60, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 0 );
 	
-	m_horizon = new wxCheckBox( TParamsPanel4, ID_HORIZON, _("Artificial Horizon"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_horizon->SetValue(true); 
-	sbSizer12->Add( m_horizon, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
 	wxBoxSizer* bSizer61;
 	bSizer61 = new wxBoxSizer( wxHORIZONTAL );
 	
@@ -2648,7 +2644,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel1->SetSizer( bSizer198 );
 	StylePanel1->Layout();
 	bSizer198->Fit( StylePanel1 );
-	m_notebook->AddPage( StylePanel1, _("Object Geometry"), false );
+	m_notebook->AddPage( StylePanel1, _("Object Geometry"), true );
 	StylePanel2 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer205;
 	bSizer205 = new wxBoxSizer( wxVERTICAL );
@@ -2748,7 +2744,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel2->SetSizer( bSizer205 );
 	StylePanel2->Layout();
 	bSizer205->Fit( StylePanel2 );
-	m_notebook->AddPage( StylePanel2, _("Line Geometry"), true );
+	m_notebook->AddPage( StylePanel2, _("Line Geometry"), false );
 	StylePanel3 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer213;
 	bSizer213 = new wxBoxSizer( wxVERTICAL );
@@ -3163,10 +3159,6 @@ EphemDlgBase::EphemDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	bSizer299->Add( m_skytexture, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
 	bSizer297->Add( bSizer299, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 0 );
-	
-	m_horizon = new wxCheckBox( this, ID_HORIZON, _("Artificial Horizon"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_horizon->SetValue(true); 
-	bSizer297->Add( m_horizon, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer300;
 	bSizer300 = new wxBoxSizer( wxHORIZONTAL );

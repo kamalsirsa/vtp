@@ -297,7 +297,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_FILENAME_WATER, &m_strFilenameWater);
 	AddValidator(this, ID_DEPRESSOCEAN, &m_bDepressOcean);
 	AddNumValidator(this, ID_DEPRESSOCEANOFFSET, &m_fDepressOceanLevel);
-	AddValidator(this, ID_HORIZON, &m_bHorizon);
 	AddValidator(this, ID_FOG, &m_bFog);
 	AddNumValidator(this, ID_FOG_DISTANCE, &m_fFogDistance);
 
@@ -453,7 +452,6 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_strFilenameWater =	 wxString(Params.GetValueString(STR_WATERFILE), wxConvUTF8);
 	m_bDepressOcean =   Params.GetValueBool(STR_DEPRESSOCEAN);
 	m_fDepressOceanLevel = Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
-	m_bHorizon =		Params.GetValueBool(STR_HORIZON);
 	RGBi col =			Params.GetValueRGBi(STR_BGCOLOR);
 	m_BgColor.Set(col.r, col.g, col.b);
 
@@ -619,7 +617,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueString(STR_WATERFILE, (const char *) m_strFilenameWater.mb_str(wxConvUTF8));
 	Params.SetValueBool(STR_DEPRESSOCEAN, m_bDepressOcean);
 	Params.SetValueFloat(STR_DEPRESSOCEANLEVEL, m_fDepressOceanLevel);
-	Params.SetValueBool(STR_HORIZON, m_bHorizon);
 	RGBi col(m_BgColor.Red(), m_BgColor.Green(), m_BgColor.Blue());
 	Params.SetValueRGBi(STR_BGCOLOR, col);
 
