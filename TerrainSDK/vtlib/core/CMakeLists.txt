@@ -15,7 +15,6 @@ set(VTLIB_CORE_SOURCE_FILES
 		../core/GeomUtil.cpp
 		../core/Globe.cpp
 		../core/ImageSprite.cpp
-		../core/IntersectionEngine.cpp
 		../core/Location.cpp
 		../core/LodGrid.cpp
 		../core/MapOverviewEngine.cpp
@@ -70,7 +69,6 @@ set(VTLIB_CORE_HEADER_FILES
 		../core/GeomUtil.h
 		../core/Globe.h
 		../core/ImageSprite.h
-		../core/IntersectionEngine.h
 		../core/Light.h
 		../core/Location.h
 		../core/LodGrid.h

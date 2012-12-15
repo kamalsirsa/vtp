@@ -34,13 +34,6 @@ enum IntersectionType {
 	IT_STOPSIGN,  // a stop sign
 };
 
-enum LightStatus {
-	LT_INVALID,
-	LT_RED,
-	LT_YELLOW,
-	LT_GREEN
-};
-
 // link flags
 #define RF_SIDEWALK	0x0800
 #define RF_PARKING	0x0400
@@ -71,9 +64,6 @@ struct LinkConnect
 
 	// intersection types of the link at this node.
 	IntersectionType eIntersection;
-
-	// light of the link at this node.
-	LightStatus eLight;
 
 	// angle of each link, not initialized till SortLinksByAngle is called
 	float fLinkAngle;
@@ -108,8 +98,6 @@ public:
 	//sets intersection type for node.  returns false if link is invalid
 	bool SetIntersectType(int linkNum, IntersectionType type);  //linkNum is internal index within the node
 	IntersectionType GetIntersectType(int linkNum); //returns the intersection type of given link index (not ID)
-	LightStatus GetLightStatus(int linkNum);		//returns the light status of given link index (not ID)
-	bool SetLightStatus(int linkNum, LightStatus light); //sets the light status of given link index (not ID)
 
 	bool HasLights();
 	bool IsControlled();	// true if any stopsigns or stoplights

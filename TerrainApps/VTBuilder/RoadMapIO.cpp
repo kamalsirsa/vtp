@@ -335,10 +335,6 @@ void RoadMapEdit::GuessIntersectionTypes()
 				}
 			}
 		}
-
-		for (i = 0; i< pN->m_iLinks; i++) {
-			pN->SetLightStatus(i, LT_INVALID);
-		}
 		pN->AdjustForLights();
 
 		pN = pN->GetNext();

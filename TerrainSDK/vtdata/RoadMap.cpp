@@ -55,8 +55,6 @@ bool TNode::operator==(TNode &ref)
 	{
 		if (m_connect[i].eIntersection != ref.m_connect[i].eIntersection)
 			return false;
-		if (m_connect[i].eLight != ref.m_connect[i].eLight)
-			return false;
 	}
 	return true;
 }
@@ -97,7 +95,6 @@ int TNode::AddLink(TLink *pL, bool bStart)
 	lc.bStart = bStart;
 	lc.pLink = pL;
 	lc.eIntersection = IT_NONE;
-	lc.eLight = LT_INVALID;
 	m_connect.push_back(lc);
 
 	return m_connect.size() - 1;
@@ -202,23 +199,6 @@ IntersectionType TNode::GetIntersectType(int linkNum)
 	return m_connect[linkNum].eIntersection;
 }
 
-LightStatus TNode::GetLightStatus(int linkNum)
-{
-	if (linkNum >= m_iLinks || linkNum < 0)
-		return LT_INVALID;
-
-	return m_connect[linkNum].eLight;
-}
-
-bool TNode::SetLightStatus(int linkNum, LightStatus light)
-{
-	if (linkNum >= m_iLinks || linkNum < 0) {
-		return false;
-	}
-	m_connect[linkNum].eLight = light;
-	return true;
-}
-
 bool TNode::HasLights()
 {
 	for (int i = 0; i < m_iLinks; i++)
@@ -246,7 +226,6 @@ void TNode::AdjustForLights()
 
 	int i;
 	for (i = 0; i< m_iLinks; i++) {
-		SetLightStatus(i, LT_GREEN);
 		SetIntersectType(i, IT_LIGHT);
 	}
 //if the intersection has signal lights, determine light relationships.
@@ -298,9 +277,6 @@ void TNode::AdjustForLights()
 				}
 			}
 		}
-
-		SetLightStatus(bestChoiceA, LT_RED);
-		SetLightStatus(bestChoiceB, LT_RED);
 		break;
 	}
 }
@@ -980,7 +956,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		{
 			//match link number
 			IntersectionType type;
-			LightStatus lStatus;
+			int lStatus;
 			//read in data
 			quiet = fread(&id, intSize, 1, fp);  //link ID
 			quiet = fread(&type, intSize, 1, fp);
@@ -990,7 +966,6 @@ bool vtRoadMap::ReadRMF(const char *filename,
 			if (id >= 0)
 			{
 				tmpNode->SetIntersectType(id, type);
-				tmpNode->SetLightStatus(id, lStatus);
 			}
 		}
 	}
@@ -1120,7 +1095,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		FWrite(&(curNode->m_iLinks), intSize); //node traffic behavior
 		for (i = 0; i < curNode->m_iLinks; i++) {
 			IntersectionType type = curNode->GetIntersectType(i);
-			LightStatus lStatus = curNode->GetLightStatus(i);
+			int lStatus = 0;
 			FWrite(&(curNode->GetLink(i)->m_id), intSize);  //link ID
 			FWrite(&type, intSize);  //get the intersection type associated with that link
 			FWrite(&lStatus,intSize);

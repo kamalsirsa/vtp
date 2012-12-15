@@ -1,7 +1,7 @@
 //
 // Terrain.cpp
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,7 +17,6 @@
 #include "Building3d.h"
 #include "Fence3d.h"
 #include "ImageSprite.h"
-#include "IntersectionEngine.h"
 #include "Light.h"
 #include "PagedLodGrid.h"
 #include "vtTin3d.h"
@@ -287,25 +286,6 @@ void vtTerrain::_CreateRoads()
 
 	if (m_Params.GetValueBool(STR_ROADCULTURE))
 		m_pRoadMap->GenerateSigns(m_pStructGrid);
-
-	if (m_pRoadMap.get() && m_Params.GetValueBool(STR_ROADCULTURE))
-	{
-		NodeGeom* node = m_pRoadMap->GetFirstNode();
-		vtIntersectionEngine *lightEngine;
-		char string[50];
-		while (node)
-		{
-			if (node->HasLights())
-			{
-				// add an traffic control engine
-				lightEngine = new vtIntersectionEngine(node);
-				sprintf(string, "Traffic Control: Node %i", node->m_id);
-				lightEngine->setName(string);
-				AddEngine(lightEngine);
-			}
-			node = (NodeGeom*)node->m_pNext;
-		}
-	}
 }
 
 

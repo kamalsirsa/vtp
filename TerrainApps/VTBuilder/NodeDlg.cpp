@@ -50,6 +50,7 @@ void NodeDlgView::OnDraw(wxDC &dc)
 		//draw signal lights or stop signs as necessary.
 		dc.SetLogicalFunction(wxCOPY);
 		wxPen pen;
+		wxBrush brush;
 
 		switch (m_pNode->GetIntersectType(i))
 		{
@@ -82,41 +83,19 @@ void NodeDlgView::OnDraw(wxDC &dc)
 			dc.DrawLines(9, buf);
 			break;
 		case IT_LIGHT:
-			wxBrush brush;
-			switch (m_pNode->GetLightStatus(i))
-			{
-			case LT_INVALID:
-				pen.SetColour(0,0,0);
-				brush.SetColour(0,0,0);
-				break;
-			case LT_RED:
-				pen.SetColour(128,0,0);
-				brush.SetColour(128,0,0);
-				break;
-			case LT_YELLOW:
-				pen.SetColour(0,128,128);
-				brush.SetColour(0,128,128);
-				break;
-			case LT_GREEN:
-				pen.SetColour(0,128,0);
-				brush.SetColour(0,128,0);
-				break;
-			default:
-				//unrecognized
-				pen.SetColour(0,0,255);
-				brush.SetColour(0,0,255);
-				break;
-			}
-
+			pen.SetColour(128,0,0);
+			brush.SetColour(128,0,0);
 			dc.SetPen(pen);
 			dc.SetBrush(brush);
-			wxRect box;
-			int radius = 4;
-			box.y = vec.y - radius;
-			box.height = (radius << 1);
-			box.x = vec.x - radius;
-			box.width = (radius << 1);
-			dc.DrawEllipse(box.x, box.y, box.width, box.height);
+			{
+				wxRect box;
+				int radius = 4;
+				box.y = vec.y - radius;
+				box.height = (radius << 1);
+				box.x = vec.x - radius;
+				box.width = (radius << 1);
+				dc.DrawEllipse(box.x, box.y, box.width, box.height);
+			}
 			break;
 		}
 
