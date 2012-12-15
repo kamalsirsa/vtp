@@ -1,7 +1,7 @@
 //
 // RoadMap.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,9 @@
 #define intSize 4
 #define floatSize 4
 #define doubleSize 8
+
+// Convenience for writing one thing to file.
+#define FWrite(data,size) fwrite(data,size,1,fp)
 
 
 //diff a - b.  result between PI and -PI.
@@ -682,13 +685,10 @@ void vtRoadMap::RemoveLink(TLink *pLink)
 	}
 }
 
-#define FRead(a,b) fread(a,b,1,fp)
-#define FWrite(a,b) fwrite(a,b,1,fp)
-
-//
-// Read an RMF (Road Map File)
-// Returns true if operation sucessful.
-//
+/**
+ * Read an RMF (Road Map File)
+ * Returns true if operation sucessful.
+ */
 bool vtRoadMap::ReadRMF(const char *filename,
 						bool bHwy, bool bPaved, bool bDirt)
 {
@@ -699,7 +699,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	FILE *fp = vtFileOpen(filename, "rb");
 	if (!fp)
 	{
-		// "Error opening file: %s",filename
+		VTLOG("Couldn't open RMF file: '%s'\n", filename);
 		return false;
 	}
 
@@ -715,17 +715,18 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	if (strncmp(buffer, RMFVERSION_STRING, 7))
 	{
 		// Not an RMF file!
-		// "Sorry, that file does not appear to be a valid RMF file."
+		VTLOG1("That file does not appear to be a valid RMF file.\n");
 		fclose(fp);
 		return false;
 	}
 	double version = atof(buffer+7);
+	VTLOG("Reading RMF file, version: %.1f.\n", version);
 
 	if (version < RMFVERSION_SUPPORTED)
 	{
 		// not recent version
-		// Format("Sorry, that file appears to be a version %1.1f RMF file",
-		// This program can only read version %1.1f or newer.", version, RMFVERSION_SUPPORTED);
+		VTLOG("Sorry, we can only read version %.1f or newer.\n",
+			version, RMFVERSION_SUPPORTED);
 		fclose(fp);
 		return false;
 	}
