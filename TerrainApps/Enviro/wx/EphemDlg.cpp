@@ -106,8 +106,8 @@ void EphemDlg::UpdateEnableState()
 	GetFog()->Enable(!m_bShadows);
 }
 
-#define DIST_MIN 1.0f   // 10 m
-#define DIST_MAX 4.69897000433f // 50 km
+#define DIST_MIN 1.698970004336		// 50 m
+#define DIST_MAX 4.903089986992		// 80 km
 #define DIST_RANGE (DIST_MAX-DIST_MIN)
 
 #define BIAS_MIN 0.0f
