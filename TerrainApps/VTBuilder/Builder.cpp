@@ -1,7 +1,7 @@
 //
 // Builder.cpp: The main Builder class of the VTBuilder
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -307,17 +307,6 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 			pLayer = pRL;
 		else
 			delete pRL;
-	}
-	if (ext.CmpNoCase(_T("osm")) == 0)
-	{
-		OpenProgressDialog(fname, false);
-		vtString fname_utf = (const char*)fname.mb_str(wxConvUTF8);
-		vtRoadLayer *pRL = new vtRoadLayer;
-		if (pRL->ImportFromOSM(fname_utf, progress_callback))
-			pLayer = pRL;
-		else
-			delete pRL;
-		CloseProgressDialog();
 	}
 	if (ext.CmpNoCase(_T("bt")) == 0 ||
 		ext.CmpNoCase(_T("tin")) == 0 ||

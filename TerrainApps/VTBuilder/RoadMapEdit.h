@@ -136,9 +136,6 @@ public:
 		bool progress_callback(int) = NULL);
 	LinkEdit *AddRoadSegment(class OGRLineString *pLineString);
 
-	// Import from OpenStreetMap
-	bool ImportFromOSM(const char *fname, bool progress_callback(int) = NULL);
-
 	//cleaning functions-------------------------
 	// merge nodes that are near each other
 	int MergeRedundantNodes(bool bDegrees, bool progress_callback(int) = NULL);

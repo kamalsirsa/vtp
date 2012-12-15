@@ -364,7 +364,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
  *			nothing importable was found in the file.
  */
 vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileName,
-								   bool bRefresh, bool bWarn)
+									 bool bRefresh, bool bWarn)
 {
 	VTLOG1("ImportDataFromFile '");
 	VTLOG1(strFileName.ToUTF8());
@@ -441,14 +441,6 @@ vtLayer *Builder::ImportDataFromFile(LayerType ltype, const wxString &strFileNam
 				 !strExt.CmpNoCase(_T("tab")))
 		{
 			pLayer = ImportVectorsWithOGR(strFileName, ltype);
-		}
-		else if (!strExt.CmpNoCase(_T("osm")))
-		{
-			vtRoadLayer *pRL = new vtRoadLayer;
-			if (pRL->ImportFromOSM(fname, progress_callback))
-				pLayer = pRL;
-			else
-				delete pRL;
 		}
 		break;
 	case LT_STRUCTURE:
@@ -1851,7 +1843,6 @@ int Builder::ImportDataFromTIGER(const wxString &strDirName)
 
 	return layer_count;
 }
-
 
 void Builder::ImportDataFromNTF(const wxString &strFileName)
 {

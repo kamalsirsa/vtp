@@ -1,17 +1,26 @@
 # Add a library target called BuilderLib
 set(BUILDERLIB_SOURCE_FILES
-	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp ExtentDlg.cpp ImageGLCanvas.cpp ImageLayer.cpp
-	Import.cpp ImportPointDlg.cpp ImportStructDlg.cpp ImportStructDlgOGR.cpp ImportVegDlg.cpp Layer.cpp NodeDlg.cpp RawDlg.cpp
-	RawLayer.cpp RenderOptionsDlg.cpp ResampleDlg.cpp RoadDlg.cpp RoadLayer.cpp RoadMapEdit.cpp RoadMapIO.cpp SampleImageDlg.cpp
-	ScaledView.cpp StructLayer.cpp TileDlg.cpp Tin2d.cpp UtilityLayer.cpp VegFieldsDlg.cpp VegLayer.cpp vtBitmap.cpp VTBuilder_UI.cpp
+	Builder.cpp BuilderView.cpp ChunkDlg.cpp ElevLayer.cpp Export.cpp
+	ExtentDlg.cpp ImageGLCanvas.cpp ImageLayer.cpp Import.cpp ImportPointDlg.cpp
+	ImportOSM.cpp ImportStructDlg.cpp ImportStructDlgOGR.cpp ImportVegDlg.cpp
+	Layer.cpp NodeDlg.cpp RawDlg.cpp RawLayer.cpp RenderOptionsDlg.cpp
+	ResampleDlg.cpp RoadDlg.cpp RoadLayer.cpp RoadMapEdit.cpp RoadMapIO.cpp
+	SampleImageDlg.cpp ScaledView.cpp StructLayer.cpp TileDlg.cpp Tin2d.cpp
+	UtilityLayer.cpp VegFieldsDlg.cpp VegLayer.cpp vtBitmap.cpp VTBuilder_UI.cpp
 	vtImage.cpp WaterLayer.cpp)
+
 set(BUILDERLIB_SOURCE_FILES_NO_PCH
 	ElevDrawOptions.cpp)
+
 set(BUILDERLIB_HEADER_FILES
-	Builder.h BuilderView.h ChunkDlg.h ElevDrawOptions.h ElevLayer.h ExtentDlg.h ImageGLCanvas.h ImageLayer.h ImportPointDlg.h ImportStructDlg.h
-	ImportStructDlgOGR.h ImportVegDlg.h Layer.h NodeDlg.h Options.h RawDlg.h RawLayer.h RenderOptionsDlg.h ResampleDlg.h RoadDlg.h
-	RoadLayer.h RoadMapEdit.h SampleImageDlg.h ScaledView.h StructLayer.h TileDlg.h Tin2d.h UtilityLayer.h VegFieldsDlg.h VegLayer.h
-	vtBitmap.h VTBuilder_UI.h vtImage.h WaterLayer.h)
+	Builder.h BuilderView.h ChunkDlg.h ElevDrawOptions.h ElevLayer.h ExtentDlg.h
+	ImageGLCanvas.h ImageLayer.h ImportPointDlg.h ImportStructDlg.h
+	ImportStructDlgOGR.h ImportVegDlg.h Layer.h NodeDlg.h Options.h RawDlg.h
+	RawLayer.h RenderOptionsDlg.h ResampleDlg.h RoadDlg.h RoadLayer.h
+	RoadMapEdit.h SampleImageDlg.h ScaledView.h StructLayer.h TileDlg.h Tin2d.h
+	UtilityLayer.h VegFieldsDlg.h VegLayer.h vtBitmap.h VTBuilder_UI.h vtImage.h
+	WaterLayer.h)
+
 if(MSVC)
 	add_library(BuilderLib ${BUILDERLIB_SOURCE_FILES} ${BUILDERLIB_SOURCE_FILES_NO_PCH} ${BUILDERLIB_HEADER_FILES} pre.cpp)
 	set_source_files_properties(${BUILDERLIB_SOURCE_FILES} PROPERTIES COMPILE_FLAGS /Yuwx/wxprec.h)
@@ -30,14 +39,18 @@ endif (WIN32)
 
 
 set(VTBUILDER_SOURCE_FILES
-	App.cpp Frame.cpp FrameMenus.cpp Geocode.cpp RoadFix.cpp Special.cpp StatusBar.cpp TreeView.cpp)
+	App.cpp Frame.cpp FrameMenus.cpp Geocode.cpp RoadFix.cpp Special.cpp
+	StatusBar.cpp TreeView.cpp)
+
 set(VTBUILDER_DIALOG_SOURCE_FILES
-	DistanceDlg2d.cpp DistribVegDlg.cpp FeatInfoDlg.cpp GenGridDlg.cpp GeocodeDlg.cpp ImageMapDlg.cpp LayerPropDlg.cpp
-	MapServerDlg.cpp MatchDlg.cpp NodeDlg.cpp OptionsDlg.cpp PrefDlg.cpp RenderDlg.cpp SelectDlg.cpp
-	TSDlg.cpp VegDlg.cpp)
+	DistanceDlg2d.cpp DistribVegDlg.cpp FeatInfoDlg.cpp GenGridDlg.cpp
+	GeocodeDlg.cpp ImageMapDlg.cpp LayerPropDlg.cpp MapServerDlg.cpp
+	MatchDlg.cpp NodeDlg.cpp OptionsDlg.cpp PrefDlg.cpp RenderDlg.cpp
+	SelectDlg.cpp	TSDlg.cpp VegDlg.cpp)
 set(VTBUILDER_HEADER_FILES
-	App.h DistanceDlg2d.h DistribVegDlg.h FeatInfoDlg.h FileFilters.h Frame.h GenGridDlg.h GeocodeDlg.h ImageMapDlg.h
-	LayerPropDlg.h MapServerDlg.h MatchDlg.h MenuEnum.h OptionsDlg.h PrefDlg.h RenderDlg.h RoadMapEdit.h
+	App.h DistanceDlg2d.h DistribVegDlg.h FeatInfoDlg.h FileFilters.h Frame.h
+	GenGridDlg.h GeocodeDlg.h ImageMapDlg.h LayerPropDlg.h MapServerDlg.h
+	MatchDlg.h MenuEnum.h OptionsDlg.h PrefDlg.h RenderDlg.h RoadMapEdit.h
 	SelectDlg.h StatusBar.h TreeView.h TSDlg.h VegDlg.h VegPointOptions.h)
 set(VTBUILDER_RC_FILES
 	VTBuilder.rc)

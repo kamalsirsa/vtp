@@ -1,7 +1,7 @@
 //
 // Builder.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -186,6 +186,7 @@ public:
 	vtFeatureSet *ImportPointsFromXYZ(const char *fname, bool progress_callback(int) = NULL);
 	void ImportDataPointsFromTable(const char *fname, bool progress_callback(int) = NULL);
 	int ImportDataFromTIGER(const wxString &strDirName);
+	void ImportDataFromOSM(const wxString &strFileName);
 	void ImportDataFromNTF(const wxString &strFileName);
 	void ImportDataFromS57(const wxString &strDirName);
 	int ImportDataFromSCC(const char *filename);

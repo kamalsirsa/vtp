@@ -1,7 +1,7 @@
 //
 //  The menus functions of the main Frame window of the VTBuilder application.
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -102,6 +102,7 @@ EVT_MENU(ID_LAYER_SAVE,			MainFrame::OnLayerSave)
 EVT_MENU(ID_LAYER_SAVE_AS,		MainFrame::OnLayerSaveAs)
 EVT_MENU(ID_LAYER_IMPORT,		MainFrame::OnLayerImport)
 EVT_MENU(ID_LAYER_IMPORTTIGER,	MainFrame::OnLayerImportTIGER)
+EVT_MENU(ID_LAYER_IMPORTOSM,	MainFrame::OnLayerImportOSM)
 EVT_MENU(ID_LAYER_IMPORTNTF,	MainFrame::OnLayerImportNTF)
 EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
 EVT_MENU(ID_LAYER_IMPORT_MS,	MainFrame::OnLayerImportMapSource)
@@ -426,9 +427,11 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_MRU_LAYER, _("Recent Layers"), mruLayerMenu);
 	layerMenu->Append(ID_MRU_IMPORT, _("Recent Imports"), mruImportMenu);
 	layerMenu->AppendSeparator();
-	layerMenu->Append(ID_LAYER_IMPORTTIGER, _("Import Data From TIGER"), _("Import Data From TIGER"));
-	layerMenu->Append(ID_LAYER_IMPORTNTF, _("Import Data From NTF"), _("Import Data From TIGER"));
-	//layerMenu->Append(ID_LAYER_IMPORTUTIL, _("Import Utilities From SHP"), _("Import Utilities From SHP"));
+	layerMenu->Append(ID_LAYER_IMPORTTIGER, _("Import Layers From TIGER"));
+	layerMenu->Append(ID_LAYER_IMPORTOSM, _("Import Layers From OSM"),
+		_("Import multiple layers from a OpenStreetMap .osm File"));
+	layerMenu->Append(ID_LAYER_IMPORTNTF, _("Import Layers From NTF"),
+		_("Import multiple layers from an OSGB NTF File"));
 	layerMenu->Append(ID_LAYER_IMPORT_MS, _("Import From MapSource File"));
 	layerMenu->Append(ID_LAYER_IMPORT_POINT, _("Import Point Data From Table"));
 	layerMenu->Append(ID_LAYER_IMPORT_XML, _("Import Point Data From XML"));
@@ -1229,27 +1232,29 @@ void MainFrame::OnLayerImport(wxCommandEvent &event)
 
 void MainFrame::OnLayerImportTIGER(wxCommandEvent &event)
 {
-	// ask the user for a directory
+	// Ask the user for a directory
 	wxDirDialog getDir(NULL, _("Import TIGER Data From Directory"));
-	bool bResult = (getDir.ShowModal() == wxID_OK);
-	if (!bResult)
-		return;
-	wxString strDirName = getDir.GetPath();
 
-	ImportDataFromTIGER(strDirName);
+	if (getDir.ShowModal() == wxID_OK)
+		ImportDataFromTIGER(getDir.GetPath());
+}
+
+void MainFrame::OnLayerImportOSM(wxCommandEvent &event)
+{
+	wxFileDialog loadFile(NULL, _("Import Layers from OpenStreetMap File"),
+		_T(""), _T(""), FSTRING_OSM, wxFD_OPEN);
+
+	if (loadFile.ShowModal() == wxID_OK)
+		ImportDataFromOSM(loadFile.GetPath());
 }
 
 void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
 {
-	// Use file dialog to open plant list text file.
-	wxFileDialog loadFile(NULL, _("Import Layers from NTF File"), _T(""), _T(""),
-		_("NTF Files (*.ntf)|*.ntf"), wxFD_OPEN);
+	wxFileDialog loadFile(NULL, _("Import Layers from NTF File"),
+		_T(""), _T(""), FSTRING_NTF, wxFD_OPEN);
 
-	if (loadFile.ShowModal() != wxID_OK)
-		return;
-
-	wxString str = loadFile.GetPath();
-	ImportDataFromNTF(str);
+	if (loadFile.ShowModal() == wxID_OK)
+		ImportDataFromNTF(loadFile.GetPath());
 }
 
 void MainFrame::OnLayerImportUtil(wxCommandEvent &event)

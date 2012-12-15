@@ -1,7 +1,7 @@
 //
 // Frame.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -100,6 +100,7 @@ protected:
 	void OnLayerSaveAs(wxCommandEvent& event);
 	void OnLayerImport(wxCommandEvent& event);
 	void OnLayerImportTIGER(wxCommandEvent& event);
+	void OnLayerImportOSM(wxCommandEvent& event);
 	void OnLayerImportNTF(wxCommandEvent& event);
 	void OnLayerImportUtil(wxCommandEvent& event);
 	void OnLayerImportMapSource(wxCommandEvent& event);
