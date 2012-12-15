@@ -35,7 +35,7 @@ public:
 
 	class LinkGeom *GetLink(int n)
 	{
-		return (class LinkGeom *)m_connect[n].pLink;
+		return (class LinkGeom *)m_connect[n];
 	}
 	void BuildIntersection();
 	void FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 &p1);

@@ -50,11 +50,8 @@ bool TNode::operator==(TNode &ref)
 {
 	if (NumLinks() != ref.NumLinks())
 		return false;
-	for (size_t i = 0; i < m_connect.size(); i++)
-	{
-		if (m_connect[i].eIntersection != ref.m_connect[i].eIntersection)
-			return false;
-	}
+	if (m_id != ref.m_id)
+		return false;
 	return true;
 }
 
@@ -69,7 +66,7 @@ void TNode::Copy(TNode *node)
 TLink *TNode::GetLink(uint n) const
 {
 	if (n >= 0 && n < m_connect.size())	// safety check
-		return m_connect[n].pLink;
+		return m_connect[n];
 	else
 		return NULL;
 }
@@ -78,7 +75,7 @@ int TNode::FindLink(int linkID)
 {
 	for (size_t i = 0; i < m_connect.size(); i++)
 	{
-		if (m_connect[i].pLink->m_id == linkID)
+		if (m_connect[i]->m_id == linkID)
 			return i;
 	}
 	return -1;
@@ -87,11 +84,7 @@ int TNode::FindLink(int linkID)
 int TNode::AddLink(TLink *pL)
 {
 	// fill in the entry for the new link
-	LinkConnect lc;
-	lc.pLink = pL;
-	lc.eIntersection = IT_NONE;
-	m_connect.push_back(lc);
-
+	m_connect.push_back(pL);
 	return m_connect.size() - 1;
 }
 
@@ -99,7 +92,7 @@ void TNode::DetachLink(TLink *pL)
 {
 	for (size_t i = 0; i < m_connect.size(); i++)
 	{
-		if (m_connect[i].pLink == pL)
+		if (m_connect[i] == pL)
 		{
 			// found it
 			m_connect.erase(m_connect.begin() + i);
@@ -112,6 +105,9 @@ void TNode::DetachLink(TLink *pL)
 void TNode::DetermineLinkAngles()
 {
 	DPoint2 pn0, pn1, diff;
+
+	m_fLinkAngle.resize(m_connect.size());
+
 	for (size_t i = 0; i < m_connect.size(); i++)
 	{
 		pn0 = m_p;
@@ -121,13 +117,13 @@ void TNode::DetermineLinkAngles()
 		float angle = atan2f((float)diff.y, (float)diff.x);
 		if (angle < 0.0f)
 			angle += PI2f;
-		m_connect[i].fLinkAngle = angle;
+		m_fLinkAngle[i] = angle;
 	}
 }
 
 float TNode::GetLinkAngle(uint iLinkNum)
 {
-	return m_connect[iLinkNum].fLinkAngle;
+	return m_fLinkAngle[iLinkNum];
 }
 
 void TNode::SortLinksByAngle()
@@ -143,10 +139,10 @@ void TNode::SortLinksByAngle()
 		sorted = true;
 		for (size_t i = 0; i < m_connect.size()-1; i++)
 		{
-			if (m_connect[i].fLinkAngle > m_connect[i+1].fLinkAngle)
+			if (m_fLinkAngle[i] > m_fLinkAngle[i+1])
 			{
 				// swap entries in connection array
-				LinkConnect tmp1 = m_connect[i];
+				TLink *tmp1 = m_connect[i];
 				m_connect[i] = m_connect[i+1];
 				m_connect[i+1] = tmp1;
 
@@ -158,18 +154,18 @@ void TNode::SortLinksByAngle()
 
 DPoint2 TNode::GetAdjacentLinkPoint2d(int iLinkNum)
 {
-	LinkConnect &lc = m_connect[iLinkNum];
-	if (lc.pLink->GetNode(0) == this)
-		return lc.pLink->GetAt(1);			// link starts here
+	TLink *link = m_connect[iLinkNum];
+	if (link->GetNode(0) == this)
+		return link->GetAt(1);			// link starts here
 	else
-		return lc.pLink->GetAt(lc.pLink->GetSize() - 2);	// link ends here
+		return link->GetAt(link->GetSize() - 2);	// link ends here
 }
 
 int TNode::GetLinkNum(TLink *link)
 {
 	for (size_t i = 0; i < m_connect.size(); i++)
 	{
-		if (m_connect[i].pLink == link)
+		if (m_connect[i] == link)
 			return i;
 	}
 	return -1;
@@ -181,7 +177,7 @@ bool TNode::SetIntersectType(uint linkNum, IntersectionType type)
 	if (linkNum < 0 || linkNum >= m_connect.size())
 		return false;
 
-	m_connect[linkNum].eIntersection = type;
+	m_connect[linkNum]->SetIntersectionType(this, type);
 	return true;
 }
 
@@ -190,7 +186,7 @@ IntersectionType TNode::GetIntersectType(uint linkNum)
 	if (linkNum < 0 || linkNum >= m_connect.size())
 		return IT_NONE;
 
-	return m_connect[linkNum].eIntersection;
+	return m_connect[linkNum]->GetIntersectionType(this);
 }
 
 bool TNode::HasLights()
@@ -245,7 +241,7 @@ void TNode::AdjustForLights()
 			{
 				if (i != j)
 				{
-					newAngle  = m_connect[j].fLinkAngle - (m_connect[i].fLinkAngle + PIf);
+					newAngle  = m_fLinkAngle[j] - (m_fLinkAngle[i] + PIf);
 					//get absolute value
 					if (newAngle < 0) {
 						newAngle = -newAngle;
@@ -259,9 +255,9 @@ void TNode::AdjustForLights()
 						newAngle = -newAngle;
 					}
 					printf("%i:%f, %i:%f, %f, %f",
-						i, m_connect[i].fLinkAngle,
-						j, m_connect[j].fLinkAngle
-						, newAngle, bestAngle);
+						i, m_fLinkAngle[i],
+						j, m_fLinkAngle[j],
+						newAngle, bestAngle);
 					if (newAngle < bestAngle) {
 						bestChoiceA = i;
 						bestChoiceB = j;

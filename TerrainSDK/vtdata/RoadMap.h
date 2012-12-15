@@ -54,18 +54,6 @@ enum IntersectionType {
 class TNode;
 class TLink;
 
-// Store the connectivity information for each place a link meets a node.
-struct LinkConnect
-{
-	TLink *pLink;
-
-	// intersection types of the link at this node.
-	IntersectionType eIntersection;
-
-	// angle of each link, not initialized till SortLinksByAngle is called
-	float fLinkAngle;
-};
-
 /**
  * A Transporation Node is a place where 2 or more links meet.
  */
@@ -91,7 +79,6 @@ public:
 	DPoint2 GetAdjacentLinkPoint2d(int iLinkNum);  //returns the 2nd point on the link from the node.
 
 	int GetLinkNum(TLink *link);
-	LinkConnect &GetLinkConnect(int iLinkNum) { return m_connect[iLinkNum]; }
 
 	//sets intersection type for node.  returns false if link is invalid
 	bool SetIntersectType(uint linkNum, IntersectionType type);  //linkNum is internal index within the node
@@ -117,12 +104,15 @@ public:
 	DPoint2 &Pos() { return m_p; }
 	const DPoint2 &Pos() const { return m_p; }
 
+	// angle of each link, not initialized till SortLinksByAngle is called
+	std::vector<float> m_fLinkAngle;
+
 protected:
 	DPoint2 m_p;	// utm coordinates of center
 	TNode *m_pNext;
 
 	// Information about the links that connect to or from this node.
-	std::vector<LinkConnect> m_connect;
+	std::vector<TLink*> m_connect;
 
 private:
 	// Don't let unsuspecting users stumble into assuming that object
@@ -180,10 +170,33 @@ public:
 	TLink *GetNext() const { return m_pNext; }
 	void SetNext(TLink *next) { m_pNext = next; }
 
+	void SetIntersectionType(int n, IntersectionType t)
+	{
+		m_eIntersection[n] = t;
+	}
+	void SetIntersectionType(TNode *node, IntersectionType t)
+	{
+		if (m_pNode[0] == node) m_eIntersection[0] = t;
+		if (m_pNode[1] == node) m_eIntersection[1] = t;
+	}
+	IntersectionType GetIntersectionType(int n)
+	{
+		return m_eIntersection[n];
+	}
+	IntersectionType GetIntersectionType(TNode *node)
+	{
+		if (m_pNode[0] == node) return m_eIntersection[0];
+		if (m_pNode[1] == node) return m_eIntersection[1];
+		return IT_NONE;
+	}
+
 protected:
 	TLink	*m_pNext;		// Next in linked list
 	TNode	*m_pNode[2];	// "from" and "to" nodes
 	float	m_fHeight[2];
+
+	// Intersection type of this link at each node.
+	IntersectionType m_eIntersection[2];
 };
 
 typedef TLink *LinkPtr;

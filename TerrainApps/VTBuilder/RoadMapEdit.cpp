@@ -107,7 +107,7 @@ void NodeEdit::Translate(const DPoint2 &offset)
 	// update the endpoints of all the links that meet here
 	for (int i = 0; i < NumLinks(); i++)
 	{
-		TLink *pL = m_connect[i].pLink;
+		TLink *pL = m_connect[i];
 		if (pL->GetNode(0) == this)
 			pL->SetAt(0, m_p);
 		if (pL->GetNode(1) == this)
@@ -836,18 +836,19 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 
 	for (int i = 0; i < pN->NumLinks(); i++)
 	{
-		LinkConnect &lc = pN->GetLinkConnect(i);
+		TLink *link = pN->GetLink(i);
 
-		if (lc.eIntersection == IT_LIGHT)
+		IntersectionType itype = link->GetIntersectionType(pN);
+		if (itype == IT_LIGHT)
 			lights = true;
 
-		if (lc.pLink->GetNode(0) == pN)
-			lc.pLink->SetNode(0, pN2);
-		if (lc.pLink->GetNode(1) == pN)
-			lc.pLink->SetNode(1, pN2);
+		if (link->GetNode(0) == pN)
+			link->SetNode(0, pN2);
+		if (link->GetNode(1) == pN)
+			link->SetNode(1, pN2);
 
-		int iNewLinkNum = pN2->AddLink(lc.pLink);
-		pN2->SetIntersectType(iNewLinkNum, lc.eIntersection);
+		int iNewLinkNum = pN2->AddLink(link);
+		pN2->SetIntersectType(iNewLinkNum, itype);
 	}
 	while (TLink *pL = pN->GetLink(0))
 		pN->DetachLink(pL);
@@ -859,7 +860,7 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 class LinkEdit *NodeEdit::GetLink(int n)
 {
 	if (n >= 0 && n < NumLinks())	// safety check
-		return (LinkEdit *) m_connect[n].pLink;
+		return (LinkEdit *) m_connect[n];
 	else
 		return NULL;
 }

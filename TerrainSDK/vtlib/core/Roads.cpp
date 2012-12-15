@@ -85,7 +85,7 @@ NodeGeom::~NodeGeom()
 FPoint3 NodeGeom::GetLinkVector(int i)
 {
 	FPoint3 linkpoint = GetAdjacentRoadpoint(i);
-	return CreateRoadVector(m_p3, linkpoint, m_connect[i].pLink->m_fWidth);
+	return CreateRoadVector(m_p3, linkpoint, m_connect[i]->m_fWidth);
 }
 
 FPoint3 NodeGeom::GetUnitLinkVector(int i)
@@ -96,8 +96,8 @@ FPoint3 NodeGeom::GetUnitLinkVector(int i)
 
 const FPoint3 &NodeGeom::GetAdjacentRoadpoint(int iLinkNumber)
 {
-	LinkConnect &lc = m_connect[iLinkNumber];
-	LinkGeom *lg = (LinkGeom*) lc.pLink;
+	TLink *link = m_connect[iLinkNumber];
+	LinkGeom *lg = (LinkGeom*) link;
 	if (lg->GetNode(0) == this)
 		return lg->m_centerline[1];
 	else
@@ -263,7 +263,7 @@ void NodeGeom::FindVerticesForLink(TLink *pL, bool bStart, FPoint3 &p0, FPoint3 
 	}
 	else if (NumLinks() == 2)
 	{
-		if (pL == m_connect[0].pLink)
+		if (pL == m_connect[0])
 		{
 			p0 = m_v[1];
 			p1 = m_v[0];
@@ -278,7 +278,7 @@ void NodeGeom::FindVerticesForLink(TLink *pL, bool bStart, FPoint3 &p0, FPoint3 
 	{
 		for (int i = 0; i < NumLinks(); i++)
 		{
-			if (m_connect[i].pLink == pL)
+			if (m_connect[i] == pL)
 			{
 				p0 = m_v[i*2];
 				p1 = m_v[i*2+1];
