@@ -12,6 +12,11 @@
 #include "MathTypes.h"
 #include "Structure.h"
 
+/**
+ * These various style of linear structure are just for convenience; they can
+ * be passed to vtFence::ApplyStyle() for a number of commonly-encountered
+ * styles of structure.
+ */
 enum vtLinearStyle
 {
 	FS_WOOD_POSTS_WIRE,
@@ -77,6 +82,7 @@ public:
 	// geometry methods
 	void AddPoint(const DPoint2 &epos);
 	DLine2 &GetFencePoints() { return m_pFencePts; }
+	void SetFencePoints(const DLine2 &pts) { m_pFencePts = pts; }
 	void GetClosestPoint(const DPoint2 &point, DPoint2 &closest);
 	double GetDistanceToLine(const DPoint2 &point);
 	int GetNearestPointIndex(const DPoint2 &point, double &fDist);
