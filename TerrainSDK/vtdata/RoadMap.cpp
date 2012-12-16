@@ -146,6 +146,11 @@ void TNode::SortLinksByAngle()
 				m_connect[i] = m_connect[i+1];
 				m_connect[i+1] = tmp1;
 
+				// And angle array
+				float tmp2 = m_fLinkAngle[i];
+				m_fLinkAngle[i] = m_fLinkAngle[i+1];
+				m_fLinkAngle[i+1] = tmp2;
+
 				sorted = false;
 			}
 		}
