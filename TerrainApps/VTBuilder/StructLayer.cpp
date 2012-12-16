@@ -345,11 +345,8 @@ bool vtStructureLayer::TransformCoords(vtProjection &proj)
 		{
 			DLine2 line = fen->GetFencePoints();
 			for (j = 0; j < line.GetSize(); j++)
-			{
-				loc = line[j];
-				trans->Transform(1, &loc.x, &loc.y);
-				line[j] = loc;
-			}
+				trans->Transform(1, &line[j].x, &line[j].y);
+			fen->SetFencePoints(line);
 		}
 
 		vtStructInstance *inst = str->GetInstance();
