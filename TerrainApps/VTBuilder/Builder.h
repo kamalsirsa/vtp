@@ -170,7 +170,13 @@ public:
 	// Import
 	void ImportData(LayerType ltype);
 	int ImportDataFromArchive(LayerType ltype, const wxString &fname_org, bool bRefresh);
-	vtLayer *ImportDataFromFile(LayerType ltype, const wxString &strFileName, bool bRefresh = false, bool bWarn = false);
+
+	bool ImportLayersFromFile(const wxString &strFileName,
+		LayerArray &layers, bool bRefresh = false, bool bWarn = false);
+
+	vtLayer *ImportLayerFromFile(LayerType ltype, const wxString &strFileName,
+		bool bRefresh = false, bool bWarn = false);
+
 	vtLayer *ImportFromDLG(const wxString &strFileName, LayerType ltype);
 	vtLayer *ImportFromSHP(const wxString &strFileName, LayerType ltype);
 	vtLayer *ImportFromDXF(const wxString &strFileName, LayerType ltype);
@@ -186,8 +192,8 @@ public:
 	vtFeatureSet *ImportPointsFromXYZ(const char *fname, bool progress_callback(int) = NULL);
 	void ImportDataPointsFromTable(const char *fname, bool progress_callback(int) = NULL);
 	int ImportDataFromTIGER(const wxString &strDirName);
-	void ImportDataFromOSM(const wxString &strFileName);
-	void ImportDataFromNTF(const wxString &strFileName);
+	void ImportDataFromOSM(const wxString &strFileName, LayerArray &layers);
+	void ImportDataFromNTF(const wxString &strFileName, LayerArray &layers);
 	void ImportDataFromS57(const wxString &strDirName);
 	int ImportDataFromSCC(const char *filename);
 	bool ImportDataFromDXF(const char *filename);

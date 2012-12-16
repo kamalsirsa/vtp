@@ -1,7 +1,7 @@
 //
 // StructLayer.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -315,7 +315,11 @@ void vtStructureLayer::GetProjection(vtProjection &proj)
 
 void vtStructureLayer::SetProjection(const vtProjection &proj)
 {
+	if (m_proj == proj)
+		return;
+
 	m_proj = proj;
+	SetModified(true);
 }
 
 bool vtStructureLayer::TransformCoords(vtProjection &proj)

@@ -524,7 +524,7 @@ void VisitorOSM::MakeLinear()
 /**
  * Import what we can from OpenStreetMap.
  */
-void Builder::ImportDataFromOSM(const wxString &strFileName)
+void Builder::ImportDataFromOSM(const wxString &strFileName, LayerArray &layers)
 {
 	// Avoid trouble with '.' and ',' in Europe
 	//  OSM always has English punctuation
@@ -545,8 +545,8 @@ void Builder::ImportDataFromOSM(const wxString &strFileName)
 	visitor.SetSignalLights();
 
 	if (visitor.m_road_layer)
-		AddLayerWithCheck(visitor.m_road_layer, true);
+		layers.Append(visitor.m_road_layer);
 
 	if (visitor.m_struct_layer)
-		AddLayerWithCheck(visitor.m_struct_layer, true);
+		layers.Append(visitor.m_struct_layer);
 }

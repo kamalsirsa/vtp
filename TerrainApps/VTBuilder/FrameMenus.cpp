@@ -1244,8 +1244,13 @@ void MainFrame::OnLayerImportOSM(wxCommandEvent &event)
 	wxFileDialog loadFile(NULL, _("Import Layers from OpenStreetMap File"),
 		_T(""), _T(""), FSTRING_OSM, wxFD_OPEN);
 
-	if (loadFile.ShowModal() == wxID_OK)
-		ImportDataFromOSM(loadFile.GetPath());
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+
+	LayerArray layers;
+	ImportDataFromOSM(loadFile.GetPath(), layers);
+	for (uint i = 0; i < layers.GetSize(); i++)
+		AddLayerWithCheck(layers[i], true);
 }
 
 void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
@@ -1253,8 +1258,13 @@ void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
 	wxFileDialog loadFile(NULL, _("Import Layers from NTF File"),
 		_T(""), _T(""), FSTRING_NTF, wxFD_OPEN);
 
-	if (loadFile.ShowModal() == wxID_OK)
-		ImportDataFromNTF(loadFile.GetPath());
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+
+	LayerArray layers;
+	ImportDataFromNTF(loadFile.GetPath(), layers);
+	for (uint i = 0; i < layers.GetSize(); i++)
+		AddLayerWithCheck(layers[i], true);
 }
 
 void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
