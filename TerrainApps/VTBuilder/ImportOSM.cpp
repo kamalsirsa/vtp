@@ -12,6 +12,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <map>
+
 #include "vtui/Helper.h"
 
 #include "Builder.h"
@@ -28,7 +30,6 @@
 
 struct OSMNode {
 	DPoint2 p;
-	int id;
 	bool signal_lights;
 };
 
@@ -46,30 +47,26 @@ private:
 	int m_state;
 	int m_rec;
 
-	std::vector<OSMNode> m_nodes;
-	int find_node(int id)
-	{
-		for (size_t i = 0; i < m_nodes.size(); i++)
-			if (m_nodes[i].id == id)
-				return (int)i;
-		return -1;
-	}
+	typedef std::map<int, OSMNode> NodeMap;
+	NodeMap m_nodes;
 	std::vector<int> m_refs;
 
 	RoadMapEdit *m_pMap;
-	LinkEdit *m_pLink;
-	bool	m_bAddLink;
+	LayerType	m_WayType;
+
+	int			m_iRoadLanes;
+	SurfaceType m_eSurfaceType;
 };
 
 void VisitorOSM::SetSignalLights()
 {
 	// For all the nodes which have signal lights, set the state
-	for (uint i = 0; i < m_nodes.size(); i++)
+	for (NodeMap::iterator it = m_nodes.begin(); it != m_nodes.end(); it++)
 	{
-		OSMNode &node = m_nodes[i];
+		OSMNode &node = it->second;
 		if (node.signal_lights)
 		{
-			TNode *tnode = m_pMap->FindNodeByID(node.id);
+			TNode *tnode = m_pMap->FindNodeByID(it->first);
 			if (tnode)
 			{
 				for (int j = 0; j < tnode->NumLinks(); j++)
@@ -103,27 +100,22 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 			if (val)
 				p.y = atof(val);
 
-			//TNode *node = m_pMap->NewNode();
-			//node->m_p = p;
-			//node->m_id = id;
-			//m_pMap->AddNode(node)
-
 			OSMNode node;
 			node.p = p;
-			node.id = id;
 			node.signal_lights = false;
-			m_nodes.push_back(node);
+			m_nodes[id] = node;
 
 			m_state = 1;
 		}
 		else if (!strcmp(name, "way"))
 		{
-			m_pLink = m_pMap->NewLink();
-			m_pLink->m_iLanes = 2;
-
 			m_refs.clear();
 			m_state = 2;
-			m_bAddLink = true;
+			m_WayType = LT_UNKNOWN;
+
+			// Defaults
+			m_iRoadLanes = 2;
+			m_eSurfaceType = SURFT_PAVED;
 		}
 	}
 	else if (m_state == 1 && !strcmp(name, "tag"))
@@ -172,61 +164,84 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 
 			// There are hundreds of possible Way tags
 			if (key == "natural")	// value is coastline, marsh, etc.
-				m_bAddLink = false;
+				m_WayType = LT_UNKNOWN;
 
 			if (key == "route" && value == "ferry")
-				m_bAddLink = false;
+				m_WayType = LT_UNKNOWN;
 
 			if (key == "highway")
 			{
+				m_WayType = LT_ROAD;
 				if (value == "motorway")	// like a freeway
-					m_pLink->m_iLanes = 4;
+					m_iRoadLanes = 4;
 				if (value == "motorway_link")	// on/offramp
-					m_pLink->m_iLanes = 1;
+					m_iRoadLanes = 1;
 				if (value == "unclassified")	// lowest form of the interconnecting grid network.
-					m_pLink->m_iLanes = 1;
+					m_iRoadLanes = 1;
 				if (value == "unsurfaced")
-					m_pLink->m_Surface = SURFT_DIRT;
+					m_eSurfaceType = SURFT_DIRT;
 				if (value == "track")
 				{
-					m_pLink->m_iLanes = 1;
-					m_pLink->m_Surface = SURFT_2TRACK;
+					m_iRoadLanes = 1;
+					m_eSurfaceType = SURFT_2TRACK;
 				}
 				if (value == "bridleway")
-					m_pLink->m_Surface = SURFT_GRAVEL;
+					m_eSurfaceType = SURFT_GRAVEL;
 				if (value == "footway")
 				{
-					m_pLink->m_iLanes = 1;
-					m_pLink->m_Surface = SURFT_GRAVEL;
+					m_iRoadLanes = 1;
+					m_eSurfaceType = SURFT_GRAVEL;
 				}
+				if (value == "primary") // An actual highway, or arterial
+					m_iRoadLanes = 2;	// Doesn't tell us much useful
 			}
 			if (key == "waterway")
-				m_bAddLink = false;
+				m_WayType = LT_WATER;
 			if (key == "railway")
-				m_pLink->m_Surface = SURFT_RAILROAD;
+				m_eSurfaceType = SURFT_RAILROAD;
 			if (key == "aeroway")
-				m_bAddLink = false;
+				m_WayType = LT_UNKNOWN;		// Airport features, like runways
 			if (key == "aerialway")
-				m_bAddLink = false;
+				m_WayType = LT_UNKNOWN;
 			if (key == "power")
-				m_bAddLink = false;
+				m_WayType = LT_UNKNOWN;
 			if (key == "man_made")
-				m_bAddLink = false;
+				m_WayType = LT_UNKNOWN;		// Piers, towers, windmills, etc.
 			if (key == "leisure")
-				m_bAddLink = false;
+				m_WayType = LT_UNKNOWN;		// gardens, golf courses, public lawns, etc.
 			if (key == "amenity")
-				m_bAddLink = false;
+				m_WayType = LT_UNKNOWN;		// mostly, types of building classified by use
 			if (key == "abutters")
-				m_bAddLink = false;
+			{
+				// describes the predominant usage of land along a road or other way
+			}
 			if (key == "surface")
 			{
+				if (value == "asphalt")
+					m_eSurfaceType = SURFT_PAVED;
+				if (value == "compacted")
+					m_eSurfaceType = SURFT_GRAVEL;
+				if (value == "concrete")
+					m_eSurfaceType = SURFT_PAVED;
+				if (value == "dirt")
+					m_eSurfaceType = SURFT_DIRT;
+				if (value == "earth")
+					m_eSurfaceType = SURFT_DIRT;
+				if (value == "fine_gravel")
+					m_eSurfaceType = SURFT_GRAVEL;
+				if (value == "ground")
+					m_eSurfaceType = SURFT_2TRACK;	// or SURFT_TRAIL
+				if (value == "gravel")
+					m_eSurfaceType = SURFT_GRAVEL;
 				if (value == "paved")
-					m_pLink->m_Surface = SURFT_PAVED;
+					m_eSurfaceType = SURFT_PAVED;
+				if (value == "sand")
+					m_eSurfaceType = SURFT_DIRT;
 				if (value == "unpaved")
-					m_pLink->m_Surface = SURFT_GRAVEL;
+					m_eSurfaceType = SURFT_GRAVEL;	// or SURFT_DIRT
 			}
 			if (key == "lanes")
-				m_pLink->m_iLanes = atoi(value);
+				m_iRoadLanes = atoi(value);
 		}
 	}
 }
@@ -243,54 +258,53 @@ void VisitorOSM::endElement(const char *name)
 		uint refs = (uint)m_refs.size();
 
 		// must have at least 2 refs
-		if (refs >= 2 && m_bAddLink == true)
+		if (refs >= 2 && m_WayType == LT_ROAD)
 		{
+			LinkEdit *link = m_pMap->NewLink();
+
+			link->m_iLanes = m_iRoadLanes;
+			link->m_Surface = m_eSurfaceType;
+
 			int ref_first = m_refs[0];
 			int ref_last = m_refs[refs-1];
 
-			int idx_first = find_node(ref_first);
-			int idx_last = find_node(ref_last);
-
-			TNode *node0 = m_pMap->FindNodeByID(m_nodes[idx_first].id);
+			TNode *node0 = m_pMap->FindNodeByID(ref_first);
 			if (!node0)
 			{
 				// doesn't exist, create it
 				node0 = m_pMap->NewNode();
-				node0->SetPos(m_nodes[idx_first].p);
-				node0->m_id = m_nodes[idx_first].id;
+				node0->SetPos(m_nodes[ref_first].p);
+				node0->m_id = ref_first;
 				m_pMap->AddNode(node0);
 			}
-			m_pLink->SetNode(0, node0);
+			link->SetNode(0, node0);
 
-			TNode *node1 = m_pMap->FindNodeByID(m_nodes[idx_last].id);
+			TNode *node1 = m_pMap->FindNodeByID(ref_last);
 			if (!node1)
 			{
 				// doesn't exist, create it
 				node1 = m_pMap->NewNode();
-				node1->SetPos(m_nodes[idx_last].p);
-				node1->m_id = m_nodes[idx_last].id;
+				node1->SetPos(m_nodes[ref_last].p);
+				node1->m_id = ref_last;
 				m_pMap->AddNode(node1);
 			}
-			m_pLink->SetNode(1, node1);
+			link->SetNode(1, node1);
 
 			// Copy all the points
 			for (uint r = 0; r < refs; r++)
 			{
-				int idx = find_node(m_refs[r]);
-				m_pLink->Append(m_nodes[idx].p);
+				int idx = m_refs[r];
+				link->Append(m_nodes[idx].p);
 			}
 
-			m_pMap->AddLink(m_pLink);
+			m_pMap->AddLink(link);
 
 			// point node to links
-			node0->AddLink(m_pLink);
-			node1->AddLink(m_pLink);
+			node0->AddLink(link);
+			node1->AddLink(link);
 
-			m_pLink->ComputeExtent();
-
-			m_pLink = NULL;
+			link->ComputeExtent();
 		}
-
 		m_state = 0;
 	}
 }
