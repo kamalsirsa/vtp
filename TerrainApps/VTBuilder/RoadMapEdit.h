@@ -1,7 +1,7 @@
 //
 // RoadMapEdit.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -106,6 +106,7 @@ public:
 	int		m_iPriority;	// used to determine intersection behavior.  lower number => higher priority
 	float	m_fLength;		// length of the road
 	bool	m_bDrawPoints;	// draw each point in the road individually
+	int		m_iHighlightPoint;
 
 	DLine2	m_WidthOffset;		// offset from each point to its left edge
 	bool	m_bSidesComputed;	// true when m_Left and m_Right are up-to-date

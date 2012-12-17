@@ -1,7 +1,7 @@
 //
 // RoadMapEdit.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -148,6 +148,7 @@ LinkEdit::LinkEdit() : TLink(), Selectable()
 	m_iPriority = 3;
 	m_fLength = 0.0f;
 	m_bDrawPoints = false;
+	m_iHighlightPoint = -1;
 	m_bSidesComputed = false;
 }
 
@@ -305,7 +306,7 @@ bool LinkEdit::Draw(wxDC *pDC, vtScaledView *pView, bool bShowDirection,
 	else
 		pDC->SetPen(LinkPen[m_Surface]);
 
-	int c, size = GetSize();
+	const int size = GetSize();
 	if (bShowWidth)
 		pView->DrawDoubleLine(pDC, *this, m_WidthOffset);
 	else
@@ -368,13 +369,27 @@ bool LinkEdit::Draw(wxDC *pDC, vtScaledView *pView, bool bShowDirection,
 	}
 	if (m_bDrawPoints)
 	{
+		// Put a crosshair at every point on the line.
+		if (bShowWidth)
+			pView->ProjectPolyline(pDC, *this, false);	// Use the centerline
+
+		const int xhair_size = 4;
 		pDC->SetPen(LinkPen[RP_CROSSES]);
-		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
+		for (int c = 0; c < size && c < SCREENBUF_SIZE; c++)
 		{
-			pDC->DrawLine(g_screenbuf[c].x-3, g_screenbuf[c].y,
-				g_screenbuf[c].x+3, g_screenbuf[c].y);
-			pDC->DrawLine(g_screenbuf[c].x, g_screenbuf[c].y-3,
-				g_screenbuf[c].x, g_screenbuf[c].y+3);
+			pDC->DrawLine(g_screenbuf[c].x - xhair_size, g_screenbuf[c].y,
+				g_screenbuf[c].x + xhair_size, g_screenbuf[c].y);
+			pDC->DrawLine(g_screenbuf[c].x, g_screenbuf[c].y - xhair_size,
+				g_screenbuf[c].x, g_screenbuf[c].y + xhair_size);
+		}
+
+		// We may highlight a single point
+		if (m_iHighlightPoint != -1)
+		{
+			const int radius = 5;
+			pDC->SetPen(LinkPen[RP_CROSSES]);
+			pDC->SetBrush(wxBrush(wxColour(0,0,0), wxTRANSPARENT));
+			pDC->DrawCircle(g_screenbuf[m_iHighlightPoint], radius);
 		}
 	}
 	return true;

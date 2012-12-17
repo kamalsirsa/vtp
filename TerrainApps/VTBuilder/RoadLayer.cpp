@@ -1,7 +1,7 @@
 //
 // RoadLayer.cpp
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -280,19 +280,10 @@ void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 {
 	if (ui.mode == LB_LinkEdit && ui.m_pEditingRoad)
 	{
-		double closest = 1E8;
-		int closest_i=-1;
-		for (uint i = 0; i < ui.m_pEditingRoad->GetSize(); i++)
-		{
-			DPoint2 diff = ui.m_DownLocation - ui.m_pEditingRoad->GetAt(i);
-			double dist = diff.Length();
-			if (dist < closest)
-			{
-				closest = dist;
-				closest_i = i;
-			}
-		}
-		int pixels = pView->sdx(closest);
+		int closest_i = -1;
+		double dist;
+		ui.m_pEditingRoad->NearestPoint(ui.m_DownLocation, closest_i, dist);
+		const int pixels = pView->sdx(dist);
 		if (pixels < 8)
 		{
 			// begin dragging point
@@ -314,18 +305,18 @@ void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	if (ui.mode == LB_LinkEdit)
 	{
 		// see if there is a link or node at m_DownPoint
-		float error = pView->odx(5);
+		const float epsilon = pView->odx(5);
 
-		LinkEdit *pLink = FindLink(ui.m_DownLocation, error);
+		LinkEdit *pLink = FindLink(ui.m_DownLocation, epsilon);
 		if (pLink != ui.m_pEditingRoad)
 		{
-			if (ui.m_pEditingRoad)
+			if (ui.m_pEditingRoad)	// Un-highlight previously hightlighted
 			{
 				pView->RefreshRoad(ui.m_pEditingRoad);
 				ui.m_pEditingRoad->m_bDrawPoints = false;
 			}
 			ui.m_pEditingRoad = pLink;
-			if (ui.m_pEditingRoad)
+			if (ui.m_pEditingRoad)	// Highlight the currently hightlighted
 			{
 				pView->RefreshRoad(ui.m_pEditingRoad);
 				ui.m_pEditingRoad->m_bDrawPoints = true;
@@ -421,6 +412,28 @@ void vtRoadLayer::OnLeftDoubleClick(BuilderView *pView, UIContext &ui)
 		wxRect screen_bound = pView->WorldToWindow(world_bound);
 		IncreaseRect(screen_bound, 5);
 		pView->Refresh(TRUE, &screen_bound);
+	}
+}
+
+void vtRoadLayer::OnMouseMove(BuilderView *pView, UIContext &ui)
+{
+	if (ui.mode == LB_LinkEdit)
+	{
+		if (ui.m_pEditingRoad)
+		{
+			// see if there is a node nearby
+			int previous = ui.m_pEditingRoad->m_iHighlightPoint;
+			int closest_i = -1;
+			double dist;
+			ui.m_pEditingRoad->NearestPoint(ui.m_CurLocation, closest_i, dist);
+			const int pixels = pView->sdx(dist);
+			if (pixels < 8)
+				ui.m_pEditingRoad->m_iHighlightPoint = closest_i;
+			else
+				ui.m_pEditingRoad->m_iHighlightPoint = -1;
+			if (previous != ui.m_pEditingRoad->m_iHighlightPoint)
+				pView->RefreshRoad(ui.m_pEditingRoad);
+		}
 	}
 }
 

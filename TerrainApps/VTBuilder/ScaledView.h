@@ -1,7 +1,7 @@
 //
 // ScaledView.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -70,6 +70,7 @@ public:
 	double odx(int x) { return x/m_fScale; }
 	double ody(int y) { return -y/m_fScale; }
 
+	int ProjectPolyline(wxDC *pDC, const DLine2 &dline, bool bClose);
 	void DrawLine(wxDC *pDC, const DPoint2 &p0, const DPoint2 &p1);
 	void DrawPolyLine(wxDC *pDC, const DLine2 &line, bool bClose);
 	void DrawDoubleLine(wxDC *pDC, const DLine2 &line, const DLine2 &width);

@@ -1,7 +1,7 @@
 //
 // ScaledView.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -218,6 +218,23 @@ void vtScaledView::GetCanvasPosition(const wxMouseEvent &event, wxPoint &pos)
 	CalcUnscrolledPosition(p.x, p.y, &pos.x, &pos.y);
 }
 
+int vtScaledView::ProjectPolyline(wxDC *pDC, const DLine2 &dline, bool bClose)
+{
+	const int size = dline.GetSize();
+	if (size < 2)
+		return 0;
+
+	int i;
+	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
+		screen(dline[i], g_screenbuf[i]);
+	if (bClose)
+	{
+		screen(dline[0], g_screenbuf[i]);
+		i++;
+	}
+	return i;
+}
+
 void vtScaledView::DrawLine(wxDC *pDC, const DPoint2 &p0, const DPoint2 &p1)
 {
 	screen(p0, g_screenbuf[0]);
@@ -227,19 +244,8 @@ void vtScaledView::DrawLine(wxDC *pDC, const DPoint2 &p0, const DPoint2 &p1)
 
 void vtScaledView::DrawPolyLine(wxDC *pDC, const DLine2 &dline, bool bClose)
 {
-	int i, size = dline.GetSize();
-	if (size < 2)
-		return;
-
-	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
-		screen(dline[i], g_screenbuf[i]);
-	if (bClose)
-	{
-		screen(dline[0], g_screenbuf[i]);
-		i++;
-	}
-
-	pDC->DrawLines(i, g_screenbuf);
+	const int num = ProjectPolyline(pDC, dline, bClose);
+	pDC->DrawLines(num, g_screenbuf);
 }
 
 void vtScaledView::DrawDoubleLine(wxDC *pDC, const DLine2 &line, const DLine2 &width)

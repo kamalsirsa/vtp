@@ -1,7 +1,7 @@
 //
 // RoadLayer.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,7 +34,8 @@ public:
 	void OnLeftUp(BuilderView *pView, UIContext &ui);
 	void OnRightUp(BuilderView *pView, UIContext &ui);
 	void OnLeftDoubleClick(BuilderView *pView, UIContext &ui);
-
+	void OnMouseMove(BuilderView *pView, UIContext &ui);
+	
 	static bool GetDrawNodes() { return m_bDrawNodes; }
 	static void SetDrawNodes(bool d) { m_bDrawNodes = d; }
 	static bool GetShowDirection() { return m_bShowDirection; }
