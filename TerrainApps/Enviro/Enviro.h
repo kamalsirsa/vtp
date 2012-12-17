@@ -10,6 +10,7 @@
 
 #include "vtlib/core/TerrainScene.h"
 
+#include "vtdata/Building.h"
 #include "vtdata/Fence.h"
 #include "vtdata/Projections.h"
 #include "vtlib/core/AnimPath.h"
@@ -176,11 +177,19 @@ public:
 	void OnMouseSelectCursorPick(vtMouseEvent &event);
 	bool OnMouseCompass(vtMouseEvent &event);
 
-	// fence methods
+	// linear structure methods
 	void start_new_fence();
 	void finish_fence();
 	void close_fence();
 	void SetFenceOptions(const vtLinearParams &param, bool bProfileChanged = false);
+
+	// building methods
+	void AddBuildingPoint(const DPoint2 &p);
+	void FinishBuilding();
+	void FlipBuildingFooprints();
+	void CopyBuildingStyle();
+	void PasteBuildingStyle();
+	bool HaveBuildingStyle();
 
 	// route methods
 	void start_new_route();
@@ -326,7 +335,10 @@ protected:
 	vtFence3d	*m_pCurFence;
 	vtLinearParams m_FenceParams;
 
-	// line for making buildings and other uses
+	// buildings
+	vtBuilding m_BuildingStyle;
+
+	// a visible, dynamic line for making buildings, and other uses
 	ElasticPolyline m_Elastic;
 
 	// route members
@@ -368,11 +380,7 @@ protected:
 	FPQ			m_SpaceLoc;
 	FPQ			m_FlatLoc;
 
-	float			m_fMessageStart, m_fMessageTime;
 	ControlEngine	*m_pControlEng;
-	vtHUD		*m_pHUD;
-	vtTextMesh	*m_pHUDMessage;
-	vtFontPtr	 m_pArial;
 
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to
@@ -387,6 +395,10 @@ protected:
 
 	// HUD UI
 	vtMaterialArrayPtr m_pHUDMaterials;
+	vtHUD			*m_pHUD;
+	vtTextMesh		*m_pHUDMessage;
+	vtFontPtr		m_pArial;
+	float			m_fMessageStart, m_fMessageTime;
 
 	vtGeode		*m_pLegendGeom;
 	bool		m_bCreatedLegend;

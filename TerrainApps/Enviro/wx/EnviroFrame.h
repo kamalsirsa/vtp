@@ -284,6 +284,8 @@ protected:
 	virtual void OnHelpDocOnline(wxCommandEvent& event);
 
 	void OnPopupProperties(wxCommandEvent& event);
+	void OnPopupCopyStyle(wxCommandEvent& event);
+	void OnPopupPasteStyle(wxCommandEvent& event);
 	void OnPopupFlip(wxCommandEvent& event);
 	void OnPopupReload(wxCommandEvent& event);
 	void OnPopupShadow(wxCommandEvent& event);

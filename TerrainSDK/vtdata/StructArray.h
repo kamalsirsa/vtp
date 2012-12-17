@@ -79,6 +79,7 @@ public:
 
 	int GetFirstSelected();
 	int GetNextSelected();
+	vtStructure *GetFirstSelectedStructure();
 	int DeleteSelected();
 	virtual void DestroyStructure(int i) {}
 
@@ -130,6 +131,7 @@ public:
 
 	// selection
 	int NumSelected();
+	int NumSelectedOfType(vtStructureType t);
 	void DeselectAll();
 
 	// override these 'Factory' methods so that the vtStructureArray base

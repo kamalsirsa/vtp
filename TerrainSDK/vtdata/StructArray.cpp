@@ -433,6 +433,16 @@ int vtStructureArray::NumSelected()
 	return sel;
 }
 
+int vtStructureArray::NumSelectedOfType(vtStructureType t)
+{
+	int sel = 0;
+	for (uint i = 0; i < GetSize(); i++)
+	{
+		if (GetAt(i)->IsSelected() && GetAt(i)->GetType() == t) sel++;
+	}
+	return sel;
+}
+
 void vtStructureArray::DeselectAll()
 {
 	for (uint i = 0; i < GetSize(); i++)
@@ -488,6 +498,14 @@ int vtStructureArray::GetNextSelected()
 			return i;
 		}
 	return -1;
+}
+
+vtStructure *vtStructureArray::GetFirstSelectedStructure()
+{
+	for (uint i = 0; i < GetSize(); i++)
+		if (GetAt(i)->IsSelected())
+			return GetAt(i);
+	return NULL;
 }
 
 

@@ -306,6 +306,8 @@ EVT_MENU(ID_HELP_DOC_ONLINE, EnviroFrame::OnHelpDocOnline)
 // Popup
 EVT_MENU(ID_POPUP_PROPERTIES, EnviroFrame::OnPopupProperties)
 EVT_MENU(ID_POPUP_FLIP, EnviroFrame::OnPopupFlip)
+EVT_MENU(ID_POPUP_COPY_STYLE, EnviroFrame::OnPopupCopyStyle)
+EVT_MENU(ID_POPUP_PASTE_STYLE, EnviroFrame::OnPopupPasteStyle)
 EVT_MENU(ID_POPUP_RELOAD, EnviroFrame::OnPopupReload)
 EVT_MENU(ID_POPUP_SHADOW, EnviroFrame::OnPopupShadow)
 EVT_MENU(ID_POPUP_ADJUST, EnviroFrame::OnPopupAdjust)
@@ -3467,48 +3469,59 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
 
 	wxMenu *popmenu = new wxMenu;
-	wxMenuItem *item;
 
-	item = popmenu->Append(ID_POPUP_PROPERTIES, _("Properties"));
+	int structures_selected = sa ? sa->NumSelected() : 0;
+	int buildings_selected = sa ? sa->NumSelectedOfType(ST_BUILDING) : 0;
+	int linears_selected = sa ? sa->NumSelectedOfType(ST_LINEAR) : 0;
+	int instances_selected = sa ? sa->NumSelectedOfType(ST_INSTANCE) : 0;
+
+	wxMenuItem *item = popmenu->Append(ID_POPUP_PROPERTIES, _("Properties"));
+	if (structures_selected == 0 && plants.NumSelected() == 0)
+		item->Enable(false);
 
 	// Can't display properties for more than one structure
-	if (sa && sa->NumSelected() == 1)
-	{
-		int first_sel = sa->GetFirstSelected();
-		if (first_sel != -1)
-		{
-			vtStructure *struc = sa->GetAt(first_sel);
-			vtStructureType type = struc->GetType();
-			if (type == ST_BUILDING)
-				popmenu->Append(ID_POPUP_FLIP, _("Flip Footprint Direction"));
-			if (type == ST_INSTANCE)
-			{
-				popmenu->Append(ID_POPUP_RELOAD, _("Reload from Disk"));
-				popmenu->Append(ID_POPUP_ADJUST, _("Adjust Terrain Surface to Fit"));
-			}
-			popmenu->Append(ID_POPUP_SHADOW, _("Toggle Shadow"));
+	if (buildings_selected == 1)
+		popmenu->Append(ID_POPUP_COPY_STYLE, _("Copy Style"));
 
-			// It might have a URL, also
-			vtTag *tag = struc->FindTag("url");
-			if (tag)
-			{
-				popmenu->AppendSeparator();
-				popmenu->Append(ID_POPUP_URL, _("URL"));
-			}
-#ifdef VISUAL_IMPACT_CALCULATOR
-			// Visual Impact Assessment
-            popmenu->AppendCheckItem(ID_POPUP_VIA, _("&Visual Impact Contributor\tCtrl+V"), _("Set this structure as a contributor to the VIA calculation"));
-            popmenu->AppendCheckItem(ID_POPUP_VIA_TARGET, _("Visual Impact &Target\tCtrl+T"), _("Set this structure as the viewer target for VIA plots"));
-#endif
-		}
+	if (buildings_selected > 0)
+	{
+		if (g_App.HaveBuildingStyle())
+			popmenu->Append(ID_POPUP_PASTE_STYLE, _("Paste Style"));
+		popmenu->Append(ID_POPUP_FLIP, _("Flip Footprint Direction"));
 	}
-	else if (plants.NumSelected() != 0)
+
+	if (instances_selected > 0)
+	{
+		popmenu->Append(ID_POPUP_RELOAD, _("Reload from Disk"));
+		popmenu->Append(ID_POPUP_ADJUST, _("Adjust Terrain Surface to Fit"));
+	}
+
+	if (structures_selected > 0)
+		popmenu->Append(ID_POPUP_SHADOW, _("Toggle Shadow"));
+
+	if (structures_selected == 1)
+	{
+		// It might have a URL, also
+		vtTag *tag = sa->GetFirstSelectedStructure()->FindTag("url");
+		if (tag)
+		{
+			popmenu->AppendSeparator();
+			popmenu->Append(ID_POPUP_URL, _("URL"));
+		}
+#ifdef VISUAL_IMPACT_CALCULATOR
+		// Visual Impact Assessment
+        popmenu->AppendCheckItem(ID_POPUP_VIA,
+			_("&Visual Impact Contributor\tCtrl+V"),
+			_("Set this structure as a contributor to the VIA calculation"));
+        popmenu->AppendCheckItem(ID_POPUP_VIA_TARGET,
+			_("Visual Impact &Target\tCtrl+T"),
+			_("Set this structure as the viewer target for VIA plots"));
+#endif
+	}
+	if (plants.NumSelected() != 0)
 	{
 		// We could add some plant-specific commands here
 	}
-	else
-		// Nothing to show properties of
-		item->Enable(false);
 
 	if (g_App.m_Vehicles.GetSelected() != -1)
 	{
@@ -3591,26 +3604,19 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 	}
 }
 
+void EnviroFrame::OnPopupCopyStyle(wxCommandEvent& event)
+{
+	g_App.CopyBuildingStyle();
+}
+
+void EnviroFrame::OnPopupPasteStyle(wxCommandEvent& event)
+{
+	g_App.PasteBuildingStyle();
+}
+
 void EnviroFrame::OnPopupFlip(wxCommandEvent& event)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructureLayer();
-
-	int count = structures->GetSize();
-	vtStructure *str;
-	vtBuilding3d *bld;
-	for (int i = 0; i < count; i++)
-	{
-		str = structures->GetAt(i);
-		if (!str->IsSelected())
-			continue;
-
-		bld = structures->GetBuilding(i);
-		if (!bld)
-			continue;
-		bld->FlipFootprintDirection();
-		structures->ConstructStructure(structures->GetStructure3d(i));
-	}
+	g_App.FlipBuildingFooprints();
 }
 
 void EnviroFrame::OnPopupReload(wxCommandEvent& event)

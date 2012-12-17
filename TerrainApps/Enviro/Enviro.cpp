@@ -1418,8 +1418,14 @@ bool Enviro::OnMouse(vtMouseEvent &event)
 
 void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 {
-	if (m_mode != MM_SELECT && m_mode != MM_SELECTMOVE && m_mode != MM_SELECTBOX && !m_bOnTerrain)
-		return;
+	if (m_mode != MM_SELECT &&
+		m_mode != MM_SELECTMOVE &&
+		m_mode != MM_SELECTBOX)
+	{
+		// All other modes require that we are pointing at some spot on the ground.
+		if (!m_bOnTerrain)
+			return;
+	}
 
 	vtTerrain *pTerr = GetCurrentTerrain();
 
@@ -1435,28 +1441,8 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	}
 	if (m_mode == MM_BUILDINGS)
 	{
-		// Use cursor point to add to a polyline being visually selected.
-		DPoint2 g1(m_EarthPos.x, m_EarthPos.y);
-
-		// Try to prevent the user from making bad geometry with points too close together
-		int npoints = m_Elastic.NumPoints();
-		if ( npoints >= 3)
-		{
-			DPoint2 p0 = m_Elastic.GetPolyline().GetAt(npoints-3);
-			DPoint2 p1 = m_Elastic.GetPolyline().GetAt(npoints-2);
-			DPoint2 p2 = m_Elastic.GetPolyline().GetAt(npoints-1);
-			double dMin = (pTerr->GetProjection().IsGeographic() ? 2e-6 : 0.2);
-			if ((p0 - p1).Length() < dMin || (p1 - p2).Length() < dMin)
-			{
-				// too close
-				VTLOG1(" too close, omitting point.\n");
-				return;
-			}
-		}
-		// we use two points to begin with
-		if (npoints == 0)
-			m_Elastic.AddPoint(g1);
-		m_Elastic.AddPoint(g1);
+		// Use cursor point to add to a building being created.
+		AddBuildingPoint(DPoint2(m_EarthPos.x, m_EarthPos.y));
 	}
 	if (m_mode == MM_ROUTES)
 	{
@@ -1960,46 +1946,7 @@ void Enviro::OnMouseRightDown(vtMouseEvent &event)
 	if (m_mode == MM_BUILDINGS && m_Elastic.NumPoints() > 0)
 	{
 		VTLOG1("OnMouseRightDown, closing building polygon\n");
-
-		if (m_bConstrainAngles)
-		{
-			// To ensure that we have right angle all around, act as if the user
-			//  clicked back on the original point
-			//m_Elastic.RemovePoint(m_Elastic.NumPoints()-1);
-			m_Elastic.AddPoint(m_Elastic.GetPolyline().GetAt(0), m_bConstrainAngles);
-			m_Elastic.RemovePoint(m_Elastic.NumPoints()-1);
-		}
-
-		// Hide the temporary markers which showed the polyline
-		DLine2 line = m_Elastic.GetPolyline();
-		m_Elastic.Clear();
-
-		VTLOG1(" Polygon:");
-		for (uint i = 0; i < line.GetSize(); i++)
-			VTLOG(" (%lf %lf)", line[i].x, line[i].y);
-		VTLOG1("\n");
-
-		// Close and create new building in the current structure array
-		vtTerrain *pTerr = GetCurrentTerrain();
-		vtStructureArray3d *structures = pTerr->GetStructureLayer();
-		vtBuilding3d *pbuilding = (vtBuilding3d*) structures->AddNewBuilding();
-
-		// Force footprint anticlockwise
-		PolyChecker PolyChecker;
-		if (PolyChecker.IsClockwisePolygon(line))
-			line.ReverseOrder();
-		pbuilding->SetFootprint(0, line);
-
-		// Describe the appearance of the new building
-		pbuilding->SetStories(2);
-		pbuilding->SetRoofType(ROOF_HIP);
-		pbuilding->SetColor(BLD_BASIC, RGBi(255,255,255));
-		pbuilding->SetColor(BLD_ROOF, RGBi(230,200,170));
-
-		// Construct it and add it to the terrain
-		pbuilding->CreateNode(pTerr);
-		pTerr->AddNodeToStructGrid(pbuilding->GetContainer());
-		RefreshLayerView();
+		FinishBuilding();
 	}
 }
 
@@ -2390,6 +2337,138 @@ void Enviro::SetFenceOptions(const vtLinearParams &param, bool bProfileChanged)
 			pFence->ProfileChanged();
 		pFence->CreateNode(pTerr);	// re-create
 	}
+}
+
+
+////////////////////////////////////////////////////////////////
+// Buildings
+
+void Enviro::AddBuildingPoint(const DPoint2 &p)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+
+	// Try to prevent the user from making bad geometry with points too close together
+	int npoints = m_Elastic.NumPoints();
+	if ( npoints >= 3)
+	{
+		DPoint2 p0 = m_Elastic.GetPolyline().GetAt(npoints-3);
+		DPoint2 p1 = m_Elastic.GetPolyline().GetAt(npoints-2);
+		DPoint2 p2 = m_Elastic.GetPolyline().GetAt(npoints-1);
+		double dMin = (pTerr->GetProjection().IsGeographic() ? 2e-6 : 0.2);
+		if ((p0 - p1).Length() < dMin || (p1 - p2).Length() < dMin)
+		{
+			// too close
+			VTLOG1(" too close, omitting point.\n");
+			return;
+		}
+	}
+	// we use two points to begin with
+	if (npoints == 0)
+		m_Elastic.AddPoint(p);
+	m_Elastic.AddPoint(p);
+}
+
+void Enviro::FinishBuilding()
+{
+	if (m_bConstrainAngles)
+	{
+		// To ensure that we have right angle all around, act as if the user
+		//  clicked back on the original point
+		//m_Elastic.RemovePoint(m_Elastic.NumPoints()-1);
+		m_Elastic.AddPoint(m_Elastic.GetPolyline().GetAt(0), m_bConstrainAngles);
+		m_Elastic.RemovePoint(m_Elastic.NumPoints()-1);
+	}
+
+	// Hide the temporary markers which showed the polyline
+	DLine2 line = m_Elastic.GetPolyline();
+	m_Elastic.Clear();
+
+	VTLOG1(" Polygon:");
+	for (uint i = 0; i < line.GetSize(); i++)
+		VTLOG(" (%lf %lf)", line[i].x, line[i].y);
+	VTLOG1("\n");
+
+	// Close and create new building in the current structure array
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+	vtBuilding3d *pbuilding = (vtBuilding3d*) structures->AddNewBuilding();
+
+	// Force footprint anticlockwise
+	PolyChecker PolyChecker;
+	if (PolyChecker.IsClockwisePolygon(line))
+		line.ReverseOrder();
+	pbuilding->SetFootprint(0, line);
+
+	// Describe the appearance of the new building
+	pbuilding->SetStories(2);
+	pbuilding->SetRoofType(ROOF_HIP);
+	pbuilding->SetColor(BLD_BASIC, RGBi(255,255,255));
+	pbuilding->SetColor(BLD_ROOF, RGBi(230,200,170));
+
+	// Construct it and add it to the terrain
+	pbuilding->CreateNode(pTerr);
+	pTerr->AddNodeToStructGrid(pbuilding->GetContainer());
+	RefreshLayerView();
+}
+
+void Enviro::FlipBuildingFooprints()
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+
+	int count = structures->GetSize();
+	vtStructure *str;
+	vtBuilding3d *bld;
+	for (int i = 0; i < count; i++)
+	{
+		str = structures->GetAt(i);
+		if (!str->IsSelected())
+			continue;
+
+		bld = structures->GetBuilding(i);
+		if (!bld)
+			continue;
+		bld->FlipFootprintDirection();
+		structures->ConstructStructure(structures->GetStructure3d(i));
+	}
+}
+
+void Enviro::CopyBuildingStyle()
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *sa = pTerr->GetStructureLayer();
+	vtBuilding *bld = sa->GetFirstSelectedStructure()->GetBuilding();
+
+	m_BuildingStyle = *bld;
+}
+
+void Enviro::PasteBuildingStyle()
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+
+	int count = structures->GetSize();
+	vtStructure *str;
+	vtBuilding3d *bld;
+	for (int i = 0; i < count; i++)
+	{
+		str = structures->GetAt(i);
+		if (str->IsSelected())
+		{
+			bld = structures->GetBuilding(i);
+			if (bld)
+			{
+				bool do_height = false;
+				bld->CopyFromDefault(&m_BuildingStyle, do_height);
+				structures->ConstructStructure(structures->GetStructure3d(i));
+			}
+		}
+	}
+}
+
+bool Enviro::HaveBuildingStyle()
+{
+	return (m_BuildingStyle.GetNumLevels() != 0);
 }
 
 
