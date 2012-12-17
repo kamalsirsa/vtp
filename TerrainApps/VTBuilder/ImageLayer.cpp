@@ -1,7 +1,7 @@
 //
 // ImageLayer.cpp
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -62,12 +62,11 @@ bool vtImageLayer::TransformCoords(vtProjection &proj_new)
 	test.SetDatum(proj_new.GetDatum());
 	if (test == proj_new)
 	{
+		// Easy case: we only change the extents
 		success = m_pImage->ReprojectExtents(proj_new);
-		SetModified(true);
 	}
 	else
 	{
-		// wxMessageBox(_("Transformation of Image Layers is not supported."), _("Warning"));
 		// Actually re-project the image pixels
 		vtImage *img_new = new vtImage;
 
@@ -81,7 +80,6 @@ bool vtImageLayer::TransformCoords(vtProjection &proj_new)
 		{
 			delete m_pImage;
 			m_pImage = img_new;
-			//  TODO ReImage();
 		}
 		else
 		{
@@ -91,6 +89,7 @@ bool vtImageLayer::TransformCoords(vtProjection &proj_new)
 		}
 		CloseProgressDialog();
 	}
+	SetModified(true);
 
 	return success;
 }

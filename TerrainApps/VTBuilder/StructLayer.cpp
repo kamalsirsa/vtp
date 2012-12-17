@@ -361,11 +361,12 @@ bool vtStructureLayer::TransformCoords(vtProjection &proj)
 			inst->SetPoint(loc);
 		}
 	}
+	delete trans;
 
 	// set the projection
 	m_proj = proj;
+	SetModified(true);
 
-	delete trans;
 	return true;
 }
 

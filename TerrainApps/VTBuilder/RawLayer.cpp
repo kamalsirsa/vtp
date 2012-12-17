@@ -1,7 +1,7 @@
 //
 // RawLayer.cpp
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // A 'raw' layer is just abstract data, without any specific correspondence
@@ -302,6 +302,8 @@ bool vtRawLayer::TransformCoords(vtProjection &proj)
 
 	m_pSet->SetProjection(proj);
 	m_bExtentComputed = false;
+	SetModified(true);
+
 	return true;
 }
 

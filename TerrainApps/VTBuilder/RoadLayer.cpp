@@ -188,7 +188,6 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 	}
 	for (n = GetFirstNode(); n; n=n->GetNext())
 		trans->Transform(1, &(n->Pos().x), &(n->Pos().y));
-
 	delete trans;
 
 	// recompute link extents
@@ -200,6 +199,7 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 
 	// set the vtRoadMap projection
 	m_proj = proj_new;
+	SetModified(true);
 
 	m_bValidExtents = false;
 	return true;
