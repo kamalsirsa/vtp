@@ -2584,25 +2584,24 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 
 void Enviro::CreateInstance()
 {
-#if 0	// test code
-	#include "CreateWedge.cpp"
-	return;
-#endif
-
-	VTLOG("Plant Instance: ");
 	vtTagArray *tags = GetInstanceFromGUI();
 	if (!tags)
 		return;
+	CreateInstanceAt(DPoint2(m_EarthPos.x, m_EarthPos.y), tags);
+}
 
-	// create a new Instance object
+// create a new Instance object
+void Enviro::CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags)
+{
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structs = pTerr->GetStructureLayer();
 	if (!structs)
 		return;
+
 	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
 	inst->CopyTagsFrom(*tags);
-	inst->SetPoint(DPoint2(m_EarthPos.x, m_EarthPos.y));
-	VTLOG("  at %.7g, %.7g: ", m_EarthPos.x, m_EarthPos.y);
+	inst->SetPoint(pos);
+	VTLOG("Create Instance at %.7g, %.7g: ", pos.x, pos.y);
 
 	// Allow the rest of the framework to 'ornament' this instance by
 	//  extending it as desired.

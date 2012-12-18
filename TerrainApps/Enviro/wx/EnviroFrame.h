@@ -70,6 +70,7 @@ public:
 	int GetTerrainDetail();
 	void ChangePagingRange(float prange);
 	void SetFullScreen(bool bFull);
+	void CreateInstance(const DPoint2 &pos, vtTagArray *tags);
 	ProfileDlg *ShowProfileDlg();
 	void OpenFenceDialog();
 	void ShowPopupMenu(const IPoint2 &pos);

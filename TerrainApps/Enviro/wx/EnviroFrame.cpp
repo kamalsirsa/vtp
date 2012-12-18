@@ -395,12 +395,30 @@ wxBitmap ToolsFunc( size_t index )
     return wxNullBitmap;
 }
 
+// Helper
+class InstanceDlg3d: public InstanceDlg
+{
+public:
+	InstanceDlg3d(EnviroFrame *frame, wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos, const wxSize& size, long style) :
+		InstanceDlg( parent, id, title, pos, size, style )
+	{
+		m_pFrame = frame;
+	}
+	virtual void OnCreate()
+	{
+		m_pFrame->CreateInstance(m_pos, GetTagArray());
+	}
+	EnviroFrame *m_pFrame;
+};
 
+
+/////////////////////////////////////////////////////////////////////////////
 //
 // Frame constructor
 //
 EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
-	const wxSize& size, long style, bool bVerticalToolbar, bool bEnableEarth):
+	const wxSize& size, long style, bool bVerticalToolbar, bool bEnableEarth) :
 		wxFrame(parent, -1, title, pos, size, style)
 {
 	VTLOG1("Frame constructor.\n");
@@ -474,8 +492,8 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pDistanceDlg = new DistanceDlg3d(this, -1, _("Distance"));
 	m_pEphemDlg = new EphemDlg(this, -1, _("Ephemeris"));
 	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
-	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
-		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	m_pInstanceDlg = new InstanceDlg3d(this, this, -1, _("Instances"),
+		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pTagDlg = new TagDlg(this, -1, _("Tags"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pTagDlg->SetSize(440,80);
@@ -1430,8 +1448,16 @@ void EnviroFrame::SetFullScreen(bool bFull)
 #endif
 }
 
+void EnviroFrame::CreateInstance(const DPoint2 &pos, vtTagArray *tags)
+{
+	// Just pass it along to the app.
+	g_App.CreateInstanceAt(pos, tags);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 //
-// Intercept menu commands
+// Handle the menu commands
 //
 
 void EnviroFrame::OnExit(wxCommandEvent& event)

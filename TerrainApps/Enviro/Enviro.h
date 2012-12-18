@@ -191,6 +191,10 @@ public:
 	void PasteBuildingStyle();
 	bool HaveBuildingStyle();
 
+	// instance methods
+	void CreateInstance();
+	void CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags);
+
 	// route methods
 	void start_new_route();
 	void finish_route();
@@ -308,7 +312,6 @@ protected:
 	void SetupGlobe();
 	void LookUpTerrainLocations();
 	void SetupTerrain(vtTerrain *pTerr);
-	void CreateInstance();
 	void SetupArcMesh();
 	void FreeArc();
 	void FreeArcMesh();

@@ -822,7 +822,7 @@ InstanceDlg *MainFrame::ShowInstanceDlg(bool bShow)
 	{
 		// Create new Instance Dialog
 		InstanceDlg2d *dlg = new InstanceDlg2d(this, -1, _("Structure Instances"),
-			wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE);
+			wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		dlg->m_pFrame = this;
 		m_pInstanceDlg = dlg;
 
