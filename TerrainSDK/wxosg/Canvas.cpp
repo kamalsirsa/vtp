@@ -380,12 +380,17 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	if (event1.AltDown())
 		mevent.flags |= VT_ALT;
 
-	// inform vtlib scene, which informs the engines
+	// inform the terrainscene (this is awkward; need a better mechanism)
+	// it will return false if it takes over the event
+	if (vtGetTS())
+	{
+		if (vtGetTS()->OnMouse(mevent) == false)
+			return;
+	}
+
+	// and the vtlib scene, which informs the engines
 	vtGetScene()->OnMouse(mevent);
 
-	// and the terrainscene (this is awkward; need a better mechanism)
-	if (vtGetTS())
-		vtGetTS()->OnMouse(mevent);
 }
 
 void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)

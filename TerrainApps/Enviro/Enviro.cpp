@@ -2104,6 +2104,10 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 	}
 }
 
+/**
+ * Mouse handler should return false if it absorbed the event, true if the
+ * event should continue to propagate.
+ */
 bool Enviro::OnMouseCompass(vtMouseEvent &event)
 {
 	if (m_pCompassSizer)
