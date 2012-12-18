@@ -1247,8 +1247,14 @@ void MainFrame::OnLayerImportOSM(wxCommandEvent &event)
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
+	OpenProgressDialog(_("Importing from OpenStreetMap"), false, m_pParentWindow);
+	UpdateProgressDialog(0, loadFile.GetPath());
+
 	LayerArray layers;
-	ImportDataFromOSM(loadFile.GetPath(), layers);
+	ImportDataFromOSM(loadFile.GetPath(), layers, progress_callback);
+
+	CloseProgressDialog();
+
 	for (uint i = 0; i < layers.GetSize(); i++)
 		AddLayerWithCheck(layers[i], true);
 }

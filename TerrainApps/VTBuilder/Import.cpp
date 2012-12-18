@@ -378,7 +378,10 @@ bool Builder::ImportLayersFromFile(const wxString &strFileName,
 	// Is it a kind of file we might get multiple layers from?
 	if (!strExt.CmpNoCase(_T("osm")))
 	{
-		ImportDataFromOSM(strFileName, layers);
+		OpenProgressDialog(_("Importing from OpenStreetMap"), false, m_pParentWindow);
+		UpdateProgressDialog(0, strFileName);
+		ImportDataFromOSM(strFileName, layers, progress_callback);
+		CloseProgressDialog();
 	}
 	else if (!strExt.CmpNoCase(_T("ntf")))
 	{

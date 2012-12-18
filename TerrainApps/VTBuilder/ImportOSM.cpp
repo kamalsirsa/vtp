@@ -603,7 +603,8 @@ void VisitorOSM::MakeLinear()
 /**
  * Import what we can from OpenStreetMap.
  */
-void Builder::ImportDataFromOSM(const wxString &strFileName, LayerArray &layers)
+void Builder::ImportDataFromOSM(const wxString &strFileName, LayerArray &layers,
+	bool progress_callback(int))
 {
 	// Avoid trouble with '.' and ',' in Europe
 	//  OSM always has English punctuation
@@ -614,7 +615,7 @@ void Builder::ImportDataFromOSM(const wxString &strFileName, LayerArray &layers)
 	VisitorOSM visitor;
 	try
 	{
-		readXML(fname_local, visitor, NULL);
+		readXML(fname_local, visitor, progress_callback);
 	}
 	catch (xh_exception &ex)
 	{

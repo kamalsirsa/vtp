@@ -189,14 +189,18 @@ public:
 	void ImportFromMapSource(const char *fname);
 	vtFeatureSetPoint2D *ImportPointsFromDBF(const char *fname);
 	vtFeatureSet *ImportPointsFromCSV(const char *fname);
-	vtFeatureSet *ImportPointsFromXYZ(const char *fname, bool progress_callback(int) = NULL);
-	void ImportDataPointsFromTable(const char *fname, bool progress_callback(int) = NULL);
+	vtFeatureSet *ImportPointsFromXYZ(const char *fname,
+		bool progress_callback(int) = NULL);
+	void ImportDataPointsFromTable(const char *fname,
+		bool progress_callback(int) = NULL);
 	int ImportDataFromTIGER(const wxString &strDirName);
-	void ImportDataFromOSM(const wxString &strFileName, LayerArray &layers);
+	void ImportDataFromOSM(const wxString &strFileName, LayerArray &layers,
+		bool progress_callback(int));
 	void ImportDataFromNTF(const wxString &strFileName, LayerArray &layers);
 	void ImportDataFromS57(const wxString &strDirName);
 	int ImportDataFromSCC(const char *filename);
 	bool ImportDataFromDXF(const char *filename);
+
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 	void ElevCopy();
 	void ElevPasteNew();
