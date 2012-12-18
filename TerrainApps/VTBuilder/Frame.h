@@ -382,6 +382,7 @@ public:
 	LinearStructureDlg *ShowLinearStructureDlg(bool bShow = true);
 	LinearStructureDlg2d *m_pLinearStructureDlg;
 	InstanceDlg *ShowInstanceDlg(bool bShow);
+	void CreateInstance(const DPoint2 &pos, vtTagArray *tags);
 
 	// Vegetation
 	SpeciesListDlg *m_SpeciesListDlg;

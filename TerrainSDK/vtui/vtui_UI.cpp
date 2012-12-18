@@ -753,6 +753,9 @@ InstanceDlgBase::InstanceDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_location = new wxTextCtrl( this, ID_LOCATION, wxEmptyString, wxDefaultPosition, wxSize( 200,-1 ), 0 );
 	bSizer349->Add( m_location, 0, wxALIGN_CENTER|wxALL, 5 );
 	
+	m_create = new wxButton( this, ID_CREATE, _("Create"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer349->Add( m_create, 0, wxALL, 5 );
+	
 	bSizer344->Add( bSizer349, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	this->SetSizer( bSizer344 );

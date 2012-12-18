@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001-2010 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -801,14 +801,30 @@ LinearStructureDlg *MainFrame::ShowLinearStructureDlg(bool bShow)
 	return m_pLinearStructureDlg;
 }
 
+class InstanceDlg2d: public InstanceDlg
+{
+public:
+	InstanceDlg2d( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos, const wxSize& size, long style) :
+		InstanceDlg( parent, id, title, pos, size, style ) {}
+	virtual void OnCreate()
+	{
+		if (!m_pFrame)
+			return;
+		m_pFrame->CreateInstance(m_pos, GetTagArray());
+	}
+	MainFrame *m_pFrame;
+};
 
 InstanceDlg *MainFrame::ShowInstanceDlg(bool bShow)
 {
 	if (bShow && !m_pInstanceDlg)
 	{
-		// Create new Distance Dialog
-		m_pInstanceDlg = new InstanceDlg(this, -1,
-			_("Structure Instances"), wxPoint(120, 80), wxSize(600, 200));
+		// Create new Instance Dialog
+		InstanceDlg2d *dlg = new InstanceDlg2d(this, -1, _("Structure Instances"),
+			wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE);
+		dlg->m_pFrame = this;
+		m_pInstanceDlg = dlg;
 
 		for (uint i = 0; i < m_contents.size(); i++)
 			m_pInstanceDlg->AddContent(m_contents[i]);
@@ -817,6 +833,22 @@ InstanceDlg *MainFrame::ShowInstanceDlg(bool bShow)
 	if (m_pInstanceDlg)
 		m_pInstanceDlg->Show(bShow);
 	return m_pInstanceDlg;
+}
+
+void MainFrame::CreateInstance(const DPoint2 &pos, vtTagArray *tags)
+{
+	vtStructureLayer *slayer = g_bld->GetActiveStructureLayer();
+	if (!slayer)
+		return;
+
+	vtStructInstance *inst = slayer->AddNewInstance();
+	inst->SetPoint(pos);
+	inst->CopyTagsFrom(*tags);
+
+	g_bld->ResolveInstanceItem(inst);
+
+	slayer->SetModified(true);
+	GetView()->Refresh();
 }
 
 class BuildingProfileCallback : public ProfileCallback

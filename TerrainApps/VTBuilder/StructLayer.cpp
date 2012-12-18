@@ -23,8 +23,8 @@
 #include "ElevLayer.h"
 #include "BuilderView.h"
 #include "vtui/BuildingDlg.h"
-#include "vtui/InstanceDlg.h"
 #include "vtui/Helper.h"
+#include "vtui/InstanceDlg.h"
 #include "ImportStructDlg.h"
 
 wxPen orangePen;
@@ -419,7 +419,7 @@ void vtStructureLayer::GetPropertyText(wxString &strIn)
 	strIn += str;
 	str.Printf(_("\t %d Linear (fences/walls)\n"), lin);
 	strIn += str;
-	str.Printf(_("\t %d Instances (imported models)\n"), ins);
+	str.Printf(_("\t %d Instances (external 3D models)\n"), ins);
 	strIn += str;
 
 	str.Printf(_("Number of selected structures: %d\n"), NumSelected());

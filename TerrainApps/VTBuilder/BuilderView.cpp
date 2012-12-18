@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,6 +31,7 @@
 // Dialogs
 #include "vtui/DistanceDlg.h"
 #include "vtui/Helper.h"	// for GuessZoneFromGeo
+#include "vtui/InstanceDlg.h"
 
 #include "cpl_error.h"
 #include <float.h>
@@ -1835,6 +1836,8 @@ void BuilderView::OnMouseMove(wxMouseEvent& event)
 
 	// update new mouse coordinates, etc. in status bar
 	g_bld->RefreshStatusBar();
+	if (g_bld->m_pInstanceDlg)
+		g_bld->m_pInstanceDlg->SetLocation(m_ui.m_CurLocation);
 
 	m_ui.m_LastPoint = m_ui.m_CurPoint;
 	m_ui.m_PrevLocation = m_ui.m_CurLocation;
