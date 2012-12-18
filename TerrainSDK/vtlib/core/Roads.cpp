@@ -819,7 +819,8 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 }
 
 
-vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture, bool progress_callback(int))
+vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
+	bool bHwy, bool bPaved, bool bDirt, bool progress_callback(int))
 {
 	VTLOG("   vtRoadMap3d::GenerateGeometry\n");
 	VTLOG("   Nodes %d, Links %d\n", NumNodes(), NumLinks());
@@ -849,7 +850,22 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture, bool progress_callback(i
 	int count = 0, total = NumLinks() + NumNodes();
 	for (LinkGeom *pL = GetFirstLink(); pL; pL = pL->GetNext())
 	{
-		pL->GenerateGeometry(this);
+		// Decide whether to construct this link
+		bool include = false;
+		if (bHwy && bPaved && bDirt)
+			include = true;
+		else
+		{
+			bool bIsDirt = (pL->m_Surface == SURFT_2TRACK || pL->m_Surface == SURFT_DIRT);
+			if (bHwy && pL->m_iHwy != -1)
+				include = true;
+			if (bPaved && !bIsDirt)
+				include = true;
+			if (bDirt && bIsDirt)
+				include = true;
+		}
+		if (include)
+			pL->GenerateGeometry(this);
 		count++;
 		if (progress_callback != NULL)
 			progress_callback(count * 100 / total);

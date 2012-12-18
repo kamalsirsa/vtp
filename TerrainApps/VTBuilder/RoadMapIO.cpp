@@ -158,11 +158,9 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		DLGNode &dnode = pDlg->m_nodes[i];
 
 		// create new node
-		pN = new NodeEdit;
+		pN = AddNewNode();
 		pN->m_id = id++;
 		pN->SetPos(dnode.m_p);
-
-		AddNode(pN);
 
 		//add to array
 		pNodeLookup[pN->m_id] = pN;
@@ -179,14 +177,14 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 			continue;
 
 		// create new link
-		pL = new LinkEdit;
+		pL = AddNewLink();
 		pL->m_Surface = stype;
 		pL->m_iLanes = lanes;
 		pL->m_iPriority = priority;
 
 		// copy data from DLG line
-		pL->SetNode(0, pNodeLookup[dline.m_iNode1]);
-		pL->SetNode(1, pNodeLookup[dline.m_iNode2]);
+		pL->ConnectNodes(pNodeLookup[dline.m_iNode1],
+						 pNodeLookup[dline.m_iNode2]);
 
 		int actual_coords = 0;
 		for (j = 0; j < dline.m_iCoords; j++)
@@ -227,13 +225,6 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		pL->ComputeExtent();
 
 		pL->m_iHwy = dline.HighwayNumber();
-
-		// add to list
-		AddLink(pL);
-
-		// inform the Nodes to which it belongs
-		pL->GetNode(0)->AddLink(pL);
-		pL->GetNode(1)->AddLink(pL);
 		pL->m_fLength = pL->Length();
 	}
 
@@ -489,22 +480,16 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 		}
 
 		// create 2 new nodes (begin/end) and a new line
-		pN1 = new NodeEdit;
+		pN1 = AddNewNode();
 		pN1->SetPos(psShape->padfX[0], psShape->padfY[0]);
 		pN1->SetVisual(VIT_NONE);
 
-		// add to list
-		AddNode(pN1);
-
-		pN2 = new NodeEdit;
+		pN2 = AddNewNode();
 		pN2->SetPos(psShape->padfX[npoints-1], psShape->padfY[npoints-1]);
 		pN2->SetVisual(VIT_NONE);
 
-		// add to list
-		AddNode(pN2);
-
 		// create new link
-		pL = new LinkEdit;
+		pL = AddNewLink();
 		pL->m_iLanes = 2;
 		pL->m_iPriority = 1;
 
@@ -514,8 +499,7 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 			ApplyCFCC(pL, str);
 		}
 		// copy point data
-		pL->SetNode(0, pN1);
-		pL->SetNode(1, pN2);
+		pL->ConnectNodes(pN1, pN2);
 
 		pL->SetSize(npoints);
 		for (j = 0; j < npoints; j++)
@@ -527,12 +511,6 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 		//set bounding box for the link
 		pL->ComputeExtent();
 
-		// add to list
-		AddLink(pL);
-
-		// inform the Nodes to which it belongs
-		pL->GetNode(0)->AddLink(pL);
-		pL->GetNode(1)->AddLink(pL);
 		pL->m_fLength = pL->Length();
 
 		SHPDestroyObject(psShape);
@@ -634,12 +612,9 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pGeom = pFeature->GetGeometryRef();
 				if (!pGeom) continue;
 				pPoint = (OGRPoint *) pGeom;
-				pN = new NodeEdit;
+				pN = AddNewNode();
 				pN->m_id = id++;
-
 				pN->SetPos(pPoint->getX(), pPoint->getY());
-
-				AddNode(pN);
 
 				//add to array
 				pNodeLookup[pN->m_id] = pN;
@@ -685,7 +660,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				if (!pGeom) continue;
 				pLineString = (OGRLineString *) pGeom;
 
-				pL = new LinkEdit;
+				pL = AddNewLink();
 				pL->m_fWidth = 1.0f;	// defaults
 				pL->m_Surface = stype;
 				pL->m_iLanes = lanes;		// defaults
@@ -734,16 +709,9 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				// Much faster: Get start/end information from SDTS via OGR
 				int snid = pFeature->GetFieldAsInteger(index_snid);
 				int enid = pFeature->GetFieldAsInteger(index_enid);
-				pL->SetNode(0, pNodeLookup[snid]);
-				pL->SetNode(1, pNodeLookup[enid]);
+				pL->ConnectNodes(pNodeLookup[snid], pNodeLookup[enid]);
 #endif
 				pL->ComputeExtent();
-
-				AddLink(pL);
-
-				// inform the Nodes to which it belongs
-				pL->GetNode(0)->AddLink(pL);
-				pL->GetNode(1)->AddLink(pL);
 			}
 		}
 		else if (!bIsSDTS)
@@ -879,7 +847,7 @@ void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
 	int j, num_points = pLineString->getNumPoints();
 
 	// create new link
-	pL = new LinkEdit;
+	pL = AddNewLink();
 	pL->m_iLanes = 2;
 	pL->m_iPriority = 1;
 
@@ -891,32 +859,18 @@ void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
 	}
 
 	// create 2 new nodes (begin/end) and a new line
-	pN1 = new NodeEdit;
+	pN1 = AddNewNode();
 	pN1->SetPos(pLineString->getX(0), pLineString->getY(0));
 	pN1->SetVisual(VIT_NONE);
 
-	// add to list
-	AddNode(pN1);
-
-	pN2 = new NodeEdit;
+	pN2 = AddNewNode();
 	pN2->SetPos(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
 	pN2->SetVisual(VIT_NONE);
 
-	// add to list
-	AddNode(pN2);
-
 	// point link to nodes
-	pL->SetNode(0, pN1);
-	pL->SetNode(1, pN2);
+	pL->ConnectNodes(pN1, pN2);
 
 	//set bounding box for the link
 	pL->ComputeExtent();
-
-	// add to list
-	AddLink(pL);
-
-	// point node to links
-	pL->GetNode(0)->AddLink(pL);
-	pL->GetNode(1)->AddLink(pL);
 }
 

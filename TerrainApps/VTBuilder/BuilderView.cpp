@@ -151,22 +151,18 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 		return;
 
 	vtLayerPtr lp;
-	int i, iLayers = g_bld->NumLayers();
+	const int iLayers = g_bld->NumLayers();
 
 	// Draw 'interrupted projection outline' for current projection
-	vtProjection proj;
-	g_bld->GetProjection(proj);
-	if (proj.IsDymaxion())
-	{
+	if (g_bld->GetAtProjection().IsDymaxion())
 		DrawDymaxionOutline(&dc);
-	}
 
 	// Draw the world map SHP file of country outline polys in latlon
 	if (m_bShowMap)
 		DrawWorldMap(&dc);
 
 	// Draw the solid layers first
-	for (i = 0; i < iLayers; i++)
+	for (int i = 0; i < iLayers; i++)
 	{
 		lp = g_bld->GetLayer(i);
 		if (lp->GetType() != LT_IMAGE && lp->GetType() != LT_ELEVATION)
@@ -175,7 +171,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 			lp->DrawLayer(&dc, this);
 	}
 	// Then the poly/vector/point layers
-	for (i = 0; i < iLayers; i++)
+	for (int i = 0; i < iLayers; i++)
 	{
 		lp = g_bld->GetLayer(i);
 		if (lp->GetType() == LT_IMAGE || lp->GetType() == LT_ELEVATION)
@@ -267,8 +263,7 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(orange);
 
-	vtProjection proj;
-	g_bld->GetProjection(proj);
+	const vtProjection &proj = g_bld->GetAtProjection();
 
 	int width, height;
 	GetClientSize(&width, &height);
@@ -295,7 +290,6 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 	{
 		int zone_start = 0;
 		int zone_end = 60;
-		int zone;
 		DPoint2 proj_point;
 
 		vtProjection geo;
@@ -320,7 +314,7 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 		// to the current projection
 		trans = CreateCoordTransform(&geo, &proj);
 
-		for (zone = zone_start; zone < zone_end; zone++)
+		for (int zone = zone_start; zone < zone_end; zone++)
 		{
 			ll.x = -180.0f + zone * 6.0;
 			j = 0;

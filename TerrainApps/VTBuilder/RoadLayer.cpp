@@ -60,7 +60,7 @@ bool vtRoadLayer::OnSave(bool progress_callback(int))
 
 bool vtRoadLayer::OnLoad()
 {
-	bool success = ReadRMF(GetLayerFilename().mb_str(wxConvUTF8), true, true, true);
+	bool success = ReadRMF(GetLayerFilename().mb_str(wxConvUTF8));
 	if (!success)
 		return false;
 
@@ -87,7 +87,7 @@ bool vtRoadLayer::OnLoad()
 
 void vtRoadLayer::GetProjection(vtProjection &proj)
 {
-	proj = vtRoadMap::GetProjection();
+	proj = vtRoadMap::GetAtProjection();
 }
 
 bool vtRoadLayer::AppendDataFrom(vtLayer *pL)

@@ -164,15 +164,28 @@ public:
 	~vtRoadMap3d();
 
 	// overrides for virtual methods
-	LinkGeom	*GetFirstLink() { return (LinkGeom *) m_pFirstLink; }
-	NodeGeom	*GetFirstNode() { return (NodeGeom *) m_pFirstNode; }
-	TNode		*NewNode() { return new NodeGeom; }
-	TLink		*NewLink() { return new LinkGeom; }
+	NodeGeom *GetFirstNode() { return (NodeGeom *) m_pFirstNode; }
+	LinkGeom *GetFirstLink() { return (LinkGeom *) m_pFirstLink; }
+	NodeGeom *NewNode() { return new NodeGeom; }
+	LinkGeom *NewLink() { return new LinkGeom; }
+	NodeGeom *AddNewNode()
+	{
+		NodeGeom *node = new NodeGeom;
+		AddNode(node);
+		return node;
+	}
+	LinkGeom *AddNewLink()
+	{
+		LinkGeom *link = new LinkGeom;
+		AddLink(link);
+		return link;
+	}
 
 	void DrapeOnTerrain(vtHeightField3d *pHeightField);
 	void BuildIntersections();
 	void AddMeshToGrid(vtMesh *pMesh, int iMatIdx);
-	vtGroup *GenerateGeometry(bool do_texture, bool progress_callback(int) = NULL);
+	vtGroup *GenerateGeometry(bool do_texture, bool bHwy, bool bPaved,
+		bool bDirt, bool progress_callback(int) = NULL);
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
 	void SetHeightOffGround(float fHeight) { s_fHeight = fHeight; }

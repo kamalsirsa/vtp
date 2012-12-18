@@ -103,13 +103,13 @@ public:
 	LinkEdit *GetNext() { return (LinkEdit *)m_pNext; }
 
 	DRECT	m_extent;		// bounding box in world coordinates
-	int		m_iPriority;	// used to determine intersection behavior.  lower number => higher priority
+	int		m_iPriority;	// used to determine intersection behavior. lower number => higher priority
 	float	m_fLength;		// length of the road
 	bool	m_bDrawPoints;	// draw each point in the road individually
 	int		m_iHighlightPoint;
 
 	DLine2	m_WidthOffset;		// offset from each point to its left edge
-	bool	m_bSidesComputed;	// true when m_Left and m_Right are up-to-date
+	bool	m_bSidesComputed;	// true when m_WidthOffset is up-to-date
 };
 
 class RoadMapEdit : public vtRoadMap
@@ -124,6 +124,19 @@ public:
 	NodeEdit *NewNode() { return new NodeEdit; }
 	LinkEdit *NewLink() { return new LinkEdit; }
 
+	NodeEdit *AddNewNode()
+	{
+		NodeEdit *node = new NodeEdit;
+		AddNode(node);
+		return node;
+	}
+	LinkEdit *AddNewLink()
+	{
+		LinkEdit *link = new LinkEdit;
+		AddLink(link);
+		return link;
+	}
+
 	// Import from DLG
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 
@@ -136,6 +149,9 @@ public:
 	void AddElementsFromOGR(class OGRDataSource *datasource,
 		bool progress_callback(int) = NULL);
 	LinkEdit *AddRoadSegment(class OGRLineString *pLineString);
+
+	void SplitLinkAtIndex(LinkEdit *link, int index, NodeEdit *node,
+		LinkEdit **plink1 = NULL, LinkEdit **plink2 = NULL);
 
 	//cleaning functions-------------------------
 	// merge nodes that are near each other

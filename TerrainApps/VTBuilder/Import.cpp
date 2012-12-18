@@ -1780,7 +1780,7 @@ int Builder::ImportDataFromTIGER(const wxString &strDirName)
 			if (!strncmp(cfcc, "A", 1))
 			{
 				// Road: implicit nodes at start and end
-				LinkEdit *r = (LinkEdit *) pRL->NewLink();
+				LinkEdit *r = pRL->AddNewLink();
 				bool bReject = pRL->ApplyCFCC((LinkEdit *)r, cfcc);
 				if (bReject)
 				{
@@ -1792,23 +1792,16 @@ int Builder::ImportDataFromTIGER(const wxString &strDirName)
 					r->Append(DPoint2(pLineString->getX(j),
 						pLineString->getY(j)));
 				}
-				TNode *n1 = pRL->NewNode();
+				TNode *n1 = pRL->AddNewNode();
 				n1->SetPos(pLineString->getX(0), pLineString->getY(0));
 
-				TNode *n2 = pRL->NewNode();
+				TNode *n2 = pRL->AddNewNode();
 				n2->SetPos(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
 
-				pRL->AddNode(n1);
-				pRL->AddNode(n2);
-				r->SetNode(0, n1);
-				r->SetNode(1, n2);
-				n1->AddLink(r);
-				n2->AddLink(r);
+				r->ConnectNodes(n1, n2);
 
 				//set bounding box for the road
 				r->ComputeExtent();
-
-				pRL->AddLink(r);
 			}
 
 			if (!strncmp(cfcc, "H", 1))

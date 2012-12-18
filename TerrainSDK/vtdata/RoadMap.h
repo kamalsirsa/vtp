@@ -136,8 +136,19 @@ public:
 	// comparison
 	bool operator==(TLink &ref);
 
+	void TLink::CopyAttributesFrom(TLink *rhs);
+
 	void SetNode(int n, TNode *pNode) { m_pNode[n] = pNode; }
-	TNode *GetNode(int n) { return m_pNode[n]; }
+	void SetNodes(TNode *pNode0, TNode *pNode1) {
+		m_pNode[0] = pNode0;
+		m_pNode[1] = pNode1;
+	}
+	void ConnectNodes(TNode *pNode0, TNode *pNode1) {
+		SetNodes(pNode0, pNode1);
+		pNode0->AddLink(this);
+		pNode1->AddLink(this);
+	}
+	TNode *GetNode(int n) const { return m_pNode[n]; }
 
 	// closest distance from point to the link
 	double GetLinearCoordinates(const DPoint2 &p, double &a, double &b,
@@ -193,7 +204,7 @@ public:
 protected:
 	TLink	*m_pNext;		// Next in linked list
 	TNode	*m_pNode[2];	// "from" and "to" nodes
-	float	m_fHeight[2];
+	float	m_fHeight[2];	// Height above the terrain heightfield
 
 	// Intersection type of this link at each node.
 	IntersectionType m_eIntersection[2];
@@ -230,15 +241,36 @@ public:
 	virtual TNode *NewNode() { return new TNode; }
 	virtual TLink *NewLink() { return new TLink; }
 
-	void	AddNode(TNode *pNode)
+	void AddNode(TNode *pNode)
 	{
 		pNode->SetNext(m_pFirstNode);
 		m_pFirstNode = pNode;
 	}
-	void	AddLink(TLink *pLink)
+	void AddLink(TLink *pLink)
 	{
 		pLink->SetNext(m_pFirstLink);
 		m_pFirstLink = pLink;
+	}
+
+	virtual TNode *AddNewNode()
+	{
+		TNode *node = new TNode;
+		AddNode(node);
+		return node;
+	}
+	virtual TLink *AddNewLink()
+	{
+		TLink *link = new TLink;
+		AddLink(link);
+		return link;
+	}
+
+	void RemoveNode(TNode *pNode);
+	void RemoveLink(TLink *pLink);
+	void DetachLink(TLink *pLink)
+	{
+		pLink->GetNode(0)->DetachLink(pLink);
+		pLink->GetNode(1)->DetachLink(pLink);
 	}
 
 	TNode *FindNodeByID(int id);
@@ -247,14 +279,10 @@ public:
 	// cleaning function: remove unused nodes, return the number removed
 	int RemoveUnusedNodes();
 
-	// Other clean up functions
-	void RemoveNode(TNode *pNode);
-	void RemoveLink(TLink *pLink);
-
-	bool ReadRMF(const char *filename, bool bHwy, bool bPaved, bool bDirt);
+	bool ReadRMF(const char *filename);
 	bool WriteRMF(const char *filename);
 
-	vtProjection &GetProjection() { return m_proj; }
+	vtProjection &GetAtProjection() { return m_proj; }
 
 protected:
 	DRECT	m_extents;			// the extent of the roads in the RoadMap

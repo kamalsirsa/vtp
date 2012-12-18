@@ -14,6 +14,7 @@
 
 #include <map>
 
+#include "vtdata/PolyChecker.h"
 #include "vtui/Helper.h"
 
 #include "Builder.h"
@@ -66,6 +67,7 @@ private:
 	vtProjection m_proj;
 
 	LayerType	m_WayType;
+	bool		m_bIsArea;
 
 	int			m_iRoadLanes;
 	SurfaceType m_eSurfaceType;
@@ -142,6 +144,7 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 
 			// Defaults
 			m_WayType = LT_UNKNOWN;
+			m_bIsArea = false;
 			m_iRoadLanes = 2;
 			m_eSurfaceType = SURFT_PAVED;
 			m_eStructureType = ST_NONE;
@@ -213,7 +216,7 @@ void VisitorOSM::endElement(const char *name)
 		// must have at least 2 refs
 		if (m_refs.size() >= 2)
 		{
-			if (m_WayType == LT_ROAD)
+			if (m_WayType == LT_ROAD && !m_bIsArea)	// Areas aren't roads
 				MakeRoad();
 			if (m_WayType == LT_STRUCTURE)
 				MakeStructure();
@@ -268,6 +271,11 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 			m_WayType = LT_STRUCTURE;
 			m_eStructureType = ST_BUILDING;
 		}
+	}
+	if (key == "area")
+	{
+		if (value == "yes")
+			m_bIsArea = true;
 	}
 	if (key == "barrier")
 	{
@@ -326,6 +334,11 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 		{
 			m_iRoadLanes = 1;
 			m_eSurfaceType = SURFT_TRAIL;
+		}
+		if (value == "pedestrian")
+		{
+			// Does this tell us anything about its width or appearance?
+			// Beware area=yes, as this is used for shopping areas.
 		}
 		if (value == "track")
 		{
@@ -411,7 +424,7 @@ void VisitorOSM::MakeRoad()
 		m_road_layer->SetProjection(m_proj);
 	}
 
-	LinkEdit *link = m_road_layer->NewLink();
+	LinkEdit *link = m_road_layer->AddNewLink();
 
 	link->m_iLanes = m_iRoadLanes;
 	link->m_Surface = m_eSurfaceType;
@@ -419,27 +432,24 @@ void VisitorOSM::MakeRoad()
 	int ref_first = m_refs[0];
 	int ref_last = m_refs[m_refs.size() - 1];
 
-	TNode *node0 = m_road_layer->FindNodeByID(ref_first);
+	// Make nodes at the first and last points.
+	NodeEdit *node0 = (NodeEdit *) m_road_layer->FindNodeByID(ref_first);
+	NodeEdit *node1 = (NodeEdit *) m_road_layer->FindNodeByID(ref_last);
 	if (!node0)
 	{
-		// doesn't exist, create it
-		node0 = m_road_layer->NewNode();
+		// No node there yet, create it
+		node0 = m_road_layer->AddNewNode();
 		node0->SetPos(m_nodes[ref_first].p);
 		node0->m_id = ref_first;
-		m_road_layer->AddNode(node0);
 	}
-	link->SetNode(0, node0);
-
-	TNode *node1 = m_road_layer->FindNodeByID(ref_last);
 	if (!node1)
 	{
-		// doesn't exist, create it
-		node1 = m_road_layer->NewNode();
+		// No node there yet, create it
+		node1 = m_road_layer->AddNewNode();
 		node1->SetPos(m_nodes[ref_last].p);
 		node1->m_id = ref_last;
-		m_road_layer->AddNode(node1);
 	}
-	link->SetNode(1, node1);
+	link->ConnectNodes(node0, node1);
 
 	// Copy all the points
 	for (uint r = 0; r < m_refs.size(); r++)
@@ -447,14 +457,77 @@ void VisitorOSM::MakeRoad()
 		int idx = m_refs[r];
 		link->Append(m_nodes[idx].p);
 	}
-
-	m_road_layer->AddLink(link);
-
-	// point node to links
-	node0->AddLink(link);
-	node1->AddLink(link);
-
 	link->ComputeExtent();
+
+	// If either end of this link shares a node in the middle of another link,
+	// we need to split that link to maintain topology.
+	LinkEdit *next = NULL;
+	for (LinkEdit *it = m_road_layer->GetFirstLink(); it; it = next)
+	{
+		next = it->GetNext();
+		if (it == link)
+			continue;	// Don't compare to itself
+
+		// Look in the middle section [1 .. size-1]
+		for (int i = 1; i < (int) it->GetSize() - 1; i++)
+		{
+			// We use matching by exact position, not by id
+			if (it->GetAt(i) == node0->Pos())
+			{
+				// Found one. Split by making two new links.
+				m_road_layer->SplitLinkAtIndex(it, i, node0);
+				break;
+			}
+			if (it->GetAt(i) == node1->Pos())
+			{
+				// Found one. Split by making two new links.
+				m_road_layer->SplitLinkAtIndex(it, i, node1);
+				break;
+			}
+		}
+	}
+
+	bool bMayNeedSplit = true;
+	while (bMayNeedSplit)
+	{
+		bMayNeedSplit = false;
+
+		// Also look for places where a mid-point of this the new link shares a
+		// node with the mid-point of an existing link.
+		for (LinkEdit *it = m_road_layer->GetFirstLink(); it && !bMayNeedSplit; it = next)
+		{
+			next = it->GetNext();
+			if (it == link)
+				continue;	// Don't compare to itself
+
+			// Look in the middle section [1 .. size-1]
+			for (int i = 1; i < (int) it->GetSize() - 1 && !bMayNeedSplit; i++)
+			{
+				for (int j = 1; j < (int) link->GetSize() - 1 && !bMayNeedSplit; j++)
+				{
+					// We use matching by exact position, not by id
+					if (it->GetAt(i) == link->GetAt(j))
+					{
+						// Found one. Split both links.
+						NodeEdit *node = m_road_layer->AddNewNode();
+						node->SetPos(it->GetAt(i));
+
+						m_road_layer->SplitLinkAtIndex(it, i, node);
+
+						LinkEdit *link1, *link2;
+						m_road_layer->SplitLinkAtIndex(link, j, node, &link1, &link2);
+
+						// We need to continue checking the second part of our
+						// split link for further intersections.
+						link = link2;
+
+						// This will drop us out of all three for loops
+						bMayNeedSplit = true;
+					}
+				}
+			}
+		}
+	}
 }
 
 void VisitorOSM::MakeStructure()
@@ -482,6 +555,12 @@ void VisitorOSM::MakeBuilding()
 		int idx = m_refs[r];
 		foot[r] = m_nodes[idx].p;
 	}
+	// The order of vertices in OSM does not seem to have a consistent
+	// direction. We use a counter-clockwise convention.
+	PolyChecker pc;
+	if (pc.IsClockwisePolygon(foot))
+		foot.ReverseOrder();
+
 	bld->SetFootprint(0, foot);
 
 	// Apply a default style of building

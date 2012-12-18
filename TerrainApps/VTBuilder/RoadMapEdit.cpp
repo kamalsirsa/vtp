@@ -419,7 +419,6 @@ void LinkEdit::Dirtied()
 	m_bSidesComputed = false;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 
 RoadMapEdit::RoadMapEdit() : vtRoadMap()
@@ -883,29 +882,64 @@ class LinkEdit *NodeEdit::GetLink(int n)
 LinkEdit *RoadMapEdit::AddRoadSegment(OGRLineString *pLineString)
 {
 	// Road: implicit nodes at start and end
-	LinkEdit *r = NewLink();
+	LinkEdit *link = AddNewLink();
 	int num_points = pLineString->getNumPoints();
 	for (int j = 0; j < num_points; j++)
 	{
-		r->Append(DPoint2(pLineString->getX(j),	pLineString->getY(j)));
+		link->Append(DPoint2(pLineString->getX(j),	pLineString->getY(j)));
 	}
-	TNode *n1 = NewNode();
+	TNode *n1 = AddNewNode();
 	n1->SetPos(pLineString->getX(0), pLineString->getY(0));
 
-	TNode *n2 = NewNode();
+	TNode *n2 = AddNewNode();
 	n2->SetPos(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
 
-	AddNode(n1);
-	AddNode(n2);
-	r->SetNode(0, n1);
-	r->SetNode(1, n2);
-	n1->AddLink(r);
-	n2->AddLink(r);
+	link->ConnectNodes(n1, n2);
 
 	//set bounding box for the link
-	r->ComputeExtent();
+	link->ComputeExtent();
 
-	AddLink(r);
-	return r;
+	return link;
 }
+
+/**
+ * Split a link into two separate links.
+ *
+ * \param link The link to split.
+ * \param index The place to split it (from 0 to number of points in this link)
+ * \param node The node to use at the place we're splitting.
+ * \param link1, line2 Will be set to the two links that are produced.
+ */
+void RoadMapEdit::SplitLinkAtIndex(LinkEdit *link, int index, NodeEdit *node,
+	LinkEdit **plink1, LinkEdit **plink2)
+{
+	// Split by making two new links.
+	TNode *old_node0 = link->GetNode(0);
+	TNode *old_node1 = link->GetNode(1);
+
+	LinkEdit *link1 = AddNewLink();
+	link1->CopyAttributesFrom(link);
+	for (int j = 0; j <= index; j++)
+		link1->Append(link->GetAt(j));
+	link1->ConnectNodes(old_node0, node);
+	link1->ComputeExtent();
+
+	LinkEdit *link2 = AddNewLink();
+	link2->CopyAttributesFrom(link);
+	for (int j = index; j < (int) link->GetSize(); j++)
+		link2->Append(link->GetAt(j));
+	link2->ConnectNodes(node, old_node1);
+	link2->ComputeExtent();
+
+	// Inform caller
+	if (plink1 != NULL)
+		*plink1 = link1;
+	if (plink2 != NULL)
+		*plink2 = link2;
+
+	// Remove and delete the now-split link
+	DetachLink(link);
+	RemoveLink(link);
+}
+
 

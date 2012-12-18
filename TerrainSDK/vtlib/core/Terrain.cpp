@@ -257,10 +257,7 @@ void vtTerrain::_CreateRoads()
 	m_pRoadMap = new vtRoadMap3d;
 
 	VTLOG("  Reading from file '%s'\n", (const char *) road_path);
-	bool success = m_pRoadMap->ReadRMF(road_path,
-		m_Params.GetValueBool(STR_HWY),
-		m_Params.GetValueBool(STR_PAVED),
-		m_Params.GetValueBool(STR_DIRT));
+	bool success = m_pRoadMap->ReadRMF(road_path);
 	if (!success)
 	{
 		VTLOG("	read failed.\n");
@@ -280,7 +277,11 @@ void vtTerrain::_CreateRoads()
 	m_pRoadMap->SetLodDistance(m_Params.GetValueFloat(STR_ROADDISTANCE) * 1000);	// convert km to m
 
 	bool bDoTexture = m_Params.GetValueBool(STR_TEXROADS);
-	m_pRoadGroup = m_pRoadMap->GenerateGeometry(bDoTexture, m_progress_callback);
+	m_pRoadGroup = m_pRoadMap->GenerateGeometry(bDoTexture,
+		m_Params.GetValueBool(STR_HWY),
+		m_Params.GetValueBool(STR_PAVED),
+		m_Params.GetValueBool(STR_DIRT),
+		m_progress_callback);
 	m_pRoadGroup->SetCastShadow(false);
 	m_pTerrainGroup->addChild(m_pRoadGroup);
 
@@ -2418,7 +2419,7 @@ bool vtTerrain::CreateStep5()
 	if (!m_pHeightField)
 		return false;
 
-	// Node to put all the scale features under
+	// Node to put all the scaled features under
 	m_pScaledFeatures = new vtTransform;
 	m_pScaledFeatures->setName("Scaled Features");
 	m_pScaledFeatures->Scale3(1.0f, m_fVerticalExag, 1.0f);

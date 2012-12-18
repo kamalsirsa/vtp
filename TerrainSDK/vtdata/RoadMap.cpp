@@ -322,6 +322,23 @@ bool TLink::operator==(TLink &ref)
 		m_iFlags == ref.m_iFlags);
 }
 
+void TLink::CopyAttributesFrom(TLink *rhs)
+{
+	m_fWidth =			rhs->m_fWidth;
+	m_iLanes =			rhs->m_iLanes;
+	m_Surface =			rhs->m_Surface;
+	m_iHwy =			rhs->m_iHwy;
+	m_iFlags =			rhs->m_iFlags;
+	m_id =				rhs->m_id;
+	m_fSidewalkWidth =	rhs->m_fSidewalkWidth;
+	m_fCurbHeight =		rhs->m_fCurbHeight;
+	m_fMarginWidth =	rhs->m_fMarginWidth;
+	m_fLaneWidth =		rhs->m_fLaneWidth;
+	m_fParkingWidth =	rhs->m_fParkingWidth;
+	m_fHeight[0] =		rhs->m_fHeight[0];
+	m_fHeight[1] =		rhs->m_fHeight[1];
+}
+
 void TLink::SetFlag(int flag, bool value)
 {
 	if (value)
@@ -599,9 +616,9 @@ int vtRoadMap::RemoveUnusedNodes()
 	return unused;
 }
 
-//
-// Remove a node - use with caution
-//
+/**
+ * Remove a node, which also deletes it.
+ */
 void vtRoadMap::RemoveNode(TNode *pNode)
 {
 	TNode *prev = NULL, *next;
@@ -618,7 +635,6 @@ void vtRoadMap::RemoveNode(TNode *pNode)
 			else
 				m_pFirstNode = next;
 			delete pN;
-			// I assume that a node cannot be on the list more than once!!!
 			break;
 		}
 		else
@@ -627,9 +643,9 @@ void vtRoadMap::RemoveNode(TNode *pNode)
 	}
 }
 
-//
-// Remove a link - use with caution
-//
+/**
+ * Remove a link, which also deletes it.
+ */
 void vtRoadMap::RemoveLink(TLink *pLink)
 {
 	TLink *prev = NULL, *next;
@@ -646,7 +662,6 @@ void vtRoadMap::RemoveLink(TLink *pLink)
 			else
 				m_pFirstLink = next;
 			delete pL;
-			// I assume that a node cannot be on the list more than once!!!
 			break;
 		}
 		else
@@ -659,8 +674,7 @@ void vtRoadMap::RemoveLink(TLink *pLink)
  * Read an RMF (Road Map File)
  * Returns true if operation sucessful.
  */
-bool vtRoadMap::ReadRMF(const char *filename,
-						bool bHwy, bool bPaved, bool bDirt)
+bool vtRoadMap::ReadRMF(const char *filename)
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -673,7 +687,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		return false;
 	}
 
-	int numNodes, numLinks, i, j, nodeNum, dummy, quiet;
+	int numNodes, numLinks, i, j, dummy, quiet;
 	TNode *tmpNode;
 	TLink *tmpLink;
 
@@ -773,7 +787,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	int ivalue;
 	for (i = 1; i <= numNodes; i++)
 	{
-		tmpNode = NewNode();
+		tmpNode = AddNewNode();
 		quiet = fread(&(tmpNode->m_id), intSize, 1, fp);
 		if (version < 1.8f)
 		{
@@ -787,10 +801,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 			quiet = fread(&tmpNode->Pos().x, doubleSize, 1, fp);
 			quiet = fread(&tmpNode->Pos().y, doubleSize, 1, fp);
 		}
-		//add node to list
-		AddNode(tmpNode);
-
-		// and to quick lookup table
+		// add to quick lookup table
 		pNodeLookup[i] = tmpNode;
 	}
 
@@ -804,10 +815,10 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	// Read the links
 	float ftmp;
 	int itmp;
-	int reject1 = 0, reject2 = 0, reject3 = 0;
+	int node_numbers[2];
 	for (i = 1; i <= numLinks; i++)
 	{
-		tmpLink = NewLink();
+		tmpLink = AddNewLink();
 		quiet = fread(&(tmpLink->m_id), intSize, 1, fp);	//id
 		if (version < 1.89)
 		{
@@ -868,57 +879,13 @@ bool vtRoadMap::ReadRMF(const char *filename,
 			}
 		}
 
-		//set the end points
-		quiet = fread(&nodeNum, intSize, 1, fp);
-		if (nodeNum < 1 || nodeNum > numNodes)
+		// The start/end nodes
+		quiet = fread(node_numbers, intSize, 2, fp);
+		if (node_numbers[0] < 1 || node_numbers[0] > numNodes ||
+			node_numbers[1] < 1 || node_numbers[1] > numNodes)
 			return false;
-		tmpLink->SetNode(0, pNodeLookup[nodeNum]);
-		quiet = fread(&nodeNum, intSize, 1, fp);
-		if (nodeNum < 1 || nodeNum > numNodes)
-			return false;
-		tmpLink->SetNode(1, pNodeLookup[nodeNum]);
-
-		// check for inclusion
-		bool include = true;
-		if (!bHwy && tmpLink->m_iHwy > 0)
-		{
-			include = false;
-			reject1++;
-		}
-		if (include && !bPaved && tmpLink->m_Surface == SURFT_PAVED)
-		{
-			include = false;
-			reject2++;
-		}
-		if (include && !bDirt && (tmpLink->m_Surface == SURFT_TRAIL ||
-			tmpLink->m_Surface == SURFT_2TRACK ||
-			tmpLink->m_Surface == SURFT_DIRT ||
-			tmpLink->m_Surface == SURFT_GRAVEL))
-		{
-			include = false;
-			reject3++;
-		}
-
-		if (!include)
-		{
-			delete tmpLink;
-			continue;
-		}
-
-		// Inform the Nodes to which it belongs
-		tmpLink->GetNode(0)->AddLink(tmpLink);
-		tmpLink->GetNode(1)->AddLink(tmpLink);
-
-		// Add to list
-		AddLink(tmpLink);
-	}
-	if (reject1 || reject2 || reject3)
-	{
-		VTLOG("  Ignored links:");
-		if (reject1) VTLOG(" %d for being highways, ", reject1);
-		if (reject2) VTLOG(" %d for being paved, ", reject2);
-		if (reject3) VTLOG(" %d for being dirt, ", reject3);
-		VTLOG("done.\n");
+		tmpLink->ConnectNodes(pNodeLookup[node_numbers[0]],
+							  pNodeLookup[node_numbers[1]]);
 	}
 
 	// Read traffic control information
@@ -999,8 +966,8 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		return false;
 	}
 
+	// go through and set id numbers (1-based) for the nodes and links
 	i= 1;
-	// go through and set id numbers for the nodes and links
 	while (curNode) {
 		curNode->m_id = i++;
 		curNode = curNode->GetNext();
