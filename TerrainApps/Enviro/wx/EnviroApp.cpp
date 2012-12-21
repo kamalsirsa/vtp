@@ -24,7 +24,6 @@
 
 #include "vtui/Helper.h"	// for LogWindowsVersion, ProgressDialog
 #include "vtui/LogCatcher.h"
-#include "wxosg/GraphicsWindowWX.h"
 
 #include "xmlhelper/easyxml.hpp"
 
@@ -410,12 +409,14 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 		go = ProcessIdle();
 #endif
 
-	// Initialize the VTP scene
+	// Initialize the VTP scene.
+	// Get the command-line arguments from wxWidgets, so we can pass them to OSG.
 	int MyArgc;
 	char** MyArgv;
 	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
 	vtGetScene()->Init(MyArgc, MyArgv, g_Options.m_bStereo, g_Options.m_iStereoMode);
-	vtGetScene()->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
+
+	frame->m_canvas->InitGraphicsWindowWX();
 
 	// Only use the spacenavigator if the user wants
 	if (g_Options.m_bUseSpaceNav)

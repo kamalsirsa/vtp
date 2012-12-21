@@ -195,6 +195,10 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 	m_pOsgViewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
 #endif
 
+	// We can't use displaySettings->setNumMultiSamples here to enable anti-
+	// aliasing, because it has to be done eariler (at the time the OpenGL
+	// context is made).
+
 #ifdef USE_OSG_STATS
 	osgViewer::StatsHandler* pStatsHandler = new osgViewer::StatsHandler;
 	pStatsHandler->setKeyEventPrintsOutStats(0);

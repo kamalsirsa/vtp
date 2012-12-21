@@ -469,18 +469,32 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pPerformanceMonitorDlg = NULL;
 #endif
 
-	// We definitely want full color and a 24-bit Z-buffer!
-	int gl_attrib[8] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
-		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0, 0 };
+	// An array of values to tell wxWidgets how to make our OpenGL context.
+	std::vector<int> gl_attribs;
+	gl_attribs.push_back(WX_GL_RGBA);			// Full color
+	gl_attribs.push_back(WX_GL_DOUBLEBUFFER);
+	gl_attribs.push_back(WX_GL_BUFFER_SIZE);	// 24-bit Z-buffer
+	gl_attribs.push_back(24);
+	gl_attribs.push_back(WX_GL_DEPTH_SIZE);
+	gl_attribs.push_back(24);
+	VTLOG("Anti-aliasing multisamples: %d\n", g_Options.m_iMultiSamples);
+	if (g_Options.m_iMultiSamples > 0)
+	{
+		gl_attribs.push_back(WX_GL_SAMPLE_BUFFERS);
+		gl_attribs.push_back(1);
+		gl_attribs.push_back(WX_GL_SAMPLES);
+		gl_attribs.push_back(g_Options.m_iMultiSamples);
+	}
 	if (g_Options.m_bStereo && g_Options.m_iStereoMode == 1)	// 1 = Quad-buffer stereo
 	{
-		gl_attrib[6] = WX_GL_STEREO;
-		gl_attrib[7] = 0;
+		gl_attribs.push_back(WX_GL_STEREO);
 	}
+	// Zero terminates the array
+	gl_attribs.push_back(0);
 
 	VTLOG("Frame window: creating view canvas.\n");
 	m_canvas = new EnviroCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
-			_T("vtGLCanvas"), gl_attrib);
+		_T("vtGLCanvas"), gl_attribs.data());
 
 	// Show the frame
 	VTLOG("Showing the main frame\n");

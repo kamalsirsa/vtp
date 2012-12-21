@@ -15,7 +15,7 @@
 #include "GraphicsWindowWX.h"
 #include "vtdata/vtLog.h"
 
-GraphicsWindowWX::GraphicsWindowWX(wxGLCanvas* pCanvas)
+GraphicsWindowWX::GraphicsWindowWX(wxGLCanvas *pCanvas, osg::DisplaySettings *pSettings)
 {
 	m_pCanvas = pCanvas;
 #ifndef __WXMAC__
@@ -28,7 +28,7 @@ GraphicsWindowWX::GraphicsWindowWX(wxGLCanvas* pCanvas)
 	wxSize  size = m_pCanvas->GetSize();
 
 	// Set up traits to match the canvas
-	_traits = new GraphicsContext::Traits;
+	_traits = new GraphicsContext::Traits(pSettings);
 	_traits->x = pos.x;
 	_traits->y = pos.y;
 	_traits->width = size.x;

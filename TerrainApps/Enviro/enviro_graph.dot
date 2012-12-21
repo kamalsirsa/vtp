@@ -1,3 +1,7 @@
+/* You can call this file like:
+ dot -Tpng -odot_enviro_graph.png enviro_graph.dot
+ */
+
 digraph G
 {
   edge [fontname="Helvetica",fontsize="10"];
@@ -28,6 +32,7 @@ digraph G
 		color="#eedddd";
 		/*	color="black"; */
 
+		vtScene [label="vtScene",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="../vtlib/classvtTerrainScene.html"];
 		vtTerrainScene [label="vtTerrainScene",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="../vtlib/classvtTerrainScene.html"];
 		vtEngine [label="vtEngine",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="../vtlib/classvtEngine.html"];
 		vtLastMouse [label="vtLastMouse",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="../vtlib/classvtLastMouse.html"];
@@ -91,6 +96,15 @@ digraph G
 		{ rank = same; EnviroApp; EnviroCanvas; EnviroFrame; }
 	}
 
+	subgraph cluster_osg
+	{
+		label="osg";
+		style=filled;
+		color="#ffeeff";
+
+		Viewer [label="osgViewer::Viewer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled"];
+	}
+
 	wxApp -> EnviroApp [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 	wxFrame -> EnviroFrame [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
 	vtGLCanvas -> EnviroCanvas [dir=back,color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -143,6 +157,8 @@ digraph G
 	EnviroFrame -> OptionsDlg [style="dotted", label="owns", color="#008800"];
 	EnviroFrame -> PlantDlg [style="dotted", label="owns", color="#008800"];
 	EnviroFrame -> StartupDlg [style="dotted", label="owns", color="#008800"];
+
+	vtScene -> Viewer [style="dotted", label="owns", color="#008800"];
 
 	BuildingDlg3d -> EnviroFrame [dir="back", style="dotted", label="owns", color="#008800"];
 	SceneGraphDlg -> EnviroFrame [dir="back", style="dotted", label="owns", color="#008800"];

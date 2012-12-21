@@ -1,7 +1,7 @@
 //
 // Options.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -37,6 +37,7 @@ public:
 	bool	m_bFullscreen;
 	bool	m_bStereo;
 	int		m_iStereoMode;
+	int		m_iMultiSamples;	// Anti-aliasing (0, 2, 4, 8, 16)
 	IPoint2	m_WinPos, m_WinSize;
 	bool	m_bLocationInside;
 

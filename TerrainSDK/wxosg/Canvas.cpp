@@ -105,6 +105,15 @@ vtGLCanvas::~vtGLCanvas(void)
 	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->CloseOsgContext();
 }
 
+void vtGLCanvas::InitGraphicsWindowWX()
+{
+	// We need to get the display settings from the Viewer to pass them to the
+	//  GraphicsWindow for its "traits".
+	osg::DisplaySettings *ds = vtGetScene()->getViewer()->getDisplaySettings();
+	GraphicsWindowWX *gfxwin = new GraphicsWindowWX(this, ds);
+	vtGetScene()->SetGraphicsContext(gfxwin);
+}
+
 void vtGLCanvas::EnableSpaceNav()
 {
 #if WIN32

@@ -23,6 +23,9 @@ public:
 	  const wxSize &size, long style, const wxString &name, int *gl_attrib);
 	~vtGLCanvas(void);
 
+	// Initialization
+	void InitGraphicsWindowWX();
+
 	// SpaceNavigator methods
 	void EnableSpaceNav();
 	void SetSpaceNavSpeed(float f);

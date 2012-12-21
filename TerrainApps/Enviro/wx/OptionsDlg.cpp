@@ -79,6 +79,7 @@ void OptionsDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_bFullscreen = opt.m_bFullscreen;
 	m_bStereo = opt.m_bStereo;
 	m_iStereoMode = opt.m_iStereoMode;
+	m_iMultiSamples = opt.m_iMultiSamples;
 	m_WinPos = opt.m_WinPos;
 	m_WinSize = opt.m_WinSize;
 	m_bLocationInside = opt.m_bLocationInside;
@@ -108,11 +109,12 @@ void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
 	opt.m_bFullscreen = m_bFullscreen;
 	opt.m_bStereo = m_bStereo;
 	opt.m_iStereoMode = m_iStereoMode;
+	opt.m_iMultiSamples = m_iMultiSamples;
 	opt.m_WinPos = m_WinPos;
 	opt.m_WinSize = m_WinSize;
 	opt.m_bLocationInside = m_bLocationInside;
 
-	//  opt.m_bHtmlpane = m_bHtmlpane;
+//  opt.m_bHtmlpane = m_bHtmlpane;
 //  opt.m_bFloatingToolbar = m_bFloatingToolbar;
 	opt.m_bTextureCompression = m_bTextureCompression;
 	opt.m_bDisableModelMipmaps = m_bDisableMipmaps;
@@ -157,6 +159,12 @@ void OptionsDlg::OnOK(wxCommandEvent &event)
 	if (m_stereo2->GetValue()) m_iStereoMode = 1;
 	if (m_stereo3->GetValue()) m_iStereoMode = 2;
 	if (m_stereo4->GetValue()) m_iStereoMode = 3;
+
+	if (m_samples0->GetValue()) m_iMultiSamples = 0;
+	if (m_samples4->GetValue()) m_iMultiSamples = 4;
+	if (m_samples8->GetValue()) m_iMultiSamples = 8;
+	if (m_samples16->GetValue()) m_iMultiSamples = 16;
+
 	event.Skip();
 }
 
@@ -186,6 +194,11 @@ void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 	if (m_iStereoMode == 1) m_stereo2->SetValue(true);
 	if (m_iStereoMode == 2) m_stereo3->SetValue(true);
 	if (m_iStereoMode == 3) m_stereo4->SetValue(true);
+
+	if (m_iMultiSamples == 0) m_samples0->SetValue(true);
+	if (m_iMultiSamples == 4) m_samples4->SetValue(true);
+	if (m_iMultiSamples == 8) m_samples8->SetValue(true);
+	if (m_iMultiSamples == 16) m_samples16->SetValue(true);
 
 	event.Skip();
 }

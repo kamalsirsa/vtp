@@ -752,6 +752,12 @@ class OptionsDlgBase : public wxDialog
 		wxRadioButton* m_stereo3;
 		
 		wxRadioButton* m_stereo4;
+		wxStaticText* m_staticText143;
+		
+		wxRadioButton* m_samples0;
+		wxRadioButton* m_samples4;
+		wxRadioButton* m_samples8;
+		wxRadioButton* m_samples16;
 		wxStaticText* m_text118;
 		wxTextCtrl* m_winx;
 		wxStaticText* m_text119;

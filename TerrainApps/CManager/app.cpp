@@ -18,7 +18,6 @@
 #include "vtlib/core/NavEngines.h"
 #include "vtui/Helper.h"	// for ConvertArgcArgv
 #include "vtui/LogCatcher.h"
-#include "wxosg/GraphicsWindowWX.h"
 
 #include "app.h"
 #include "frame.h"
@@ -83,14 +82,15 @@ bool vtApp::OnInit(void)
 	// Create the main frame window
 	//
 	VTLOG("Creating frame\n");
-	vtFrame *frame = new vtFrame(NULL, _T("Content Manager"), wxPoint(50, 50), wxSize(800, 600));
+	vtFrame *frame = new vtFrame(NULL, _T("Content Manager"),
+		wxPoint(50, 50), wxSize(800, 600));
 
 	int MyArgc;
 	char** MyArgv;
 	ConvertArgcArgv(wxApp::argc, wxApp::argv, &MyArgc, &MyArgv);
 	pScene->Init(MyArgc, MyArgv);
 
-	pScene->SetGraphicsContext(new GraphicsWindowWX(frame->m_canvas));
+	frame->m_canvas->InitGraphicsWindowWX();
 
 	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));		// grey
 

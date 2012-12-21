@@ -28,7 +28,7 @@ public:
 class GraphicsWindowWX : public osgViewer::GraphicsWindow
 {
 public:
-	GraphicsWindowWX(wxGLCanvas *pCanvas);
+	GraphicsWindowWX(wxGLCanvas *pCanvas, osg::DisplaySettings *pSettings);
 	~GraphicsWindowWX();
 
 	void SetCanvas(wxGLCanvas *pCanvas)

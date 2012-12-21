@@ -1968,6 +1968,30 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	sbSizer36->Add( fgSizer5, 0, wxALIGN_CENTER_VERTICAL, 5 );
 	
+	m_staticText143 = new wxStaticText( this, wxID_ANY, _("Anti-aliasing (Multisamples):"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText143->Wrap( -1 );
+	sbSizer36->Add( m_staticText143, 0, wxALL, 5 );
+	
+	wxBoxSizer* bSizer202;
+	bSizer202 = new wxBoxSizer( wxHORIZONTAL );
+	
+	
+	bSizer202->Add( 20, 0, 1, 0, 5 );
+	
+	m_samples0 = new wxRadioButton( this, wxID_ANY, _("None / System Default"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	bSizer202->Add( m_samples0, 0, wxALL, 5 );
+	
+	m_samples4 = new wxRadioButton( this, wxID_ANY, _("4x"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer202->Add( m_samples4, 0, wxALL, 5 );
+	
+	m_samples8 = new wxRadioButton( this, wxID_ANY, _("8x"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer202->Add( m_samples8, 0, wxALL, 5 );
+	
+	m_samples16 = new wxRadioButton( this, wxID_ANY, _("16x"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer202->Add( m_samples16, 0, wxALL, 5 );
+	
+	sbSizer36->Add( bSizer202, 1, 0, 5 );
+	
 	bSizer190->Add( sbSizer36, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxStaticBoxSizer* sbSizer37;
