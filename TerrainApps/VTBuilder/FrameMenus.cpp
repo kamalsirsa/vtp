@@ -19,6 +19,7 @@
 
 #include "vtdata/config_vtdata.h"
 #include "vtdata/ChunkLOD.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/Icosa.h"
 #include "vtdata/QuikGrid.h"
@@ -2802,9 +2803,30 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 	{
 		wxString filter = _("Plant Species List Files (*.xml)|*.xml");
 
+		// To make it easier for the user, look for a species.xml on the path and
+		// suggest that as the folder to look in.
+		wxString default_dir;
+		wxString default_file("species.xml");
+		vtString species_path = FindFileOnPaths(vtGetDataPath(), "PlantData/species.xml");
+		if (species_path != "")
+		{
+			vtString just_path(ExtractPath(species_path, false));
+			default_dir = (const char *) just_path;
+#if WIN32
+			// An ugly workaround for Windows 7 File Dialog's behavior.
+			// We really want it to respect default_dir, but it wants to give us
+			// folder that the user last opened instead.
+			// Ref: http://msdn.microsoft.com/en-us/library/windows/desktop/ms646839(v=vs.85).aspx
+			// Using a random value (that isn't a valid path) avoids the behavior.
+			default_dir.Printf("%d", clock());
+			default_file = wxString::FromUTF8(species_path);
+			default_file.Replace("/", "\\");
+#endif
+		}
+
 		// Use file dialog to open plant list text file.
-		wxFileDialog loadFile(NULL, _("Load Plant Info"), _T(""), _T(""),
-			filter, wxFD_OPEN);
+		wxFileDialog loadFile(NULL, _("Load Plant Info"), default_dir,
+			default_file, filter, wxFD_OPEN);
 
 		if (loadFile.ShowModal() != wxID_OK)
 			return;

@@ -330,6 +330,29 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 	}
 	if (ext.CmpNoCase(_T("vf")) == 0)
 	{
+		// Make sure we have some species first.
+		if (GetPlantList()->NumSpecies() == 0)
+		{
+			vtString species_path = FindFileOnPaths(vtGetDataPath(), "PlantData/species.xml");
+			wxString msg;
+			msg += _("You must specify a species file (plant list) to use when working with vegetation files.");
+			if (species_path == "")
+			{
+				wxMessageBox(msg);
+				return NULL;
+			}
+			msg += _T("\n");
+			msg += _("Do you want to load the default species file from:\n");
+			msg += wxString(species_path);
+			int ret = wxMessageBox(msg, _("Plants"), wxYES_NO);
+			if (ret == wxYES)
+			{
+				if (!LoadSpeciesFile(species_path))
+					return NULL;
+			}
+			else // No.
+				return NULL;
+		}
 		vtVegLayer *pVL = new vtVegLayer;
 		if (pVL->Load(fname))
 			pLayer = pVL;
