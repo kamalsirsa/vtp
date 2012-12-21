@@ -74,8 +74,9 @@ public:
 
 	/// Call this method once before calling any other vtlib methods.
 	bool Init(int argc, char** argv, bool bStereo = false, int iStereoMode = 0);
-	void SetGraphicsContext(osg::GraphicsContext* pGraphicsContext);
-	osg::GraphicsContext* GetGraphicsContext();
+	void SetGraphicsContext(osg::GraphicsContext *pGraphicsContext);
+	osg::GraphicsContext *GetGraphicsContext();
+	osgViewer::GraphicsWindow *GetGraphicsWindow();
 
 	/// Call this method after all other vtlib methods, to free memory.
 	void Shutdown();

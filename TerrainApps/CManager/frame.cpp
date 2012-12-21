@@ -36,7 +36,6 @@
 #include "ModelDlg.h"
 #include "LightDlg.h"
 #include "wxosg/SceneGraphDlg.h"
-#include "wxosg/GraphicsWindowWX.h"
 
 #include "osgUtil/SmoothingVisitor"
 
@@ -910,7 +909,7 @@ void vtFrame::OnViewStats(wxCommandEvent& event)
 #ifdef USE_OSG_STATS
 	// Yes, this is a hack, but it doesn't seem that StatsHandler can be cycled
 	//  any other way than by key event.
-	GraphicsWindowWX* pGW = (GraphicsWindowWX*)vtGetScene()->GetGraphicsContext();
+	osgViewer::GraphicsWindow *pGW = vtGetScene()->GetGraphicsWindow();
 	if ((NULL != pGW) && pGW->valid())
 		pGW->getEventQueue()->keyPress('x');
 #endif

@@ -636,7 +636,7 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 			pEng->OnWindowSize(w, h);
 	}
 
-	osgViewer::GraphicsWindow* pGW = (osgViewer::GraphicsWindow*)GetGraphicsContext();
+	osgViewer::GraphicsWindow* pGW = GetGraphicsWindow();
 	if ((NULL != pGW) && pGW->valid())
 	{
 		pGW->getEventQueue()->windowResize(0, 0, w, h);
@@ -748,9 +748,14 @@ void vtScene::SetGraphicsContext(osg::GraphicsContext* pGraphicsContext)
 	m_pOsgViewer->getCamera()->setGraphicsContext(pGraphicsContext);
 }
 
-osg::GraphicsContext* vtScene::GetGraphicsContext()
+osg::GraphicsContext *vtScene::GetGraphicsContext()
 {
 	return m_pGraphicsContext.get();
+}
+
+osgViewer::GraphicsWindow *vtScene::GetGraphicsWindow()
+{
+	return dynamic_cast<osgViewer::GraphicsWindow*>(m_pGraphicsContext.get());
 }
 
 ////////////////////////////////////////

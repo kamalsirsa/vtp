@@ -588,7 +588,7 @@ EnviroFrame::~EnviroFrame()
 void EnviroFrame::DeleteCanvas()
 {
 	// Tell our graphics context that there is no canvas.
-	GraphicsWindowWX *pGW = (GraphicsWindowWX*)vtGetScene()->GetGraphicsContext();
+	GraphicsWindowWX *pGW = (GraphicsWindowWX*) vtGetScene()->GetGraphicsWindow();
 	if (pGW) {
 		pGW->CloseOsgContext();
 		pGW->SetCanvas(NULL);
@@ -1708,7 +1708,7 @@ void EnviroFrame::OnViewStats(wxCommandEvent& event)
 #ifdef USE_OSG_STATS
 	// Yes, this is a hack, but it doesn't seem that StatsHandler can be cycled
 	//  any other way than by key event.
-	GraphicsWindowWX* pGW = (GraphicsWindowWX*)vtGetScene()->GetGraphicsContext();
+	osgViewer::GraphicsWindow *pGW = vtGetScene()->GetGraphicsWindow();
 	if ((NULL != pGW) && pGW->valid())
 		pGW->getEventQueue()->keyPress('x');
 #endif

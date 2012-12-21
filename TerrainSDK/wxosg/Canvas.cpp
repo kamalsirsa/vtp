@@ -239,7 +239,7 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 void vtGLCanvas::OnChar(wxKeyEvent& event)
 {
 #ifdef USE_OSG_STATS
-	GraphicsWindowWX* pGW = (GraphicsWindowWX*)vtGetScene()->GetGraphicsContext();
+	osgViewer::GraphicsWindow *pGW = vtGetScene()->GetGraphicsWindow();
 	if ((NULL != pGW) && pGW->valid())
 		pGW->getEventQueue()->keyPress(event.GetKeyCode());
 #endif
