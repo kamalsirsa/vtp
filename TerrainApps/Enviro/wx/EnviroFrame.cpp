@@ -1476,29 +1476,45 @@ void EnviroFrame::CreateInstance(const DPoint2 &pos, vtTagArray *tags)
 
 void EnviroFrame::OnExit(wxCommandEvent& event)
 {
-	VTLOG("Got Exit event, shutting down.\n");
-	DeleteCanvas();
-	Destroy();
+	VTLOG1("Got Exit event.\n");
+	Close(false);	// False means: don't force a close.
 }
 
 void EnviroFrame::OnClose(wxCloseEvent &event)
 {
-	VTLOG("Got Close event, shutting down.\n");
-	DeleteCanvas();
-	event.Skip();
+	VTLOG1("Got Close event.\n");
+	bool bReally = true;
+
+	if (event.CanVeto())
+	{
+		// Pause rendering
+		m_canvas->m_bRunning = false;
+		int ret = wxMessageBox("Really Exit?", "Enviro", wxYES_NO);
+		if (ret == wxNO)
+		{
+			event.Veto();
+			bReally = false;
+			// Resume rendering
+			m_canvas->m_bRunning = true;
+		}
+	}
+	if (bReally)
+	{
+		DeleteCanvas();
+		Destroy();
+	}
 }
 
 void EnviroFrame::OnIdle(wxIdleEvent& event)
 {
 	// Check if we were requested to close on the next Idle event.
 	if (m_bCloseOnIdle)
-		Close();
+	{
+		m_bCloseOnIdle = false;
+		Close(false);	// False means: don't force a close.
+	}
 	else
 		event.Skip();
-
-	// Test: exit after first terrain loaded
-//	if (g_App.m_state == AS_Terrain)
-//		Close();
 }
 
 #ifdef __WXMSW__
