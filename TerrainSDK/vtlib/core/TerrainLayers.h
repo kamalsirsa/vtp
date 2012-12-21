@@ -1,7 +1,7 @@
 //
 // TerrainLayers.h
 //
-// Copyright (c) 2006-2011 Virtual Terrain Project
+// Copyright (c) 2006-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,7 @@
 #define TERRAINLAYERSH
 
 #include "Structure3d.h"	// for vtStructureArray3d
+#include "Plants3d.h"		// for vtPlantInstanceArray3d
 
 /** \addtogroup terrain */
 /*@{*/
@@ -19,12 +20,17 @@
 class vtLayer : public osg::Referenced
 {
 public:
-	virtual ~vtLayer() {}
+	virtual ~vtLayer() { m_bModified = false; }
 
 	virtual void SetLayerName(const vtString &fname) = 0;
 	virtual vtString GetLayerName() = 0;
 	virtual void SetVisible(bool vis) = 0;
 	virtual bool GetVisible() = 0;
+	virtual void SetModified(bool bModified) { m_bModified = bModified; }
+	bool GetModified() const { return m_bModified; }
+
+protected:
+	bool m_bModified;
 };
 typedef osg::ref_ptr<vtLayer> vtLayerPtr;
 
@@ -32,6 +38,24 @@ typedef osg::ref_ptr<vtLayer> vtLayerPtr;
  * This class encapsulates vtStructureArray3d as a terrain layer.
  */
 class vtStructureLayer : public vtStructureArray3d, public vtLayer
+{
+public:
+	void SetLayerName(const vtString &fname) { SetFilename(fname); }
+	vtString GetLayerName() { return GetFilename(); }
+	void SetVisible(bool vis)
+	{
+		SetEnabled(vis);
+	}
+	bool GetVisible()
+	{
+		return GetEnabled();
+	}
+};
+
+/**
+ * This class encapsulates vtPlantInstanceArray3d as a terrain layer.
+ */
+class vtVegLayer : public vtPlantInstanceArray3d, public vtLayer
 {
 public:
 	void SetLayerName(const vtString &fname) { SetFilename(fname); }

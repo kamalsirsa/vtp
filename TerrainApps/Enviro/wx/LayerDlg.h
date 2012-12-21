@@ -35,6 +35,12 @@ enum LayerType
 class LayerItemData : public wxTreeItemData
 {
 public:
+	LayerItemData(vtVegLayer *vlay)
+	{
+		Defaults();
+		m_type = LT_VEG;
+		m_layer = m_vlay = vlay;
+	}
 	LayerItemData(vtStructureLayer *slay, int index, int item)
 	{
 		Defaults();
@@ -72,6 +78,7 @@ public:
 	{
 		m_layer = NULL;
 		m_alay = NULL;
+		m_vlay = NULL;
 		m_slay = NULL;
 		m_glay = NULL;
 		m_fset = NULL;
@@ -82,11 +89,14 @@ public:
 	vtLayer *m_layer;
 	vtAbstractLayer *m_alay;
 	vtImageLayer *m_ilay;
+	vtVegLayer *m_vlay;
 	vtStructureLayer *m_slay;
 	vtFeatureSet *m_fset;
 	GlobeLayer *m_glay;
 	int m_index;
 	int m_item;
+	wxString m_text;	// We cache the text label to detect when it changes.
+	int m_icon;			// We cache the icon to detect when it changes.
 };
 
 

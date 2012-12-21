@@ -219,28 +219,34 @@ public:
 	LayerSet &GetLayers() { return m_Layers; }
 	void RemoveLayer(vtLayer *lay, bool progress_callback(int) = NULL);
 	vtLayer *LoadLayer(const char *fname);
+	void SetActiveLayer(vtLayer *lay) { m_pActiveLayer = lay; }
+	vtLayer *GetActiveLayer() { return m_pActiveLayer; }
 
 	// plants
+	vtVegLayer *GetVegLayer();
+	vtVegLayer *NewVegLayer();
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	int DeleteSelectedPlants();
 	void SetPlantList(vtSpeciesList3d *pPlantList);
 	vtSpeciesList3d *GetPlantList() { return m_pPlantList; }
 	/// Get the plant array for this terrain.  You can modify it directly.
-	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
 	bool AddNodeToVegGrid(osg::Node *pNode);
+	int NumVegLayers() const;
+	bool FindClosestPlant(const DPoint2 &point, double epsilon,
+						  int &plant_index, vtVegLayer **v_layer);
 
 	// structures
 	vtStructureLayer *GetStructureLayer();
-	void SetStructureLayer(vtStructureLayer *slay);
 	vtStructureLayer *NewStructureLayer();
 	vtStructureLayer *LoadStructuresFromXML(const vtString &strFilename);
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
 	int DeleteSelectedStructures();
-	void DeleteLayer(uint index);
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
-							  int &structure, double &closest, float fMaxInstRadius,
+							  int &structure, vtStructureLayer **st_layer,
+							  double &closest, float fMaxInstRadius,
 							  float fLinearWidthBuffer);
+	void DeselectAllStructures();
 
 	bool AddNodeToStructGrid(osg::Node *pNode);
 	void RemoveNodeFromStructGrid(osg::Node *pNode);
@@ -257,7 +263,6 @@ public:
 	vtStructureExtension *m_pStructureExtension;
 
 	// abstract layers
-	void SetAbstractLayer(vtAbstractLayer *alay);
 	vtAbstractLayer *GetAbstractLayer();
 	void RemoveFeatureGeometries(vtAbstractLayer *alay);
 	int DeleteSelectedFeatures();
@@ -445,9 +450,9 @@ protected:
 
 	// Layers
 	LayerSet		m_Layers;
+	vtLayer			*m_pActiveLayer;
 
 	// built structures, e.g. buildings and fences
-	vtStructureLayer *m_pActiveStructLayer;
 	vtLodGrid		*m_pStructGrid;
 	vtPagedStructureLodGrid		*m_pPagedStructGrid;
 	int		m_iPagingStructureMax;
@@ -460,7 +465,6 @@ protected:
 	bool			m_bBothSides;	// show both sides of terrain materials
 
 	// abstract layers
-	vtAbstractLayer *m_pActiveAbstractLayer;
 	vtTransform		*m_pScaledFeatures;
 	vtFeatureLoader *m_pFeatureLoader;
 
@@ -469,7 +473,6 @@ protected:
 	vtRoadMap3dPtr	m_pRoadMap;
 
 	// plants
-	vtPlantInstanceArray3d	m_PIA;
 	vtSpeciesList3d	*m_pPlantList;
 	vtGroup			*m_pVegGroup;
 	vtSimpleLodGrid	*m_pVegGrid;

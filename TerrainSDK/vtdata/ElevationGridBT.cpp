@@ -235,7 +235,7 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 	{
 		for (i = 0; i < m_iColumns; i++)
 		{
-			if (progress_callback != NULL)
+			if (progress_callback != NULL && ((i%40) == 0))
 			{
 				if (progress_callback(i * 100 / m_iColumns))
 				{
@@ -259,7 +259,7 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 	{
 		for (i = 0; i < m_iColumns; i++)
 		{
-			if (progress_callback != NULL)
+			if (progress_callback != NULL && ((i%40) == 0))
 			{
 				if (progress_callback(i * 100 / m_iColumns))
 				{

@@ -522,11 +522,13 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			SetMessage(_("Loading Elevation"));
 		UpdateProgress(m_strMessage, 20, 0);
 	}
-	if (m_iInitStep == 3)
+	else if (m_iInitStep == 3)
 	{
 		OnCreateTerrain(pTerr);
 
-		if (pTerr->GetParams().GetValueBool(STR_TREES))
+		int veg_layers = pTerr->GetParams().NumLayersOfType(TERR_LTYPE_VEGETATION);
+		VTLOG("There are %d vegetation layers\n", veg_layers);
+		if (veg_layers > 0)
 		{
 			// We'll need vegetation for this terrain, so load the species
 			//  file and check which appearances are available
@@ -1193,6 +1195,7 @@ void Enviro::StoreTerrainParameters()
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
 		vtImageLayer *ilay = dynamic_cast<vtImageLayer*>(lay);
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
+		vtVegLayer *vlay = dynamic_cast<vtVegLayer*>(lay);
 
 		vtTagArray newlay;
 		if (slay)
@@ -1205,6 +1208,8 @@ void Enviro::StoreTerrainParameters()
 			vtTagArray &style = alay->GetProperties();
 			newlay.CopyTagsFrom(style);
 		}
+		if (vlay)
+			newlay.SetValueString("Type", TERR_LTYPE_VEGETATION, true);
 
 		newlay.SetValueString("Filename", lay->GetLayerName(), true);
 		newlay.SetValueBool("Visible", lay->GetVisible());
@@ -1552,8 +1557,9 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		m_bSelectedStruct = false;
 	}
 
-	vtPlantInstanceArray3d &Plants = pTerr->GetPlantInstances();
-	Plants.VisualDeselectAll();
+	vtVegLayer *v_layer = pTerr->GetVegLayer();
+	if (v_layer)
+		v_layer->VisualDeselectAll();
 	m_bSelectedPlant = false;
 
 	vtRouteMap &Routes = pTerr->GetRouteMap();
@@ -1636,7 +1642,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		{
 			// Switching to a different structure set
 			pActiveStructures->VisualDeselectAll();
-			pTerr->SetStructureLayer(slay);
+			pTerr->SetActiveLayer(slay);
 			ShowLayerView();
 			UpdateLayerView();
 		}
@@ -1647,10 +1653,10 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 			m_bSelectedStruct = false;
 	}
 	// Check for plants
-	else if (Plants.FindPlantFromNode(HitList.front().geode, iOffset))
+	else if (v_layer && v_layer->FindPlantFromNode(HitList.front().geode, iOffset))
 	{
 		VTLOG("  Found plant\n");
-		Plants.VisualSelect(iOffset);
+		v_layer->VisualSelect(iOffset);
 		m_bDragging = true;
 		m_bSelectedPlant = true;
 	}
@@ -1682,9 +1688,8 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 
 	double dist1, dist2, dist3;
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructureLayer();
-	if (!(event.flags & VT_CONTROL) && structures != NULL)
-		structures->VisualDeselectAll();
+	if (!(event.flags & VT_CONTROL))
+		pTerr->DeselectAllStructures();
 
 	// SelectionCutoff is in meters, but the picking functions work in
 	//  Earth coordinates.  Try to convert it to earth horiz units.
@@ -1699,26 +1704,25 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	double linear_buffer = eoffset.x;
 
 	// Check Structures
-	int structure;		// index of closest structure
-	bool result1 = pTerr->FindClosestStructure(gpos, epsilon, structure, dist1,
-		g_Options.m_fMaxPickableInstanceRadius, (float) linear_buffer);
+	vtStructureLayer *st_layer;	// layer that contains the closest structure
+	int structure;				// index of closest structure
+	bool result1 = pTerr->FindClosestStructure(gpos, epsilon, structure,
+		&st_layer, dist1, g_Options.m_fMaxPickableInstanceRadius,
+		(float) linear_buffer);
 	if (result1)
 		VTLOG("structure at dist %lf, ", dist1);
 	m_bSelectedStruct = false;
 
-  VTLOG("|XY= %lf, %lf, %lf|\n",m_EarthPos.x, m_EarthPos.y, m_EarthPos.z); // BobMaX
+	VTLOG("|XY= %lf, %lf, %lf|\n", m_EarthPos.x, m_EarthPos.y, m_EarthPos.z); // BobMaX
 
 	// Check Plants
-	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
-	plants.VisualDeselectAll();
+	vtVegLayer *v_layer;
 	m_bSelectedPlant = false;
-
-	// find index of closest plant
-	int plant = plants.FindClosestPoint(gpos, epsilon);
-	bool result2 = (plant != -1);
+	int plant_index;
+	bool result2 = pTerr->FindClosestPlant(gpos, epsilon, plant_index, &v_layer);
 	if (result2)
 	{
-		dist2 = (gpos - plants.GetPoint(plant)).Length();
+		dist2 = (gpos - v_layer->GetPoint(plant_index)).Length();
 		VTLOG("plant at dist %lf, ", dist2);
 	}
 	else
@@ -1748,9 +1752,8 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	if (click_struct)
 	{
 		VTLOG(" struct is closest.\n");
-		vtStructureArray3d *structures_picked = pTerr->GetStructureLayer();
-		vtStructure *str = structures_picked->GetAt(structure);
-		vtStructure3d *str3d = structures_picked->GetStructure3d(structure);
+		vtStructure *str = st_layer->GetAt(structure);
+		vtStructure3d *str3d = st_layer->GetStructure3d(structure);
 		if (str->GetType() != ST_INSTANCE && str3d->GetGeom() == NULL)
 		{
 			VTLOG("  Warning: unconstructed structure.\n");
@@ -1794,10 +1797,10 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 			}
 			m_bSelectedStruct = true;
 		}
-		if (structures_picked != structures)
+		if (st_layer != pTerr->GetStructureLayer())
 		{
 			// active structure set (layer) has changed due to picking
-			structures->VisualDeselectAll();
+			pTerr->SetActiveLayer(st_layer);
 			ShowLayerView();
 			UpdateLayerView();
 		}
@@ -1805,7 +1808,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	else if (click_plant)
 	{
 		VTLOG(" plant is closest.\n");
-		plants.VisualSelect(plant);
+		v_layer->VisualSelect(plant_index);
 		m_bDragging = true;
 		m_bSelectedPlant = true;
 	}
@@ -1961,12 +1964,18 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 			close_route();
 		if (m_mode == MM_SELECT || m_mode == MM_SELECTMOVE)
 		{
-			vtTerrain *t = GetCurrentTerrain();
-			vtStructureArray3d *sa = t->GetStructureLayer();
-			vtPlantInstanceArray3d &plants = t->GetPlantInstances();
+			vtTerrain *terr = GetCurrentTerrain();
+			vtStructureArray3d *sa = terr->GetStructureLayer();
+			vtVegLayer *vlay = terr->GetVegLayer();
 
-			if (sa->NumSelected() != 0 || plants.NumSelected() != 0 ||
-				m_Vehicles.GetSelected() != -1)
+			bool show = false;
+			if (sa && sa->NumSelected() != 0)
+				show = true;
+			if (vlay && vlay->NumSelected() != 0)
+				show = true;
+			if (m_Vehicles.GetSelected() != -1)
+				show = true;
+			if (show)
 				ShowPopupMenu(event.pos);
 		}
 		if (m_mode == MM_SELECTBOX)
@@ -2000,8 +2009,8 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 
 		vtTerrain *pTerr = GetCurrentTerrain();
 
-		vtStructureArray3d *structures = pTerr->GetStructureLayer();
-		if (structures && structures->NumSelected() > 0)
+		vtStructureLayer *st_layer = pTerr->GetStructureLayer();
+		if (st_layer && st_layer->NumSelected() > 0)
 		{
 			if (m_bDragging)
 			{
@@ -2009,7 +2018,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 				{
 					// Moving a whole structure (building or instance)
 					float fDelta = (m_MouseLast.y - event.pos.y) / 20.0f;
-					structures->OffsetSelectedStructuresVertical(fDelta);
+					st_layer->OffsetSelectedStructuresVertical(fDelta);
 				}
 				else if (m_pDraggingFence != NULL)
 				{
@@ -2021,27 +2030,29 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 				else
 				{
 					// Moving a whole structure (building or instance)
-					structures->OffsetSelectedStructures(ground_delta);
+					st_layer->OffsetSelectedStructures(ground_delta);
 				}
 			}
 			else if (m_bRotating)
 			{
-				for (int sel = structures->GetFirstSelected(); sel != -1; sel = structures->GetNextSelected())
+				for (int sel = st_layer->GetFirstSelected(); sel != -1; sel = st_layer->GetNextSelected())
 				{
-					vtStructInstance *inst = structures->GetAt(sel)->GetInstance();
-					vtStructInstance3d *str3d = structures->GetInstance(sel);
+					vtStructInstance *inst = st_layer->GetAt(sel)->GetInstance();
+					vtStructInstance3d *str3d = st_layer->GetInstance(sel);
 
 					inst->SetRotation(fNewRotation);
 					str3d->UpdateTransform(pTerr->GetHeightField());
 				}
 			}
+			st_layer->SetModified(true);
 		}
 		if (m_bDragging)
 		{
 			if (m_bSelectedPlant)
 			{
-				vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
-				plants.OffsetSelectedPlants(ground_delta);
+				vtVegLayer *vlay = pTerr->GetVegLayer();
+				if (vlay)
+					vlay->OffsetSelectedPlants(ground_delta);
 			}
 			if (m_bSelectedUtil)
 			{
@@ -2374,6 +2385,11 @@ void Enviro::AddBuildingPoint(const DPoint2 &p)
 
 void Enviro::FinishBuilding()
 {
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureLayer *st_layer = pTerr->GetStructureLayer();
+	if (!st_layer)
+		return;
+
 	if (m_bConstrainAngles)
 	{
 		// To ensure that we have right angle all around, act as if the user
@@ -2393,9 +2409,7 @@ void Enviro::FinishBuilding()
 	VTLOG1("\n");
 
 	// Close and create new building in the current structure array
-	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructureLayer();
-	vtBuilding3d *pbuilding = (vtBuilding3d*) structures->AddNewBuilding();
+	vtBuilding3d *pbuilding = (vtBuilding3d*) st_layer->AddNewBuilding();
 
 	// Force footprint anticlockwise
 	PolyChecker PolyChecker;
@@ -2514,13 +2528,16 @@ void Enviro::SetPlantOptions(const PlantingOptions &opt)
 	m_PlantOpt = opt;
 	if (m_mode == MM_SELECT || m_mode == MM_SELECTMOVE)
 	{
-		vtPlantInstanceArray3d &pia = GetCurrentTerrain()->GetPlantInstances();
-		for (uint i = 0; i < pia.GetNumEntities(); i++)
+		vtVegLayer *vlay = GetCurrentTerrain()->GetVegLayer();
+		if (vlay)
 		{
-			if (pia.IsSelected(i))
+			for (uint i = 0; i < vlay->GetNumEntities(); i++)
 			{
-				pia.SetPlant(i, opt.m_fHeight, opt.m_iSpecies);
-				pia.CreatePlantNode(i);
+				if (vlay->IsSelected(i))
+				{
+					vlay->SetPlant(i, opt.m_fHeight, opt.m_iSpecies);
+					vlay->CreatePlantNode(i);
+				}
 			}
 		}
 	}
@@ -2544,10 +2561,12 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 		return false;
 
 	// check distance from other plants
-	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
-	int size = pia.GetNumEntities();
+	vtVegLayer *vlay = pTerr->GetVegLayer();
+	if (!vlay)
+		return false;
+
+	int size = vlay->GetNumEntities();
 	double len, closest = 1E8;
-	DPoint2 diff;
 
 	bool bPlant = true;
 	if (m_PlantOpt.m_fSpacing > 0.0f)
@@ -2556,16 +2575,15 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 		//  Earth coordinates.  Try to convert it to earth horiz units.
 		DPoint2 eoffset;
 		g_Conv.ConvertVectorToEarth(m_PlantOpt.m_fSpacing, 0, eoffset);
-		double epsilon = eoffset.x;
+		double mininum_spacing = eoffset.x;
 
 		for (int i = 0; i < size; i++)
 		{
-			diff = epos - pia.GetPoint(i);
-			len = diff.Length();
-
-			if (len < closest) closest = len;
+			len = (epos - vlay->GetPoint(i)).Length();
+			if (len < closest)
+				closest = len;
 		}
-		if (closest < epsilon)
+		if (closest < mininum_spacing)
 			bPlant = false;
 		VTLOG(" closest plant %.2fm,%s planting..", closest, bPlant ? "" : " not");
 	}

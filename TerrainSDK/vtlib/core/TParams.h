@@ -40,6 +40,7 @@ enum LodMethodEnum {
 #define TERR_LTYPE_STRUCTURE	"Structure"
 #define TERR_LTYPE_ABSTRACT		"Abstract"
 #define TERR_LTYPE_IMAGE		"Image"
+#define TERR_LTYPE_VEGETATION	"Vegetation"
 
 ////////////////////////////////////////////////////////////////////////
 // Class to encapsulate a scenarios parameters.
@@ -351,6 +352,8 @@ public:
 	void SetOverlay(const vtString &fname, int x, int y);
 	bool GetOverlay(vtString &fname, int &x, int &y) const;
 
+	int NumLayersOfType(const vtString &layer_type);
+
 public:
 	// this must be a public member (currently..)
 	std::vector<vtTagArray> m_Layers;
@@ -362,23 +365,6 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////
-// Visitor class for XML parsing of TParams files.
-
-class TParamsVisitor : public TagVisitor
-{
-public:
-	TParamsVisitor(TParams *pParams) : TagVisitor(pParams), m_pParams(pParams), m_bInLayer(false), m_bInScenario(false) {}
-	void startElement(const char *name, const XMLAttributes &atts);
-	void endElement (const char *name);
-
-protected:
-	TParams *m_pParams;
-	vtTagArray m_layer;
-	bool m_bViz;
-	ScenarioParams m_Scenario;
-	bool m_bInLayer;
-	bool m_bInScenario;
-};
 
 #define STR_TPARAMS_FORMAT_NAME "Terrain_Parameters"
 

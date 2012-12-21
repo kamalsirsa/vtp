@@ -1485,7 +1485,20 @@ void EnviroFrame::OnClose(wxCloseEvent &event)
 	VTLOG1("Got Close event.\n");
 	bool bReally = true;
 
-	if (event.CanVeto())
+	bool bUnsavedChanges = false;
+	vtTerrain *terr = GetCurrentTerrain();
+	if (terr)
+	{
+		LayerSet &set = terr->GetLayers();
+		for (uint i = 0; i < set.size(); i++)
+		{
+			vtLayer *lay = set[i];
+			if (lay->GetModified())
+				bUnsavedChanges = true;
+		}
+	}
+
+	if (event.CanVeto() && bUnsavedChanges)
 	{
 		// Pause rendering
 		m_canvas->m_bRunning = false;
@@ -3521,18 +3534,19 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 	VTLOG1("Creating popup, ");
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *sa = pTerr->GetStructureLayer();
-	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
+	vtStructureLayer *slay = pTerr->GetStructureLayer();
+	vtVegLayer *vlay = pTerr->GetVegLayer();
 
 	wxMenu *popmenu = new wxMenu;
 
-	int structures_selected = sa ? sa->NumSelected() : 0;
-	int buildings_selected = sa ? sa->NumSelectedOfType(ST_BUILDING) : 0;
-	int linears_selected = sa ? sa->NumSelectedOfType(ST_LINEAR) : 0;
-	int instances_selected = sa ? sa->NumSelectedOfType(ST_INSTANCE) : 0;
+	int structures_selected = slay ? slay->NumSelected() : 0;
+	int buildings_selected = slay ? slay->NumSelectedOfType(ST_BUILDING) : 0;
+	int linears_selected = slay ? slay->NumSelectedOfType(ST_LINEAR) : 0;
+	int instances_selected = slay ? slay->NumSelectedOfType(ST_INSTANCE) : 0;
+	int plants_selected = vlay ? vlay->NumSelected() : 0;
 
 	wxMenuItem *item = popmenu->Append(ID_POPUP_PROPERTIES, _("Properties"));
-	if (structures_selected == 0 && plants.NumSelected() == 0)
+	if (structures_selected == 0 && plants_selected == 0)
 		item->Enable(false);
 
 	// Can't display properties for more than one structure
@@ -3558,7 +3572,7 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 	if (structures_selected == 1)
 	{
 		// It might have a URL, also
-		vtTag *tag = sa->GetFirstSelectedStructure()->FindTag("url");
+		vtTag *tag = slay->GetFirstSelectedStructure()->FindTag("url");
 		if (tag)
 		{
 			popmenu->AppendSeparator();
@@ -3574,7 +3588,7 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 			_("Set this structure as the viewer target for VIA plots"));
 #endif
 	}
-	if (plants.NumSelected() != 0)
+	if (plants_selected != 0)
 	{
 		// We could add some plant-specific commands here
 	}
@@ -3629,14 +3643,14 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 		}
 	}
 
-	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
-	if (plants.NumSelected() != 0)
+	vtVegLayer *vlay = pTerr->GetVegLayer();
+	if (vlay && vlay->NumSelected() != 0)
 	{
 		int found = -1;
-		uint count = plants.GetNumEntities();
+		uint count = vlay->GetNumEntities();
 		for (uint i = 0; i < count; i++)
 		{
-			if (plants.IsSelected(i))
+			if (vlay->IsSelected(i))
 			{
 				found = i;
 				break;
@@ -3649,7 +3663,7 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 
 			float size;
 			short species_id;
-			plants.GetPlant(found, size, species_id);
+			vlay->GetPlant(found, size, species_id);
 			opt.m_iSpecies = species_id;
 			opt.m_fHeight = size;
 

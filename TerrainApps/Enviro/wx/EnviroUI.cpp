@@ -1096,24 +1096,11 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer39;
 	bSizer39 = new wxBoxSizer( wxVERTICAL );
 	
-	m_plants = new wxCheckBox( TParamsPanel3, ID_PLANTS, _("Plants"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_plants->SetValue(true); 
-	bSizer39->Add( m_plants, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+	wxStaticBoxSizer* sbSizer38;
+	sbSizer38 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel3, wxID_ANY, _("Plant Layers") ), wxVERTICAL );
 	
-	wxStaticBoxSizer* sbSizer9;
-	sbSizer9 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel3, wxID_ANY, wxEmptyString ), wxVERTICAL );
-	
-	wxBoxSizer* bSizer40;
-	bSizer40 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text13 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Source file: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text13->Wrap( -1 );
-	bSizer40->Add( m_text13, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	id_treefile = new wxComboBox( TParamsPanel3, ID_TREEFILE, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_DROPDOWN|wxCB_SORT ); 
-	bSizer40->Add( id_treefile, 1, wxALIGN_CENTER|wxALL, 5 );
-	
-	sbSizer9->Add( bSizer40, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	id_plantfiles = new wxListBox( TParamsPanel3, ID_PLANTFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
+	sbSizer38->Add( id_plantfiles, 0, wxALL|wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer41;
 	bSizer41 = new wxBoxSizer( wxHORIZONTAL );
@@ -1129,12 +1116,12 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_text15->Wrap( 0 );
 	bSizer41->Add( m_text15, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	sbSizer9->Add( bSizer41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	sbSizer38->Add( bSizer41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 	
 	m_checkBox64 = new wxCheckBox( TParamsPanel3, ID_TREES_USE_SHADERS, _("Use Shaders for Plants"), wxDefaultPosition, wxDefaultSize, 0 );
-	sbSizer9->Add( m_checkBox64, 0, wxALL, 5 );
+	sbSizer38->Add( m_checkBox64, 0, wxALL, 5 );
 	
-	bSizer39->Add( sbSizer9, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+	bSizer39->Add( sbSizer38, 0, wxEXPAND|wxALL, 5 );
 	
 	id_roads = new wxCheckBox( TParamsPanel3, ID_ROADS, _("Roads"), wxDefaultPosition, wxDefaultSize, 0 );
 	id_roads->SetValue(true); 
@@ -1243,9 +1230,9 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer47 = new wxBoxSizer( wxVERTICAL );
 	
 	wxStaticBoxSizer* sbSizer11;
-	sbSizer11 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel3, wxID_ANY, _("Structure Files") ), wxVERTICAL );
+	sbSizer11 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel3, wxID_ANY, _("Structure Layers") ), wxVERTICAL );
 	
-	id_structfiles = new wxListBox( TParamsPanel3, ID_STRUCTFILES, wxDefaultPosition, wxSize( 80,110 ), 0, NULL, wxLB_SINGLE ); 
+	id_structfiles = new wxListBox( TParamsPanel3, ID_STRUCTFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
 	sbSizer11->Add( id_structfiles, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer48;

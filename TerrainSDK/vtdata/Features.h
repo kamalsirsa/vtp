@@ -1,7 +1,7 @@
 //
 // Features.h
 //
-// Copyright (c) 2002-2009 Virtual Terrain Project
+// Copyright (c) 2002-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -254,7 +254,7 @@ public:
 	DPoint2 &GetPoint(uint num) { return m_Point2[num]; }
 	const DPoint2 &GetPoint(uint num) const { return m_Point2[num]; }
 
-	int FindClosestPoint(const DPoint2 &p, double epsilon);
+	int FindClosestPoint(const DPoint2 &p, double epsilon, double *distance = NULL);
 	void FindAllPointsAtLocation(const DPoint2 &p, vtArray<int> &found);
 	void GetPoint(uint num, DPoint2 &p) const;
 

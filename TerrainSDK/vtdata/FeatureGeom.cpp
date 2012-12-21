@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -106,7 +106,7 @@ void vtFeatureSetPoint2D::GetPoint(uint num, DPoint2 &p) const
 	p = m_Point2.GetAt(num);
 }
 
-int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon)
+int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon, double *distance)
 {
 	int entities = GetNumEntities();
 	double dist, closest = 1E9;
@@ -127,6 +127,8 @@ int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon)
 		if (dist < closest && dist < epsilon)
 		{
 			closest = dist;
+			if (distance)
+				*distance = dist;
 			found = i;
 		}
 	}

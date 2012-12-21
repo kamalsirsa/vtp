@@ -109,9 +109,8 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_TEXROADS, "true");
 	AddTag(STR_ROADCULTURE, "false");
 
-	AddTag(STR_TREES, "false");
-	AddTag(STR_TREEFILE, "2000");		// 2 km
-	AddTag(STR_VEGDISTANCE, "5000");	// 5 km
+	AddTag(STR_VEGDISTANCE, "4000");	// 4 km
+	AddTag(STR_TREES_USE_SHADERS, "false");
 
 	AddTag(STR_FOG, "false");
 	AddTag(STR_FOGDISTANCE, "50");		// 50 km
@@ -201,70 +200,24 @@ void TParams::ConvertOldTimeValue()
 	}
 }
 
-bool TParams::LoadFromXML(const char *fname)
-{
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
-	VTLOG("\tReading TParams from '%s'\n", fname);
-
-	TParamsVisitor visitor(this);
-	try
-	{
-		std::string fname2(fname);
-		readXML(fname2, visitor);
-	}
-	catch (xh_io_exception &ex)
-	{
-		const string msg = ex.getFormattedMessage();
-		VTLOG(" XML problem: %s\n", msg.c_str());
-		return false;
-	}
-
-	// Convert old time values to new values
-	ConvertOldTimeValue();
-
-	// Remove some obsolete stuff
-	RemoveTag("Labels");
-	RemoveTag("LabelFile");
-	RemoveTag("Label_Field");
-	RemoveTag("Label_Height");
-	RemoveTag("Label_Size");
-	RemoveTag("Overlay");
-	RemoveTag("Num_Tiles");
-	RemoveTag("Pixel_Error");
-	RemoveTag("Texture_Format");
-	RemoveTag("Tile_Size");
-	RemoveTag("Base_Texture");
-	RemoveTag("Texture_4by4");
-
-	// Is_TIN is obsolete, use Surface_Type=1 instead
-	bool bOldTin = GetValueBool("Is_TIN");
-	if (bOldTin)
-		SetValueInt(STR_SURFACE_TYPE, 1, true);
-	RemoveTag("Is_TIN");
-
-	// Filename is obsolete, use Elevation_Filename instead
-	vtTag *tag;
-	tag = FindTag("Filename");
-	if (tag)
-	{
-		SetValueString(STR_ELEVFILE, tag->value);
-		RemoveTag("Filename");
-	}
-
-	// Single_Texture is obsolete, use Texture_Filename instead
-	tag = FindTag("Single_Texture");
-	if (tag)
-	{
-		SetValueString(STR_TEXTUREFILE, tag->value);
-		RemoveTag("Single_Texture");
-	}
-
-	return true;
-}
-
-
 //////////////////////////////
+// Visitor class for XML parsing of TParams files.
+
+class TParamsVisitor : public TagVisitor
+{
+public:
+	TParamsVisitor(TParams *pParams) : TagVisitor(pParams), m_pParams(pParams), m_bInLayer(false), m_bInScenario(false) {}
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement (const char *name);
+
+protected:
+	TParams *m_pParams;
+	vtTagArray m_layer;
+	bool m_bViz;
+	ScenarioParams m_Scenario;
+	bool m_bInLayer;
+	bool m_bInScenario;
+};
 
 void TParamsVisitor::startElement(const char *name, const XMLAttributes &atts)
 {
@@ -340,8 +293,83 @@ void TParamsVisitor::endElement(const char *name)
 		TagVisitor::endElement(name);
 }
 
-
 //////////////////////////////
+
+bool TParams::LoadFromXML(const char *fname)
+{
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	VTLOG("\tReading TParams from '%s'\n", fname);
+
+	TParamsVisitor visitor(this);
+	try
+	{
+		std::string fname2(fname);
+		readXML(fname2, visitor);
+	}
+	catch (xh_io_exception &ex)
+	{
+		const string msg = ex.getFormattedMessage();
+		VTLOG(" XML problem: %s\n", msg.c_str());
+		return false;
+	}
+
+	// Convert old time values to new values
+	ConvertOldTimeValue();
+
+	// Remove some obsolete stuff
+	RemoveTag("Labels");
+	RemoveTag("LabelFile");
+	RemoveTag("Label_Field");
+	RemoveTag("Label_Height");
+	RemoveTag("Label_Size");
+	RemoveTag("Overlay");
+	RemoveTag("Num_Tiles");
+	RemoveTag("Pixel_Error");
+	RemoveTag("Texture_Format");
+	RemoveTag("Tile_Size");
+	RemoveTag("Base_Texture");
+	RemoveTag("Texture_4by4");
+
+	// Is_TIN is obsolete, use Surface_Type=1 instead
+	bool bOldTin = GetValueBool("Is_TIN");
+	if (bOldTin)
+		SetValueInt(STR_SURFACE_TYPE, 1, true);
+	RemoveTag("Is_TIN");
+
+	// Filename is obsolete, use Elevation_Filename instead
+	vtTag *tag;
+	tag = FindTag("Filename");
+	if (tag)
+	{
+		SetValueString(STR_ELEVFILE, tag->value);
+		RemoveTag("Filename");
+	}
+
+	// Single_Texture is obsolete, use Texture_Filename instead
+	tag = FindTag("Single_Texture");
+	if (tag)
+	{
+		SetValueString(STR_TEXTUREFILE, tag->value);
+		RemoveTag("Single_Texture");
+	}
+
+	// Trees/Tree_File is obsolete, make a vegetation layer instead
+	bool bOldTrees = (FindTag("Trees") != NULL);
+	tag = FindTag("Tree_File");
+	if (tag && bOldTrees)
+	{
+		vtTagArray layer;
+		layer.SetValueString("Type", TERR_LTYPE_VEGETATION, true);
+		layer.SetValueString("Filename", tag->value, true);
+		m_Layers.push_back(layer);
+
+		RemoveTag("Trees");
+		RemoveTag("Tree_File");
+	}
+
+	return true;
+}
 
 void TParams::SetLodMethod(LodMethodEnum method)
 {
@@ -385,6 +413,18 @@ bool TParams::GetOverlay(vtString &fname, int &x, int &y) const
 	x = atoi(xstr);
 	y = atoi(ystr);
 	return true;
+}
+
+int TParams::NumLayersOfType(const vtString &layer_type)
+{
+	int count = 0;
+	for (uint i = 0; i < m_Layers.size(); i++)
+	{
+		const vtTagArray &lay = m_Layers[i];
+		if (lay.GetValueString("Type") == layer_type)
+			count++;
+	}
+	return count;
 }
 
 void TParams::WriteOverridesToXML(FILE *fp) const

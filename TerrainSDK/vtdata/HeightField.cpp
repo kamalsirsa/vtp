@@ -1,7 +1,7 @@
 //
 // HeightField.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -739,11 +739,9 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	// now iterate over the texels
 	for (int i = 0; i < w; i++)
 	{
-		if (progress_callback != NULL)
-		{
-			if ((i&7) == 0)
-				progress_callback(i * 100 / w);
-		}
+		if (progress_callback != NULL && (i&40) == 0)
+			progress_callback(i * 100 / w);
+
 		x = i * ratiox;		// find corresponding location in height grid
 
 		for (int j = 0; j < h; j++)
@@ -817,11 +815,9 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 	// iterate over the texels
 	for (int j = 0; j < h; j++)
 	{
-		if (progress_callback != NULL)
-		{
-			if ((j&7) == 0)
-				progress_callback(j * 100 / h);
-		}
+		if (progress_callback != NULL && (j%40) == 0)
+			progress_callback(j * 100 / h);
+
 		// find corresponding location in terrain
 		y = (int) (j * ratioy);
 		for (int i = 0; i < w; i++)
@@ -930,11 +926,9 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 
 	for (j = 0; j < h; j++)
 	{
-		if (progress_callback != NULL)
-		{
-			if ((j&7) == 0)
+		if (progress_callback != NULL && (j%40) == 0)
 				progress_callback(j * 100 / h);
-		}
+
 		// find corresponding location in heightfield
 		y = m_iRows-1 - (j * stepy);
 		for (i = 0; i < w; i++)
@@ -1172,11 +1166,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 	for (j = j_init; j != j_final; j += j_incr)
 	{
-		if (progress_callback != NULL)
-		{
-			if ((j&7) == 0)
-				progress_callback(abs(j-j_init) * 100 / h);
-		}
+		if (progress_callback != NULL && (j%20) == 0)
+			progress_callback(abs(j-j_init) * 100 / h);
+
 		for (i = i_init; i != i_final; i += i_incr)
 		{
 			pos = GridPos(texel_base, texel_size, i, j);
@@ -1260,11 +1252,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	//  the full lighting formula to each texel that has not been shaded yet.
 	for (j = 0; j < h; j++)
 	{
-		if (progress_callback != NULL)
-		{
-			if ((j&7) == 0)
-				progress_callback(j * 100 / h);
-		}
+		if (progress_callback != NULL && (j%20) == 0)
+			progress_callback(j * 100 / h);
+
 		for (i = 0; i < w; i++)
 		{
 			if (lightmap.Get(i, j) > 0)

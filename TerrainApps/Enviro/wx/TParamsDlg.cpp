@@ -103,7 +103,6 @@ BEGIN_EVENT_TABLE(TParamsDlg,TParamsDlgBase)
 	EVT_CHECKBOX( ID_DETAILTEXTURE, TParamsDlg::OnCheckBox )
 
 	// Culture
-	EVT_CHECKBOX( ID_PLANTS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_CHECK_STRUCTURE_SHADOWS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_SHADOW_LIMIT, TParamsDlg::OnCheckBox )
@@ -138,6 +137,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,TParamsDlgBase)
 	EVT_CHOICE( ID_CHOICE_SCENARIO, TParamsDlg::OnChoiceScenario )
 
 	// Clickable listboxes
+	EVT_LISTBOX_DCLICK( ID_PLANTFILES, TParamsDlg::OnListDblClickPlants )
 	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClickStructure )
 	EVT_LISTBOX_DCLICK( ID_RAWFILES, TParamsDlg::OnListDblClickRaw )
 	EVT_LISTBOX_DCLICK( ID_ANIM_PATHS, TParamsDlg::OnListDblClickAnimPaths )
@@ -164,12 +164,12 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	notebook->SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
 	m_pPreLightFactor = GetLightFactor();
+	m_pPlantFiles = GetPlantFiles();
 	m_pStructFiles = GetStructFiles();
 	m_pRawFiles = GetRawFiles();
 	m_pAnimFiles = GetAnimPaths();
 	m_pImageFiles = GetImageFiles();
 	m_pRoadFile = GetRoadfile();
-	m_pTreeFile = GetTreefile();
 	m_pTextureFileSingle = GetTfileSingle();
 	m_pTextureFileTileset = GetTfileTileset();
 	m_pDTName = GetDTName();
@@ -253,12 +253,10 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_DT_NAME, &m_strDetailName);
 	AddNumValidator(this, ID_DT_SCALE, &m_fDetailScale);
 	AddNumValidator(this, ID_DT_DISTANCE, &m_fDetailDistance);
-	AddValidator(this, ID_TREES_USE_SHADERS, &m_bTreesUseShaders);
 
 	// culture page
-	AddValidator(this, ID_PLANTS, &m_bPlants);
-	AddValidator(this, ID_TREEFILE, &m_strVegFile);
 	AddNumValidator(this, ID_VEGDISTANCE, &m_iVegDistance);
+	AddValidator(this, ID_TREES_USE_SHADERS, &m_bTreesUseShaders);
 
 	AddValidator(this, ID_ROADS, &m_bRoads);
 	AddValidator(this, ID_ROADFILE, &m_strRoadFile);
@@ -309,6 +307,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	// It's somewhat roundabout, but this lets us capture events on the
 	// listbox controls without having to subclass.
+	m_pPlantFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pPlantFiles));
 	m_pStructFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pStructFiles));
 	m_pRawFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pRawFiles));
 	m_pAnimFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pAnimFiles));
@@ -317,6 +316,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 TParamsDlg::~TParamsDlg()
 {
+	m_pPlantFiles->PopEventHandler(true);
 	m_pStructFiles->PopEventHandler(true);
 	m_pRawFiles->PopEventHandler(true);
 	m_pAnimFiles->PopEventHandler(true);
@@ -415,8 +415,6 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bTexRoads =		Params.GetValueBool(STR_TEXROADS);
 	m_bRoadCulture =	Params.GetValueBool(STR_ROADCULTURE);
 
-	m_bPlants =			Params.GetValueBool(STR_TREES);
-	m_strVegFile = wxString(Params.GetValueString(STR_TREEFILE), wxConvUTF8);
 	m_iVegDistance =	Params.GetValueInt(STR_VEGDISTANCE);
 	m_bTreesUseShaders = Params.GetValueBool(STR_TREES_USE_SHADERS);
 
@@ -577,8 +575,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_TEXROADS, m_bTexRoads);
 	Params.SetValueBool(STR_ROADCULTURE, m_bRoadCulture);
 
-	Params.SetValueBool(STR_TREES, m_bPlants);
-	Params.SetValueString(STR_TREEFILE, (const char *) m_strVegFile.mb_str(wxConvUTF8));
 	Params.SetValueInt(STR_VEGDISTANCE, m_iVegDistance);
 	Params.SetValueBool(STR_TREES_USE_SHADERS, m_bTreesUseShaders);
 
@@ -670,10 +666,6 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_DT_NAME)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
 	FindWindow(ID_DT_SCALE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
 	FindWindow(ID_DT_DISTANCE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
-
-	FindWindow(ID_TREEFILE)->Enable(m_bPlants);
-	FindWindow(ID_TREES_USE_SHADERS)->Enable(m_bPlants);
-//  FindWindow(ID_VEGDISTANCE)->Enable(m_bPlants); // user might want to adjust
 
 	FindWindow(ID_ROADFILE)->Enable(m_bRoads);
 	FindWindow(ID_ROADHEIGHT)->Enable(m_bRoads);
@@ -897,13 +889,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (sel != -1)
 			m_pRoadFile->SetSelection(sel);
 
-		// fill in Vegetation files
-		AddFilenamesToComboBox(m_pTreeFile, paths[i] + "PlantData", "*.vf");
-		AddFilenamesToComboBox(m_pTreeFile, paths[i] + "PlantData", "*.shp");
-		sel = m_pTreeFile->FindString(m_strVegFile);
-		if (sel != -1)
-			m_pTreeFile->SetSelection(sel);
-
 		// fill in Content file
 		AddFilenamesToComboBox(GetContentFile(), paths[i], "*.vtco");
 		sel = GetContentFile()->FindString(m_strContent);
@@ -1004,6 +989,7 @@ bool TParamsDlg::TransferDataToWindow()
 	m_pTileset->SetValue(m_iTexture == TE_TILESET);
 
 	uint i;
+	m_pPlantFiles->Clear();
 	m_pStructFiles->Clear();
 	m_pRawFiles->Clear();
 	m_pImageFiles->Clear();
@@ -1013,6 +999,8 @@ bool TParamsDlg::TransferDataToWindow()
 		vtString fname = m_Layers[i].GetValueString("Filename");
 		wxString fname2(fname, wxConvUTF8);
 
+		if (ltype == TERR_LTYPE_VEGETATION)
+			m_pPlantFiles->Append(fname2);
 		if (ltype == TERR_LTYPE_STRUCTURE)
 			m_pStructFiles->Append(fname2);
 		if (ltype == TERR_LTYPE_ABSTRACT)
@@ -1020,6 +1008,7 @@ bool TParamsDlg::TransferDataToWindow()
 		if (ltype == TERR_LTYPE_IMAGE)
 			m_pImageFiles->Append(fname2);
 	}
+	m_pPlantFiles->Append(_("(double-click to add files)"));
 	m_pStructFiles->Append(_("(double-click to add files)"));
 	m_pRawFiles->Append(_("(double-click to add files)"));
 	m_pImageFiles->Append(_("(double-click to add files)"));
@@ -1183,6 +1172,33 @@ void AddFilenamesToArray(wxArrayString &array, const wxString &dirname,
 	{
 		array.Add(filename);
 		cont = dir.GetNext(&filename);
+	}
+}
+
+void TParamsDlg::OnListDblClickPlants( wxCommandEvent &event )
+{
+	uint i;
+	wxArrayString strings;
+
+	for (i = 0; i < vtGetDataPath().size(); i++)
+	{
+		wxString path(vtGetDataPath()[i], wxConvUTF8);
+		path += _T("PlantData");
+		AddFilenamesToArray(strings, path, _T("*.vf*"));
+		AddFilenamesToArray(strings, path, _T("*.shp"));
+	}
+
+	wxString result = wxGetSingleChoice(_("One of the following to add:"),
+		_("Choose a plant file"), strings, this);
+
+	if (result.Cmp(_T(""))) // user selected something
+	{
+		TransferDataFromWindow();
+		vtTagArray lay;
+		lay.SetValueString("Type", TERR_LTYPE_VEGETATION, true);
+		lay.SetValueString("Filename", (const char *) result.mb_str(wxConvUTF8), true);
+		m_Layers.push_back(lay);
+		TransferDataToWindow();
 	}
 }
 

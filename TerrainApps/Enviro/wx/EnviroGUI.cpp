@@ -273,9 +273,12 @@ bool EnviroGUI::SaveVegetation(bool bAskFilename)
 	VTLOG1("EnviroGUI::SaveVegetation\n");
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
+	vtVegLayer *vlay = pTerr->GetVegLayer();
 
-	vtString fname = pia.GetFilename();
+	if (!vlay)
+		return false;
+
+	vtString fname = vlay->GetFilename();
 
 	if (bAskFilename)
 	{
@@ -297,9 +300,9 @@ bool EnviroGUI::SaveVegetation(bool bAskFilename)
 		}
 		wxString str = saveFile.GetPath();
 		fname = str.mb_str(wxConvUTF8);
-		pia.SetFilename(fname);
+		vlay->SetFilename(fname);
 	}
-	pia.WriteVF(fname);
+	vlay->WriteVF(fname);
 	return true;
 }
 
@@ -473,7 +476,7 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr, bool bAskStyle)
 
 	// add the new layer to the terrain
 	pTerr->GetLayers().push_back(pLay);
-	pTerr->SetAbstractLayer(pLay);
+	pTerr->SetActiveLayer(pLay);
 
 	// and show it in the layers dialog
 	GetFrame()->m_pLayerDlg->RefreshTreeContents();	// full refresh
@@ -517,7 +520,7 @@ vtAbstractLayer *CreateNewAbstractLineLayer(vtTerrain *pTerr, bool bAskStyle)
 
 	// add the new layer to the terrain
 	pTerr->GetLayers().push_back(pLay);
-	pTerr->SetAbstractLayer(pLay);
+	pTerr->SetActiveLayer(pLay);
 
 	// and show it in the layers dialog
 	GetFrame()->m_pLayerDlg->RefreshTreeContents();	// full refresh

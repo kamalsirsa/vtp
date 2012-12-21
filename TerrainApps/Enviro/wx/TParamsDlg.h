@@ -115,9 +115,7 @@ public:
 	bool	m_bRoadCulture;
 
 	// vegetation
-	bool	m_bPlants;
-	wxString   m_strVegFile;
-	int	 m_iVegDistance;
+	int		m_iVegDistance;
 	bool    m_bTreesUseShaders;
 
 	bool	m_bFog;
@@ -199,7 +197,6 @@ public:
 	wxRadioButton* GetNone()  { return (wxRadioButton*) FindWindow( ID_NONE ); }
 	wxTextCtrl* GetLightFactor()  { return (wxTextCtrl*) FindWindow( ID_LIGHT_FACTOR ); }
 	wxComboBox* GetRoadfile()  { return (wxComboBox*) FindWindow( ID_ROADFILE ); }
-	wxComboBox* GetTreefile()  { return (wxComboBox*) FindWindow( ID_TREEFILE ); }
 	wxComboBox* GetTfileSingle()  { return (wxComboBox*) FindWindow( ID_TFILE_SINGLE ); }
 	wxComboBox* GetTfileTileset()  { return (wxComboBox*) FindWindow( ID_TFILE_TILESET ); }
 	wxChoice* GetLodmethod()  { return (wxChoice*) FindWindow( ID_LODMETHOD ); }
@@ -210,6 +207,7 @@ public:
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
 	wxChoice* GetLocField()  { return (wxChoice*) FindWindow( ID_INIT_LOCATION ); }
 	wxListBox* GetStructFiles()  { return (wxListBox*) FindWindow( ID_STRUCTFILES ); }
+	wxListBox* GetPlantFiles()  { return (wxListBox*) FindWindow( ID_PLANTFILES ); }
 	wxListBox* GetRawFiles()  { return (wxListBox*) FindWindow( ID_RAWFILES ); }
 	wxListBox* GetImageFiles()  { return (wxListBox*) FindWindow( ID_IMAGEFILES ); }
 	wxComboBox* GetFilenameWater()  { return (wxComboBox*) FindWindow( ID_FILENAME_WATER ); }
@@ -229,9 +227,9 @@ private:
 	wxChoice* m_pNavStyle;
 	wxTextCtrl* m_pPreLightFactor;
 	wxListBox* m_pStructFiles;
+	wxListBox* m_pPlantFiles;
 	wxListBox* m_pImageFiles;
 	wxComboBox* m_pRoadFile;
-	wxComboBox* m_pTreeFile;
 	wxComboBox* m_pTextureFileSingle;
 	wxComboBox* m_pTextureFileTileset;
 	wxChoice* m_pLodMethod;
@@ -261,6 +259,7 @@ private:
 	void OnEditColors( wxCommandEvent &event );
 	void OnCheckBoxElevType( wxCommandEvent &event );
 	void OnCheckBox( wxCommandEvent &event );
+	void OnListDblClickPlants( wxCommandEvent &event );
 	void OnListDblClickStructure( wxCommandEvent &event );
 	void OnListDblClickRaw( wxCommandEvent &event );
 	void OnListDblClickAnimPaths( wxCommandEvent &event );
