@@ -122,9 +122,6 @@ typedef Block *BlockPtr;
 	 -# set the desired level detail with SetPolygonTarget()
 	 -# for a detail texture, call SetDetailMaterial()
 	 -# let the scene graph API render the terrain for you each frame
-	<h4>Performance Issues</h4>
-	 - Use of triangle fans can be toggled at runtime, via the m_bUseTriStrips
-	   member.  In testing, this has shown around a 15% speed increase.
  */
 class SMTerrain : public vtDynTerrainGeom
 {
@@ -165,7 +162,7 @@ protected:
 
 	// rendering
 	void RenderSurface();
-	void RenderBlock(BlockPtr block, bool bFans);
+	void RenderBlock(BlockPtr block);
 	bool BlockIsVisible(BlockPtr block);
 	void LoadSingleMaterial();
 	void render_triangle_as_fan(BinTri *pTri, int v0, int v1, int va,
@@ -213,7 +210,6 @@ private:
 	BinTri *m_pSETri;
 
 	bool hack_detail_pass;
-	bool m_bUseTriStrips;
 };
 
 /*@}*/	// Group dynterr

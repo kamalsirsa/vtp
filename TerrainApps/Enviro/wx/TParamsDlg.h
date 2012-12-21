@@ -73,7 +73,6 @@ public:
 	// LOD
 	int	 m_iLodMethod;
 	int	 m_iTriCount;
-	bool	m_bTriStrips;
 	int	 m_iVertCount;
 	int	 m_iTileCacheSize;
 	bool m_bTileThreading;

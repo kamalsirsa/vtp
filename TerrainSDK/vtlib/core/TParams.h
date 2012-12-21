@@ -385,7 +385,6 @@ private:
 #define STR_SURFACE_TYPE "Surface_Type"	// 0=grid, 1=TIN, 2=tiled grid
 #define STR_LODMETHOD "LOD_Method"
 #define STR_TRICOUNT "Tri_Count"
-#define STR_TRISTRIPS "Tristrips"
 #define STR_VERTCOUNT "Vert_Count"
 #define STR_TILE_CACHE_SIZE "Tile_Cache_Size"	// in MB
 #define STR_TILE_THREADING "Tile_Threading"

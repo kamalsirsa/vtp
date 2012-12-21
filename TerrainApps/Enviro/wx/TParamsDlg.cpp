@@ -225,7 +225,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// LOD
 	AddValidator(this, ID_LODMETHOD, &m_iLodMethod);
 	AddNumValidator(this, ID_TRI_COUNT, &m_iTriCount);
-	AddValidator(this, ID_TRISTRIPS, &m_bTriStrips);
 	AddNumValidator(this, ID_VTX_COUNT, &m_iVertCount);
 	AddNumValidator(this, ID_TILE_CACHE_SIZE, &m_iTileCacheSize);
 	AddValidator(this, ID_TILE_THREADING, &m_bTileThreading);
@@ -365,7 +364,6 @@ void TParamsDlg::SetParams(const TParams &Params)
 	// LOD
 	m_iLodMethod =		Params.GetLodMethod();
 	m_iTriCount =		Params.GetValueInt(STR_TRICOUNT);
-	m_bTriStrips =		Params.GetValueBool(STR_TRISTRIPS);
 	m_iVertCount =		Params.GetValueInt(STR_VERTCOUNT);
 	m_iTileCacheSize =	Params.GetValueInt(STR_TILE_CACHE_SIZE);
 	m_bTileThreading =	Params.GetValueBool(STR_TILE_THREADING);
@@ -525,7 +523,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	// LOD
 	Params.SetLodMethod((enum LodMethodEnum) m_iLodMethod);
 	Params.SetValueInt(STR_TRICOUNT, m_iTriCount);
-	Params.SetValueBool(STR_TRISTRIPS, m_bTriStrips);
 	Params.SetValueInt(STR_VERTCOUNT, m_iVertCount);
 	Params.SetValueInt(STR_TILE_CACHE_SIZE, m_iTileCacheSize);
 	Params.SetValueBool(STR_TILE_THREADING, m_bTileThreading);
@@ -638,7 +635,6 @@ void TParamsDlg::UpdateEnableState()
 
 	FindWindow(ID_LODMETHOD)->Enable(m_bGrid);
 	FindWindow(ID_TRI_COUNT)->Enable(m_bGrid && m_iLodMethod != LM_TOPOVISTA);
-	FindWindow(ID_TRISTRIPS)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY);
 	FindWindow(ID_VTX_COUNT)->Enable(m_bTileset);
 	FindWindow(ID_TILE_CACHE_SIZE)->Enable(false);
 	FindWindow(ID_TILE_THREADING)->Enable(m_bTileset);

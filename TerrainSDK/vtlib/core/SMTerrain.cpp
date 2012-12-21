@@ -130,8 +130,6 @@ SMTerrain::SMTerrain() : vtDynTerrainGeom()
 	m_TriPool = NULL;
 	m_HypoLength = NULL;
 	m_pBlockArray = NULL;
-
-	m_bUseTriStrips = true;
 }
 
 SMTerrain::~SMTerrain()
@@ -860,7 +858,6 @@ int fan_start;
 int fan_last = 0;
 int fan_count;
 
-
 void SMTerrain::render_triangle_as_fan(BinTri *pTri, int v0, int v1, int va,
 									   bool even, bool right)
 {
@@ -984,32 +981,30 @@ void SMTerrain::render_triangle_single(BinTri *pTri, int v0, int v1, int va)
 }
 
 
-void SMTerrain::RenderBlock(BlockPtr block, bool bFans)
+void SMTerrain::RenderBlock(BlockPtr block)
 {
-	if (bFans)
-	{
-		fan_start = -1;
-		render_triangle_as_fan(block->root[0],	block->v0[0],
-			block->v1[0], block->va[0], true, false);
-		render_triangle_as_fan(block->root[1],	block->v0[1],
-			block->v1[1], block->va[1], true, false);
-		End();
-		fan_count++;
-	}
-	else
-	{
+#if 1
+	fan_start = -1;
+	render_triangle_as_fan(block->root[0],	block->v0[0],
+		block->v1[0], block->va[0], true, false);
+	render_triangle_as_fan(block->root[1],	block->v0[1],
+		block->v1[1], block->va[1], true, false);
+	End();
+	fan_count++;
+
+#else // The non-triangle-fan way of doing things.
 #if USE_VERTEX_BUFFER
-		glVertexPointer(3, GL_FLOAT, 0, g_vbuf_base);
+	glVertexPointer(3, GL_FLOAT, 0, g_vbuf_base);
 #endif
-		render_triangle_single(block->root[0],	block->v0[0],
-			block->v1[0], block->va[0]);
-		render_triangle_single(block->root[1],	block->v0[1],
-			block->v1[1], block->va[1]);
+	render_triangle_single(block->root[0],	block->v0[0],
+		block->v1[0], block->va[0]);
+	render_triangle_single(block->root[1],	block->v0[1],
+		block->v1[1], block->va[1]);
 #if USE_VERTEX_BUFFER
-		if (verts_in_buffer)
-			flush_buffer(GL_TRIANGLES);
+	if (verts_in_buffer)
+		flush_buffer(GL_TRIANGLES);
 #endif
-	}
+#endif
 }
 
 bool SMTerrain::BlockIsVisible(BlockPtr block)
@@ -1062,7 +1057,7 @@ void SMTerrain::RenderSurface()
 			LoadSingleMaterial();
 
 			hack_detail_pass = false;
-			RenderBlock(block, m_bUseTriStrips);
+			RenderBlock(block);
 
 			if (m_bDetailTexture)
 			{
@@ -1072,16 +1067,11 @@ void SMTerrain::RenderSurface()
 				hack_detail_pass = true;
 				glPolygonOffset(-1.0f, -1.0f);
 				glEnable(GL_POLYGON_OFFSET_FILL);
-				RenderBlock(block, false);	// NOT as fans
+				RenderBlock(block);	// NOT as fans?
 				glDisable(GL_POLYGON_OFFSET_FILL);
 			}
 		}
 	}
-
-	// statistics
-//	if (m_bUseTriStrips)
-//		float ratio = (float) m_iDrawnTriangles / (float) fan_count;
-
 	DisableTexGen();
 	glPopMatrix();
 }

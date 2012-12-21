@@ -780,21 +780,17 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_lodmethod->SetSelection( 0 );
 	bSizer17->Add( m_lodmethod, 0, wxALIGN_CENTER|wxALL, 5 );
 	
+	m_text4 = new wxStaticText( TParamsPanel1, ID_TEXT, _("Triangle count target: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text4->Wrap( -1 );
+	bSizer17->Add( m_text4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	
+	m_tri_count = new wxTextCtrl( TParamsPanel1, ID_TRI_COUNT, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	bSizer17->Add( m_tri_count, 0, wxALIGN_CENTER|wxALL, 5 );
+	
 	sbSizer3->Add( bSizer17, 0, wxALIGN_CENTER, 5 );
 	
 	wxBoxSizer* bSizer18;
 	bSizer18 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text4 = new wxStaticText( TParamsPanel1, ID_TEXT, _("Triangle count target: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text4->Wrap( -1 );
-	bSizer18->Add( m_text4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
-	
-	m_tri_count = new wxTextCtrl( TParamsPanel1, ID_TRI_COUNT, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	bSizer18->Add( m_tri_count, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_tristrips = new wxCheckBox( TParamsPanel1, ID_TRISTRIPS, _("Use strips/fans"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_tristrips->SetValue(true); 
-	bSizer18->Add( m_tristrips, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	sbSizer3->Add( bSizer18, 0, wxALIGN_CENTER, 5 );
 	
@@ -878,7 +874,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	sbSizer6->Add( bSizer22, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	bSizer15->Add( sbSizer6, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxLEFT, 5 );
+	bSizer15->Add( sbSizer6, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxLEFT, 10 );
 	
 	wxBoxSizer* bSizer23;
 	bSizer23 = new wxBoxSizer( wxHORIZONTAL );
@@ -894,7 +890,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_text8->Wrap( 0 );
 	bSizer23->Add( m_text8, 0, wxALIGN_CENTER|wxALL, 0 );
 	
-	bSizer15->Add( bSizer23, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+	bSizer15->Add( bSizer23, 0, wxALIGN_CENTER|wxRIGHT|wxLEFT, 5 );
 	
 	TParamsPanel1->SetSizer( bSizer15 );
 	TParamsPanel1->Layout();
@@ -1212,18 +1208,6 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	bSizer39->Add( sbSizer10, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
-	wxBoxSizer* bSizer46;
-	bSizer46 = new wxBoxSizer( wxVERTICAL );
-	
-	m_text216 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Terrain-specific content:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text216->Wrap( -1 );
-	bSizer46->Add( m_text216, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	m_content_file = new wxComboBox( TParamsPanel3, ID_CONTENT_FILE, wxEmptyString, wxDefaultPosition, wxSize( 100,-1 ), 0, NULL, wxCB_DROPDOWN ); 
-	bSizer46->Add( m_content_file, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-	
-	bSizer39->Add( bSizer46, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-	
 	bSizer38->Add( bSizer39, 1, wxALIGN_CENTER_HORIZONTAL, 5 );
 	
 	wxBoxSizer* bSizer47;
@@ -1250,6 +1234,18 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer48->Add( m_text20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	sbSizer11->Add( bSizer48, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	
+	wxBoxSizer* bSizer46;
+	bSizer46 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_text216 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Terrain-specific content:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text216->Wrap( -1 );
+	bSizer46->Add( m_text216, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	m_content_file = new wxComboBox( TParamsPanel3, ID_CONTENT_FILE, wxEmptyString, wxDefaultPosition, wxSize( 100,-1 ), 0, NULL, wxCB_DROPDOWN ); 
+	bSizer46->Add( m_content_file, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+	
+	sbSizer11->Add( bSizer46, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	wxBoxSizer* bSizer49;
 	bSizer49 = new wxBoxSizer( wxVERTICAL );

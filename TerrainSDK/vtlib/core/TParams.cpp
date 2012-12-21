@@ -73,13 +73,12 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_SURFACE_TYPE, "0");	// 0=grid, 1=TIN, 2=tiled grid
 	AddTag(STR_LODMETHOD, "0");
 	AddTag(STR_TRICOUNT, "10000");
-	AddTag(STR_TRISTRIPS, "true");
 	AddTag(STR_VERTCOUNT, "20000");
 	AddTag(STR_TILE_CACHE_SIZE, "80");	// 80 MB
 	AddTag(STR_TILE_THREADING, "false");
 
 	AddTag(STR_TIMEON, "false");
-	AddTag(STR_INITTIME, "104 2 21 10 0 0");	// 2004, spring, 10am
+	AddTag(STR_INITTIME, "104 3 21 10 0 0");	// 2004, spring equinox, 10am
 	AddTag(STR_TIMESPEED, "1");
 
 	AddTag(STR_TEXTURE, "0");
@@ -330,6 +329,7 @@ bool TParams::LoadFromXML(const char *fname)
 	RemoveTag("Tile_Size");
 	RemoveTag("Base_Texture");
 	RemoveTag("Texture_4by4");
+	RemoveTag("Tristrips");
 
 	// Is_TIN is obsolete, use Surface_Type=1 instead
 	bool bOldTin = GetValueBool("Is_TIN");
