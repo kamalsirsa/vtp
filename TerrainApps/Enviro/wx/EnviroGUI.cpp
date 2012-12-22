@@ -23,7 +23,7 @@
 #include "EnviroGUI.h"
 #include "EnviroApp.h"
 #include "EnviroFrame.h"
-#include "canvas.h"
+#include "EnviroCanvas.h"
 #include "../Options.h"
 
 // dialogs

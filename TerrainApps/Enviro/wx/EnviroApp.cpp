@@ -28,10 +28,10 @@
 #include "xmlhelper/easyxml.hpp"
 
 #include "../Options.h"
-#include "EnviroGUI.h"		// for g_App
 #include "EnviroApp.h"
+#include "EnviroCanvas.h"
 #include "EnviroFrame.h"
-#include "canvas.h"
+#include "EnviroGUI.h"		// for g_App
 #include "StartupDlg.h"
 #include "TParamsDlg.h"
 

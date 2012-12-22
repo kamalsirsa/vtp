@@ -78,7 +78,7 @@
 #include "EnviroGUI.h"	// for GetCurrentTerrain
 
 #include "EnviroApp.h"
-#include "canvas.h"
+#include "EnviroCanvas.h"
 #include "menu_id.h"
 #include "StatusBar.h"
 

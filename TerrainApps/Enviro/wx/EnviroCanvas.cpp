@@ -1,5 +1,5 @@
 //
-// Name:	 canvas.cpp
+// Name:	 EnviroCanvas.cpp
 // Purpose: Implements the canvas class for the Enviro wxWidgets application.
 //
 // Copyright (c) 2001-2011 Virtual Terrain Project
@@ -16,7 +16,7 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
 
-#include "canvas.h"
+#include "EnviroCanvas.h"
 #include "EnviroGUI.h"		// for g_App
 #include "EnviroFrame.h"	// for UpdateStatus and OnChar
 
