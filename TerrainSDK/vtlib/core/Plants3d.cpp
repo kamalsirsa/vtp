@@ -995,6 +995,37 @@ bool vtPlantInstanceArray3d::CreatePlantNode(uint i)
 	return true;
 }
 
+void vtPlantInstanceArray3d::SetEnabled(bool en)
+{
+	// Currently, the shader plants are all under a single group, so they are
+	// easy to control in one place.
+	if (m_group.valid())
+		m_group->SetEnabled(en);
+
+	// whereas the conventional plants are distributed in an LOD Grid, so we
+	// need to control each one independently
+	for (uint i = 0; i < m_Instances3d.GetSize(); i++)
+	{
+		vtPlantInstance3d *inst3d = GetInstance3d(i);
+		if (inst3d && inst3d->m_pContainer)
+			inst3d->m_pContainer->SetEnabled(en);
+	}
+}
+
+bool vtPlantInstanceArray3d::GetEnabled() const
+{
+	if (m_group.valid())
+		return m_group->GetEnabled();
+
+	if (m_Instances3d.GetSize() > 0)
+	{
+		vtPlantInstance3d *inst3d = GetInstance3d(0);
+		if (inst3d && inst3d->m_pContainer)
+			return inst3d->m_pContainer->GetEnabled();
+	}
+	return false;
+}
+
 void vtPlantInstanceArray3d::ReleasePlantGeometry(uint i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);

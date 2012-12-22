@@ -246,7 +246,7 @@ public:
 
 	int CreatePlantNodes(bool progress_dialog(int) = NULL);
 	bool CreatePlantNode(uint i);
-	int NumOffTerrain() { return m_iOffTerrain; }
+	int NumOffTerrain() const { return m_iOffTerrain; }
 
 	vtTransform *GetPlantNode(uint i) const;
 	vtPlantInstance3d *GetInstance3d(uint i) const;
@@ -257,8 +257,8 @@ public:
 	/// Indicate the Plant List to use
 	vtSpeciesList3d *GetPlantList() { return (vtSpeciesList3d *) m_pPlantList; }
 
-	void SetEnabled(bool en) { if (m_group.valid()) m_group->SetEnabled(en); }
-	bool GetEnabled() { return m_group.valid() ? m_group->GetEnabled() : false; }
+	void SetEnabled(bool en);
+	bool GetEnabled() const;
 
 	/// Deselect all plants including turning off their visual highlights
 	void VisualDeselectAll();
