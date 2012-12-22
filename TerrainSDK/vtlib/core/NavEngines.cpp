@@ -573,19 +573,19 @@ void QuakeFlyer::Eval()
 		return;
 	}
 
-	pTarget->Rotate2(FPoint3(0,1,0), leftright);
-	pTarget->Rotate2(FPoint3(1,0,0), updown);
+	pTarget->Rotate(FPoint3(0,1,0), leftright);
+	pTarget->Rotate(FPoint3(1,0,0), updown);
 
 	//  Left button down
 	if ((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT))
 	{
-		pTarget->Translate1(FPoint3(0.0f, -0.1f, 0.0f));
+		pTarget->Translate(FPoint3(0.0f, -0.1f, 0.0f));
 	}
 
 	//  Right button down
 	if ((m_buttons & VT_RIGHT) && !(m_buttons & VT_LEFT))
 	{
-		pTarget->Translate1(FPoint3(0.0f, 0.1f, 0.0f));
+		pTarget->Translate(FPoint3(0.0f, 0.1f, 0.0f));
 	}
 }
 
@@ -1025,10 +1025,10 @@ void vtTrackball::Eval()
 	_ApplyLimits();
 
 	pTarget->Identity();
-	pTarget->Translate1(FPoint3(0.0, 0.0, m_Pos.z));
-	pTarget->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -m_Pos.y);
-	pTarget->Rotate2(FPoint3(0.0f, 1.0f, 0.0f), -m_Pos.x);
-	pTarget->Translate1(m_Pivot);
+	pTarget->Translate(FPoint3(0.0, 0.0, m_Pos.z));
+	pTarget->Rotate(FPoint3(1.0f, 0.0f, 0.0f), -m_Pos.y);
+	pTarget->Rotate(FPoint3(0.0f, 1.0f, 0.0f), -m_Pos.x);
+	pTarget->Translate(m_Pivot);
 
 	pTarget->TranslateLocal(m_Trans);
 }

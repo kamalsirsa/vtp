@@ -226,7 +226,7 @@ bool vtLocationSaver::StoreTo(uint num, const LocNameString &name)
 
 	// Get terrain coordinates for position and direction from the vtTransform
 	FMatrix4 mat;
-	m_pTransform->GetTransform1(mat);
+	m_pTransform->GetTransform(mat);
 
 	FPoint3 pos1 = m_pTransform->GetTrans();
 	FPoint3 pos2, dir;

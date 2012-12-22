@@ -1271,7 +1271,7 @@ void EnviroFrame::DoTestCode()
 			// Add the geometry and materials to the shape
 			vtGeode *pGeode = new vtGeode;
 			vtMaterialArray *pMats = new vtMaterialArray;
-			pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
+			pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
 			pGeode->SetMaterials(pMats);
 
 			vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLES, VT_Normals | VT_Colors, 4000);

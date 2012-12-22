@@ -44,9 +44,9 @@ vtGeode *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	vtGeode *pGeode = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
 
-	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, false, false, fAlpha);
-	pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, false, false, fAlpha);
-	pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), true, false, false, fAlpha);
+	pMats->AddRGBMaterial(RGBf(1.0f, 0.0f, 0.0f), true, false, false, fAlpha);
+	pMats->AddRGBMaterial(RGBf(0.0f, 1.0f, 0.0f), true, false, false, fAlpha);
+	pMats->AddRGBMaterial(RGBf(0.0f, 0.0f, 1.0f), true, false, false, fAlpha);
 
 	pGeode->SetMaterials(pMats);
 	pGeode->setName("3D Crosshair");
@@ -65,7 +65,7 @@ vtGeode *CreateBoundSphereGeom(const FSphere &sphere, int res)
 {
 	vtGeode *pGeode = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
-	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
+	pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
 	pGeode->SetMaterials(pMats);
 
 	vtMesh *pMesh = CreateSphereMesh(sphere, res);
@@ -274,7 +274,7 @@ vtDynBoundBox::vtDynBoundBox(const RGBf &color)
 	pGeode = new vtGeode;
 
 	vtMaterialArrayPtr mats = new vtMaterialArray;
-	mats->AddRGBMaterial1(color, false, false, true);	// wire material
+	mats->AddRGBMaterial(color, false, false, true);	// wire material
 	pGeode->SetMaterials(mats);
 
 	pMesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 8);
@@ -453,7 +453,7 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 
 	// create materials and meshes
 	m_pMats = new vtMaterialArray;
-	m_pMats->AddRGBMaterial1(line_color, false, false);	// plain, no culling
+	m_pMats->AddRGBMaterial(line_color, false, false);	// plain, no culling
 	m_pGeode->SetMaterials(m_pMats);
 
 	m_pLines = new vtMesh(osg::PrimitiveSet::LINES, 0, 12);

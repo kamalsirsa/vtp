@@ -479,7 +479,7 @@ void TransformExtension::SetTrans(const FPoint3 &pos)
 	m_pTransform->dirtyBound();
 }
 
-void TransformExtension::Translate1(const FPoint3 &pos)
+void TransformExtension::Translate(const FPoint3 &pos)
 {
 	// OSG 0.8.43 and later
 	m_pTransform->postMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
@@ -491,7 +491,7 @@ void TransformExtension::TranslateLocal(const FPoint3 &pos)
 	m_pTransform->preMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
 }
 
-void TransformExtension::Rotate2(const FPoint3 &axis, double angle)
+void TransformExtension::Rotate(const FPoint3 &axis, double angle)
 {
 	// OSG 0.8.43 and later
 	m_pTransform->postMult(osg::Matrix::rotate(angle, axis.x, axis.y, axis.z));
@@ -531,7 +531,7 @@ void TransformExtension::SetDirection(const FPoint3 &point, bool bPitch)
 {
 	// get current matrix
 	FMatrix4 m4;
-	GetTransform1(m4);
+	GetTransform(m4);
 
 	// remember where it is now
 	FPoint3 trans = m4.GetTrans();
@@ -545,7 +545,7 @@ void TransformExtension::SetDirection(const FPoint3 &point, bool bPitch)
 	m4.SetTrans(trans);
 
 	// set current matrix
-	SetTransform1(m4);
+	SetTransform(m4);
 }
 
 void TransformExtension::Scale(float factor)
@@ -553,12 +553,12 @@ void TransformExtension::Scale(float factor)
 	m_pTransform->preMult(osg::Matrix::scale(factor, factor, factor));
 }
 
-void TransformExtension::Scale3(float x, float y, float z)
+void TransformExtension::Scale(float x, float y, float z)
 {
 	m_pTransform->preMult(osg::Matrix::scale(x, y, z));
 }
 
-void TransformExtension::SetTransform1(const FMatrix4 &mat)
+void TransformExtension::SetTransform(const FMatrix4 &mat)
 {
 	osg::Matrix mat_osg;
 
@@ -568,7 +568,7 @@ void TransformExtension::SetTransform1(const FMatrix4 &mat)
 	m_pTransform->dirtyBound();
 }
 
-void TransformExtension::GetTransform1(FMatrix4 &mat) const
+void TransformExtension::GetTransform(FMatrix4 &mat) const
 {
 	const osg::Matrix &xform = m_pTransform->getMatrix();
 	ConvertMatrix4(&xform, &mat);
@@ -1388,7 +1388,7 @@ float vtCamera::GetVertFOV() const
 void vtCamera::ZoomToSphere(const FSphere &sphere, float fPitch)
 {
 	Identity();
-	Translate1(sphere.center);
+	Translate(sphere.center);
 	RotateLocal(FPoint3(1,0,0), fPitch);
 	TranslateLocal(FPoint3(0.0f, 0.0f, sphere.radius));
 }

@@ -76,14 +76,14 @@ struct TransformExtension: public NodeExtension
 
 	/** Apply a relative offset (translation) to the transform, in the frame
 		of its parent. */
-	void Translate1(const FPoint3 &pos);
+	void Translate(const FPoint3 &pos);
 
 	/** Apply a relative offset (translation) to the transform, in its own
 		frame of reference. */
 	void TranslateLocal(const FPoint3 &pos);
 
 	/** Rotate around a given axis by a given angle, in radians. */
-	void Rotate2(const FPoint3 &axis, double angle);
+	void Rotate(const FPoint3 &axis, double angle);
 
 	/** Similar to Rotate2, but operates in the local frame of reference. */
 	void RotateLocal(const FPoint3 &axis, double angle);
@@ -108,12 +108,12 @@ struct TransformExtension: public NodeExtension
 	/** Scale (stretch) by the given factor in all dimensions. */
 	void Scale(float factor);
 	/** Scale (stretch) by given factors in the x,y,z dimensions. */
-	void Scale3(float x, float y, float z);
+	void Scale(float x, float y, float z);
 
 	/** Set the entire transform with a 4x4 matrix. */
-	void SetTransform1(const FMatrix4 &mat);
+	void SetTransform(const FMatrix4 &mat);
 	/** Get the entire transform as a 4x4 matrix. */
-	void GetTransform1(FMatrix4 &mat) const;
+	void GetTransform(FMatrix4 &mat) const;
 
 	/** Rotate the object such that it points toward a given point.  By
 		convention, this means that the object's -Z axis points in the
@@ -514,9 +514,9 @@ public:
 	//
 	int IsVisible(const FSphere &sphere) const;
 	int IsVisible(const FPoint3 &point0,
-					const FPoint3 &point1,
-					const FPoint3 &point2,
-					const float fTolerance = 0.0f) const;
+				  const FPoint3 &point1,
+				  const FPoint3 &point2,
+				  const float fTolerance = 0.0f) const;
 	int IsVisible(const FPoint3 &point, float radius);
 
 	// Tests a single point, returns true if in view

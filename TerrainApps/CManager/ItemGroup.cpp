@@ -187,7 +187,7 @@ vtGeode *CreateRulers(osgText::Font *font, float fSize)
 
 	vtGeode *pGeode = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
-	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
+	pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
 	pGeode->SetMaterials(pMats);
 
 	int up = 0;

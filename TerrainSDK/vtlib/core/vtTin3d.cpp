@@ -68,7 +68,7 @@ void vtTin3d::MakeSurfaceMaterials()
 			path = FindFileOnPaths(vtGetDataPath(), relpath);
 		}
 
-		m_pMats->AddTextureMaterial2(path, false, bLighting, false, false,
+		m_pMats->AddTextureMaterial(path, false, bLighting, false, false,
 			fAmbient, 1.0f, 1.0f, 0.0f, false, false, true);
 	}
 }
@@ -95,13 +95,13 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 		bool lighting = false;
 
 		// White: used for vertex-colored terrain surface
-		m_pMats->AddRGBMaterial1(RGBf(1, 1, 1), false, lighting, false);
+		m_pMats->AddRGBMaterial(RGBf(1, 1, 1), false, lighting, false);
 
 		// Grey: used for drop shadow plane
-		m_pMats->AddRGBMaterial1(RGBf(0.4f, 0.4f, 0.4f), false, false, false);
+		m_pMats->AddRGBMaterial(RGBf(0.4f, 0.4f, 0.4f), false, false, false);
 
 		// Black
-		m_pMats->AddRGBMaterial1(RGBf(0, 0, 0), false, false, false);
+		m_pMats->AddRGBMaterial(RGBf(0, 0, 0), false, false, false);
 
 		if (bUseSurfaceTypes)
 			MakeSurfaceMaterials();

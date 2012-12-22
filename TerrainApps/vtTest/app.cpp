@@ -144,12 +144,12 @@ bool App::CreateScene()
 	m_pScene->SetRootEngine(this);
 
 	vtMaterialArrayPtr mats = new vtMaterialArray;
-	mats->AddRGBMaterial1(RGBf(1,1,0));
-	mats->AddRGBMaterial1(RGBf(1,0,0),true,false,true);	// wire
-	mats->AddRGBMaterial1(RGBf(0,1,0),true,false,true);	// wire
-	mats->AddRGBMaterial1(RGBf(0,0,1),true,false,true);	// wire
+	mats->AddRGBMaterial(RGBf(1,1,0));
+	mats->AddRGBMaterial(RGBf(1,0,0),true,false,true);	// wire
+	mats->AddRGBMaterial(RGBf(0,1,0),true,false,true);	// wire
+	mats->AddRGBMaterial(RGBf(0,0,1),true,false,true);	// wire
 	mats->AddRGBMaterial(RGBf(0,0,1),RGBf(0,0,1),true,true,false,0.6f,0.5f);
-	mats->AddRGBMaterial1(RGBf(1,1,1),true,false,true);	// wire
+	mats->AddRGBMaterial(RGBf(1,1,1),true,false,true);	// wire
 
 	// Reference grid (always there)
 	vtGeode *pGeode = CreateLineGridGeom(mats, 5,

@@ -147,7 +147,7 @@ vtGeode *vtContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fH
 
 	// Create material and geometry to contain the vector geometry
 	vtMaterialArrayPtr pMats = new vtMaterialArray;
-	pMats->AddRGBMaterial1(color, false, false, true);
+	pMats->AddRGBMaterial(color, false, false, true);
 
 	m_pGeode = new vtGeode;
 	m_pGeode->setName("Contour Geometry");

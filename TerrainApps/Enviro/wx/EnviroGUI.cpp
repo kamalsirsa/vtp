@@ -415,7 +415,7 @@ void vtJoystickEngine::Eval()
 			if (fabs(dx) > dead_zone)
 				pTarget->TranslateLocal(FPoint3(dx * m_fSpeed * fElapsed, 0.0f, 0.0f));
 			if (fabs(dy) > dead_zone)
-				pTarget->Translate1(FPoint3(0.0f, dy * m_fSpeed * fElapsed, 0.0f));
+				pTarget->Translate(FPoint3(0.0f, dy * m_fSpeed * fElapsed, 0.0f));
 		}
 		else if (buttons & wxJOY_BUTTON3)
 		{

@@ -68,17 +68,17 @@ public:
 	void SetMipMap(bool bMipMap);
 	bool GetMipMap() const;
 
-	void SetDiffuse1(const RGBAf &c) { SetDiffuse(c.r, c.g, c.b, c.a); }
-	void SetDiffuse2(float f) { SetDiffuse(f, f, f); }
+	void SetDiffuse(const RGBAf &c) { SetDiffuse(c.r, c.g, c.b, c.a); }
+	void SetDiffuse(float f) { SetDiffuse(f, f, f); }
 
-	void SetSpecular1(const RGBf &c) { SetSpecular(c.r, c.g, c.b); }
-	void SetSpecular2(float f) { SetSpecular(f, f, f); }
+	void SetSpecular(const RGBf &c) { SetSpecular(c.r, c.g, c.b); }
+	void SetSpecular(float f) { SetSpecular(f, f, f); }
 
-	void SetAmbient1(const RGBf &c) { SetAmbient(c.r, c.g, c.b); }
-	void SetAmbient2(float f) { SetAmbient(f, f, f); }
+	void SetAmbient(const RGBf &c) { SetAmbient(c.r, c.g, c.b); }
+	void SetAmbient(float f) { SetAmbient(f, f, f); }
 
-	void SetEmission1(const RGBf &c) { SetEmission(c.r, c.g, c.b); }
-	void SetEmission2(float f) { SetEmission(f, f, f); }
+	void SetEmission(const RGBf &c) { SetEmission(c.r, c.g, c.b); }
+	void SetEmission(float f) { SetEmission(f, f, f); }
 
 	// global option
 	static bool s_bTextureCompression;
@@ -102,25 +102,27 @@ class vtMaterialArray : public std::vector<vtMaterialPtr>, public osg::Reference
 public:
 	int Find(vtMaterial *mat);
 	int AddTextureMaterial(osg::Image *pImage,
-						 bool bCulling, bool bLighting,
-						 bool bTransp = false, bool bAdditive = false,
-						 float fAmbient = 0.0f, float fDiffuse = 1.0f,
-						 float fAlpha = 1.0f, float fEmissive = 0.0f,
-						 bool bTexGen = false, bool bClamp = false,
-						 bool bMipMap = false);
-	int AddTextureMaterial2(const char *fname,
-						 bool bCulling, bool bLighting,
-						 bool bTransp = false, bool bAdditive = false,
-						 float fAmbient = 0.0f, float fDiffuse = 1.0f,
-						 float fAlpha = 1.0f, float fEmissive = 0.0f,
-						 bool bTexGen = false, bool bClamp = false,
-						 bool bMipMap = false);
+						   bool bCulling, bool bLighting,
+						   bool bTransp = false, bool bAdditive = false,
+						   float fAmbient = 0.0f, float fDiffuse = 1.0f,
+						   float fAlpha = 1.0f, float fEmissive = 0.0f,
+						   bool bTexGen = false, bool bClamp = false,
+						   bool bMipMap = false);
+	int AddTextureMaterial(const char *fname,
+						   bool bCulling, bool bLighting,
+						   bool bTransp = false, bool bAdditive = false,
+						   float fAmbient = 0.0f, float fDiffuse = 1.0f,
+						   float fAlpha = 1.0f, float fEmissive = 0.0f,
+						   bool bTexGen = false, bool bClamp = false,
+						   bool bMipMap = false);
 	int AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient,
-					 bool bCulling = true, bool bLighting= true, bool bWireframe = false,
-					 float fAlpha = 1.0f, float fEmissive = 0.0f);
-	int AddRGBMaterial1(const RGBf &diffuse,
-					 bool bCulling = true, bool bLighting= true, bool bWireframe = false,
-					 float fAlpha = 1.0f, float fEmissive = 0.0f);
+					   bool bCulling = true, bool bLighting= true,
+					   bool bWireframe = false, float fAlpha = 1.0f,
+					   float fEmissive = 0.0f);
+	int AddRGBMaterial(const RGBf &diffuse,
+					   bool bCulling = true, bool bLighting= true,
+					   bool bWireframe = false, float fAlpha = 1.0f,
+					   float fEmissive = 0.0f);
 	int FindByDiffuse(const RGBAf &rgba) const;
 	int FindByImage(const osg::Image *image) const;
 

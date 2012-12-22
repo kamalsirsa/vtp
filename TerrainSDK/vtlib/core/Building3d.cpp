@@ -1149,7 +1149,7 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 		return false;
 	}
 
-	mm.m_iMatIdx = GetSharedMaterialArray()->AddTextureMaterial2(fname,
+	mm.m_iMatIdx = GetSharedMaterialArray()->AddTextureMaterial(fname,
 			true, true, false, false,
 			TERRAIN_AMBIENT,
 			TERRAIN_DIFFUSE,

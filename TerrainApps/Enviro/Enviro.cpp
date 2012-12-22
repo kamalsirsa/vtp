@@ -476,7 +476,7 @@ void Enviro::RequestTerrain(vtTerrain *pTerr)
 		vtTerrain *pT = GetCurrentTerrain();
 		vtCamera *pCam = vtGetScene()->GetCamera();
 		FMatrix4 mat;
-		pCam->GetTransform1(mat);
+		pCam->GetTransform(mat);
 		pT->SetCamLocation(mat);
 		pT->SaveRoute();
 	}
@@ -987,7 +987,7 @@ void Enviro::ResetCamera()
 {
 	VTLOG1("ResetCamera\n");
 	if (m_pCurrentTerrain)
-		m_pNormalCamera->SetTransform1(m_pCurrentTerrain->GetCamLocation());
+		m_pNormalCamera->SetTransform(m_pCurrentTerrain->GetCamLocation());
 }
 
 void Enviro::SwitchToTerrain(vtTerrain *pTerrain)
@@ -1114,7 +1114,7 @@ void Enviro::SelectInitialViewpoint(vtTerrain *pTerrain)
 		FPoint3 trans = mat.GetTrans();
 		VTLOG("   Got stored viewpoint for terrain '%s' as position %.1f, %.1f, %.1f\n",
 			(const char *) pTerrain->GetName(), trans.x, trans.y, trans.z);
-		m_pNormalCamera->SetTransform1(mat);
+		m_pNormalCamera->SetTransform(mat);
 		return;
 	}
 
@@ -1155,11 +1155,11 @@ void Enviro::SelectInitialViewpoint(vtTerrain *pTerrain)
 		mat.SetTrans(middle);
 
 		// Use it now
-		m_pNormalCamera->SetTransform1(mat);
+		m_pNormalCamera->SetTransform(mat);
 	}
 	// Remember it for later
 	FMatrix4 mat;
-	m_pNormalCamera->GetTransform1(mat);
+	m_pNormalCamera->GetTransform(mat);
 	pTerrain->SetCamLocation(mat);
 
 	pTerrain->Visited(true);
@@ -2200,9 +2200,9 @@ void Enviro::SetupArcMesh()
 	if (!m_pArcMats)
 	{
 		m_pArcMats = new vtMaterialArray;
-		m_pArcMats->AddRGBMaterial1(RGBf(1, 1, 0), false, false); // yellow
-		m_pArcMats->AddRGBMaterial1(RGBf(1, 0, 0), false, false); // red
-		m_pArcMats->AddRGBMaterial1(RGBf(1, 0.5f, 0), true, true); // orange lit
+		m_pArcMats->AddRGBMaterial(RGBf(1, 1, 0), false, false); // yellow
+		m_pArcMats->AddRGBMaterial(RGBf(1, 0, 0), false, false); // red
+		m_pArcMats->AddRGBMaterial(RGBf(1, 0.5f, 0), true, true); // orange lit
 	}
 	// create geometry container, if needed
 	if (!m_pArc)
@@ -2923,8 +2923,8 @@ void Enviro::CreateElevationLegend()
 	const int cbar_right = in_base.x + in_size.x;
 
 	int i, idx;
-	int white = m_pHUDMaterials->AddRGBMaterial1(RGBf(1, 1, 1), false, false); // white
-	int grey = m_pHUDMaterials->AddRGBMaterial1(RGBf(.2, .2, .2), false, false); // dark grey
+	int white = m_pHUDMaterials->AddRGBMaterial(RGBf(1, 1, 1), false, false); // white
+	int grey = m_pHUDMaterials->AddRGBMaterial(RGBf(.2, .2, .2), false, false); // dark grey
 
 	m_pLegendGeom = new vtGeode;
 	m_pLegendGeom->setName("Legend");
@@ -3014,7 +3014,7 @@ void Enviro::SetWindowBox(const IPoint2 &p1, const IPoint2 &p2)
 	if (!m_pWindowBoxMesh)
 	{
 		// create a yellow wireframe polygon we can stretch later
-		int yellow = m_pHUDMaterials->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
+		int yellow = m_pHUDMaterials->AddRGBMaterial(RGBf(1,1,0), false, false, true);
 		vtGeode *geode = new vtGeode;
 		geode->setName("Selection Box");
 		geode->SetMaterials(m_pHUDMaterials);

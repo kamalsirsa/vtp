@@ -120,7 +120,7 @@ void GlobePicker::Eval()
 			// rotate to find position relative to globe's rotation
 			vtTransform *xform = m_pGlobe->GetTop();
 			FMatrix4 rot;
-			xform->GetTransform1(rot);
+			xform->GetTransform(rot);
 			FMatrix4 inverse;
 			inverse.Invert(rot);
 			FPoint3 newpoint;

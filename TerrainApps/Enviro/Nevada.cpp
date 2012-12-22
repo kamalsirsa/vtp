@@ -105,7 +105,7 @@ void NevadaTerrain::CreateWater()
 
 	int id;
 
-	id = m_pMats->AddTextureMaterial2(str,
+	id = m_pMats->AddTextureMaterial(str,
 		false, true,	// cull, light
 		false, false,	// transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
@@ -118,7 +118,7 @@ void NevadaTerrain::CreateWater()
 	m_pWaterShape->setName("WaterSurface");
 	addNode(m_pWaterShape);
 
-	id = m_pMats->AddTextureMaterial2(str,
+	id = m_pMats->AddTextureMaterial(str,
 		false, true,	// cull, light
 		true, false,	// transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 0.6f, TERRAIN_EMISSIVE);
@@ -127,7 +127,7 @@ void NevadaTerrain::CreateWater()
 	geode = CreatePlaneGeom(m_pMats, id,  0, 2, 1, org, org+size, 260.3f, 10);
 	m_pWaterShape2 = new vtMovGeode(geode);
 	m_pWaterShape2->setName("WaterSurface2");
-	m_pWaterShape2->Translate1(FPoint3(0.0f, .01f, 0.0f));
+	m_pWaterShape2->Translate(FPoint3(0.0f, .01f, 0.0f));
 	addNode(m_pWaterShape2);
 }
 
@@ -457,7 +457,7 @@ bool JumpingEngine::Eval(float t)
 	if (m_vel.y > 0.0f)
 		wiggle2 += sinf(t*10.0f + PIf) * 50.0f * m_vel.y;
 //	VTLOG("wiggle %f\n", wiggle1);
-	pTarget->Scale3(1.0f, wiggle1, wiggle2);
+	pTarget->Scale(1.0f, wiggle1, wiggle2);
 
 	return true;
 }
@@ -580,7 +580,7 @@ void EpochEngine::Eval()
 				pMaterial = m_pPastMat;
 				diffuse = pMaterial->GetDiffuse();
 				diffuse.a = alpha;
-				pMaterial->SetDiffuse1(diffuse);
+				pMaterial->SetDiffuse(diffuse);
 				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPastMat,
 					DETAIL_TILING, DETAIL_DISTANCE);
 			}
@@ -591,7 +591,7 @@ void EpochEngine::Eval()
 				pMaterial = m_pPresentMat;
 				diffuse = pMaterial->GetDiffuse();
 				diffuse.a = alpha;
-				pMaterial->SetDiffuse1(diffuse);
+				pMaterial->SetDiffuse(diffuse);
 				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPresentMat,
 					DETAIL_TILING, DETAIL_DISTANCE);
 			}

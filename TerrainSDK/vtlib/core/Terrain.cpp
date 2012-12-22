@@ -703,7 +703,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	m_pDynGeomScale->setName("Dynamic Geometry Scaling Container");
 
 	FPoint2 spacing = m_pElevGrid->GetWorldSpacing();
-	m_pDynGeomScale->Scale3(spacing.x, m_fVerticalExag, -spacing.y);
+	m_pDynGeomScale->Scale(spacing.x, m_fVerticalExag, -spacing.y);
 
 	m_pDynGeomScale->addChild(m_pDynGeom);
 	m_pTerrainGroup->addChild(m_pDynGeomScale);
@@ -723,7 +723,7 @@ void vtTerrain::SetVerticalExag(float fExag)
 	{
 		FPoint2 spacing = m_pDynGeom->GetWorldSpacing();
 		m_pDynGeomScale->Identity();
-		m_pDynGeomScale->Scale3(spacing.x, m_fVerticalExag, -spacing.y);
+		m_pDynGeomScale->Scale(spacing.x, m_fVerticalExag, -spacing.y);
 
 		m_pDynGeom->SetVerticalExag(m_fVerticalExag);
 	}
@@ -734,7 +734,7 @@ void vtTerrain::SetVerticalExag(float fExag)
 	if (m_pScaledFeatures != NULL)
 	{
 		m_pScaledFeatures->Identity();
-		m_pScaledFeatures->Scale3(1.0f, m_fVerticalExag, 1.0f);
+		m_pScaledFeatures->Scale(1.0f, m_fVerticalExag, 1.0f);
 	}
 }
 
@@ -892,7 +892,7 @@ void vtTerrain::MakeWaterMaterial()
 	{
 		// Water material: texture waves
 		vtString fname = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
-		m_idx_water = m_pEphemMats->AddTextureMaterial2(fname,
+		m_idx_water = m_pEphemMats->AddTextureMaterial(fname,
 			false, false,		// culling, lighting
 			false,				// the texture itself has no alpha
 			false,				// additive
@@ -933,7 +933,7 @@ void vtTerrain::CreateWaterHeightfield(const vtString &fname)
 	float x, z;
 	g_Conv.ConvertVectorFromEarth(offset, x, z);
 	vtTransform *xform = new vtTransform;
-	xform->Translate1(FPoint3(x, 0, z));
+	xform->Translate(FPoint3(x, 0, z));
 
 	xform->addChild(wsgeom);
 	m_pTerrainGroup->addChild(xform);
@@ -2422,7 +2422,7 @@ void vtTerrain::CreateStep6()
 	// Node to put all the scaled features under
 	m_pScaledFeatures = new vtTransform;
 	m_pScaledFeatures->setName("Scaled Features");
-	m_pScaledFeatures->Scale3(1.0f, m_fVerticalExag, 1.0f);
+	m_pScaledFeatures->Scale(1.0f, m_fVerticalExag, 1.0f);
 	m_pScaledFeatures->SetCastShadow(false);
 	m_pUnshadowedGroup->addChild(m_pScaledFeatures);
 

@@ -37,7 +37,7 @@ void Enviro::FlyToSpace()
 		vtTerrain *pT = GetCurrentTerrain();
 		vtCamera *pCam = vtGetScene()->GetCamera();
 		FMatrix4 mat;
-		pCam->GetTransform1(mat);
+		pCam->GetTransform(mat);
 		pT->SetCamLocation(mat);
 	}
 
@@ -221,9 +221,9 @@ void Enviro::MakeGlobe()
 
 	// create some geometry showing various astronomical axes
 	vtMaterialArray *pMats = new vtMaterialArray;
-	int yellow = pMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
-	int red = pMats->AddRGBMaterial1(RGBf(1,0,0), false, false);
-	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
+	int yellow = pMats->AddRGBMaterial(RGBf(1,1,0), false, false);
+	int red = pMats->AddRGBMaterial(RGBf(1,0,0), false, false);
+	int green = pMats->AddRGBMaterial(RGBf(0,1,0), false, false);
 
 	m_pSpaceAxes = new vtGeode;
 	m_pSpaceAxes->setName("Earth Axes");
@@ -251,7 +251,7 @@ void Enviro::MakeGlobe()
 	// Lon-lat cursor lines
 	m_pEarthLines = new vtGeode;
 	m_pEarthLines->setName("Earth Lines");
-	int orange = pMats->AddRGBMaterial1(RGBf(1,.7,1), false, false, true, 0.6);
+	int orange = pMats->AddRGBMaterial(RGBf(1,.7,1), false, false, true, 0.6);
 	m_pEarthLines->SetMaterials(pMats);
 
 	m_pLineMesh = new vtMesh(osg::PrimitiveSet::LINE_STRIP, 0, 6);
@@ -293,8 +293,8 @@ void Enviro::MakeDemoGlobe()
 
 	vtGeode *geode = new vtGeode;
 	vtMaterialArray *mats = new vtMaterialArray;
-	mats->AddTextureMaterial2("Planetwork/logo3.png", false, false, true);
-	mats->AddTextureMaterial2("Planetwork/logo2.png", false, false, true);
+	mats->AddTextureMaterial("Planetwork/logo3.png", false, false, true);
+	mats->AddTextureMaterial("Planetwork/logo2.png", false, false, true);
 	geode->SetMaterials(mats);
 
 	float width = 1.9, height = .22;
@@ -308,12 +308,12 @@ void Enviro::MakeDemoGlobe()
 	int i;
 	vtMaterialArray *rainbow = new vtMaterialArray;
 	bool bLighting = false;
-	rainbow->AddRGBMaterial1(RGBf(0.5,0,0),		false, bLighting, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0.5,0.5,0),	false, bLighting, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0,0.5,0),		false, bLighting, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0,0.5,0.5),	false, bLighting, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0,0,0.5),		false, bLighting, false, 0.5f);
-	rainbow->AddRGBMaterial1(RGBf(0.5,0,0.5),	false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial(RGBf(0.5,0,0),		false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial(RGBf(0.5,0.5,0),	false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial(RGBf(0,0.5,0),		false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial(RGBf(0,0.5,0.5),	false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial(RGBf(0,0,0.5),		false, bLighting, false, 0.5f);
+	rainbow->AddRGBMaterial(RGBf(0.5,0,0.5),	false, bLighting, false, 0.5f);
 	for (i = 0; i < 6; i++)
 	{
 		vtMaterial *mat = rainbow->at(i);
@@ -614,7 +614,7 @@ void Enviro::DoControlOrbit()
 		pq.Interpolate(m_SpaceLoc, m_FlatLoc, m_fFolding);
 		FMatrix4 m4;
 		pq.ToMatrix(m4);
-		m_pNormalCamera->SetTransform1(m4);
+		m_pNormalCamera->SetTransform(m4);
 	}
 
 	if (m_bOnTerrain)
@@ -766,7 +766,7 @@ void Enviro::SetEarthUnfold(bool bUnfold)
 	{
 		// Enter Flat View
 		FMatrix4 m4;
-		m_pNormalCamera->GetTransform1(m4);
+		m_pNormalCamera->GetTransform(m4);
 		m_SpaceLoc.FromMatrix(m4);
 
 		m_FlatLoc.p.Set(0.85f,-0.75f,5.6);
@@ -1001,7 +1001,7 @@ void Enviro::FlyInStage1()
 
 		// Start the camera at the start
 		Flight2Start.ToMatrix(mat);
-		m_pNormalCamera->SetTransform1(mat);
+		m_pNormalCamera->SetTransform(mat);
 
 		// Now, all at once, we've got turn off the globe and turn on the
 		//  terrain, with as immediate a transition as possible.
@@ -1047,7 +1047,7 @@ void Enviro::FlyInStage2()
 	{
 		FMatrix4 matrix;
 		cp.GetMatrix(matrix);
-		m_pNormalCamera->SetTransform1(matrix);
+		m_pNormalCamera->SetTransform(matrix);
 	}
 	if (m_iFlightStep == 100)
 	{

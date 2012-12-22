@@ -172,13 +172,13 @@ void vtAbstractLayer::CreateGeomGroup()
 	RGBi color;
 
 	color = m_StyleProps.GetValueRGBi("ObjectGeomColor");
-	material_index_object = pGeomMats->AddRGBMaterial1(color, true, true);
+	material_index_object = pGeomMats->AddRGBMaterial(color, true, true);
 
 	color = m_StyleProps.GetValueRGBi("LineGeomColor");
-	material_index_line = pGeomMats->AddRGBMaterial1(color, false, false);
+	material_index_line = pGeomMats->AddRGBMaterial(color, false, false);
 
 	// There is always a yellow highlight material
-	material_index_yellow = pGeomMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
+	material_index_yellow = pGeomMats->AddRGBMaterial(RGBf(1,1,0), false, false);
 
 	pGeodeObject = new vtGeode;
 	pGeodeObject->setName("Objects");
@@ -233,7 +233,7 @@ int vtAbstractLayer::GetObjectMaterialIndex(vtTagArray &style, uint iIndex)
 			if (result == -1)
 			{
 				RGBf rgb = (RGBf) rgba;
-				result = pGeomMats->AddRGBMaterial1(rgb, true, true);
+				result = pGeomMats->AddRGBMaterial(rgb, true, true);
 			}
 		}
 		else
@@ -403,7 +403,7 @@ void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 			if (material_index == -1)
 			{
 				RGBf rgb = (RGBf) rgba;
-				material_index = pGeomMats->AddRGBMaterial1(rgb, false, false, true);
+				material_index = pGeomMats->AddRGBMaterial(rgb, false, false, true);
 			}
 		}
 		else

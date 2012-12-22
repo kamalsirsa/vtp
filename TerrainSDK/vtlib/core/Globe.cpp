@@ -145,11 +145,11 @@ void vtIcoGlobe::CreateMeshMat(int iTriangleCount)
 void vtIcoGlobe::CreateCoreMaterials()
 {
 	m_coremats = new vtMaterialArray;
-	m_red = m_coremats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f),	// red
+	m_red = m_coremats->AddRGBMaterial(RGBf(1.0f, 0.0f, 0.0f),	// red
 					 false, false, true);
-	m_yellow = m_coremats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
+	m_yellow = m_coremats->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f),	// yellow
 					 false, false, false);
-	m_white = m_coremats->AddRGBMaterial1(RGBf(0.2f, 0.2f, 0.2f),
+	m_white = m_coremats->AddRGBMaterial(RGBf(0.2f, 0.2f, 0.2f),
 					 true, true, true, 1);
 	m_coremats->at(m_white)->SetTransparent(true, true);
 }
@@ -171,7 +171,7 @@ vtMaterialArray *vtIcoGlobe::CreateMaterialsFromFiles(const vtString &strImagePr
 				float r = (pair+1) * (1.0f / 10);
 				float g = (j+1) * (1.0f / m_freq);
 				float b = (i+1) * (1.0f / m_freq);
-				m_globe_mat[mat++] = mats->AddRGBMaterial1(RGBf(r, g, b),
+				m_globe_mat[mat++] = mats->AddRGBMaterial(RGBf(r, g, b),
 						true, true);
 			}
 		}
@@ -328,13 +328,13 @@ void vtIcoGlobe::SetUnfolding(float f)
 	q1.Slerp(qnull, m_Rotation, 1-f);
 	q1.GetMatrix(m3);
 	m4 = m3;
-	m_top->SetTransform1(m3);
+	m_top->SetTransform(m3);
 
 	// interpolate from No rotation to the desired rotation
 	q2.Slerp(qnull, m_diff, f);
 	q2.GetMatrix(m3);
 	m4 = m3;
-	m_mface[0].xform->SetTransform1(m3);
+	m_mface[0].xform->SetTransform(m3);
 }
 
 void vtIcoGlobe::SetCulling(bool bCull)
@@ -403,7 +403,7 @@ void vtIcoGlobe::SetTime(const vtTime &time)
 
 	// don't do time rotation on unfolded(ing) globes
 	if (!m_bUnfolded)
-		m_top->SetTransform1(m4);
+		m_top->SetTransform(m4);
 }
 
 void vtIcoGlobe::ShowAxis(bool bShow)
@@ -575,13 +575,13 @@ void vtIcoGlobe::BuildSphericalPoints(GlobeLayer *glay, float fSize)
 		if (bArea)
 		{
 			// scale just the radius of the cylinder
-			mgeom->Scale3(spheres[i].radius, 0.001f, spheres[i].radius);
+			mgeom->Scale(spheres[i].radius, 0.001f, spheres[i].radius);
 		}
 		else
 		{
 			// scale just the height of the cylinder
 			double area = PIf * spheres[i].radius * spheres[i].radius;
-			mgeom->Scale3(0.002f, (float)area*1000, 0.002f);
+			mgeom->Scale(0.002f, (float)area*1000, 0.002f);
 		}
 		m_SurfaceGroup->addChild(mgeom);
 		glay->addChild(mgeom);
@@ -705,7 +705,7 @@ void vtIcoGlobe::BuildFlatPoint(GlobeLayer *glay, int i, float fSize)
 	mgeom->SetTrans(p_out);
 
 	// scale just the radius of the cylinder
-	mgeom->Scale3(fSize, 0.001f, fSize);
+	mgeom->Scale(fSize, 0.001f, fSize);
 
 	m_mface[mface].surfgroup->addChild(mgeom);
 	glay->addChild(mgeom);
@@ -1298,9 +1298,9 @@ void vtIcoGlobe::SetMeshConnect(int mface)
 		mesh->SetVtxPos(i, pos);
 	}
 	if (parent_mface == 0)
-		xform->Translate1(edge_center);
+		xform->Translate(edge_center);
 	else
-		xform->Translate1(edge_center - m_mface[parent_mface].local_origin);
+		xform->Translate(edge_center - m_mface[parent_mface].local_origin);
 }
 
 void vtIcoGlobe::CreateUnfoldableDymax()
@@ -1380,7 +1380,7 @@ void vtIcoGlobe::CreateUnfoldableDymax()
 
 	// Show axis of rotation (north and south poles)
 	vtMaterialArray *pMats = new vtMaterialArray;
-	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
+	int green = pMats->AddRGBMaterial(RGBf(0,1,0), false, false);
 	m_pAxisGeom = new vtGeode;
 	m_pAxisGeom->setName("AxisGeom");
 	m_pAxisGeom->SetMaterials(pMats);
@@ -1664,7 +1664,7 @@ vtTransform *WireAxis(RGBf color, float len)
 	geode->setName("axis");
 
 	vtMaterialArray *pMats = new vtMaterialArray;
-	int index = pMats->AddRGBMaterial1(color, false, false);
+	int index = pMats->AddRGBMaterial(color, false, false);
 	geode->SetMaterials(pMats);
 
 	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 6);
@@ -1709,7 +1709,7 @@ vtMovGeode *CreateSimpleEarth(const vtString &strDataPath)
 	bool bCulling = false;
 	bool bLighting = false;
 	bool bTransp = false;
-	pMats->AddTextureMaterial2(strDataPath + "WholeEarth/earth2k_free.jpg",
+	pMats->AddTextureMaterial(strDataPath + "WholeEarth/earth2k_free.jpg",
 						 bCulling, bLighting, bTransp);
 	geode->SetMaterials(pMats);
 

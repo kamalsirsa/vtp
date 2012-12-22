@@ -315,7 +315,7 @@ void IslandTerrain::create_state_park()
 vtGeode *IslandTerrain::make_test_cone()
 {
 	vtMaterialArray *looks = new vtMaterialArray;
-	looks->AddRGBMaterial1(RGBf(1.0f, 0.5f, 0.0f), false);	// orange
+	looks->AddRGBMaterial(RGBf(1.0f, 0.5f, 0.0f), false);	// orange
 
 	////////////
 	int res = 40;
@@ -349,7 +349,7 @@ vtGeode *IslandTerrain::make_red_cube()
 	mesh->CreateBlock(half);
 
 	vtMaterialArray *looks = new vtMaterialArray;
-	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true);
+	looks->AddRGBMaterial(RGBf(1.0f, 0.0f, 0.0f), true);
 	thebox->SetMaterials(looks);
 	thebox->AddMesh(mesh, 0);
 

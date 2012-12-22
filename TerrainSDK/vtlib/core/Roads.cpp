@@ -896,19 +896,19 @@ void vtRoadMap3d::_CreateMaterials(bool do_texture)
 		vtString path;
 
 		path = FindFileOnPaths(paths, "GeoTypical/roadside_32.png");
-		m_mi_roadside = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
+		m_mi_roadside = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
 
 		path = FindFileOnPaths(paths, "GeoTypical/pavement_256.jpg");
-		m_mi_pavement = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
+		m_mi_pavement = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
 
 		path = FindFileOnPaths(paths, ROAD_FILENAME);
-		m_mi_roads = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(false));
+		m_mi_roads = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(false));
 
 		path = FindFileOnPaths(paths, ROADTEXTURE_4WD);
-		m_mi_4wd = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
+		m_mi_4wd = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
 
 		path = FindFileOnPaths(paths, ROADTEXTURE_TRAIL);
-		m_mi_trail = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
+		m_mi_trail = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
 
 		m_vt[VTI_MARGIN].m_idx = m_mi_roads;
 		m_vt[VTI_MARGIN].m_rect.SetRect(960.0f/ROAD_REZ, 1, 992.0f/ROAD_REZ, 0);
@@ -951,10 +951,10 @@ void vtRoadMap3d::_CreateMaterials(bool do_texture)
 	}
 	else
 	{
-		m_mi_roadside = m_pMats->AddRGBMaterial1(RGBf(0.8f, 0.6f, 0.4f), true, false);	// 0 brown roadside
-		m_mi_roads = m_pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, false);	// 1 green
-		m_mi_4wd = m_pMats->AddRGBMaterial1(RGBf(0.5f, 0.5f, 0.5f), true, false);	// 2 grey
-		m_mi_trail = m_pMats->AddRGBMaterial1(RGBf(1.0f, 0.3f, 1.0f), true, false);	// 3 light purple
+		m_mi_roadside = m_pMats->AddRGBMaterial(RGBf(0.8f, 0.6f, 0.4f), true, false);	// 0 brown roadside
+		m_mi_roads = m_pMats->AddRGBMaterial(RGBf(0.0f, 1.0f, 0.0f), true, false);	// 1 green
+		m_mi_4wd = m_pMats->AddRGBMaterial(RGBf(0.5f, 0.5f, 0.5f), true, false);	// 2 grey
+		m_mi_trail = m_pMats->AddRGBMaterial(RGBf(1.0f, 0.3f, 1.0f), true, false);	// 3 light purple
 	}
 	m_mi_red = m_pMats->AddRGBMaterial(RGBf(1.0f, 0.0f, 0.0f), RGBf(0.2f, 0.0f, 0.0f),
 		true, true, false, 0.4f);	// red-translucent
@@ -1011,7 +1011,7 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 			{
 				offset = pN->m_p3 - (unit * 6.0f) + (perp * (link->m_fWidth/2.0f));
 			}
-			trans->Translate1(FPoint3(offset.x, offset.y + s_fHeight, offset.z));
+			trans->Translate(FPoint3(offset.x, offset.y + s_fHeight, offset.z));
 			pLodGrid->AddToGrid(trans);
 		}
 	}

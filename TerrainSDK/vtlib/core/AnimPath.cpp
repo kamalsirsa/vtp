@@ -615,7 +615,7 @@ void vtAnimPathEngine::UpdateTargets()
 				tr->SetTrans(pos);
 			}
 			else
-				tr->SetTransform1(matrix);
+				tr->SetTransform(matrix);
 		}
 	}
 }

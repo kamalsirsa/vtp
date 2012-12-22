@@ -572,7 +572,7 @@ bool GeometryBuilder::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 	}
 
 	// !!!!!! TODO we should probably search for this image rather than just adding it each time it is used
-	int MaterialIndex = GetSharedMaterialArray()->AddTextureMaterial2(fname,
+	int MaterialIndex = GetSharedMaterialArray()->AddTextureMaterial(fname,
 			true, true, false, false,
 			TERRAIN_AMBIENT,
 			TERRAIN_DIFFUSE,

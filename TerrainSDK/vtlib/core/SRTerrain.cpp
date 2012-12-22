@@ -220,7 +220,7 @@ void SRTerrain::DoCulling(const vtCamera *pCam)
 
 	// Get up vector and direction vector from camera matrix
 	FMatrix4 mat;
-	pCam->GetTransform1(mat);
+	pCam->GetTransform(mat);
 	FPoint3 up(0.0f, 1.0f, 0.0f);
 	mat.TransformVector(up, eye_up);
 

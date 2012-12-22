@@ -123,8 +123,8 @@ void MapOverviewEngine::CreateArrow()
 	vtGeode * arrowGeom = new vtGeode;
 
 	vtMaterialArray *pMats = new vtMaterialArray;
-	pMats->AddRGBMaterial1(RGBf(1, 0, 0), false, false); // red
-	pMats->AddRGBMaterial1(RGBf(0, 0, 0), false, false); // black
+	pMats->AddRGBMaterial(RGBf(1, 0, 0), false, false); // red
+	pMats->AddRGBMaterial(RGBf(0, 0, 0), false, false); // black
 	arrowGeom->SetMaterials(pMats);
 
 	int ind[7];

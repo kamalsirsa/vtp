@@ -12,8 +12,8 @@
 ElasticPolyline::ElasticPolyline()
 {
 	m_Materials = new vtMaterialArray;
-	m_Materials->AddRGBMaterial1(RGBf(1, 0.5, 0), true, true);			// orange solid
-	m_Materials->AddRGBMaterial1(RGBf(1, 1, 0.5), false, false, true);	// light yellow wireframe
+	m_Materials->AddRGBMaterial(RGBf(1, 0.5, 0), true, true);			// orange solid
+	m_Materials->AddRGBMaterial(RGBf(1, 1, 0.5), false, false, true);	// light yellow wireframe
 
 	// Create a marker post to use for each corner of the polyline
 	int matidx = 0;		// orange
@@ -41,7 +41,7 @@ void ElasticPolyline::SetTerrain(vtTerrain *pTerr)
 
 void ElasticPolyline::SetLineColor(const RGBAf &color)
 {
-	m_Materials->at(1)->SetDiffuse1(color);
+	m_Materials->at(1)->SetDiffuse(color);
 }
 
 void ElasticPolyline::SetPolyline(const DLine2 &line)
@@ -124,7 +124,7 @@ void ElasticPolyline::Realize()
 	{
 		vtTransform *xform = new vtTransform;
 		m_pTerr->PlantModelAtPoint(xform, m_Line[i]);
-		xform->Scale3(1.0f, m_fPostHeight, 1.0f);
+		xform->Scale(1.0f, m_fPostHeight, 1.0f);
 
 		m_Container->addChild(xform);
 		xform->addChild(m_Marker);

@@ -138,7 +138,7 @@ void GrabFlyer::OnMouse(vtMouseEvent &event)
 			//  the starting state.
 			m_start_wp = wp;
 			m_startpos = m_pos;
-			pTarget->GetTransform1(m_start_eye);
+			pTarget->GetTransform(m_start_eye);
 		}
 		if (bLeft && !bRight)
 		{
@@ -174,7 +174,7 @@ void GrabFlyer::Eval()
 
 	if (m_bPivot)
 	{
-		pTarget->SetTransform1(m_start_eye);
+		pTarget->SetTransform(m_start_eye);
 		FPoint3 pos = pTarget->GetTrans();
 		FPoint3 ray = pos - m_start_wp;
 		FPoint3 ray2;
@@ -212,7 +212,7 @@ void GrabFlyer::Eval()
 	}
 	if (m_bDrag)
 	{
-		pTarget->SetTransform1(m_start_eye);
+		pTarget->SetTransform(m_start_eye);
 		FPoint3 pos = pTarget->GetTrans();
 		FPoint3 ray = m_start_wp - pos;
 
@@ -236,7 +236,7 @@ void GrabFlyer::Eval()
 	}
 	if (m_bZoom)
 	{
-		pTarget->SetTransform1(m_start_eye);
+		pTarget->SetTransform(m_start_eye);
 		FPoint3 pos = pTarget->GetTrans();
 		FPoint3 ray = m_start_wp - pos;
 

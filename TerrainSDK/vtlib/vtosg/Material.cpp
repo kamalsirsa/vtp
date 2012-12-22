@@ -30,10 +30,10 @@ vtMaterial::vtMaterial() : osg::StateSet()
  */
 void vtMaterial::CopyFrom(vtMaterial *pFrom)
 {
-	SetDiffuse1(pFrom->GetDiffuse());
-	SetSpecular1(pFrom->GetSpecular());
-	SetAmbient1(pFrom->GetAmbient());
-	SetEmission1(pFrom->GetEmission());
+	SetDiffuse(pFrom->GetDiffuse());
+	SetSpecular(pFrom->GetSpecular());
+	SetAmbient(pFrom->GetAmbient());
+	SetEmission(pFrom->GetEmission());
 
 	SetCulling(pFrom->GetCulling());
 	SetLighting(pFrom->GetLighting());
@@ -463,7 +463,7 @@ int vtMaterialArray::AddTextureMaterial(osg::Image *pImage,
  *
  * \return The index of the added material if successful, or -1 on failure.
  */
-int vtMaterialArray::AddTextureMaterial2(const char *fname,
+int vtMaterialArray::AddTextureMaterial(const char *fname,
 						 bool bCulling, bool bLighting,
 						 bool bTransp, bool bAdditive,
 						 float fAmbient, float fDiffuse,
@@ -565,7 +565,7 @@ int vtMaterialArray::AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient,
  *
  * \return The index of the added material.
  */
-int vtMaterialArray::AddRGBMaterial1(const RGBf &diffuse,
+int vtMaterialArray::AddRGBMaterial(const RGBf &diffuse,
 				 bool bCulling, bool bLighting, bool bWireframe,
 				 float fAlpha, float fEmissive)
 {

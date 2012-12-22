@@ -251,13 +251,13 @@ void CarEngine::MoveCarTo(const FPoint3 &next_pos)
 		FPoint3 trans;
 		trans = m_pFrontLeft->GetTrans();
 		m_pFrontLeft->Identity();
-		m_pFrontLeft->Rotate2(YAXIS, m_fSteeringAngle);
-		m_pFrontLeft->Translate1(trans);
+		m_pFrontLeft->Rotate(YAXIS, m_fSteeringAngle);
+		m_pFrontLeft->Translate(trans);
 
 		trans = m_pFrontRight->GetTrans();
 		m_pFrontRight->Identity();
-		m_pFrontRight->Rotate2(YAXIS, m_fSteeringAngle);
-		m_pFrontRight->Translate1(trans);
+		m_pFrontRight->Rotate(YAXIS, m_fSteeringAngle);
+		m_pFrontRight->Translate(trans);
 #endif
 	}
 	// Angle is measure from +X, but our car's "forward" is -Z.  That's a difference

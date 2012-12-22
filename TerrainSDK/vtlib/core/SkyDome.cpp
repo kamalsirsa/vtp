@@ -66,7 +66,7 @@ inline void PT_SPHERE_TO_CART(const FPoint3& A, FPoint3& B) {
 vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color)
 {
 	// Now make a green marker, directly north
-	int matidx = pMats->AddRGBMaterial1(color, false, false, true);
+	int matidx = pMats->AddRGBMaterial(color, false, false, true);
 	FPoint3 p;
 	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 500);
 	mesh->AddVertex(FPoint3(-0.07, 0, -0.94));
@@ -86,7 +86,7 @@ vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color)
 void PlaceMarker(vtTransform *trans, float alt, float azi)
 {
 	trans->Identity();
-	trans->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(alt));
+	trans->Rotate(FPoint3(1,0,0), DEG_TO_RAD(alt));
 	trans->RotateParent(FPoint3(0,1,0), DEG_TO_RAD(-azi));
 }
 
@@ -248,7 +248,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 void vtSkyDome::CreateMarkers()
 {
 	// First create some 5-degree tic marks.
-	int yellow = m_pMats->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
+	int yellow = m_pMats->AddRGBMaterial(RGBf(1,1,0), false, false, true);
 	FPoint3 p;
 	vtMesh *tics = new vtMesh(osg::PrimitiveSet::LINES, 0, (36+1)*2*2);
 	for (float t = 0; t < PId; t += (PId / 36))	// 5 degree increment
@@ -371,7 +371,7 @@ void vtSkyDome::RefreshCelestialObjects()
 	if (m_pSunGeom)
 	{
 		m_pSunGeom->Identity();
-		m_pSunGeom->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
+		m_pSunGeom->Rotate(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
 		m_pSunGeom->RotateParent(FPoint3(0,0,1), DEG_TO_RAD(-ra));
 	}
 
@@ -396,7 +396,7 @@ void vtSkyDome::RefreshCelestialObjects()
 
 	// Put red marker where SPA tells us the ra-dec sun should go
 	m_pRedMarker->Identity();
-	m_pRedMarker->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
+	m_pRedMarker->Rotate(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
 	m_pRedMarker->RotateParent(FPoint3(0,0,1), DEG_TO_RAD(-ra));
 }
 
@@ -410,9 +410,9 @@ void vtSkyDome::UpdateSunLight()
 	// First rotate by 180 degrees because OpenGL lights default to
 	//  facing 'north', but alt-azi here assumes the default position is
 	//  _from_ the north at the horizon, facing us.
-	m_pSunLight->Rotate2(FPoint3(1,0,0), PId);
-	m_pSunLight->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(m_fSunAlt));
-	m_pSunLight->Rotate2(FPoint3(0,1,0), DEG_TO_RAD(-m_fSunAzi));
+	m_pSunLight->Rotate(FPoint3(1,0,0), PId);
+	m_pSunLight->Rotate(FPoint3(1,0,0), DEG_TO_RAD(m_fSunAlt));
+	m_pSunLight->Rotate(FPoint3(0,1,0), DEG_TO_RAD(-m_fSunAzi));
 
 //	FPoint3 dir = m_pSunLight->GetDirection();
 //	VTLOG("  Alt-Azi %.3f %.3f, Light dir: %.3f %.3f %.3f\n", m_fSunAlt, m_fSunAzi, dir.x, dir.y, dir.z);
@@ -471,7 +471,7 @@ void vtSkyDome::UpdateSunLight()
 	m_pSunLightSource->SetSpecular(color);
 
 	// Don't actually color the sun geometry, because we use a sun texture now.
-	// if (m_pSunMat) m_pSunMat->SetDiffuse1(color);
+	// if (m_pSunMat) m_pSunMat->SetDiffuse(color);
 }
 
 //
@@ -690,7 +690,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	ReadStarData(starfile);
 
 	m_pMats = new vtMaterialArray;
-	int star_mat = m_pMats->AddRGBMaterial1(RGBf(0,0,0), false, false);
+	int star_mat = m_pMats->AddRGBMaterial(RGBf(0,0,0), false, false);
 	vtMaterial *pMat = m_pMats->at(star_mat);
 	pMat->SetTransparent(true, true);
 

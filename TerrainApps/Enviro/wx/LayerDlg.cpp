@@ -844,8 +844,8 @@ void LayerDlg::OnZoomTo( wxCommandEvent &event )
 		float alpha = smallest / 2.0f;
 		float distance = sphere.radius / tanf(alpha);
 		pCam->Identity();
-		pCam->Rotate2(FPoint3(1,0,0), -PID2f/2);	// tilt down a little
-		pCam->Translate1(sphere.center);
+		pCam->Rotate(FPoint3(1,0,0), -PID2f/2);	// tilt down a little
+		pCam->Translate(sphere.center);
 		pCam->TranslateLocal(FPoint3(0.0f, 0.0f, distance));
 	}
 }

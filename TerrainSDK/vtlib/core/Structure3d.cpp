@@ -53,7 +53,7 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 		m_pContainer->Scale(m_fScale);
 
 	if (m_fRotation != 0.0f)
-		m_pContainer->Rotate2(FPoint3(0,1,0), m_fRotation);
+		m_pContainer->Rotate(FPoint3(0,1,0), m_fRotation);
 
 	// convert earth -> XZ
 	FPoint3 point;
@@ -508,9 +508,9 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 	m_pMaterials->reserve(500);
 
 	// Create internal materials (only needed by vtlib, not vtdata)
-	m_hightlight1 = m_pMaterials->AddRGBMaterial1(RGBf(1,1,1), false, false, true);
-	m_hightlight2 = m_pMaterials->AddRGBMaterial1(RGBf(1,0,0), false, false, true);
-	m_hightlight3 = m_pMaterials->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
+	m_hightlight1 = m_pMaterials->AddRGBMaterial(RGBf(1,1,1), false, false, true);
+	m_hightlight2 = m_pMaterials->AddRGBMaterial(RGBf(1,0,0), false, false, true);
+	m_hightlight3 = m_pMaterials->AddRGBMaterial(RGBf(1,1,0), false, false, true);
 
 	// wire material
 	m_wire = m_pMaterials->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
@@ -760,10 +760,10 @@ vtMaterial *vtMaterialDescriptorArray3d::MakeMaterial(vtMaterialDescriptor *desc
 	}
 	else
 	{
-		pMat->SetDiffuse1(color * 0.7f);
-		pMat->SetAmbient1(color * 0.4f);
+		pMat->SetDiffuse(color * 0.7f);
+		pMat->SetAmbient(color * 0.4f);
 	}
-	pMat->SetSpecular2(0.0f);
+	pMat->SetSpecular(0.0f);
 	pMat->SetCulling(!desc->GetTwoSided());
 	pMat->SetLighting(true);
 	return pMat;
