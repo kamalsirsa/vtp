@@ -592,6 +592,7 @@ class TParamsDlgBase : public wxDialog
 		wxCheckBox* m_highways;
 		wxCheckBox* id_paved;
 		wxCheckBox* m_dirt;
+		wxPanel* TParamsPanel8;
 		wxListBox* id_structfiles;
 		wxStaticText* m_text19;
 		wxTextCtrl* m_struct_distance;
@@ -663,7 +664,6 @@ class TParamsDlgBase : public wxDialog
 		wxCheckBox* m_check_overview;
 		wxCheckBox* m_check_compass;
 		wxPanel* TParamsPanel7;
-		
 		wxStaticText* m_text32;
 		wxChoice* mmav_style;
 		wxStaticText* m_text33;
@@ -683,7 +683,6 @@ class TParamsDlgBase : public wxDialog
 		wxStaticText* m_text39;
 		wxStaticText* m_text220;
 		wxListBox* m_anim_paths;
-		
 		wxPanel* ScenariosPanel;
 		wxListBox* m_scenario_list;
 		wxButton* m_new_scenario;

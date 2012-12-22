@@ -778,14 +778,14 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	int m_lodmethodNChoices = sizeof( m_lodmethodChoices ) / sizeof( wxString );
 	m_lodmethod = new wxChoice( TParamsPanel1, ID_LODMETHOD, wxDefaultPosition, wxSize( 120,-1 ), m_lodmethodNChoices, m_lodmethodChoices, 0 );
 	m_lodmethod->SetSelection( 0 );
-	bSizer17->Add( m_lodmethod, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer17->Add( m_lodmethod, 0, wxALIGN_CENTER|wxTOP|wxBOTTOM|wxRIGHT, 5 );
 	
 	m_text4 = new wxStaticText( TParamsPanel1, ID_TEXT, _("Triangle count target: "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text4->Wrap( -1 );
 	bSizer17->Add( m_text4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 	
 	m_tri_count = new wxTextCtrl( TParamsPanel1, ID_TRI_COUNT, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	bSizer17->Add( m_tri_count, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer17->Add( m_tri_count, 0, wxALIGN_CENTER|wxTOP|wxBOTTOM|wxRIGHT, 5 );
 	
 	sbSizer3->Add( bSizer17, 0, wxALIGN_CENTER, 5 );
 	
@@ -838,24 +838,26 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer21->Add( m_text5, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 	
 	m_vtx_count = new wxTextCtrl( TParamsPanel1, ID_VTX_COUNT, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	bSizer21->Add( m_vtx_count, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer21->Add( m_vtx_count, 0, wxALIGN_CENTER|wxTOP|wxBOTTOM|wxRIGHT, 5 );
 	
 	m_text6 = new wxStaticText( TParamsPanel1, ID_TEXT, _("RAM cache size (MB):"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text6->Wrap( -1 );
 	m_text6->Enable( false );
+	m_text6->Hide();
 	
 	bSizer21->Add( m_text6, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_tile_cache_size = new wxTextCtrl( TParamsPanel1, ID_TILE_CACHE_SIZE, wxEmptyString, wxDefaultPosition, wxSize( 40,-1 ), 0 );
 	m_tile_cache_size->Enable( false );
+	m_tile_cache_size->Hide();
 	
-	bSizer21->Add( m_tile_cache_size, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	sbSizer5->Add( bSizer21, 0, wxALIGN_CENTER, 5 );
+	bSizer21->Add( m_tile_cache_size, 0, wxALIGN_CENTER|wxTOP|wxBOTTOM|wxRIGHT, 5 );
 	
 	m_tile_threading = new wxCheckBox( TParamsPanel1, ID_TILE_THREADING, _("Use multithreading for asynchronous tile loading"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tile_threading->SetValue(true); 
-	sbSizer5->Add( m_tile_threading, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer21->Add( m_tile_threading, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	sbSizer5->Add( bSizer21, 0, wxALIGN_CENTER, 5 );
 	
 	bSizer15->Add( sbSizer5, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxLEFT, 10 );
 	
@@ -1119,9 +1121,14 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	bSizer39->Add( sbSizer38, 0, wxEXPAND|wxALL, 5 );
 	
+	bSizer38->Add( bSizer39, 1, wxALIGN_CENTER_HORIZONTAL, 5 );
+	
+	wxBoxSizer* bSizer47;
+	bSizer47 = new wxBoxSizer( wxVERTICAL );
+	
 	id_roads = new wxCheckBox( TParamsPanel3, ID_ROADS, _("Roads"), wxDefaultPosition, wxDefaultSize, 0 );
 	id_roads->SetValue(true); 
-	bSizer39->Add( id_roads, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+	bSizer47->Add( id_roads, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
 	wxStaticBoxSizer* sbSizer10;
 	sbSizer10 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel3, wxID_ANY, wxEmptyString ), wxVERTICAL );
@@ -1206,51 +1213,64 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	sbSizer10->Add( bSizer45, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	bSizer39->Add( sbSizer10, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+	bSizer47->Add( sbSizer10, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
-	bSizer38->Add( bSizer39, 1, wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer38->Add( bSizer47, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 0 );
 	
-	wxBoxSizer* bSizer47;
-	bSizer47 = new wxBoxSizer( wxVERTICAL );
+	TParamsPanel3->SetSizer( bSizer38 );
+	TParamsPanel3->Layout();
+	bSizer38->Fit( TParamsPanel3 );
+	m_notebook->AddPage( TParamsPanel3, _("Plants and Roads"), false );
+	TParamsPanel8 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer202;
+	bSizer202 = new wxBoxSizer( wxHORIZONTAL );
 	
 	wxStaticBoxSizer* sbSizer11;
-	sbSizer11 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel3, wxID_ANY, _("Structure Layers") ), wxVERTICAL );
+	sbSizer11 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel8, wxID_ANY, _("Structure Layers") ), wxHORIZONTAL );
 	
-	id_structfiles = new wxListBox( TParamsPanel3, ID_STRUCTFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
-	sbSizer11->Add( id_structfiles, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	wxBoxSizer* bSizer203;
+	bSizer203 = new wxBoxSizer( wxVERTICAL );
+	
+	id_structfiles = new wxListBox( TParamsPanel8, ID_STRUCTFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
+	bSizer203->Add( id_structfiles, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer48;
 	bSizer48 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text19 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Visibility distance: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text19 = new wxStaticText( TParamsPanel8, ID_TEXT, _("Visibility distance: "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text19->Wrap( -1 );
 	bSizer48->Add( m_text19, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_struct_distance = new wxTextCtrl( TParamsPanel3, ID_STRUCT_DISTANCE, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_struct_distance = new wxTextCtrl( TParamsPanel8, ID_STRUCT_DISTANCE, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), 0 );
 	bSizer48->Add( m_struct_distance, 0, wxALIGN_CENTER|wxALL, 0 );
 	
-	m_text20 = new wxStaticText( TParamsPanel3, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text20 = new wxStaticText( TParamsPanel8, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text20->Wrap( 0 );
 	bSizer48->Add( m_text20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	sbSizer11->Add( bSizer48, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	bSizer203->Add( bSizer48, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 	
 	wxBoxSizer* bSizer46;
 	bSizer46 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text216 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Terrain-specific content:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text216 = new wxStaticText( TParamsPanel8, ID_TEXT, _("Terrain-specific content:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text216->Wrap( -1 );
 	bSizer46->Add( m_text216, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_content_file = new wxComboBox( TParamsPanel3, ID_CONTENT_FILE, wxEmptyString, wxDefaultPosition, wxSize( 100,-1 ), 0, NULL, wxCB_DROPDOWN ); 
+	m_content_file = new wxComboBox( TParamsPanel8, ID_CONTENT_FILE, wxEmptyString, wxDefaultPosition, wxSize( 100,-1 ), 0, NULL, wxCB_DROPDOWN ); 
 	bSizer46->Add( m_content_file, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
-	sbSizer11->Add( bSizer46, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	bSizer203->Add( bSizer46, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	sbSizer11->Add( bSizer203, 1, 0, 5 );
+	
+	wxBoxSizer* bSizer204;
+	bSizer204 = new wxBoxSizer( wxVERTICAL );
 	
 	wxBoxSizer* bSizer49;
 	bSizer49 = new wxBoxSizer( wxVERTICAL );
 	
-	mmheck_structure_shadows = new wxCheckBox( TParamsPanel3, ID_CHECK_STRUCTURE_SHADOWS, _("Shadows"), wxDefaultPosition, wxDefaultSize, 0 );
+	mmheck_structure_shadows = new wxCheckBox( TParamsPanel8, ID_CHECK_STRUCTURE_SHADOWS, _("Shadows"), wxDefaultPosition, wxDefaultSize, 0 );
 	mmheck_structure_shadows->SetValue(true); 
 	bSizer49->Add( mmheck_structure_shadows, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -1266,12 +1286,12 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer52;
 	bSizer52 = new wxBoxSizer( wxHORIZONTAL );
 	
-	id_text5 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Resolution:"), wxDefaultPosition, wxDefaultSize, 0 );
+	id_text5 = new wxStaticText( TParamsPanel8, ID_TEXT, _("Resolution:"), wxDefaultPosition, wxDefaultSize, 0 );
 	id_text5->Wrap( -1 );
 	bSizer52->Add( id_text5, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	wxArrayString mmhoice_shadow_rezChoices;
-	mmhoice_shadow_rez = new wxChoice( TParamsPanel3, ID_CHOICE_SHADOW_REZ, wxDefaultPosition, wxSize( 100,-1 ), mmhoice_shadow_rezChoices, 0 );
+	mmhoice_shadow_rez = new wxChoice( TParamsPanel8, ID_CHOICE_SHADOW_REZ, wxDefaultPosition, wxSize( 100,-1 ), mmhoice_shadow_rezChoices, 0 );
 	mmhoice_shadow_rez->SetSelection( 0 );
 	bSizer52->Add( mmhoice_shadow_rez, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
@@ -1280,34 +1300,34 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer53;
 	bSizer53 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text21 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Darkness:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text21 = new wxStaticText( TParamsPanel8, ID_TEXT, _("Darkness:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text21->Wrap( -1 );
 	bSizer53->Add( m_text21, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_darkness = new wxTextCtrl( TParamsPanel3, ID_DARKNESS, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	m_darkness = new wxTextCtrl( TParamsPanel8, ID_DARKNESS, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	bSizer53->Add( m_darkness, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
 	bSizer51->Add( bSizer53, 0, wxALIGN_CENTER_VERTICAL, 5 );
 	
-	m_shadows_default_on = new wxCheckBox( TParamsPanel3, ID_SHADOWS_DEFAULT_ON, _("All structures cast shadows by default"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_shadows_default_on = new wxCheckBox( TParamsPanel8, ID_SHADOWS_DEFAULT_ON, _("All structures cast shadows by default"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_shadows_default_on->SetValue(true); 
 	bSizer51->Add( m_shadows_default_on, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_shadows_every_frame = new wxCheckBox( TParamsPanel3, ID_SHADOWS_EVERY_FRAME, _("Recompute shadows every frame"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_shadows_every_frame = new wxCheckBox( TParamsPanel8, ID_SHADOWS_EVERY_FRAME, _("Recompute shadows every frame"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_shadows_every_frame->SetValue(true); 
 	bSizer51->Add( m_shadows_every_frame, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer54;
 	bSizer54 = new wxBoxSizer( wxHORIZONTAL );
 	
-	id_shadow_limit = new wxCheckBox( TParamsPanel3, ID_SHADOW_LIMIT, _("Limit shadow area:"), wxDefaultPosition, wxDefaultSize, 0 );
+	id_shadow_limit = new wxCheckBox( TParamsPanel8, ID_SHADOW_LIMIT, _("Limit shadow area:"), wxDefaultPosition, wxDefaultSize, 0 );
 	id_shadow_limit->SetValue(true); 
 	bSizer54->Add( id_shadow_limit, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_shadow_limit_radius = new wxTextCtrl( TParamsPanel3, ID_SHADOW_LIMIT_RADIUS, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), 0 );
+	m_shadow_limit_radius = new wxTextCtrl( TParamsPanel8, ID_SHADOW_LIMIT_RADIUS, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), 0 );
 	bSizer54->Add( m_shadow_limit_radius, 0, wxALIGN_CENTER|wxALL, 0 );
 	
-	m_text22 = new wxStaticText( TParamsPanel3, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text22 = new wxStaticText( TParamsPanel8, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text22->Wrap( 0 );
 	bSizer54->Add( m_text22, 0, wxALIGN_CENTER|wxALL, 5 );
 	
@@ -1317,7 +1337,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	bSizer49->Add( bSizer50, 0, wxALIGN_CENTER_VERTICAL, 5 );
 	
-	m_check_structure_paging = new wxCheckBox( TParamsPanel3, ID_CHECK_STRUCTURE_PAGING, _("Paging"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_check_structure_paging = new wxCheckBox( TParamsPanel8, ID_CHECK_STRUCTURE_PAGING, _("Paging"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_check_structure_paging->SetValue(true); 
 	bSizer49->Add( m_check_structure_paging, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -1327,11 +1347,11 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	bSizer55->Add( 15, 10, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text23 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Maximum structures:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text23 = new wxStaticText( TParamsPanel8, ID_TEXT, _("Maximum structures:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text23->Wrap( -1 );
 	bSizer55->Add( m_text23, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_paging_max_structures = new wxTextCtrl( TParamsPanel3, ID_PAGING_MAX_STRUCTURES, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	m_paging_max_structures = new wxTextCtrl( TParamsPanel8, ID_PAGING_MAX_STRUCTURES, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	bSizer55->Add( m_paging_max_structures, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
 	bSizer49->Add( bSizer55, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
@@ -1342,29 +1362,29 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	bSizer56->Add( 15, 10, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_text24 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Page-out distance:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text24 = new wxStaticText( TParamsPanel8, ID_TEXT, _("Page-out distance:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text24->Wrap( -1 );
 	bSizer56->Add( m_text24, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_page_out_distance = new wxTextCtrl( TParamsPanel3, ID_PAGE_OUT_DISTANCE, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	m_page_out_distance = new wxTextCtrl( TParamsPanel8, ID_PAGE_OUT_DISTANCE, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
 	bSizer56->Add( m_page_out_distance, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
-	m_text25 = new wxStaticText( TParamsPanel3, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text25 = new wxStaticText( TParamsPanel8, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text25->Wrap( 0 );
 	bSizer56->Add( m_text25, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer49->Add( bSizer56, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	sbSizer11->Add( bSizer49, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	bSizer204->Add( bSizer49, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	bSizer47->Add( sbSizer11, 0, wxEXPAND|wxALL, 5 );
+	sbSizer11->Add( bSizer204, 0, 0, 5 );
 	
-	bSizer38->Add( bSizer47, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 0 );
+	bSizer202->Add( sbSizer11, 1, wxALL|wxEXPAND, 5 );
 	
-	TParamsPanel3->SetSizer( bSizer38 );
-	TParamsPanel3->Layout();
-	bSizer38->Fit( TParamsPanel3 );
-	m_notebook->AddPage( TParamsPanel3, _("Culture"), false );
+	TParamsPanel8->SetSizer( bSizer202 );
+	TParamsPanel8->Layout();
+	bSizer202->Fit( TParamsPanel8 );
+	m_notebook->AddPage( TParamsPanel8, _("Structures"), false );
 	TParamsPanel4 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer57;
 	bSizer57 = new wxBoxSizer( wxHORIZONTAL );
@@ -1627,9 +1647,6 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer72;
 	bSizer72 = new wxBoxSizer( wxHORIZONTAL );
 	
-	
-	bSizer72->Add( 5, 20, 1, wxALIGN_CENTER|wxALL, 5 );
-	
 	wxStaticBoxSizer* sbSizer17;
 	sbSizer17 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel7, wxID_ANY, _("Navigation") ), wxVERTICAL );
 	
@@ -1736,17 +1753,19 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	sbSizer17->Add( bSizer79, 0, wxALIGN_CENTER, 5 );
 	
-	m_text220 = new wxStaticText( TParamsPanel7, ID_TEXT, _("Animation Paths:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text220->Wrap( -1 );
-	sbSizer17->Add( m_text220, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	m_anim_paths = new wxListBox( TParamsPanel7, ID_ANIM_PATHS, wxDefaultPosition, wxSize( 80,60 ), 0, NULL, wxLB_SINGLE ); 
-	sbSizer17->Add( m_anim_paths, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-	
 	bSizer72->Add( sbSizer17, 0, wxEXPAND|wxALL, 10 );
 	
+	wxBoxSizer* bSizer205;
+	bSizer205 = new wxBoxSizer( wxVERTICAL );
 	
-	bSizer72->Add( 5, 20, 1, wxALIGN_CENTER|wxALL, 5 );
+	m_text220 = new wxStaticText( TParamsPanel7, ID_TEXT, _("Animation Paths:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text220->Wrap( -1 );
+	bSizer205->Add( m_text220, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	m_anim_paths = new wxListBox( TParamsPanel7, ID_ANIM_PATHS, wxDefaultPosition, wxSize( 80,160 ), 0, NULL, wxLB_SINGLE ); 
+	bSizer205->Add( m_anim_paths, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT, 5 );
+	
+	bSizer72->Add( bSizer205, 1, wxEXPAND|wxRIGHT, 5 );
 	
 	TParamsPanel7->SetSizer( bSizer72 );
 	TParamsPanel7->Layout();
