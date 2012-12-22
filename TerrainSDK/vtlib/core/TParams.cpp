@@ -355,15 +355,18 @@ bool TParams::LoadFromXML(const char *fname)
 	}
 
 	// Trees/Tree_File is obsolete, make a vegetation layer instead
-	bool bOldTrees = (FindTag("Trees") != NULL);
-	tag = FindTag("Tree_File");
-	if (tag && bOldTrees)
+	bool bOldTrees;
+	if (GetValueBool("Trees", bOldTrees))
 	{
-		vtTagArray layer;
-		layer.SetValueString("Type", TERR_LTYPE_VEGETATION, true);
-		layer.SetValueString("Filename", tag->value, true);
-		m_Layers.push_back(layer);
+		tag = FindTag("Tree_File");
+		if (tag && bOldTrees)
+		{
+			vtTagArray layer;
+			layer.SetValueString("Type", TERR_LTYPE_VEGETATION, true);
+			layer.SetValueString("Filename", tag->value, true);
+			m_Layers.push_back(layer);
 
+		}
 		RemoveTag("Trees");
 		RemoveTag("Tree_File");
 	}

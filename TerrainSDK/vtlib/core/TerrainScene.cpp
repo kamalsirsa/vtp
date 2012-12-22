@@ -222,12 +222,12 @@ void vtTerrainScene::AppendTerrain(vtTerrain *pTerrain)
  */
 vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 {
-	pTerrain->CreateStep0();
+	pTerrain->CreateStep1();
 
 	// connect the terrain's engines
 	m_pTerrainEngines->AddChild(pTerrain->GetEngineGroup());
 
-	if (!pTerrain->CreateStep1())
+	if (!pTerrain->CreateStep2())
 		return NULL;
 
 	// Set time to that of the new terrain
@@ -237,10 +237,7 @@ vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 	DPoint2 geo = pTerrain->GetCenterGeoLocation();
 	m_pSkyDome->SetGeoLocation(geo);
 
-	if (!pTerrain->CreateStep2(m_pSunLight, m_pLightSource))
-		return NULL;
-
-	if (!pTerrain->CreateStep3())
+	if (!pTerrain->CreateStep3(m_pSunLight, m_pLightSource))
 		return NULL;
 
 	if (!pTerrain->CreateStep4())
@@ -248,6 +245,11 @@ vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 
 	if (!pTerrain->CreateStep5())
 		return NULL;
+
+	pTerrain->CreateStep6();
+	pTerrain->CreateStep7();
+	pTerrain->CreateStep8();
+	pTerrain->CreateStep9();
 
 	return pTerrain->GetTopGroup();
 }

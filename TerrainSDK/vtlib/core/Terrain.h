@@ -152,12 +152,15 @@ public:
 
 	// You can use these methods to build a terrain step by step,
 	// or simply use the method vtTerrainScene::BuildTerrain.
-	void CreateStep0();
-	bool CreateStep1();
-	bool CreateStep2(vtTransform *pSunLight, vtLightSource *pLightSource);
-	bool CreateStep3();
+	void CreateStep1();
+	bool CreateStep2();
+	bool CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource);
 	bool CreateStep4();
 	bool CreateStep5();
+	void CreateStep6();
+	void CreateStep7();
+	void CreateStep8();
+	void CreateStep9();
 	vtString GetLastError() { return m_strErrorMsg; }
 
 	void SetProgressCallback(ProgFuncPtrType progress_callback = NULL);
@@ -318,7 +321,7 @@ public:
 		float fOffset, bool bInterp = true, bool bCurve = false, bool bTrue = false);
 
 	// Access the viewpoint(s) associated with this terrain
-	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
+	void SetCamLocation(FMatrix4 &mat);
 	FMatrix4 &GetCamLocation() { return m_CamLocation; }
 	vtLocationSaver *GetLocSaver() { return &m_LocSaver; }
 	void Visited(bool bVisited) { m_bVisited = bVisited; }
@@ -377,6 +380,7 @@ protected:
 	bool CreateFromGrid();
 	bool CreateFromTiles();
 	bool CreateFromExternal();
+	void _CreateOtherCulture();
 	void _CreateCulture();
 	void _CreateVegetation();
 	void _CreateStructures();

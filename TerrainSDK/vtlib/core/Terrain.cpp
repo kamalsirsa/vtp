@@ -1292,48 +1292,18 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 	model->SetTrans(wpos);
 }
 
-void vtTerrain::_CreateCulture()
+void vtTerrain::_CreateOtherCulture()
 {
-	// Read terrain-specific content file
-	vtString con_file = m_Params.GetValueString(STR_CONTENT_FILE);
-	if (con_file != "")
-	{
-		VTLOG(" Looking for terrain-specific content file: '%s'\n", (const char *) con_file);
-		vtString fname = FindFileOnPaths(vtGetDataPath(), con_file);
-		if (fname != "")
-		{
-			VTLOG("  Found.\n");
-			try
-			{
-				m_Content.ReadXML(fname);
-			}
-			catch (xh_io_exception &ex)
-			{
-				// display (or a least log) error message here
-				VTLOG("  XML error:");
-				VTLOG(ex.getFormattedMessage().c_str());
-				return;
-			}
-		}
-		else
-			VTLOG("  Not found.\n");
-	}
-
-	// Always create a LOD grid for structures, as the user might create some
-	// The LOD distances are in meters
-	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
-
-	// create roads
-	if (m_Params.GetValueBool(STR_ROADS))
-		_CreateRoads();
-
-	_CreateVegetation();
-	_CreateStructures();
-
 	// create utility structures (routes = towers and wires)
 	if (m_Params.GetValueBool(STR_ROUTEENABLE))
 	{
 		// TODO
+	}
+
+	// create any route geometry
+	for (uint i = 0; i < m_Routes.GetSize(); i++)
+	{
+		m_Routes[i]->BuildGeometry(m_pHeightField);
 	}
 
 	// create HUD overlay geometry
@@ -1354,12 +1324,6 @@ void vtTerrain::_CreateCulture()
 				m_pOverlay->addChild(pSprite->GetGeode());
 			}
 		}
-	}
-
-	// create any route geometry
-	for (uint i = 0; i < m_Routes.GetSize(); i++)
-	{
-		m_Routes[i]->BuildGeometry(m_pHeightField);
 	}
 
 	// Let any terrain subclasses provide their own culture
@@ -1509,6 +1473,34 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 
 void vtTerrain::_CreateStructures()
 {
+	// Read terrain-specific content file
+	vtString con_file = m_Params.GetValueString(STR_CONTENT_FILE);
+	if (con_file != "")
+	{
+		VTLOG(" Looking for terrain-specific content file: '%s'\n", (const char *) con_file);
+		vtString fname = FindFileOnPaths(vtGetDataPath(), con_file);
+		if (fname != "")
+		{
+			VTLOG("  Found.\n");
+			try
+			{
+				m_Content.ReadXML(fname);
+			}
+			catch (xh_io_exception &ex)
+			{
+				// display (or a least log) error message here
+				VTLOG("  XML error:");
+				VTLOG(ex.getFormattedMessage().c_str());
+				return;
+			}
+		}
+		else
+			VTLOG("  Not found.\n");
+	}
+
+	// Always create a LOD grid for structures, as the user might create some
+	// The LOD distances are in meters
+	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
 	// create built structures
 	vtStructure3d::InitializeMaterialArrays();
 
@@ -2040,7 +2032,7 @@ void vtTerrain::_ComputeCenterLocation()
 }
 
 
-void vtTerrain::CreateStep0()
+void vtTerrain::CreateStep1()
 {
 	// Only do this method once
 	if (m_pTerrainGroup)
@@ -2077,7 +2069,7 @@ void vtTerrain::CreateStep0()
  * You can use these methods to build a terrain step by step, or simply
  * use the method vtTerrainScene::BuildTerrain, which calls them all.
  */
-bool vtTerrain::CreateStep1()
+bool vtTerrain::CreateStep2()
 {
 	VTLOG("Step1\n");
 
@@ -2294,7 +2286,7 @@ bool vtTerrain::CreateStep1()
 /**
  * Next step in terrain creation: create textures.
  */
-bool vtTerrain::CreateStep2(vtTransform *pSunLight, vtLightSource *pLightSource)
+bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 {
 	VTLOG("Step2\n");
 
@@ -2316,7 +2308,7 @@ bool vtTerrain::CreateStep2(vtTransform *pSunLight, vtLightSource *pLightSource)
 /**
  * Next step in terrain creation: create 3D geometry for the terrain.
  */
-bool vtTerrain::CreateStep3()
+bool vtTerrain::CreateStep4()
 {
 	VTLOG("Step3\n");
 
@@ -2398,7 +2390,7 @@ bool vtTerrain::CreateFromExternal()
 /**
  * Next step in terrain creation: additional CLOD construction.
  */
-bool vtTerrain::CreateStep4()
+bool vtTerrain::CreateStep5()
 {
 	VTLOG("Step4\n");
 
@@ -2421,13 +2413,11 @@ bool vtTerrain::CreateStep4()
 /**
  * Next step in terrain creation: create the culture and labels.
  */
-bool vtTerrain::CreateStep5()
+void vtTerrain::CreateStep6()
 {
-	VTLOG("Step5\n");
-
 	// must have a heightfield by this point
 	if (!m_pHeightField)
-		return false;
+		return;
 
 	// Node to put all the scaled features under
 	m_pScaledFeatures = new vtTransform;
@@ -2436,7 +2426,24 @@ bool vtTerrain::CreateStep5()
 	m_pScaledFeatures->SetCastShadow(false);
 	m_pUnshadowedGroup->addChild(m_pScaledFeatures);
 
-	_CreateCulture();
+	_CreateStructures();
+}
+
+void vtTerrain::CreateStep7()
+{
+	// create roads
+	if (m_Params.GetValueBool(STR_ROADS))
+		_CreateRoads();
+}
+
+void vtTerrain::CreateStep8()
+{
+	_CreateVegetation();
+}
+
+void vtTerrain::CreateStep9()
+{
+	_CreateOtherCulture();
 
 	if (m_Params.GetValueBool(STR_OCEANPLANE))
 	{
@@ -2514,8 +2521,6 @@ bool vtTerrain::CreateStep5()
 		entry.m_Name = fname1;
 		m_AnimContainer.AppendEntry(entry);
 	}
-
-	return true;
 }
 
 void vtTerrain::SetProgressCallback(ProgFuncPtrType progress_callback)
@@ -2988,6 +2993,19 @@ float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 	}
 	pMF->PrimEnd();
 	return fTotalLength;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Camera viewpoints
+
+void vtTerrain::SetCamLocation(FMatrix4 &mat)
+{
+	FPoint3 trans = mat.GetTrans();
+	VTLOG("Setting stored viewpoint for terrain '%s' to position %.1f, %.1f, %.1f\n",
+		(const char *) GetName(), trans.x, trans.y, trans.z);
+
+	m_CamLocation = mat;
 }
 
 

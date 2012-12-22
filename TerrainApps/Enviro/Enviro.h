@@ -76,7 +76,8 @@ public:
 	void DoControl();
 	void DoControlOrbit();
 	void DoControlTerrain();
-	void SetTerrain(vtTerrain *pTerrain);
+	void SwitchToTerrain(vtTerrain *pTerrain);
+	void SelectInitialViewpoint(vtTerrain *pTerrain);
 	vtGroup *GetRoot() { return m_pRoot; }
 	void StoreTerrainParameters();
 	osgText::Font *GetArial() { return m_pArial; }
@@ -111,8 +112,8 @@ public:
 
 	// go to space or a terrain
 	void FlyToSpace();
-	bool SwitchToTerrain(const char *name);
-	void SwitchToTerrain(vtTerrain *pTerr);
+	bool RequestTerrain(const char *name);
+	void RequestTerrain(vtTerrain *pTerr);
 
 	// these work in space
 	vtIcoGlobe *GetGlobe() { return m_pIcoGlobe; }
@@ -323,6 +324,7 @@ protected:
 	void StartFlyIn();
 	void FlyInStage1();
 	void FlyInStage2();
+	bool IsFlyingInFromSpace() { return (m_iFlightStage != 0); }
 	void SetWindowBox(const IPoint2 &ul, const IPoint2 &lr);
 
 	// plants

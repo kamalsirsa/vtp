@@ -42,7 +42,7 @@ void Enviro::FlyToSpace()
 	}
 
 	// turn off terrain, if any
-	SetTerrain(NULL);
+	SwitchToTerrain(NULL);
 	EnableFlyerEngine(false);
 
 	SetState(AS_MovingOut);
@@ -691,7 +691,7 @@ void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 	{
 		vtTerrain *pTerr = FindTerrainOnEarth(DPoint2(m_EarthPos.x, m_EarthPos.y));
 		if (pTerr)
-			SwitchToTerrain(pTerr);
+			RequestTerrain(pTerr);
 	}
 	if (m_mode == MM_MEASURE)
 	{
@@ -1013,7 +1013,7 @@ void Enviro::FlyInStage1()
 			m_pTrackball->SetEnabled(false);
 
 		// make terrain active
-		SetTerrain(m_pTargetTerrain);
+		SwitchToTerrain(m_pTargetTerrain);
 
 		// Set hither and yon
 		m_pNormalCamera->SetHither(m_pTargetTerrain->GetParams().GetValueFloat(STR_HITHER));

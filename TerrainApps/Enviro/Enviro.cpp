@@ -336,12 +336,12 @@ void Enviro::DoControl()
 				pTerr->GetParams().SetValueInt(STR_SURFACE_TYPE, 1);	// 1 = tin
 			else
 				pTerr->GetParams().SetValueInt(STR_SURFACE_TYPE, 0);	// 0 = grid
-			SwitchToTerrain(pTerr);
+			RequestTerrain(pTerr);
 			return;
 		}
 		else
 		{
-			if (!SwitchToTerrain(g_Options.m_strInitTerrain))
+			if (!RequestTerrain(g_Options.m_strInitTerrain))
 			{
 				SetMessage(_("Terrain not found"));
 				SetState(AS_Error);
@@ -366,7 +366,7 @@ void Enviro::DoControl()
 	{
 		m_iInitStep++;
 		SetupTerrain(m_pTargetTerrain);
-		if (m_bFlyIn && m_iInitStep >= 7)
+		if (m_bFlyIn && m_iInitStep >= 10)
 		{
 			// Finished constructing, can smoothly fly in now
 			ShowProgress(false);
@@ -440,9 +440,9 @@ void Enviro::DoControlTerrain()
 	}
 }
 
-bool Enviro::SwitchToTerrain(const char *name)
+bool Enviro::RequestTerrain(const char *name)
 {
-	VTLOG("SwitchToTerrain (%s)\n", name);
+	VTLOG("RequestTerrain (%s)\n", name);
 	vtTerrain *pTerr = FindTerrainByName(name);
 	if (!pTerr)
 		return false;
@@ -452,16 +452,16 @@ bool Enviro::SwitchToTerrain(const char *name)
 
 	if (pTerr)
 	{
-		SwitchToTerrain(pTerr);
+		RequestTerrain(pTerr);
 		return true;
 	}
 	else
 		return false;
 }
 
-void Enviro::SwitchToTerrain(vtTerrain *pTerr)
+void Enviro::RequestTerrain(vtTerrain *pTerr)
 {
-	VTLOG("SwitchToTerrain %lx\n", pTerr);
+	VTLOG("RequestTerrain %lx\n", pTerr);
 
 	FreeArc();
 
@@ -504,23 +504,23 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	VTLOG("SetupTerrain step %d\n", m_iInitStep);
 	if (m_iInitStep == 1)
 	{
-		vtString str = _("Creating Terrain ");
+		vtString str = _("Setting up Terrain ");
 		str += "'";
 		str += pTerr->GetName();
 		str += "'";
 		SetMessage(str);
-		UpdateProgress(m_strMessage, 10, 0);
+		UpdateProgress(m_strMessage, 8, 0);
 	}
 	else if (m_iInitStep == 2)
 	{
 		if (pTerr->IsCreated())
 		{
-			m_iInitStep = 7;	// already made, skip ahead
+			m_iInitStep = 10;	// already made, skip ahead
 			return;
 		}
 		else
 			SetMessage(_("Loading Elevation"));
-		UpdateProgress(m_strMessage, 20, 0);
+		UpdateProgress(m_strMessage, 16, 0);
 	}
 	else if (m_iInitStep == 3)
 	{
@@ -536,19 +536,19 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		}
 
 		pTerr->SetPlantList(m_pPlantList);
-		pTerr->CreateStep0();
+		pTerr->CreateStep1();
 
 		// connect the terrain's engines
 		m_pTerrainEngines->AddChild(pTerr->GetEngineGroup());
 
-		if (!pTerr->CreateStep1())
+		if (!pTerr->CreateStep2())
 		{
 			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
 		SetMessage(_("Loading/Coloring/Prelighting Textures"));
-		UpdateProgress(m_strMessage, 30, 0);
+		UpdateProgress(m_strMessage, 24, 0);
 	}
 	else if (m_iInitStep == 4)
 	{
@@ -563,27 +563,16 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			m_pSkyDome->SetTime(pTerr->GetInitialTime());
 		}
 
-		if (!pTerr->CreateStep2(GetSunLightTransform(), GetSunLightSource()))
+		if (!pTerr->CreateStep3(GetSunLightTransform(), GetSunLightSource()))
 		{
 			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
 		SetMessage(_("Processing Elevation"));
-		UpdateProgress(m_strMessage, 40, 0);
+		UpdateProgress(m_strMessage, 32, 0);
 	}
 	else if (m_iInitStep == 5)
-	{
-		if (!pTerr->CreateStep3())
-		{
-			SetState(AS_Error);
-			SetMessage(pTerr->GetLastError());
-			return;
-		}
-		SetMessage(_("Building CLOD"));
-		UpdateProgress(m_strMessage, 50, 0);
-	}
-	else if (m_iInitStep == 6)
 	{
 		if (!pTerr->CreateStep4())
 		{
@@ -591,47 +580,49 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			SetMessage(pTerr->GetLastError());
 			return;
 		}
-		SetMessage(_("Creating Culture"));
-		UpdateProgress(m_strMessage, 60, 0);
+		SetMessage(_("Building CLOD"));
+		UpdateProgress(m_strMessage, 40, 0);
 	}
-	else if (m_iInitStep == 7)
+	else if (m_iInitStep == 6)
 	{
 		if (!pTerr->CreateStep5())
 		{
 			SetState(AS_Error);
 			SetMessage(pTerr->GetLastError());
-			ShowProgress(false);
 			return;
 		}
+		SetMessage(_("Creating Structures"));
+		UpdateProgress(m_strMessage, 48, 0);
+	}
+	else if (m_iInitStep == 7)
+	{
+		pTerr->CreateStep6();
 
-		// Initial default location for camera for this terrain: Try center
-		//  of heightfield, just above the ground
-		vtHeightField3d *pHF = pTerr->GetHeightField();
-		FPoint3 middle;
-		FMatrix4 mat;
-
-		VTLOG1(" Placing the camera at the center of the terrain:\n");
-		VTLOG(" World extents: LRTB %f %f %f %f\n",
-			pHF->m_WorldExtents.left,
-			pHF->m_WorldExtents.right,
-			pHF->m_WorldExtents.top,
-			pHF->m_WorldExtents.bottom);
-		pHF->GetCenter(middle);
-		VTLOG(" Center: %f %f %f\n", middle.x, middle.y, middle.z);
-		pHF->FindAltitudeAtPoint(middle, middle.y);
-		VTLOG(" Altitude at that point: %f\n", middle.y);
-		float minheight = pTerr->GetParams().GetValueFloat(STR_MINHEIGHT);
-		middle.y += minheight;
-		VTLOG(" plus minimum height (%f) is %f\n", minheight, middle.y);
-
-		mat.Identity();
-		mat.SetTrans(middle);
-		pTerr->SetCamLocation(mat);
-
-		SetMessage(_("Setting Camera"));
-		UpdateProgress(m_strMessage, 70, 0);
+		SetMessage(_("Creating Roads"));
+		UpdateProgress(m_strMessage, 56, 0);
 	}
 	else if (m_iInitStep == 8)
+	{
+		pTerr->CreateStep7();
+
+		SetMessage(_("Creating Vegetation"));
+		UpdateProgress(m_strMessage, 64, 0);
+	}
+	else if (m_iInitStep == 9)
+	{
+		pTerr->CreateStep8();
+
+		SetMessage(_("Creating Water and Abstracts"));
+		UpdateProgress(m_strMessage, 72, 0);
+	}
+	else if (m_iInitStep == 10)
+	{
+		pTerr->CreateStep9();
+
+		SetMessage(_("Setting Camera"));
+		UpdateProgress(m_strMessage, 80, 0);
+	}
+	else if (m_iInitStep == 11)
 	{
 		// If we were in Earth View, hide the globe and disable the trackball
 		if (m_pGlobeContainer != NULL)
@@ -642,16 +633,13 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (m_pTrackball)
 			m_pTrackball->SetEnabled(false);
 
-		// Set initial location
-		m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
-
 		SetMessage(_("Switching to Terrain"));
-		UpdateProgress(m_strMessage, 80, 0);
+		UpdateProgress(m_strMessage, 88, 0);
 	}
-	else if (m_iInitStep == 9)
+	else if (m_iInitStep == 12)
 	{
-		// make first terrain active
-		SetTerrain(pTerr);
+		// make the terrain active
+		SwitchToTerrain(pTerr);
 
 		// Set hither and yon
 		m_pNormalCamera->SetHither(pTerr->GetParams().GetValueFloat(STR_HITHER));
@@ -665,7 +653,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		m_pTerrainPicker->SetEnabled(true);
 		SetMode(MM_NAVIGATE);
 	}
-	else if (m_iInitStep == 10)
+	else if (m_iInitStep == 13)
 	{
 		vtString str = _("Welcome to ");
 		str += pTerr->GetName();
@@ -1002,9 +990,9 @@ void Enviro::ResetCamera()
 		m_pNormalCamera->SetTransform1(m_pCurrentTerrain->GetCamLocation());
 }
 
-void Enviro::SetTerrain(vtTerrain *pTerrain)
+void Enviro::SwitchToTerrain(vtTerrain *pTerrain)
 {
-	VTLOG("Enviro::SetTerrain '%s'\n",
+	VTLOG("Enviro::SwitchToTerrain '%s'\n",
 		pTerrain ? (const char *) pTerrain->GetName() : "none");
 
 	if (m_pCurrentTerrain)
@@ -1036,7 +1024,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	// Inform the terrain's location saver of the camera
 	pTerrain->GetLocSaver()->SetTransform(m_pNormalCamera);
 
-	// inform the navigation engine of the new terrain
+	// inform the navigation engines of the new terrain
 	float speed = param.GetValueFloat(STR_NAVSPEED);
 	if (m_pCurrentFlyer != NULL)
 	{
@@ -1094,23 +1082,8 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	if (pOverlay)
 		m_pHUD->GetContainer()->addChild(pOverlay);
 
-	if (m_iFlightStage != 2)
-	{
-		// Only do this the first time: jump to initial viewpoint
-		if (!pTerrain->IsVisited())
-		{
-			VTLOG1("First visit to this terrain, looking up stored viewpoint.\n");
-			if (g_Options.m_strInitLocation != "")
-			{
-				// may have been given on command line
-				pTerrain->GetLocSaver()->RecallFrom(g_Options.m_strInitLocation);
-				g_Options.m_strInitLocation = "";
-			}
-			else
-				pTerrain->GetLocSaver()->RecallFrom(pTerrain->GetParams().GetValueString(STR_INITLOCATION));
-		}
-	}
-	pTerrain->Visited(true);
+	if (!IsFlyingInFromSpace())
+		SelectInitialViewpoint(pTerrain);
 
 	// Inform the GUI that the terrain has changed
 	SetTerrainToGUI(pTerrain);
@@ -1129,6 +1102,67 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 				pTerrain->ActivateScenario(snum);
 		}
 	}
+}
+
+void Enviro::SelectInitialViewpoint(vtTerrain *pTerrain)
+{
+	// If we've already been here, use the viewpoint we had last time
+	if (pTerrain->IsVisited())
+	{
+		// Get stored location
+		const FMatrix4 &mat = pTerrain->GetCamLocation();
+		FPoint3 trans = mat.GetTrans();
+		VTLOG("   Got stored viewpoint for terrain '%s' as position %.1f, %.1f, %.1f\n",
+			(const char *) pTerrain->GetName(), trans.x, trans.y, trans.z);
+		m_pNormalCamera->SetTransform1(mat);
+		return;
+	}
+
+	// First visit.
+	bool bGotStoredViewpoint = false;
+	VTLOG1("First visit to this terrain, looking up initial location.\n");
+	if (g_Options.m_strInitLocation != "")
+	{
+		// may have been given on command line
+		pTerrain->GetLocSaver()->RecallFrom(g_Options.m_strInitLocation);
+		g_Options.m_strInitLocation = "";
+		bGotStoredViewpoint = true;
+	}
+	else
+	{
+		// or, it may be a location in the terrain parameters
+		vtString vname = pTerrain->GetParams().GetValueString(STR_INITLOCATION);
+		if (pTerrain->GetLocSaver()->RecallFrom(vname))
+			bGotStoredViewpoint = true;
+	}
+	if (!bGotStoredViewpoint)
+	{
+		// Initial default location for camera for this terrain: Try center
+		//  of heightfield, just above the ground, looking north.
+		vtHeightField3d *pHF = pTerrain->GetHeightField();
+		FPoint3 middle;
+		FMatrix4 mat;
+
+		VTLOG1(" Placing the camera at the center of the terrain:\n");
+		pHF->GetCenter(middle);
+		VTLOG(" Center: %f %f %f\n", middle.x, middle.y, middle.z);
+		pHF->FindAltitudeAtPoint(middle, middle.y);
+		VTLOG(" Altitude at that point: %f\n", middle.y);
+		float minheight = pTerrain->GetParams().GetValueFloat(STR_MINHEIGHT);
+		middle.y += minheight;
+		VTLOG(" plus minimum height (%f) is %f\n", minheight, middle.y);
+		mat.Identity();
+		mat.SetTrans(middle);
+
+		// Use it now
+		m_pNormalCamera->SetTransform1(mat);
+	}
+	// Remember it for later
+	FMatrix4 mat;
+	m_pNormalCamera->GetTransform1(mat);
+	pTerrain->SetCamLocation(mat);
+
+	pTerrain->Visited(true);
 }
 
 //

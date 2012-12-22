@@ -554,7 +554,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 
 	m_mgr.AddPane(m_pLayerDlg, wxAuiPaneInfo().
 				  Name(_T("layers")).Caption(_("Layers")).
-				  Left().Hide());
+				  Left());
 	m_mgr.Update();
 }
 
@@ -2590,7 +2590,7 @@ void EnviroFrame::OnSceneTerrain(wxCommandEvent& event)
 		str = wxString(pTerr->GetName(), wxConvUTF8);
 
 	if (wxGetApp().AskForTerrainName(this, str))
-		g_App.SwitchToTerrain(str.mb_str(wxConvUTF8));
+		g_App.RequestTerrain(str.mb_str(wxConvUTF8));
 }
 
 void EnviroFrame::OnUpdateSceneTerrain(wxUpdateUIEvent& event)
