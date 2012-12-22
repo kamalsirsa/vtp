@@ -580,7 +580,7 @@ CameraDlgBase::CameraDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	m_speedslider = new wxSlider( this, ID_SPEEDSLIDER, 0, 0, 100, wxDefaultPosition, wxSize( 100,-1 ), wxSL_HORIZONTAL );
 	bSizer112->Add( m_speedslider, 0, wxALIGN_CENTER, 0 );
 	
-	CamSizerTop->Add( bSizer112, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+	CamSizerTop->Add( bSizer112, 0, wxALIGN_RIGHT, 5 );
 	
 	wxBoxSizer* bSizer113;
 	bSizer113 = new wxBoxSizer( wxHORIZONTAL );
@@ -607,6 +607,21 @@ CameraDlgBase::CameraDlgBase( wxWindow* parent, wxWindowID id, const wxString& t
 	bSizer114->Add( m_accel, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
 	CamSizerTop->Add( bSizer114, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	wxBoxSizer* bSizer1121;
+	bSizer1121 = new wxBoxSizer( wxHORIZONTAL );
+	
+	id_text81 = new wxStaticText( this, ID_TEXT, _("Velocity Damping:"), wxDefaultPosition, wxDefaultSize, 0 );
+	id_text81->Wrap( -1 );
+	bSizer1121->Add( id_text81, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_damping = new wxTextCtrl( this, ID_DAMPING, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	bSizer1121->Add( m_damping, 0, wxALIGN_CENTER|wxALL, 0 );
+	
+	m_dampingslider = new wxSlider( this, ID_DAMPINGSLIDER, 0, 0, 100, wxDefaultPosition, wxSize( 100,-1 ), wxSL_HORIZONTAL );
+	bSizer1121->Add( m_dampingslider, 0, wxALIGN_CENTER, 0 );
+	
+	CamSizerTop->Add( bSizer1121, 1, wxALIGN_RIGHT, 5 );
 	
 	wxStaticBoxSizer* CamSizerLOD;
 	CamSizerLOD = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("LOD Distance") ), wxVERTICAL );
@@ -1663,26 +1678,32 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	mmav_style->SetSelection( 0 );
 	bSizer73->Add( mmav_style, 1, wxALIGN_CENTER|wxALL, 5 );
 	
-	sbSizer17->Add( bSizer73, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	sbSizer17->Add( bSizer73, 0, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer74;
 	bSizer74 = new wxBoxSizer( wxHORIZONTAL );
+	
+	
+	bSizer74->Add( 20, 0, 1, wxEXPAND, 5 );
 	
 	m_text33 = new wxStaticText( TParamsPanel7, ID_TEXT, _("Minimum height above ground: "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text33->Wrap( -1 );
 	bSizer74->Add( m_text33, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_minheight = new wxTextCtrl( TParamsPanel7, ID_MINHEIGHT, wxEmptyString, wxDefaultPosition, wxSize( 50,-1 ), 0 );
-	bSizer74->Add( m_minheight, 0, wxALIGN_CENTER|wxALL, 0 );
+	bSizer74->Add( m_minheight, 0, wxALIGN_CENTER|wxTOP|wxBOTTOM|wxRIGHT, 5 );
 	
 	m_text34 = new wxStaticText( TParamsPanel7, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text34->Wrap( 0 );
 	bSizer74->Add( m_text34, 0, wxALIGN_CENTER|wxALL, 0 );
 	
-	sbSizer17->Add( bSizer74, 0, wxALIGN_CENTER|wxALL, 0 );
+	sbSizer17->Add( bSizer74, 0, wxALIGN_LEFT, 5 );
 	
 	wxBoxSizer* bSizer75;
 	bSizer75 = new wxBoxSizer( wxHORIZONTAL );
+	
+	
+	bSizer75->Add( 20, 0, 1, wxEXPAND, 5 );
 	
 	id_text7 = new wxStaticText( TParamsPanel7, ID_TEXT, _("Navigation speed:"), wxDefaultPosition, wxDefaultSize, 0 );
 	id_text7->Wrap( -1 );
@@ -1695,7 +1716,22 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_text35->Wrap( 0 );
 	bSizer75->Add( m_text35, 0, wxALIGN_CENTER|wxALL, 0 );
 	
-	sbSizer17->Add( bSizer75, 0, wxALIGN_CENTER|wxALL, 0 );
+	sbSizer17->Add( bSizer75, 0, wxALIGN_LEFT, 5 );
+	
+	wxBoxSizer* bSizer751;
+	bSizer751 = new wxBoxSizer( wxHORIZONTAL );
+	
+	
+	bSizer751->Add( 20, 0, 1, wxEXPAND, 5 );
+	
+	id_text71 = new wxStaticText( TParamsPanel7, ID_TEXT, _("Velocity damping:"), wxDefaultPosition, wxDefaultSize, 0 );
+	id_text71->Wrap( -1 );
+	bSizer751->Add( id_text71, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_damping = new wxTextCtrl( TParamsPanel7, ID_DAMPING, wxEmptyString, wxDefaultPosition, wxSize( 50,-1 ), 0 );
+	bSizer751->Add( m_damping, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+	
+	sbSizer17->Add( bSizer751, 0, wxALIGN_LEFT, 5 );
 	
 	wxBoxSizer* bSizer76;
 	bSizer76 = new wxBoxSizer( wxVERTICAL );

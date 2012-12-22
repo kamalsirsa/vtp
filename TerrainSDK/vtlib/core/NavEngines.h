@@ -3,7 +3,7 @@
 //
 // Navigation Engines, generally for moving the camera with mouse input.
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -46,6 +46,7 @@ public:
 	void SetAlwaysMove(bool bMove);
 	void SetMultiplier(float fMult) { m_fMult = fMult; }
 
+	void OnMouse(vtMouseEvent &event);
 	void Eval();
 
 	enum DOF { DOF_X = 0, DOF_Y, DOF_Z, DOF_PITCH, DOF_YAW, DOF_ROLL };
@@ -165,7 +166,7 @@ protected:
 class vtHeightConstrain;
 
 /**
- * Similar to vtTerrainFlyer, but a velocity is maintained.
+ * Similar to vtTerrainFlyer, but a velocity (with damping) is maintained.
  * Viewpoint moves even after mouse button is released.
  */
 class VFlyer : public vtTerrainFlyer
@@ -185,11 +186,12 @@ public:
 		the engine you are using to keep the target above the ground. */
 	void SetGroundTester(vtHeightConstrain *pEng) { m_pConstrain = pEng; }
 
-	/** Set the damping of the velocity, per second. For example, a
-		value of 0.9 would reduce the velocity by 10% of its magnitude
-		per second. */
-	void SetDamping(float damp) { m_fDamping = damp; }
+	/** Set the damping of the velocity, per second. A typical range is from
+		1 (very little damping) to 10 (a lot of damping). */
+	void SetDamping(float factor) { m_fDamping = factor; }
+	float GetDamping() { return m_fDamping; }
 
+	void OnMouse(vtMouseEvent &event);
 	void Eval();	// overrides
 
 protected:

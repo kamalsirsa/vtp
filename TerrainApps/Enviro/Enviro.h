@@ -93,6 +93,8 @@ public:
 	// navigation and camera
 	virtual void SetFlightSpeed(float speed);
 	float GetFlightSpeed();
+	virtual void SetNavDamping(float factor);
+	float GetNavDamping();
 	void SetFlightAccel(bool bAccel);
 	bool GetFlightAccel();
 	void SetTopDown(bool bTopDown);

@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -216,6 +216,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(this, ID_MINHEIGHT, &m_fMinHeight, 2);
 	AddValidator(this, ID_NAV_STYLE, &m_iNavStyle);
 	AddNumValidator(this, ID_NAVSPEED, &m_fNavSpeed, 2);
+	AddNumValidator(this, ID_DAMPING, &m_fDamping, 1);
 	AddValidator(this, ID_LOCFILE, &m_strLocFile);
 	AddValidator(this, ID_INIT_LOCATION, &m_iInitLocation);
 	AddNumValidator(this, ID_HITHER, &m_fHither);
@@ -354,6 +355,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_fMinHeight =		Params.GetValueFloat(STR_MINHEIGHT);
 	m_iNavStyle =		Params.GetValueInt(STR_NAVSTYLE);
 	m_fNavSpeed =		Params.GetValueFloat(STR_NAVSPEED);
+	m_fDamping =		Params.GetValueFloat(STR_NAVDAMPING);
 	m_strLocFile = wxString(Params.GetValueString(STR_LOCFILE), wxConvUTF8);
 	m_strInitLocation = wxString(Params.GetValueString(STR_INITLOCATION), wxConvUTF8);
 	m_fHither =			Params.GetValueFloat(STR_HITHER);
@@ -513,6 +515,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueFloat(STR_MINHEIGHT, m_fMinHeight);
 	Params.SetValueInt(STR_NAVSTYLE, m_iNavStyle);
 	Params.SetValueFloat(STR_NAVSPEED, m_fNavSpeed);
+	Params.SetValueFloat(STR_NAVDAMPING, m_fDamping);
 	Params.SetValueString(STR_LOCFILE, (const char *) m_strLocFile.mb_str(wxConvUTF8));
 	Params.SetValueString(STR_INITLOCATION, (const char *) m_strInitLocation.mb_str(wxConvUTF8));
 	Params.SetValueFloat(STR_HITHER, m_fHither);

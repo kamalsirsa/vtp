@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -63,6 +63,7 @@ public:
 	float	m_fMinHeight;
 	int		m_iNavStyle;
 	float   m_fNavSpeed;
+	float   m_fDamping;
 	wxString   m_strLocFile;
 	int	 m_iInitLocation;
 	wxString   m_strInitLocation;

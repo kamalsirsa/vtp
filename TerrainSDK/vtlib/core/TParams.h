@@ -376,6 +376,7 @@ private:
 #define STR_MINHEIGHT "Min_Height"
 #define STR_NAVSTYLE "Nav_Style"
 #define STR_NAVSPEED "Nav_Speed"
+#define STR_NAVDAMPING "Nav_Damping"
 #define STR_LOCFILE "Locations_File"
 #define STR_INITLOCATION "Init_Location"
 #define STR_HITHER "Hither_Distance"

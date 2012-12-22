@@ -64,6 +64,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_MINHEIGHT, "20");
 	AddTag(STR_NAVSTYLE, "0");
 	AddTag(STR_NAVSPEED, "100");
+	AddTag(STR_NAVDAMPING, "5");
 	AddTag(STR_LOCFILE, "");
 	AddTag(STR_INITLOCATION, "");
 	AddTag(STR_HITHER, "5");

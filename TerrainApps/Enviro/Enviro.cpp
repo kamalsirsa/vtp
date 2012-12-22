@@ -1037,6 +1037,8 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerrain)
 	m_pPanoFlyer->SetSpeed(speed);
 	m_pOrthoFlyer->SetSpeed(speed);
 
+	m_pVFlyer->SetDamping(param.GetValueFloat(STR_NAVDAMPING));
+
 	// TODO: a more elegant way of keeping all nav engines current
 	m_pQuakeFlyer->SetHeightField(pHF);
 	m_pVFlyer->SetHeightField(pHF);
@@ -1303,6 +1305,16 @@ float Enviro::GetFlightSpeed()
 		return m_pCurrentFlyer->GetSpeed();
 	else
 		return 0.0f;
+}
+
+void Enviro::SetNavDamping(float factor)
+{
+	m_pVFlyer->SetDamping(factor);
+}
+
+float Enviro::GetNavDamping()
+{
+	return m_pVFlyer->GetDamping();
 }
 
 void Enviro::SetFlightAccel(bool bAccel)
