@@ -17,9 +17,9 @@
 #include "vtlib/core/Globe.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for progress dialog
-#include "EnviroGUI.h"  // for GetCurrentTerrain
+#include "EnviroGUI.h"		// for GetCurrentTerrain
 #include "EnviroFrame.h"
-#include "canvas.h"		// for EnableContinuousRendering
+#include "EnviroCanvas.h"	// for EnableContinuousRendering
 #include "StyleDlg.h"
 #include "LayerDlg.h"
 

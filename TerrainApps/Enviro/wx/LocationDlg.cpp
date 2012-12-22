@@ -21,7 +21,7 @@
 #include "vtui/Helper.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
-#include "canvas.h"
+#include "EnviroCanvas.h"		// for EnableContinuousRendering
 #include "LocationDlg.h"
 
 void BlockingMessageBox(const wxString &msg)
