@@ -469,7 +469,7 @@ void vtFrame::FreeContents()
 	}
 	m_itemmap.clear();
 	m_nodemap.clear();
-	m_Man.Empty();
+	m_Man.Clear();
 	m_pCurrentItem = NULL;
 	m_pCurrentModel = NULL;
 }

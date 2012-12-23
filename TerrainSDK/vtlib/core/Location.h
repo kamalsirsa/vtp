@@ -93,7 +93,7 @@ public:
 	/// Find a location by name
 	int FindLocation(const char *locname);
 
-	void Empty();
+	void Clear();
 
 	// you must call these methods before this class is useful for vtTerrain:
 	/// Attach this LocationSaver to an object in the scenegraph

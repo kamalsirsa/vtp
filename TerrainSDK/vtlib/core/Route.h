@@ -93,7 +93,7 @@ protected:
 class vtRouteMap : public vtArray<vtRoute *>
 {
 public:
-	virtual ~vtRouteMap() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	virtual ~vtRouteMap() { Clear(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
 	void DestructItems(uint first, uint last)
 	{
 		for (uint i = first; i <= last; i++)

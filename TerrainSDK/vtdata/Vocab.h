@@ -38,7 +38,7 @@ typedef vtArray<InputToken *> SentenceIn;
 class SentenceMatch : public vtArray<MatchToken *>
 {
 public:
-	virtual ~SentenceMatch() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	virtual ~SentenceMatch() { Clear(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
 	void DestructItems(uint first, uint last) {
 		for (uint i = first; i <= last; i++) delete GetAt(i);
 	}

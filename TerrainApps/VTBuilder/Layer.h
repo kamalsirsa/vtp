@@ -127,7 +127,7 @@ typedef vtLayer *vtLayerPtr;
 class LayerArray : public vtArray<vtLayerPtr>
 {
 public:
-	// don't need explicit destructor here because Empty() is always called
+	// don't need explicit destructor here because Clear() is always called
 	virtual void DestructItems(uint first, uint last);
 	vtLayer *FindByFilename(const wxString &name);
 };

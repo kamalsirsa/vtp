@@ -465,22 +465,22 @@ void vtTagArray::LogTags() const
 
 vtItem::vtItem()
 {
-	m_extents.Empty();
+	m_extents.SetToZero();
 }
 
 vtItem::~vtItem()
 {
 	// clean up
-	Empty();
+	DeleteModels();
 }
 
-void vtItem::Empty()
+void vtItem::DeleteModels()
 {
 	for (uint i = 0; i < m_models.GetSize(); i++)
 	{
 		delete m_models.GetAt(i);
 	}
-	m_models.Empty();
+	m_models.Clear();
 }
 
 void vtItem::RemoveModel(vtModel *model)
@@ -671,19 +671,19 @@ void ContentVisitor::data(const char * s, int length)
 vtContentManager::~vtContentManager()
 {
 	// clean up
-	Empty();
+	Clear();
 }
 
-void vtContentManager::Empty()
+void vtContentManager::Clear()
 {
 	uint items = m_items.GetSize();
 	if (items)
-		VTLOG("vtContentManager::Empty, %d items to delete\n", items);
+		VTLOG("vtContentManager::Clear, %d items to delete\n", items);
 	for (uint i = 0; i < items; i++)
 	{
 		delete m_items.GetAt(i);
 	}
-	m_items.Empty();
+	m_items.Clear();
 }
 
 void vtContentManager::RemoveItem(vtItem *item)

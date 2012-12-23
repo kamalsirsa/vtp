@@ -849,5 +849,5 @@ void vtFence3d::LoadProfile()
 	if (path != "")
 		LoadFLine2FromSHP(path, m_Profile);
 	else
-		m_Profile.Empty();
+		m_Profile.Clear();
 }

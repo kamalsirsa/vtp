@@ -1356,7 +1356,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		else
 		{
 			// No extents.
-			m_Extents.Empty();
+			m_Extents.SetToZero();
 			wxString msg = _("File lacks geographic location (extents).  ");
 			msg += _("Would you like to specify extents?\n");
 			VTLOG(msg.mb_str(wxConvUTF8));
@@ -1365,7 +1365,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 			{
 				VTLOG("Yes.\n");
 				DRECT ext;
-				ext.Empty();
+				ext.SetToZero();
 				ExtentDlg dlg(NULL, -1, _("Extents"));
 				dlg.SetArea(ext, (m_proj.IsGeographic() != 0));
 				if (dlg.ShowModal() == wxID_OK)

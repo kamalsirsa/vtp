@@ -83,7 +83,7 @@ void vtTerrainScene::CleanupScene()
 	VTLOG("vtTerrainScene::CleanupScene\n");
 
 	m_Content.ReleaseContents();
-	m_Content.Empty();
+	m_Content.Clear();
 
 	SetCurrentTerrain(NULL);
 

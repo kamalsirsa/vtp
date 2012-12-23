@@ -94,7 +94,7 @@ bool vtItem3d::LoadModels()
 //
 void vtItem3d::UpdateExtents()
 {
-	m_extents.Empty();
+	m_extents.SetToZero();
 
 	if (m_pNode == NULL)
 		return;

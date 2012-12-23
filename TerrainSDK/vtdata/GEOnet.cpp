@@ -216,7 +216,7 @@ Country::~Country()
 	int j, num_places = m_places.GetSize();
 	for (j = 0; j < num_places; j++)
 		delete m_places[j];
-	m_places.Empty();
+	m_places.Clear();
 }
 
 bool Country::FindPlace(const char *name_nd, DPoint2 &point, bool bFullLength)
@@ -276,7 +276,7 @@ bool Country::FindAllMatchingPlaces(const char *name_nd, bool bFullLength, Place
 	int j, num_places = m_places.GetSize();
 
 	bool match = false;
-	places.Empty();
+	places.Clear();
 
 	for (j = 0; j < num_places; j++)
 	{

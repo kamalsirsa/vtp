@@ -718,7 +718,7 @@ public:
 		center = p;
 		radius = fRadius;
 	}
-	void Empty() { center.Set(0,0,0); radius = 0; }
+	void SetToZero() { center.Set(0,0,0); radius = 0; }
 
 	void GrowToContain(const FSphere &sh)
 	{
@@ -839,7 +839,7 @@ public:
 	bool IsNull() const { return (left == 0.0 && top == 0.0 && right == 0.0 && bottom == 0.0); }
 	// return true if empty
 	bool IsEmpty() const { return (left == right && top == bottom); }
-	void Empty() { left = top = right = bottom = 0.0; }
+	void SetToZero() { left = top = right = bottom = 0.0; }
 	void Sort()
 	{
 		if (left > right) { double tmp = left; left = right; right = tmp; }
@@ -977,7 +977,7 @@ public:
 	float Height() const { return top - bottom; };
 	// return true if empty
 	bool IsEmpty() const { return (left == right && top == bottom); }
-	void Empty() { left = top = right = bottom = 0.0; }
+	void SetToZero() { left = top = right = bottom = 0.0; }
 	void Sort()
 	{
 		if (left > right) { float tmp = left; left = right; right = tmp; }

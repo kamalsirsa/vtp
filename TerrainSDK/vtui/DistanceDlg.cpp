@@ -89,7 +89,7 @@ void DistanceDlg::Zero()
 {
 	m_p1.Set(0,0);
 	m_p2.Set(0,0);
-	m_path.Empty();
+	m_path.Clear();
 	m_fGround = FLT_MIN;
 	m_fVertical = FLT_MIN;
 }

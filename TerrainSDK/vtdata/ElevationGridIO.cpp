@@ -1819,7 +1819,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	else
 	{
 		// No extents
-		m_EarthExtents.Empty();
+		m_EarthExtents.SetToZero();
 	}
 
 	ComputeCornersFromExtents();

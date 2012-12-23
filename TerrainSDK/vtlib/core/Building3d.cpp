@@ -79,7 +79,7 @@ void vtBuilding3d::DestroyGeometry()
 
 	m_pContainer->removeChild(m_pGeode);
 	m_pGeode = NULL;
-	m_Mesh.Empty();
+	m_Mesh.Clear();
 }
 
 void vtBuilding3d::AdjustHeight(vtHeightField3d *pHeightField)

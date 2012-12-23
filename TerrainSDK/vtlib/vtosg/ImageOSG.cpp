@@ -984,7 +984,7 @@ bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 
 vtImageGeo::vtImageGeo()
 {
-	m_extents.Empty();
+	m_extents.SetToZero();
 }
 
 vtImageGeo::vtImageGeo(const vtImageGeo *copyfrom) : vtImage(*copyfrom)

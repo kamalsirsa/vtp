@@ -120,7 +120,7 @@ Builder::~Builder()
 
 void Builder::DeleteContents()
 {
-	m_Layers.Empty();
+	m_Layers.Clear();
 	m_pActiveLayer = NULL;
 	FreeGlobalMaterials();
 	FreeContentFiles();

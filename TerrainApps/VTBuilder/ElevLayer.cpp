@@ -973,7 +973,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		dlg.m_fVUnits = 1.0f;
 		dlg.m_fSpacing = 30.0f;
 		dlg.m_bBigEndian = false;
-		dlg.m_extents.Empty();
+		dlg.m_extents.SetToZero();
 		g_bld->GetProjection(dlg.m_original);
 
 		if (dlg.ShowModal() == wxID_OK)
@@ -1028,7 +1028,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 			if (res == wxYES)
 			{
 				DRECT ext;
-				ext.Empty();
+				ext.SetToZero();
 				ExtentDlg dlg(NULL, -1, _("Elevation Grid Extents"));
 				dlg.SetArea(ext, (pProj->IsGeographic() != 0));
 				if (dlg.ShowModal() == wxID_OK)

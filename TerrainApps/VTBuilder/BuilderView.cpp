@@ -488,7 +488,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 		WMPolyExtents[i].GrowToContainLine(WMPoly[i]);
 
 		// and project into current CRS
-		WMPolyDraw[i].Empty();
+		WMPolyDraw[i].Clear();
 		for (j = 0; j < WMPoly[i].GetSize(); j++)
 		{
 			point = WMPoly[i].GetAt(j);

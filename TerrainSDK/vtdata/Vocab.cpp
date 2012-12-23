@@ -339,7 +339,7 @@ int TestParser::IsMaterial(int index)
 
 void TestParser::ParseInput(const char *string)
 {
-	sen.Empty();
+	sen.Clear();
 
 	InputToken *t;
 	char *word = strtok((char *)string, " ");

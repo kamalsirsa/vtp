@@ -45,7 +45,7 @@
 \code
 	class MyArray : public vtArray<MyObject *>
 	{
-		virtual ~MyArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+		virtual ~MyArray() { Clear(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
 		virtual	void DestructItems(uint first, uint last)
 		{
 			for (uint i = first; i <= last; i++)
@@ -61,37 +61,35 @@ public:
 	vtArray(const vtArray<E>&);
 	virtual ~vtArray();
 
-//	Accessors
 	uint	GetSize() const;
 	uint	GetMaxSize() const;
-	bool		SetSize(uint);
-	bool		SetMaxSize(uint);
+	bool	SetSize(uint);
+	bool	SetMaxSize(uint);
 	uint	GetElemSize() const;
-	E*			GetData() const;
-	void		FreeData();
-	bool		IsEmpty() const;
-	E&			GetAt(uint i) const;
-	bool		SetAt(uint i, E);
+	E*		GetData() const;
+	void	FreeData();
+	bool	IsEmpty() const;
+	E&		GetAt(uint i) const;
+	bool	SetAt(uint i, E);
 
-//	Other operations
 	vtArray<E>& operator=(const vtArray<E>&);
 	E&			operator[](uint i);
 	const E&	operator[](uint i) const;
-	void		Empty();
+	void		Clear();
 	bool		RemoveAt(uint i, int n = 1);
 	int			Append(const E&);
 	int			Append(const vtArray<E>&);
 	int			Find(const E&) const;
 
 protected:
-//	Internal functions
+	//	Internal functions
 	virtual bool	Grow(uint);
 	virtual	void	DestructItems(uint first, uint last);
 
-//	Data members
+	//	Data members
 	uint	m_Size;		// number of elements added so far
 	uint	m_MaxSize;	// maximum number of elements we have room for
-	E*				m_Data;		// data area for array
+	E*		m_Data;		// data area for array
 };
 
 
@@ -125,7 +123,7 @@ template <class E> vtArray<E>::vtArray(uint size)
  */
 template <class E> void vtArray<E>::FreeData()
 {
-	Empty();
+	Clear();
 	if (m_Data)
 		free(m_Data);
 	m_Data = NULL;
@@ -183,7 +181,7 @@ template <class E> inline void vtArray<E>::DestructItems(uint first, uint last)
 template <class E> inline vtArray<E>::~vtArray()
 {
 	//VTLOG("~vtArray, size %d, max %d\n", m_Size, m_MaxSize);
-	Empty();
+	Clear();
 	free(m_Data);
 	m_Data = NULL;
 	m_MaxSize = 0;
@@ -495,7 +493,7 @@ template <class E> int vtArray<E>::Append(const vtArray<E>& src)
  *
  * \sa vtArray::SetSize vtArray::IsEmpty
  */
-template <class E> void vtArray<E>::Empty()
+template <class E> void vtArray<E>::Clear()
 {
 	//VTLOG("Empty, size %d\n", m_Size);
 	if (m_Size > 0)

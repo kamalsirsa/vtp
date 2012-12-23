@@ -207,7 +207,7 @@ void ProfileDlg::GetValues()
 	{
 		if (m_p1 == m_p2)
 			return;
-		m_path.Empty();
+		m_path.Clear();
 		m_path.Append(m_p1);
 		m_path.Append(m_p2);
 	}

@@ -112,7 +112,7 @@ public:
 	TimeControlPointMap &GetTimeControlPointMap() { return m_TimeControlPointMap; }
 	const TimeControlPointMap &GetTimeControlPointMap() const { return m_TimeControlPointMap; }
 
-	void Empty() { m_TimeControlPointMap.clear(); }
+	void Clear() { m_TimeControlPointMap.clear(); }
 	bool IsEmpty() const { return m_TimeControlPointMap.empty(); }
 
 	/** If Loop is true, interpolation of the control points will loop back

@@ -102,7 +102,7 @@ vtTerrain::~vtTerrain()
 
 	// Remove/release the things this terrain has added to the scene.
 	m_Content.ReleaseContents();
-	m_Content.Empty();
+	m_Content.Clear();
 
 	m_AnimContainer.clear();
 
@@ -2538,7 +2538,7 @@ void vtTerrain::GetTerrainBounds()
 	if (m_pDynGeomScale != NULL)
 		m_pDynGeomScale->GetBoundSphere(m_bound_sphere);
 	else
-		m_bound_sphere.Empty();
+		m_bound_sphere.SetToZero();
 }
 
 /**

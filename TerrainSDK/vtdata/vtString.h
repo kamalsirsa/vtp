@@ -74,7 +74,7 @@ public:
 	// TRUE if zero length
 	bool IsEmpty() const;
 	// clear contents to empty
-	void Empty();
+	void Clear();
 
 	// return single character at zero-based index
 	char GetAt(int nIndex) const;

@@ -963,7 +963,7 @@ void Enviro::FlyInStage1()
 		m_iFlightStage = 2;
 		m_iFlightStep = 0;
 
-		m_FlyInAnim.Empty();
+		m_FlyInAnim.Clear();
 
 		// Set special high initial camera location to match where the
 		//  trackball left us in earth view

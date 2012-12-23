@@ -39,7 +39,7 @@ vtStructureArray::vtStructureArray()
 
 vtStructureArray::~vtStructureArray()
 {
-	Empty();
+	Clear();
 	free(m_Data);
 	m_Data = NULL;
 	m_MaxSize = 0;
@@ -1221,7 +1221,7 @@ void DLine2FromString(const char *data, DLine2 &line)
 	for (size_t i = 0; i < strlen(data); i++)
 		if (data[i] == ',')
 			verts++;
-	line.Empty();
+	line.Clear();
 	line.SetMaxSize(verts);
 
 	double x, y;

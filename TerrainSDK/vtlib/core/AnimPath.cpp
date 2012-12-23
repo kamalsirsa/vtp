@@ -416,7 +416,7 @@ bool vtAnimPath::Read(const char *fname)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// Clear before loading
-	Empty();
+	Clear();
 
 	AnimPathVisitor visitor(this);
 	try

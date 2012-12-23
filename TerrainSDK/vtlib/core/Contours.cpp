@@ -282,7 +282,7 @@ void vtContourConverter::Flush()
 			}
 		}
 	}
-	m_line.Empty();
+	m_line.Clear();
 }
 
 #endif // SUPPORT_QUIKGRID

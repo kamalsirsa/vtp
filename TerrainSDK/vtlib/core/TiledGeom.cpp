@@ -162,7 +162,7 @@ static vtTiledGeom *s_pTiledGeom = NULL;
 TiledDatasetDescription::TiledDatasetDescription()
 {
 	cols = rows = lod0size = 0;
-	earthextents.Empty();
+	earthextents.SetToZero();
 	minheight = maxheight = INVALID_ELEVATION;
 	bJPEG = false;
 }

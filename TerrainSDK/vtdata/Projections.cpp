@@ -935,7 +935,7 @@ void SetupEPSGDatums()
 
 void CleanupEPSGDatums()
 {
-	g_EPSGDatums.Empty();
+	g_EPSGDatums.Clear();
 }
 
 /**

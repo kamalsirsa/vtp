@@ -29,15 +29,15 @@ vtLocationSaver::~vtLocationSaver()
 {
 	delete m_pConvertToWGS;
 	delete m_pConvertFromWGS;
-	Empty();
+	Clear();
 }
 
-void vtLocationSaver::Empty()
+void vtLocationSaver::Clear()
 {
 	int i, num = m_loc.GetSize();
 	for (i = 0; i < num; i++)
 		delete m_loc[i];
-	m_loc.Empty();
+	m_loc.Clear();
 }
 
 bool vtLocationSaver::Write(const vtString &fname_in)

@@ -183,7 +183,7 @@ void ContourConverter::Flush()
 			m_pLS->SetValue(record, 0, m_fAltitude);
 		}
 	}
-	m_line.Empty();
+	m_line.Clear();
 }
 
 #endif // SUPPORT_QUIKGRID

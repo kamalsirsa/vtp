@@ -459,7 +459,7 @@ void IslandTerrain::create_building_manually()
 	pEdge->m_pMaterial = GetGlobalMaterials()->FindName(BMAT_NAME_CEMENT);
 
 	// main floor level (1)
-	dl.Empty();
+	dl.Clear();
 	dl.Append(c7);
 	dl.Append(c3);
 	dl.Append(c4);
@@ -524,7 +524,7 @@ void IslandTerrain::create_building_manually()
 
 	//////////////////////////////
 	// first roof level (2)
-	dl.Empty();
+	dl.Clear();
 	dl.Append(c1);
 	dl.Append(c3);
 	dl.Append(c4);
@@ -541,7 +541,7 @@ void IslandTerrain::create_building_manually()
 
 	//////////////////////////////
 	// second roof level (3)
-	dl.Empty();
+	dl.Clear();
 	dl.Append(c8);
 	dl.Append(c10);
 	dl.Append(c11);

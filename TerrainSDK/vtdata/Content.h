@@ -163,7 +163,7 @@ public:
 	vtItem();
 	virtual ~vtItem();
 
-	void Empty();
+	void DeleteModels();
 	void AddModel(vtModel *item) { m_models.Append(item); }
 	void RemoveModel(vtModel *model);
 	uint NumModels() { return m_models.GetSize(); }
@@ -196,7 +196,7 @@ public:
 	void ReadXML(const char *filename);
 	void WriteXML(const char *filename) const;
 
-	void Empty();
+	void Clear();
 	void AddItem(vtItem *item) { m_items.Append(item); }
 	void RemoveItem(vtItem *item);
 	uint NumItems() { return m_items.GetSize(); }

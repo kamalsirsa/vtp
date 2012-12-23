@@ -2284,7 +2284,7 @@ void Enviro::SetDistanceTool(const DLine2 &line)
 
 void Enviro::ResetDistanceTool()
 {
-	m_distance_path.Empty();
+	m_distance_path.Clear();
 	m_fArcLength = 0.0;
 	if (m_bMeasurePath)
 		ShowDistance(DLine2(), FLT_MIN, FLT_MIN);

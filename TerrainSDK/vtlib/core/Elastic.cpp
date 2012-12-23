@@ -107,7 +107,7 @@ void ElasticPolyline::EnforceRightAngles()
 
 void ElasticPolyline::Clear()
 {
-	m_Line.Empty();
+	m_Line.Clear();
 	Realize();
 }
 

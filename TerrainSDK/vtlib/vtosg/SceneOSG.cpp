@@ -259,7 +259,7 @@ void vtScene::Shutdown()
 
 	delete m_pDefaultWindow;
 	m_pDefaultWindow = NULL;
-	m_Windows.Empty();
+	m_Windows.Clear();
 
 	// Also clear the OSG cache
 	osgDB::Registry::instance()->clearObjectCache();

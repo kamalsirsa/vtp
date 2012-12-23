@@ -1097,7 +1097,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 					// Update the shading and culture
 					pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform());
 					DRECT area;
-					area.Empty();
+					area.SetToZero();
 					pTerr->RedrapeCulture(area);
 				}
 			}
@@ -1128,7 +1128,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 					// Update the shading and culture
 					pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform());
 					DRECT area;
-					area.Empty();
+					area.SetToZero();
 					pTerr->RedrapeCulture(area);
 				}
 			}
@@ -1158,7 +1158,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 					// Update the (entire) shading and culture
 					pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform());
 					DRECT area;
-					area.Empty();
+					area.SetToZero();
 					pTerr->RedrapeCulture(area);
 				}
 			}
@@ -3803,7 +3803,7 @@ void EnviroFrame::CarveTerrainToFitNode(osg::Node *node)
 
 			terr->RecreateTextures(vtGetTS()->GetSunLightTransform(), progress_callback);
 			DRECT area;
-			area.Empty();
+			area.SetToZero();
 			terr->RedrapeCulture(area);
 
 			CloseProgressDialog();
