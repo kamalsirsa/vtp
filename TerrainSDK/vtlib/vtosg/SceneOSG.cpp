@@ -3,14 +3,11 @@
 //
 // Implementation of vtScene for the OSG library
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
-#if OLD_OSG_SHADOWS
-#include "StructureShadowsOSG.h"
-#endif
 
 #include <osgViewer/ViewerEventHandlers>
 
@@ -502,11 +499,6 @@ void vtScene::SetRoot(vtGroup *pRoot)
 	if (pRoot)
 		m_StateRoot->addChild(pRoot);
 
-#if OLD_OSG_SHADOWS
-	// Clear out any shadow stuff
-	m_pStructureShadowsOSG = NULL;
-#endif
-
 	// Remember it
 	m_pRoot = pRoot;
 }
@@ -683,64 +675,6 @@ bool vtScene::GetWindowSizeFromOSG()
 
 ////////////////////////////////////////
 // Shadow methods
-
-#if OLD_OSG_SHADOWS
-void vtScene::ShadowVisibleNode(osg::Node *node, bool bVis)
-{
-	if (m_pStructureShadowsOSG.valid())
-		if (bVis)
-			m_pStructureShadowsOSG->ExcludeFromShadower(node, false);
-		else
-			m_pStructureShadowsOSG->ExcludeFromShadower(node, true);
-}
-
-bool vtScene::IsShadowVisibleNode(osg::Node *node)
-{
-	if (m_pStructureShadowsOSG.valid())
-		return (m_pStructureShadowsOSG->IsExcludedFromShadower(node) == false);
-	return false;
-}
-
-void vtScene::SetShadowedNode(vtTransform *pLight, osg::Node *pShadowerNode,
-							  osg::Node *pShadowed, int iRez, float fDarkness,
-							  int iTextureUnit, const FSphere &ShadowSphere)
-{
-	m_pStructureShadowsOSG = new CStructureShadowsOSG;
-	m_pStructureShadowsOSG->Initialise(m_pOsgSceneView.get(), pShadowerNode,
-		pShadowed, iRez, fDarkness, iTextureUnit, ShadowSphere);
-	m_pStructureShadowsOSG->SetSunDirection(v2s(-pLight->GetDirection()));
-	m_pStructureShadowsOSG->ComputeShadows();
-}
-
-void vtScene::UnsetShadowedNode(vtTransform *pTransform)
-{
-	m_pStructureShadowsOSG = NULL;
-}
-
-void vtScene::UpdateShadowLightDirection(vtTransform *pLight)
-{
-	if (m_pStructureShadowsOSG.valid())
-		m_pStructureShadowsOSG->SetSunDirection(v2s(-pLight->GetDirection()));
-}
-
-void vtScene::SetShadowDarkness(float fDarkness)
-{
-	if (m_pStructureShadowsOSG.valid())
-		m_pStructureShadowsOSG->SetShadowDarkness(fDarkness);
-}
-
-void vtScene::SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw)
-{
-	if (m_pStructureShadowsOSG.valid())
-		m_pStructureShadowsOSG->SetShadowSphere(ShadowSphere, bForceRedraw);
-}
-
-void vtScene::ComputeShadows()
-{
-	if (m_pStructureShadowsOSG.valid())
-		m_pStructureShadowsOSG->ComputeShadows();
-}
-#endif // OLD_OSG_SHADOWS
 
 void vtScene::SetGraphicsContext(osg::GraphicsContext* pGraphicsContext)
 {

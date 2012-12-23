@@ -854,14 +854,6 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 {
 	bool bShow = event.IsChecked();
 
-#if OLD_OSG_SHADOWS
-	osg::Node *pThing = GetNodeFromItem(m_item);
-	if (pThing)
-	{
-		vtGetScene()->ShadowVisibleNode(pThing, bVis);
-		vtGetScene()->ComputeShadows();
-	}
-#else
 	LayerItemData *data = GetLayerDataFromItem(m_item);
 	if (!data)
 		return;
@@ -888,29 +880,10 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 			// whole layer is selected
 			slay->SetShadows(bShow);
 	}
-#endif
 }
 
 void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 {
-#if OLD_OSG_SHADOWS
-	bool bShadows = false;
-	osg::Node *pThing = NULL;
-
-	LayerItemData *data = GetLayerDataFromItem(m_item);
-	if (data && data->m_slay)
-	{
-		pThing = GetNodeFromItem(m_item);
-		vtTerrain *terr = GetCurrentTerrain();
-		bShadows = (terr && terr->GetParams().GetValueBool(STR_STRUCT_SHADOWS) &&
-			pThing != NULL);
-	}
-
-	event.Enable(bShadows);
-
-	if (pThing)
-		event.Check(vtGetScene()->IsShadowVisibleNode(pThing));
-#else
 	LayerItemData *data = GetLayerDataFromItem(m_item);
 	if (!data)
 	{
@@ -945,7 +918,6 @@ void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 		else
 			event.Enable(false);
 	}
-#endif
 }
 
 void LayerDlg::OnVisible( wxCommandEvent &event )

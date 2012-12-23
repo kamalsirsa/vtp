@@ -341,40 +341,7 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 	m_pTimeEngine->SetEnabled(true);
 
 	if (param.GetValueBool(STR_STRUCT_SHADOWS))
-	{
-#ifdef OLD_OSG_SHADOWS
-		int iRez = param.GetValueInt(STR_SHADOW_REZ);
-		// Experimental OSG-specific code!
-		// Set up cull callback on the dynamic geometry transform node
-		vtLodGrid *pStructures = m_pCurrentTerrain->GetStructureGrid();
-		osg::Node *pShadowed = m_pCurrentTerrain->GetTopGroup()->getChild(0);
-		if (NULL != pShadowed)
-		{
-			bool bPaging = (pTerrain->GetStructureLodGrid() != NULL);
-
-			LocaleWrap normal_numbers(LC_NUMERIC, "C");
-			float fDarkness;
-			if (!param.GetValueFloat(STR_SHADOW_DARKNESS, fDarkness))
-				fDarkness = 0.8f;
-			int iTextureUnit = m_pCurrentTerrain->GetShadowTextureUnit();
-
-			FSphere shadow_area;
-			if (bPaging)
-				shadow_area.Set(FPoint3(0,0,0),-1);
-			else
-				pStructures->GetBoundSphere(shadow_area, true);
-
-			vtGetScene()->SetShadowedNode(m_pSunLight, pStructures, pShadowed,
-				iRez, fDarkness, iTextureUnit, shadow_area);
-
-			// Update the time engine once again, forcing it to move the sun
-			//  to set the correct sunlight direction
-			m_pTimeEngine->SetTime(localtime);
-		}
-#else
 		m_pCurrentTerrain->SetShadows(true);
-#endif
-	}
 }
 
 void vtTerrainScene::UpdateSkydomeForTerrain(vtTerrain *pTerrain)
@@ -440,11 +407,6 @@ void vtTerrainScene::SetTime(const vtTime &time)
 	{
 		m_pSkyDome->SetTime(time);
 		// TODO? Update the fog color to match the color of the horizon.
-
-#if OLD_OSG_SHADOWS
-		// Experimental OSG-specific code!
-		vtGetScene()->UpdateShadowLightDirection(m_pSunLight);
-#endif
 	}
 }
 

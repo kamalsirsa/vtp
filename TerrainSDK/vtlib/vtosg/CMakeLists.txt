@@ -2,12 +2,12 @@
 set(VTLIB_OSG_SOURCE_FILES ExternalHeightField3d.cpp GeometryUtils.cpp GroupLOD.cpp
 		ImageOSG.cpp LightSpacePerspectiveShadowTechnique.cpp Material.cpp Mesh.cpp
 		NodeLog.cpp NodeOSG.cpp OSGEventHandler.cpp SaveImageOSG.cpp SceneOSG.cpp
-		ScreenCaptureHandler.cpp SimpleInterimShadowTechnique.cpp StructureShadowsOSG.cpp
+		ScreenCaptureHandler.cpp SimpleInterimShadowTechnique.cpp
 		VisualImpactCalculatorOSG.cpp)
 set(VTLIB_OSG_HEADER_FILES ExternalHeightField3d.h GeometryUtils.h GroupLOD.h
 		ImageOSG.h LightSpacePerspectiveShadowTechnique.h Material.h MathOSG.h
 		Mesh.h NodeOSG.h OSGEventHandler.h SaveImageOSG.h SceneOSG.h
-		ScreenCaptureHandler.h SimpleInterimShadowTechnique.h StructureShadowsOSG.h
+		ScreenCaptureHandler.h SimpleInterimShadowTechnique.h
 		VisualImpactCalculatorOSG.h)
 
 # Add a library target called vtlib

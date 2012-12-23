@@ -403,39 +403,6 @@ void Enviro::DoControlTerrain()
 		else
 			SetHUDMessageText("");
 	}
-	if (plg)
-	{
-#if OLD_OSG_SHADOWS
-		// Periodically re-render the shadows
-		static FPoint3 previous_shadow_center(0,0,0);
-
-		// Only draw shadows in the area of visible structure LOD
-		FSphere sph;
-		vtCamera *cam = vtGetScene()->GetCamera();
-		sph.center = cam->GetTrans();
-		sph.radius = terr->GetLODDistance(TFT_STRUCTURES);
-
-		bool bRedrawShadows = false;
-
-		// If we moved 15% of the LOD distance, re-render
-		if ((sph.center - previous_shadow_center).Length() > (sph.radius * 0.15f))
-			bRedrawShadows = true;
-
-		// If we've paged in 20 buildings since last render, re-render
-		if (pslg && pslg->GetLoadCount() > 20)
-			bRedrawShadows = true;
-
-		if (bRedrawShadows)
-		{
-			// Pass true to force re-render with current area
-			vtGetScene()->SetShadowSphere(sph, true);
-
-			previous_shadow_center = sph.center;
-			if (pslg)
-				pslg->ResetLoadCount();
-		}
-#endif // #if OLD_OSG_SHADOWS
-	}
 }
 
 bool Enviro::RequestTerrain(const char *name)

@@ -1,7 +1,7 @@
 //
 // SceneOSG.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,10 +15,6 @@
 #include "../core/Engine.h"
 
 #include "VisualImpactCalculatorOSG.h"
-
-#if OLD_OSG_SHADOWS
-class CStructureShadowsOSG;
-#endif
 
 /** \defgroup sg Scene graph
  * These classes define the node of a scene graph and the Scene class which
@@ -162,21 +158,6 @@ public:
 			return NULL;
 	}
 
-#if OLD_OSG_SHADOWS
-	// Experimental:
-	// Object-terrain shadow casting, only for OSG
-	void SetShadowedNode(vtTransform *pLight, osg::Node *pShadowerNode,
-		osg::Node *pShadowed, int iRez, float fDarkness, int iTextureUnit,
-		const FSphere &ShadowSphere);
-	void UnsetShadowedNode(vtTransform *pTransform);
-	void UpdateShadowLightDirection(vtTransform *pLight);
-	void SetShadowDarkness(float fDarkness);
-	void SetShadowSphere(const FSphere &ShadowSphere, bool bForceRedraw);
-	void ShadowVisibleNode(osg::Node *node, bool bVis);
-	bool IsShadowVisibleNode(osg::Node *node);
-	void ComputeShadows();
-#endif
-
 	void SetHUD(vtHUD *hud) { m_pHUD = hud; }
 	vtHUD *GetHUD() { return m_pHUD; }
 
@@ -231,9 +212,7 @@ protected:
 	bool	m_bWinInfo;
 	bool	m_bInitialized;
 	bool	m_bWireframe;
-#if OLD_OSG_SHADOWS
-	osg::ref_ptr<CStructureShadowsOSG> m_pStructureShadowsOSG;
-#endif
+
 #if VISUAL_IMPACT_CALCULATOR
 	CVisualImpactCalculatorOSG m_VisualImpactCalculator;
 #endif
