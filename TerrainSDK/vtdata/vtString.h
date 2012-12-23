@@ -79,7 +79,9 @@ public:
 	// return single character at zero-based index
 	char GetAt(int nIndex) const;
 	// return single character at zero-based index
-	char operator[](int nIndex) const;
+	const char& operator[](int nIndex) const;
+	// access single character at zero-based index
+	char& operator[](int nIndex);
 	// set a single character at zero-based index
 	void SetAt(int nIndex, char ch);
 	// return pointer to const string
@@ -300,7 +302,12 @@ inline char vtString::GetAt(int nIndex) const
 {
 	return m_pchData[nIndex];
 }
-inline char vtString::operator[](int nIndex) const
+inline const char& vtString::operator[](int nIndex) const
+{
+	// same as GetAt
+	return m_pchData[nIndex];
+}
+inline char& vtString::operator[](int nIndex)
 {
 	// same as GetAt
 	return m_pchData[nIndex];

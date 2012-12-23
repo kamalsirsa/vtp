@@ -220,7 +220,7 @@ bool vtLocationSaver::StoreTo(uint num, const LocNameString &name)
 
 	vtLocation *loc;
 	if (num < m_loc.GetSize())
-		loc = m_loc.GetAt(num);
+		loc = m_loc[num];
 	else
 		loc = new vtLocation;
 
@@ -334,8 +334,7 @@ int vtLocationSaver::FindLocation(const char *locname)
 
 void vtLocationSaver::Remove(int num)
 {
-	vtLocation *loc = m_loc.GetAt(num);
-	delete loc;
+	delete m_loc[num];
 	m_loc.RemoveAt(num);
 }
 

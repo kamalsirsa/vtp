@@ -69,7 +69,7 @@ void vtUtilityLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 	for (i = 0; i < npoles; i++)
 	{
 		// draw each Pole
-		vtPole *pole = m_Poles.GetAt(i);
+		vtPole *pole = m_Poles[i];
 
 /*		if (pole->IsSelected())
 		{
@@ -92,7 +92,7 @@ void vtUtilityLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 	pDC->SetPen(greenPen);
 	for (i = 0; i < nlines; i++)
 	{
-		vtLine *line = m_Lines.GetAt(i);
+		vtLine *line = m_Lines[i];
 		pView->DrawPolyLine(pDC, *line, false);
 	}
 }

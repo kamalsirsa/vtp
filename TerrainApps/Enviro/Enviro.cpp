@@ -1664,7 +1664,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		VTLOG("  Found route\n");
 		m_bDragging = true;
 		m_bSelectedUtil = true;
-		m_pSelRoute = Routes.GetAt(iOffset);
+		m_pSelRoute = Routes[iOffset];
 	}
 	else
 		VTLOG("  Unable to identify node\n");

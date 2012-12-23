@@ -190,7 +190,7 @@ void vtUtilityMap::GetPoleExtents(DRECT &rect)
 	int i, size = m_Poles.GetSize();
 	for (i = 0; i < size; i++)
 	{
-		vtPole *pole = m_Poles.GetAt(i);
+		vtPole *pole = m_Poles[i];
 		rect.GrowToContainPoint(pole->m_p);
 	}
 }

@@ -24,7 +24,7 @@ vtString RemoveAccents(const vtString &strInput)
 	int len = strInput.GetLength();
 	for (int i = 0; i < len; i++)
 	{
-		uchar ch = (uchar) strInput.GetAt(i);
+		uchar ch = (uchar) strInput[i];
 		switch (ch)
 		{
 			// do conversion from "ANSI western europe" character set

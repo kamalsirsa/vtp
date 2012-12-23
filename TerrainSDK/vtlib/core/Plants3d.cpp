@@ -742,7 +742,7 @@ vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(uint i) const
 {
 	if (i < 0 || i >= m_Instances3d.GetSize())
 		return NULL;
-	return m_Instances3d.GetAt(i);
+	return m_Instances3d[i];
 }
 
 int vtPlantInstanceArray3d::CreatePlantNodes(bool progress_dialog(int))

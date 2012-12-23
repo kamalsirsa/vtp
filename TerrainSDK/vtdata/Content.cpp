@@ -477,9 +477,8 @@ vtItem::~vtItem()
 void vtItem::DeleteModels()
 {
 	for (uint i = 0; i < m_models.GetSize(); i++)
-	{
-		delete m_models.GetAt(i);
-	}
+		delete m_models[i];
+
 	m_models.Clear();
 }
 
@@ -680,9 +679,8 @@ void vtContentManager::Clear()
 	if (items)
 		VTLOG("vtContentManager::Clear, %d items to delete\n", items);
 	for (uint i = 0; i < items; i++)
-	{
-		delete m_items.GetAt(i);
-	}
+		delete m_items[i];
+
 	m_items.Clear();
 }
 
@@ -697,7 +695,7 @@ vtItem *vtContentManager::FindItemByName(const char *name)
 {
 	for (uint i = 0; i < m_items.GetSize(); i++)
 	{
-		vtItem *pItem = m_items.GetAt(i);
+		vtItem *pItem = m_items[i];
 		if (!pItem->m_name.CompareNoCase(name))
 			return pItem;
 	}
@@ -708,7 +706,7 @@ vtItem *vtContentManager::FindItemByType(const char *type, const char *subtype)
 {
 	for (uint i = 0; i < m_items.GetSize(); i++)
 	{
-		vtItem *pItem = m_items.GetAt(i);
+		vtItem *pItem = m_items[i];
 		vtTag *tag1 = pItem->FindTag("type");
 		if (tag1 && !tag1->value.CompareNoCase(type))
 		{
@@ -772,7 +770,7 @@ void vtContentManager::WriteXML(const char *filename) const
 	fprintf(fp, "<vtp-content file-format-version=\"1.1\">\n");
 	for (i = 0; i < m_items.GetSize(); i++)
 	{
-		vtItem *pItem = m_items.GetAt(i);
+		vtItem *pItem = m_items[i];
 
 		// Write name
 		const char *name = pItem->m_name;

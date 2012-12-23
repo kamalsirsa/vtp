@@ -798,8 +798,8 @@ double vtIcoGlobe::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line)
 
 	for (i = 0; i < size-1; i++)
 	{
-		g1 = line.GetAt(i);
-		g2 = line.GetAt(i+1);
+		g1 = line[i];
+		g2 = line[i+1];
 
 		// for each pair of points, determine how many more points are needed
 		//  for a smooth arc
@@ -836,7 +836,7 @@ double vtIcoGlobe::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line)
 	// last vertex
 	if (size > 1)
 	{
-		g2 = line.GetAt(size-1);
+		g2 = line[size-1];
 		geo_to_xyz(1.0, g2, p2);
 		pMF->AddVertex(p2 * scale);
 		length++;

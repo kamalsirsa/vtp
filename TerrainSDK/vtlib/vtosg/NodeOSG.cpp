@@ -872,10 +872,7 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 
 	// Workaround for OSG's OBJ-MTL reader which doesn't like backslashes
 	vtString fname = filename;
-	for (int i = 0; i < fname.GetLength(); i++)
-	{
-		if (fname.GetAt(i) == '\\') fname.SetAt(i, '/');
-	}
+	fname.Replace('\\', '/');
 
 #define HINT osgDB::ReaderWriter::Options::CacheHintOptions
 	// In case of reloading a previously loaded model, we must empty

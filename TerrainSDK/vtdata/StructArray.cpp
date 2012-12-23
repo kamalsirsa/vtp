@@ -186,7 +186,7 @@ bool vtStructureArray::FindClosestLinearCorner(const DPoint2 &point, double epsi
 		DLine2 &dl = fen->GetFencePoints();
 		for (j = 0; j < dl.GetSize(); j++)
 		{
-			dist = (dl.GetAt(j) - point).Length();
+			dist = (dl[j] - point).Length();
 			if (dist > epsilon)
 				continue;
 			if (dist < closest)
@@ -343,7 +343,7 @@ void vtStructureArray::Offset(const DPoint2 &delta)
 		{
 			DLine2 line = fen->GetFencePoints();
 			for (j = 0; j < line.GetSize(); j++)
-				line.GetAt(j) += delta;
+				line[j] += delta;
 		}
 		vtStructInstance *inst = str->GetInstance();
 		if (inst)
@@ -380,7 +380,7 @@ int vtStructureArray::AddFoundations(vtHeightField *pHF, bool progress_callback(
 		float fMin = 1E9, fMax = -1E9;
 		for (j = 0; j < pts; j++)
 		{
-			pHF->FindAltitudeOnEarth(foot.GetAt(j), fElev);
+			pHF->FindAltitudeOnEarth(foot[j], fElev);
 
 			if (fElev < fMin) fMin = fElev;
 			if (fElev > fMax) fMax = fElev;
@@ -1538,13 +1538,13 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* filename)
 		int vert = 0;
 		for (j=0; j < poly.GetSize(); j++) //for each vertex
 		{
-			DPoint2 pt = poly.GetAt(j);
+			DPoint2 pt = poly[j];
 			dX[vert] = pt.x;
 			dY[vert] = pt.y;
 			vert++;
 		}
 		// duplicate first vertex, it's just what SHP files do.
-		DPoint2 pt = poly.GetAt(0);
+		DPoint2 pt = poly[0];
 		dX[vert] = pt.x;
 		dY[vert] = pt.y;
 		vert++;
@@ -1631,7 +1631,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 		int vert = 0;
 		for (j=0; j < poly.GetSize(); j++) //for each vertex
 		{
-			DPoint2 pt = poly.GetAt(j);
+			DPoint2 pt = poly[j];
 
 			if (pHF != NULL)
 				pHF->FindAltitudeOnEarth(pt, fElev);
@@ -1648,7 +1648,7 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 			vert++;
 		}
 		// duplicate first vertex, it's just what SHP files do.
-		DPoint2 pt = poly.GetAt(0);
+		DPoint2 pt = poly[0];
 		dX[vert] = pt.x;
 		dY[vert] = pt.y;
 		vert++;

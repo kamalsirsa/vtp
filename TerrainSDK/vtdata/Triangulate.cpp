@@ -721,7 +721,7 @@ void CallPoly2Tri(const DLine2 &contour, DLine2 &result)
 	std::vector<p2t::Point*> polyline;
 
 	for (uint i = 0; i < contour.GetSize(); i++)
-		polyline.push_back(new p2t::Point(contour.GetAt(i).x, contour.GetAt(i).y));
+		polyline.push_back(new p2t::Point(contour[i].x, contour[i].y));
 
 	/*
 	* STEP 1: Create CDT and add primary polyline
@@ -763,11 +763,11 @@ void CallPoly2Tri(const DPolygon2 &contour, DLine2 &result)
 	std::vector<p2t::Point*> polyline;
 
 	const DLine2 &outer = contour[0];
-	DPoint2 origin = outer.GetAt(0);
+	DPoint2 origin = outer[0];
 
 	for (uint i = 0; i < outer.GetSize(); i++)
 	{
-		DPoint2 p = outer.GetAt(i) - origin;
+		DPoint2 p = outer[i] - origin;
 		polyline.push_back(new p2t::Point(p.x, p.y));
 	}
 
@@ -790,9 +790,9 @@ void CallPoly2Tri(const DPolygon2 &contour, DLine2 &result)
 		uint npoints = inner.GetSize();
 		for (uint i = 0; i < npoints; i++)
 		{
-			//hole.push_back(new p2t::Point(inner.GetAt(i).x, inner.GetAt(i).y));
+			//hole.push_back(new p2t::Point(inner[i].x, inner[i].y));
 
-			DPoint2 p = inner.GetAt(npoints-1-i) - origin;
+			DPoint2 p = inner[npoints-1-i] - origin;
 
 			hole.push_back(new p2t::Point(p.x, p.y));
 		}

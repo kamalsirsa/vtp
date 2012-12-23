@@ -103,27 +103,18 @@ void vtFeatureSetPoint2D::SetPoint(uint num, const DPoint2 &p)
 
 void vtFeatureSetPoint2D::GetPoint(uint num, DPoint2 &p) const
 {
-	p = m_Point2.GetAt(num);
+	p = m_Point2[num];
 }
 
 int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon, double *distance)
 {
-	int entities = GetNumEntities();
+	uint entities = GetNumEntities();
 	double dist, closest = 1E9;
 	int found = -1;
-	DPoint2 diff;
 
-	int i;
-	for (i = 0; i < entities; i++)
+	for (uint i = 0; i < entities; i++)
 	{
-		diff = p - m_Point2.GetAt(i);
-/*		if (m_eGeomType == wkbPoint25D)
-		{
-			DPoint3 p3 = m_Point3.GetAt(i);
-			diff.x = p.x - p3.x;
-			diff.y = p.y - p3.y;
-		} */
-		dist = diff.Length();
+		dist = (p - m_Point2[i]).Length();
 		if (dist < closest && dist < epsilon)
 		{
 			closest = dist;
@@ -137,14 +128,14 @@ int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon, doub
 
 void vtFeatureSetPoint2D::FindAllPointsAtLocation(const DPoint2 &loc, std::vector<int> &found)
 {
-	for (int i = 0; i < GetNumEntities(); i++)
+	for (uint i = 0; i < GetNumEntities(); i++)
 	{
-		if (loc == m_Point2.GetAt(i))
+		if (loc == m_Point2[i])
 			found.push_back(i);
 
 	/*	if (m_eGeomType == wkbPoint25D)
 		{
-			DPoint3 p3 = m_Point3.GetAt(i);
+			DPoint3 p3 = m_Point3[i];
 			if (loc.x == p3.x && loc.y == p3.y)
 				found.Append(i);
 		} */
@@ -302,7 +293,7 @@ void vtFeatureSetPoint3D::SetPoint(uint num, const DPoint3 &p)
 
 void vtFeatureSetPoint3D::GetPoint(uint num, DPoint3 &p) const
 {
-	p = m_Point3.GetAt(num);
+	p = m_Point3[num];
 }
 
 bool vtFeatureSetPoint3D::ComputeHeightRange(float &fmin, float &fmax)
@@ -437,7 +428,7 @@ bool vtFeatureSetLineString::TransformCoords(OCT *pTransform, bool progress_call
 		pts = dline.GetSize();
 		for (j = 0; j < pts; j++)
 		{
-			DPoint2 &p = dline.GetAt(j);
+			DPoint2 &p = dline[j];
 			int success = pTransform->Transform(1, &p.x, &p.y);
 			if (success != 1)
 				bad++;
@@ -500,7 +491,7 @@ void vtFeatureSetLineString::SaveGeomToSHP(SHPHandle hSHP, bool progress_callbac
 
 		for (j = 0; j < dl.GetSize(); j++) //for each vertex
 		{
-			DPoint2 pt = dl.GetAt(j);
+			DPoint2 pt = dl[j];
 			dX[j] = pt.x;
 			dY[j] = pt.y;
 
@@ -623,7 +614,7 @@ bool vtFeatureSetLineString3D::TransformCoords(OCT *pTransform, bool progress_ca
 		pts = dline.GetSize();
 		for (j = 0; j < pts; j++)
 		{
-			DPoint3 &p = dline.GetAt(j);
+			DPoint3 &p = dline[j];
 			int success = pTransform->Transform(1, &p.x, &p.y);
 			if (success != 1)
 				bad++;
@@ -655,7 +646,7 @@ int vtFeatureSetLineString3D::AddPolyLine(const DLine3 &pl)
 
 bool vtFeatureSetLineString3D::ComputeHeightRange(float &fmin, float &fmax)
 {
-	uint count = m_Line.size();
+	const uint count = m_Line.size();
 	if (!count)
 		return false;
 
@@ -664,10 +655,10 @@ bool vtFeatureSetLineString3D::ComputeHeightRange(float &fmin, float &fmax)
 	for (uint i = 0; i < count; i++)
 	{
 		const DLine3 &dl = m_Line[i];
-		int num = dl.GetSize();
+		const int num = dl.GetSize();
 		for (int j = 0; j < num; j++)
 		{
-			DPoint3 &p3 = dl.GetAt(j);
+			const DPoint3 &p3 = dl[j];
 			if ((float)p3.z > fmax) fmax = (float)p3.z;
 			if ((float)p3.z < fmin) fmin = (float)p3.z;
 		}
@@ -736,7 +727,7 @@ void vtFeatureSetLineString3D::SaveGeomToSHP(SHPHandle hSHP, bool progress_callb
 
 		for (j = 0; j < dl.GetSize(); j++) //for each vertex
 		{
-			DPoint3 pt = dl.GetAt(j);
+			DPoint3 pt = dl[j];
 			dX[j] = pt.x;
 			dY[j] = pt.y;
 			dZ[j] = pt.z;
@@ -862,7 +853,7 @@ bool vtFeatureSetPolygon::TransformCoords(OCT *pTransform, bool progress_callbac
 			pts = dline.GetSize();
 			for (k = 0; k < pts; k++)
 			{
-				DPoint2 &p = dline.GetAt(k);
+				DPoint2 &p = dline[k];
 				int success = pTransform->Transform(1, &p.x, &p.y);
 				if (success != 1)
 					bad++;
@@ -1201,13 +1192,13 @@ void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(i
 				const DLine2 &dl = poly[part];
 				for (j=0; j < dl.GetSize(); j++) //for each vertex
 				{
-					DPoint2 pt = dl.GetAt(j);
+					DPoint2 pt = dl[j];
 					dX[vert] = pt.x;
 					dY[vert] = pt.y;
 					vert++;
 				}
 				// duplicate first vertex, it's just what SHP files do.
-				DPoint2 pt = dl.GetAt(0);
+				DPoint2 pt = dl[0];
 				dX[vert] = pt.x;
 				dY[vert] = pt.y;
 				vert++;

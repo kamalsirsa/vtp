@@ -508,11 +508,8 @@ void vtFrame::AddModelFromFile(const wxString &fname1)
 	VTLOG("AddModelFromFile '%s'\n", (const char *) fname);
 
 	// Change backslashes to slashes.
-	for (int j = 0; j < fname.GetLength(); j++)
-	{
-		if (fname.GetAt(j) == '\\')
-			fname.SetAt(j, '/');
-	}
+	fname.Replace('\\', '/');
+
 	// Check if its on the known data path.
 	vtStringArray &paths = vtGetDataPath();
 	for (uint i = 0; i < paths.size(); i++)

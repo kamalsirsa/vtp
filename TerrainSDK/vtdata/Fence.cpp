@@ -285,20 +285,18 @@ vtFence &vtFence::operator=(const vtFence &v)
 
 void vtFence::AddPoint(const DPoint2 &epos)
 {
-	int numfencepts = m_pFencePts.GetSize();
+	uint numfencepts = m_pFencePts.GetSize();
 
-	// check distance
-	if (numfencepts > 0)
+	if (numfencepts == 0)
+		m_pFencePts.Append(epos);
+	else
 	{
-		DPoint2 LastPt = m_pFencePts.GetAt(numfencepts - 1);
-
+		// check distance
+		const DPoint2 &LastPt = m_pFencePts[numfencepts - 1];
 		double distance = (LastPt - epos).Length();
-
 		if (distance <= LONGEST_FENCE)
 			m_pFencePts.Append(epos);
 	}
-	else
-		m_pFencePts.Append(epos);
 }
 
 void vtFence::ApplyStyle(vtLinearStyle style)
@@ -308,14 +306,14 @@ void vtFence::ApplyStyle(vtLinearStyle style)
 
 bool vtFence::GetExtents(DRECT &rect) const
 {
-	int size = m_pFencePts.GetSize();
+	uint size = m_pFencePts.GetSize();
 
-	if (size < 1)
+	if (size == 0)
 		return false;
 
 	rect.SetRect(1E9, -1E9, -1E9, 1E9);
-	for (int i = 0; i < size; i++)
-		rect.GrowToContainPoint(m_pFencePts.GetAt(i));
+	for (uint i = 0; i < size; i++)
+		rect.GrowToContainPoint(m_pFencePts[i]);
 	return true;
 }
 
@@ -324,18 +322,16 @@ bool vtFence::GetExtents(DRECT &rect) const
  */
 void vtFence::GetClosestPoint(const DPoint2 &point, DPoint2 &closest_point)
 {
-	DPoint2 pos;
 	double dist, closest = 1E8;
 
 	int size = m_pFencePts.GetSize();
 	for (int i = 0; i < size; i++)
 	{
-		pos = m_pFencePts.GetAt(i);
-		dist = (pos - point).Length();
+		dist = (m_pFencePts[i] - point).Length();
 		if (dist < closest)
 		{
 			closest = dist;
-			closest_point = pos;
+			closest_point = m_pFencePts[i];
 		}
 	}
 }
@@ -345,18 +341,16 @@ void vtFence::GetClosestPoint(const DPoint2 &point, DPoint2 &closest_point)
  */
 double vtFence::GetDistanceToLine(const DPoint2 &point)
 {
-	int i, size = m_pFencePts.GetSize();
+	uint size = m_pFencePts.GetSize();
 
 	// simple case, one point, just get distance to it
 	if (size == 1)
 		return (point-m_pFencePts[0]).Length();
 
 	double dist, closest = 1E8;
-	for (i = 0; i < size-1; i++)
+	for (uint i = 0; i < size-1; i++)
 	{
-		DPoint2 p0 = m_pFencePts[i];
-		DPoint2 p1 = m_pFencePts[i+1];
-		dist = DistancePointToLine(p0, p1, point);
+		dist = DistancePointToLine(m_pFencePts[i], m_pFencePts[i+1], point);
 		if (dist < closest)
 			closest = dist;
 	}
@@ -365,20 +359,19 @@ double vtFence::GetDistanceToLine(const DPoint2 &point)
 
 int vtFence::GetNearestPointIndex(const DPoint2 &point, double &fDist)
 {
-	int i, size = m_pFencePts.GetSize();
-	double dist, closest_dist = 1E8;
+	uint size = m_pFencePts.GetSize();
 	int closest = -1;
-	for (i = 0; i < size; i++)
+	fDist = 1E8;
+
+	for (uint i = 0; i < size; i++)
 	{
-		DPoint2 p0 = m_pFencePts[i];
-		dist = (point-p0).Length();
-		if (dist < closest_dist)
+		double dist = (point - m_pFencePts[i]).Length();
+		if (dist < fDist)
 		{
-			closest_dist = dist;
+			fDist = dist;
 			closest = i;
 		}
 	}
-	fDist = closest_dist;
 	return closest;
 }
 
@@ -395,7 +388,7 @@ void vtFence::WriteXML(GZOutput &out, bool bDegrees) const
 	int points = m_pFencePts.GetSize();
 	for (i = 0; i < points; i++)
 	{
-		DPoint2 p = m_pFencePts.GetAt(i);
+		DPoint2 p = m_pFencePts[i];
 		gfprintf(out, coord_format, p.x);
 		gfprintf(out, ",");
 		gfprintf(out, coord_format, p.y);
@@ -439,8 +432,8 @@ bool LoadFLine2FromSHP(const char *fname, FLine2 &prof)
 	prof.SetSize(verts);
 	for (int j = 0; j < verts; j++)
 	{
-		prof.GetAt(j).x = (float) psShape->padfX[j];
-		prof.GetAt(j).y = (float) psShape->padfY[j];
+		prof[j].x = (float) psShape->padfX[j];
+		prof[j].y = (float) psShape->padfY[j];
 	}
 	SHPDestroyObject(psShape);
 	SHPClose(hSHP);
@@ -453,16 +446,14 @@ bool SaveFLine2ToSHP(const char *fname, const FLine2 &prof)
 	if (!hSHP)
 		return false;
 
-	int size = prof.GetSize();
+	uint size = prof.GetSize();
 	double* dX = new double[size];
 	double* dY = new double[size];
 
-	for (int j = 0; j < size; j++) //for each vertex
+	for (uint j = 0; j < size; j++) //for each vertex
 	{
-		FPoint2 pt = prof.GetAt(j);
-		dX[j] = pt.x;
-		dY[j] = pt.y;
-
+		dX[j] = prof[j].x;
+		dY[j] = prof[j].y;
 	}
 	SHPObject *obj = SHPCreateSimpleObject(SHPT_ARC, size, dX, dY, NULL);
 

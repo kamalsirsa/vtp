@@ -160,7 +160,7 @@ void vtRoute::_CreateMaterials()
 
 void vtRoute::_CreateStruct(int iNode)
 {
-	vtUtilNode *node =  m_Nodes.GetAt(iNode);
+	vtUtilNode *node =  m_Nodes[iNode];
 
 	bool add = false;
 	if (!node->m_pTrans)
@@ -193,7 +193,7 @@ void vtRoute::_CreateStruct(int iNode)
 
 void vtRoute::_DeleteStruct(int iNode)
 {
-	vtUtilNode *node =  m_Nodes.GetAt(iNode);
+	vtUtilNode *node =  m_Nodes[iNode];
 	if (node->m_pTrans)
 	{
 		m_pTheTerrain->RemoveNodeFromStructGrid(node->m_pTrans);

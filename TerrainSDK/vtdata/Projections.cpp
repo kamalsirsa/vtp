@@ -1222,12 +1222,7 @@ static void MassageDatumFromWKT(vtString &strDatum )
 			break;
 		}
 	}
-	int len = strDatum.GetLength();
-	for (i = 0; i < len; i++)
-	{
-		if (strDatum.GetAt(i) == '_')
-			strDatum.SetAt(i, ' ');
-	}
+	strDatum.Replace('_', ' ');
 }
 
 

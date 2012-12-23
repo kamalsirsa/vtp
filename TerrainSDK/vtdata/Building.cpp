@@ -181,7 +181,7 @@ vtLevel::~vtLevel()
 void vtLevel::DeleteEdges()
 {
 	for (uint i = 0; i < m_Edges.GetSize(); i++)
-		delete m_Edges.GetAt(i);
+		delete m_Edges[i];
 	m_Edges.SetSize(0);
 }
 
@@ -204,7 +204,7 @@ vtLevel &vtLevel::operator=(const vtLevel &v)
 
 void vtLevel::DeleteEdge(int iEdge)
 {
-	delete m_Edges.GetAt(iEdge);
+	delete m_Edges[iEdge];
 	m_Edges.RemoveAt(iEdge);
 	m_Foot.RemovePoint(iEdge);
 }
@@ -225,7 +225,7 @@ bool vtLevel::AddEdge(const int iEdge, const DPoint2 &Point)
 	else
 	{
 		for (iIndex = iNumEdges - 1; iIndex > iEdge ; iIndex--)
-			m_Edges.SetAt(iIndex + 1, m_Edges.GetAt(iIndex));
+			m_Edges.SetAt(iIndex + 1, m_Edges[iIndex]);
 		m_Edges.SetAt(iEdge + 1, pEdge);
 	}
 	m_Foot.InsertPointAfter(iEdge, Point);
@@ -490,7 +490,7 @@ void vtLevel::DetermineLocalFootprint(float fHeight)
 		fline3.SetSize(edges);
 		for (unsigned i = 0; i < edges; i++)
 		{
-			p = dline2.GetAt(i);
+			p = dline2[i];
 			vtBuilding::s_Conv.ConvertFromEarth(p, lp.x, lp.z);
 			lp.y = fHeight;
 			fline3.SetAt(i, lp);
@@ -689,7 +689,7 @@ vtBuilding::~vtBuilding()
 void vtBuilding::DeleteLevels()
 {
 	for (uint i = 0; i < m_Levels.GetSize(); i++)
-		delete m_Levels.GetAt(i);
+		delete m_Levels[i];
 	m_Levels.SetSize(0);
 }
 
@@ -705,7 +705,7 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 	// copy class data
 	DeleteLevels();
 	for (uint i = 0; i < v.m_Levels.GetSize(); i++)
-		m_Levels.Append(new vtLevel(* v.m_Levels.GetAt(i)));
+		m_Levels.Append(new vtLevel(* v.m_Levels[i]));
 	return *this;
 }
 

@@ -486,10 +486,9 @@ void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 	}
 #if 0
 	// TEST - try coloring from water polygons
-	int layers = m_Layers.GetSize();
-	for (int l = 0; l < layers; l++)
+	for (uint i = 0; i < m_Layers.GetSize(); i++)
 	{
-		vtLayer *lp = m_Layers.GetAt(l);
+		vtLayer *lp = m_Layers[i];
 		if (lp->GetType() == LT_WATER)
 			((vtWaterLayer*)lp)->PaintDibWithWater(&dib);
 	}

@@ -1226,9 +1226,9 @@ bool vtTin::TestTriangle(int tri, const DPoint2 &p, float &fAltitude) const
 	const int v0 = m_tri[tri*3];
 	const int v1 = m_tri[tri*3+1];
 	const int v2 = m_tri[tri*3+2];
-	const DPoint2 &p1 = m_vert.GetAt(v0);
-	const DPoint2 &p2 = m_vert.GetAt(v1);
-	const DPoint2 &p3 = m_vert.GetAt(v2);
+	const DPoint2 &p1 = m_vert[v0];
+	const DPoint2 &p2 = m_vert[v1];
+	const DPoint2 &p3 = m_vert[v2];
 
 	// First try to identify which triangle
 	if (PointInTriangle(p, p1, p2, p3))
@@ -1268,7 +1268,6 @@ void vtTin::SetupTriangleBins(int bins, bool progress_callback(int))
 		delete m_trianglebins;
 	m_trianglebins = new BinArray(bins, bins);
 
-	DPoint2 p1, p2, p3;
 	uint tris = NumTris();
 	for (uint i = 0; i < tris; i++)
 	{
@@ -1276,9 +1275,9 @@ void vtTin::SetupTriangleBins(int bins, bool progress_callback(int))
 			progress_callback(i * 100 / tris);
 
 		// get 2D points
-		p1 = m_vert.GetAt(m_tri[i*3]);
-		p2 = m_vert.GetAt(m_tri[i*3+1]);
-		p3 = m_vert.GetAt(m_tri[i*3+2]);
+		const DPoint2 &p1 = m_vert[m_tri[i*3]];
+		const DPoint2 &p2 = m_vert[m_tri[i*3+1]];
+		const DPoint2 &p3 = m_vert[m_tri[i*3+2]];
 
 		// find the correct range of bins, and add the index of this index to it
 		DPoint2 fminrange, fmaxrange;
@@ -1385,7 +1384,6 @@ bool vtTin::ConvertProjection(const vtProjection &proj_new)
  */
 void vtTin::CleanupClockwisdom()
 {
-	DPoint2 p1, p2, p3;		// 2D points
 	int v0, v1, v2;
 	uint tris = NumTris();
 	for (uint i = 0; i < tris; i++)
@@ -1394,9 +1392,9 @@ void vtTin::CleanupClockwisdom()
 		v1 = m_tri[i*3+1];
 		v2 = m_tri[i*3+2];
 		// get 2D points
-		p1 = m_vert.GetAt(v0);
-		p2 = m_vert.GetAt(v1);
-		p3 = m_vert.GetAt(v2);
+		const DPoint2 &p1 = m_vert[v0];
+		const DPoint2 &p2 = m_vert[v1];
+		const DPoint2 &p3 = m_vert[v2];
 
 		// The so-called 2D cross product
 		double cross2d = (p2-p1).Cross(p3-p1);
@@ -1487,17 +1485,17 @@ void vtTin::AppendFrom(vtTin *pTin)
  */
 double vtTin::GetTriMaxEdgeLength(int iTri) const
 {
-	int tris = NumTris();
+	const int tris = NumTris();
 	if (iTri < 0 || iTri >= tris)
 		return 0.0;
 
 	// get points
-	int v0 = m_tri[iTri*3];
-	int v1 = m_tri[iTri*3+1];
-	int v2 = m_tri[iTri*3+2];
-	DPoint2 p1 = m_vert.GetAt(v0);
-	DPoint2 p2 = m_vert.GetAt(v1);
-	DPoint2 p3 = m_vert.GetAt(v2);
+	const int v0 = m_tri[iTri*3];
+	const int v1 = m_tri[iTri*3+1];
+	const int v2 = m_tri[iTri*3+2];
+	const DPoint2 &p1 = m_vert[v0];
+	const DPoint2 &p2 = m_vert[v1];
+	const DPoint2 &p3 = m_vert[v2];
 
 	// check lengths
 	double len1 = (p2 - p1).Length();
@@ -1708,18 +1706,16 @@ int vtTin::RemoveTrianglesBySegment(const DPoint2 &ep1, const DPoint2 &ep2)
 {
 	int count = 0;
 
-	DPoint2 p1, p2, p3;		// 2D points
-	int v0, v1, v2;
 	uint tris = NumTris();
 	for (uint i = 0; i < tris; i++)
 	{
 		// get 2D points
-		v0 = m_tri[i*3];
-		v1 = m_tri[i*3+1];
-		v2 = m_tri[i*3+2];
-		p1 = m_vert.GetAt(v0);
-		p2 = m_vert.GetAt(v1);
-		p3 = m_vert.GetAt(v2);
+		const int v0 = m_tri[i*3];
+		const int v1 = m_tri[i*3+1];
+		const int v2 = m_tri[i*3+2];
+		const DPoint2 &p1 = m_vert[v0];
+		const DPoint2 &p2 = m_vert[v1];
+		const DPoint2 &p3 = m_vert[v2];
 
 		if (LineSegmentsIntersect(ep1, ep2, p1, p2) ||
 			LineSegmentsIntersect(ep1, ep2, p2, p3) ||

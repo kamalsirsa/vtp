@@ -842,7 +842,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 			fMax = -1E9;
 			for (uint v = 0; v < outer_ring_size; v++)
 			{
-				if (opt.pHeightField->FindAltitudeOnEarth(outer_ring.GetAt(v), fElev))
+				if (opt.pHeightField->FindAltitudeOnEarth(outer_ring[v], fElev))
 				{
 					if (fElev < fMin)
 						fMin = fElev;
@@ -966,7 +966,7 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 		{
 			// Exclude fences outside the indicated extents
 			for (i = 0; i < iNumPoints; i++)
-				if (!opt.rect.ContainsPoint(FencePoints.GetAt(i)))
+				if (!opt.rect.ContainsPoint(FencePoints[i]))
 					break;
 			if (i != iNumPoints)
 				continue;

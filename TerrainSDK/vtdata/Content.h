@@ -167,7 +167,7 @@ public:
 	void AddModel(vtModel *item) { m_models.Append(item); }
 	void RemoveModel(vtModel *model);
 	uint NumModels() { return m_models.GetSize(); }
-	vtModel *GetModel(int i) { return m_models.GetAt(i); }
+	vtModel *GetModel(int i) { return m_models[i]; }
 
 	vtString	m_name;
 	FRECT		m_extents;
@@ -201,7 +201,7 @@ public:
 	void RemoveItem(vtItem *item);
 	uint NumItems() { return m_items.GetSize(); }
 	virtual vtItem *NewItem() { return new vtItem; }
-	vtItem *GetItem(int i) { return m_items.GetAt(i); }
+	vtItem *GetItem(int i) { return m_items[i]; }
 	vtItem *FindItemByName(const char *name);
 	vtItem *FindItemByType(const char *type, const char *subtype);
 	vtString GetFilename() { return m_strFilename; }

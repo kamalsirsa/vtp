@@ -3653,7 +3653,7 @@ void CapWords(vtString &str)
 	bool bStart = true;
 	for (int i = 0; i < str.GetLength(); i++)
 	{
-		char ch = str.GetAt(i);
+		char ch = str[i];
 		if (bStart)
 			ch = toupper(ch);
 		else

@@ -468,53 +468,37 @@ public:
 
 inline DLine2 &DLine2::operator=(const DLine2 &v)
 {
-	int size = v.GetSize();
+	const uint size = v.GetSize();
 	SetSize(size);
-	for (int i = 0; i < size; i++)
-		SetAt(i, v.GetAt(i));
-
+	for (uint i = 0; i < size; i++)
+		SetAt(i, v[i]);
 	return *this;
 }
 
 inline DLine2 &DLine2::operator=(const FLine2 &v)
 {
-	int size = v.GetSize();
+	const uint size = v.GetSize();
 	SetSize(size);
-
-	FPoint2 p1;
-	DPoint2 p2;
-	for (int i = 0; i < size; i++)
-	{
-		p1 = v.GetAt(i);
-		p2 = p1;
-		SetAt(i, p2);
-	}
+	for (uint i = 0; i < size; i++)
+		SetAt(i, v[i]);
 	return *this;
 }
 
 inline FLine2 &FLine2::operator=(const FLine2 &v)
 {
-	int size = v.GetSize();
+	const uint size = v.GetSize();
 	SetSize(size);
-	for (int i = 0; i < size; i++)
-		SetAt(i, v.GetAt(i));
-
+	for (uint i = 0; i < size; i++)
+		SetAt(i, v[i]);
 	return *this;
 }
 
 inline FLine2 &FLine2::operator=(const DLine2 &v)
 {
-	int size = v.GetSize();
+	const uint size = v.GetSize();
 	SetSize(size);
-
-	DPoint2 p1;
-	FPoint2 p2;
-	for (int i = 0; i < size; i++)
-	{
-		p1 = v.GetAt(i);
-		p2 = p1;
-		SetAt(i, p2);
-	}
+	for (uint i = 0; i < size; i++)
+		SetAt(i, v[i]);
 	return *this;
 }
 
@@ -563,21 +547,19 @@ public:
 
 inline DLine3 &DLine3::operator=(const DLine3 &v)
 {
-	int size = v.GetSize();
+	const uint size = v.GetSize();
 	SetSize(size);
-	for (int i = 0; i < size; i++)
-		SetAt(i, v.GetAt(i));
-
+	for (uint i = 0; i < size; i++)
+		SetAt(i, v[i]);
 	return *this;
 }
 
 inline FLine3 &FLine3::operator=(const FLine3 &v)
 {
-	int size = v.GetSize();
+	const uint size = v.GetSize();
 	SetSize(size);
-	for (int i = 0; i < size; i++)
-		SetAt(i, v.GetAt(i));
-
+	for (uint i = 0; i < size; i++)
+		SetAt(i, v[i]);
 	return *this;
 }
 
@@ -902,11 +884,10 @@ public:
 	}
 	void GrowToContainLine(const DLine2 &line)
 	{
-		DPoint2 p;
-		int size = line.GetSize();
-		for (int i = 0; i < size; i++)
+		const uint size = line.GetSize();
+		for (uint i = 0; i < size; i++)
 		{
-			p = line.GetAt(i);
+			const DPoint2 &p = line[i];
 			if (p.x < left)		left = p.x;
 			if (p.x > right)	right = p.x;
 			if (p.y < bottom)	bottom = p.y;
@@ -915,11 +896,10 @@ public:
 	}
 	void GrowToContainLine(const DLine3 &line)
 	{
-		DPoint3 p;
-		int size = line.GetSize();
-		for (int i = 0; i < size; i++)
+		const uint size = line.GetSize();
+		for (uint i = 0; i < size; i++)
 		{
-			p = line.GetAt(i);
+			const DPoint3 &p = line[i];
 			if (p.x < left)		left = p.x;
 			if (p.x > right)	right = p.x;
 			if (p.y < bottom)	bottom = p.y;
@@ -1201,7 +1181,7 @@ public:
 	float LengthSquared() const { return x*x + y*y + z*z + w*w; }
 	const FQuat Inverse() const
 	{
-		float l2 = LengthSquared();
+		const float l2 = LengthSquared();
 		return FQuat( -x / l2, -y / l2, -z / l2, w / l2);
 	}
 	void Invert();

@@ -160,8 +160,8 @@ void vtStructureLayer::DrawBuildingHighlight(wxDC *pDC, vtScaledView *pView)
 		const DLine2 &dline = dl[ring];
 		int sides = dline.GetSize();
 		wxPoint p[2];
-		pView->screen(dline.GetAt(j), p[0]);
-		pView->screen(dline.GetAt((j+1)%sides), p[1]);
+		pView->screen(dline[j], p[0]);
+		pView->screen(dline[(j+1)%sides], p[1]);
 		pDC->DrawLines(2, p);
 	}
 }
@@ -283,11 +283,11 @@ void vtStructureLayer::CleanFootprints(double epsilon, int &degenerate, int &ove
 				DLine2 &ring = dp[r];
 				for (uint k2 = 1; k2 < ring.GetSize(); k2++)
 				{
-					DPoint2 &p2 = ring.GetAt(k2);
+					const DPoint2 &p2 = ring[k2];
 					for (uint k1 = 0; k1 < k2; k1++)
 					{
-						DPoint2 &p1 = ring.GetAt(k1);
-						DPoint2 diff = p1 - p2;
+						const DPoint2 &p1 = ring[k1];
+						const DPoint2 diff = p1 - p2;
 						if (fabs(diff.x) < epsilon && fabs(diff.y) < epsilon)
 						{
 							ring.RemoveAt(k2);
@@ -753,7 +753,7 @@ void vtStructureLayer::OnMouseMove(BuilderView *pView, UIContext &ui)
 	{
 		wxPoint p1, p2;
 		DLine2 &pts = ui.m_pCurLinear->GetFencePoints();
-		pView->screen(pts.GetAt(pts.GetSize()-1), p1);
+		pView->screen(pts[pts.GetSize()-1], p1);
 		dc.DrawLine(p1, ui.m_LastPoint);
 		dc.DrawLine(p1, ui.m_CurPoint);
 	}
@@ -805,7 +805,7 @@ void vtStructureLayer::UpdateRotate(UIContext &ui)
 			DLine2 &dl = foot[r];
 			for (j = 0; j < dl.GetSize(); j++)
 			{
-				p = dl.GetAt(j);
+				p = dl[j];
 				p -= origin;
 				p.Rotate(angle_diff);
 				p += origin;
@@ -841,7 +841,7 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 				DLine2 &dl = foot[r];
 				for (j = 0; j < dl.GetSize(); j++)
 				{
-					p = dl.GetAt(j);
+					p = dl[j];
 					p -= origin;
 					p *= fScale;
 					p += origin;
@@ -859,7 +859,7 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 		int vert = ui.m_iCurCorner;
 		int ring = footprint.WhichRing(vert);
 		DLine2 &foot = footprint[ring];
-		p = foot.GetAt(vert);
+		p = foot[vert];
 
 		int points = foot.GetSize();
 		if (pView->m_bConstrain && points > 3)
@@ -967,7 +967,7 @@ void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
 		float fMin = 1E9, fMax = -1E9;
 		for (j = 0; j < pts; j++)
 		{
-			fElev = pEL->GetElevation(foot.GetAt(j));
+			fElev = pEL->GetElevation(foot[j]);
 			if (fElev == INVALID_ELEVATION)
 				continue;
 

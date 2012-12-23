@@ -99,7 +99,7 @@ public:
 	bool ConvertProjection(const vtProjection &proj_new);
 
 	// Accessors
-	void GetVert(int v, DPoint2 &p, float &z) const { p = m_vert.GetAt(v); z = m_z[v]; }
+	void GetVert(int v, DPoint2 &p, float &z) const { p = m_vert[v]; z = m_z[v]; }
 	void GetTri(int t, int &v0, int &v1, int &v2) const { v0 = m_tri[t*3]; v1 = m_tri[t*3+1]; v2 = m_tri[t*3+2]; }
 	const int *GetAtTri(int t) const { return m_tri.data() + (t*3); }
 

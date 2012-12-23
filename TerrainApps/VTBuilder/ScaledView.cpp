@@ -274,7 +274,7 @@ void vtScaledView::DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill)
 		int i, size = dline.GetSize();
 
 		for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
-			screen(dline.GetAt(i), g_screenbuf[i]);
+			screen(dline[i], g_screenbuf[i]);
 
 		pDC->DrawPolygon(i, g_screenbuf);
 	}

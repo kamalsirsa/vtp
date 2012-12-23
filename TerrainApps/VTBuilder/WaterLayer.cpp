@@ -247,10 +247,8 @@ void vtWaterLayer::AddElementsFromSHP(const wxString &filename,
 
 		// Copy each SHP Poly Coord
 		for (int j = 0; j < psShape->nVertices; j++)
-		{
-			dline.GetAt(j).x = psShape->padfX[j];
-			dline.GetAt(j).y = psShape->padfY[j];
-		}
+			dline[j].Set(psShape->padfX[j], psShape->padfY[j]);
+
 		m_Lines[i] = dline;
 		m_IsBody[i] = false;
 
