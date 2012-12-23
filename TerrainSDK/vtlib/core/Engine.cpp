@@ -44,11 +44,11 @@ void vtEngine::RemoveChild(vtEngine *pEngine)
 	}
 }
 
-void vtEngine::AddChildrenToList(vtArray<vtEngine*> &list, bool bEnabledOnly)
+void vtEngine::AddChildrenToList(vtEngineArray &list, bool bEnabledOnly)
 {
 	if (bEnabledOnly && !GetEnabled())
 		return;
-	list.Append(this);
+	list.push_back(this);
 	for (uint i = 0; i < NumChildren(); i++)
 		GetChild(i)->AddChildrenToList(list, bEnabledOnly);
 }

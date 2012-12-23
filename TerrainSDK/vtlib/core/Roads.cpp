@@ -661,7 +661,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	m_Lanes.resize(m_iLanes);
 	for (uint i = 0; i < m_iLanes; i++)
 	{
-		m_Lanes.at(i).SetSize(GetSize());
+		m_Lanes[i].SetSize(GetSize());
 	}
 	for (uint j = 0; j < GetSize(); j++)
 	{

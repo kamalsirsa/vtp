@@ -100,7 +100,7 @@ public:
 	vtEngine *GetChild(uint i) { return m_Children[i].get(); }
 	uint NumChildren() { return m_Children.size(); }
 
-	void AddChildrenToList(vtArray<vtEngine*> &list, bool bEnabledOnly);
+	void AddChildrenToList(class vtEngineArray &list, bool bEnabledOnly);
 
 protected:
 	std::vector<ReferencePtr> m_Targets;
@@ -113,7 +113,7 @@ protected:
 };
 
 
-class vtEngineArray : public vtArray<vtEngine*>
+class vtEngineArray : public std::vector<vtEngine*>
 {
 public:
 	vtEngineArray(vtEngine *pTop, bool bEnabledOnly = true)

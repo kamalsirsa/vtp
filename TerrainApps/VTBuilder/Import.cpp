@@ -160,7 +160,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 			return 0;	// no layers created
 
 		int num_imported = 0;
-		for (uint i = 0; i < layers.GetSize(); i++)
+		for (uint i = 0; i < layers.size(); i++)
 		{
 			if (AddLayerWithCheck(layers[i], true))
 				num_imported++;		// Layer accepted
@@ -227,7 +227,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 			if (ImportLayersFromFile(fname, layers, bRefresh, true))
 			{
 				int num_imported = 0;
-				for (uint i = 0; i < layers.GetSize(); i++)
+				for (uint i = 0; i < layers.size(); i++)
 				{
 					if (AddLayerWithCheck(layers[i], true))
 					{
@@ -393,9 +393,9 @@ bool Builder::ImportLayersFromFile(const wxString &strFileName,
 		vtLayer *layer = ImportLayerFromFile(LT_UNKNOWN, strFileName,
 			bRefresh, bWarn);
 		if (layer)
-			layers.Append(layer);
+			layers.push_back(layer);
 	}
-	return (layers.GetSize() > 0);
+	return (layers.size() > 0);
 }
 
 /**
@@ -2014,8 +2014,8 @@ void Builder::ImportDataFromNTF(const wxString &strFileName, LayerArray &layers)
 #endif
 	}
 
-	layers.Append(pRL);
-	layers.Append(pSL);
+	layers.push_back(pRL);
+	layers.push_back(pSL);
 
 	delete pDatasource;
 

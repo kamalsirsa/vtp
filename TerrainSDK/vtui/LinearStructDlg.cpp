@@ -133,9 +133,9 @@ void LinearStructureDlg::UpdateChoices()
 
 void LinearStructureDlg::AddConnectStringsFromDescriptors(const vtMaterialDescriptorArray *mats)
 {
-	for (uint i = 0; i < mats->GetSize(); i++)
+	for (uint i = 0; i < mats->size(); i++)
 	{
-		vtMaterialDescriptor *desc = mats->GetAt(i);
+		vtMaterialDescriptor *desc = mats->at(i);
 
 		// Type 0 means a surface type. This avoids fence posts, windows,
 		//  and other things inappropriate for a linear connector.
@@ -172,9 +172,9 @@ void LinearStructureDlg::UpdateConnectChoices()
 	GetPostType()->Append(_T("none"));
 	if (m_pStructureMaterials)
 	{
-		for (uint i = 0; i < m_pStructureMaterials->GetSize(); i++)
+		for (uint i = 0; i < m_pStructureMaterials->size(); i++)
 		{
-			vtMaterialDescriptor *desc = m_pStructureMaterials->GetAt(i);
+			vtMaterialDescriptor *desc = m_pStructureMaterials->at(i);
 
 			// Type 3 means a post material.
 			if (desc->GetMatType() == 3)

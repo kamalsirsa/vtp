@@ -207,7 +207,7 @@ void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAtt
 			if (attval && !strcmp(attval, "true"))
 				pDescriptor->SetBlending(true);
 
-			m_pMDA->Append(pDescriptor);
+			m_pMDA->push_back(pDescriptor);
 		}
 	}
 }
@@ -319,7 +319,7 @@ void vtMaterialDescriptor::WriteToFile(FILE *fp)
 void vtMaterialDescriptorArray::CreatePlain()
 {
 	// First provide plain material, which does need to be serialized
-	Append(new vtMaterialDescriptor(BMAT_NAME_PLAIN, "", VT_MATERIAL_COLOURABLE));
+	push_back(new vtMaterialDescriptor(BMAT_NAME_PLAIN, "", VT_MATERIAL_COLOURABLE));
 }
 
 bool vtMaterialDescriptorArray::Load(const char *szFileName)
@@ -337,7 +337,7 @@ bool vtMaterialDescriptorArray::Load(const char *szFileName)
 		VTLOG("vtMaterialDescriptorArray::Load xml error %s\n", e.getMessage().c_str());
 		return false;
 	}
-	VTLOG(" successfully loaded %d material descriptions.\n", GetSize());
+	VTLOG(" successfully loaded %d material descriptions.\n", size());
 	return true;
 }
 
@@ -351,9 +351,9 @@ bool vtMaterialDescriptorArray::Save(const char *szFileName)
 
 	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	fprintf(fp, "<MaterialDescriptorArray>\n");
-	uint iSize = GetSize();
+	uint iSize = size();
 	for (uint i = 0; i < iSize; i++)
-		GetAt(i)->WriteToFile(fp);
+		at(i)->WriteToFile(fp);
 	fprintf(fp, "</MaterialDescriptorArray>\n");
 	fclose(fp);
 
@@ -362,11 +362,11 @@ bool vtMaterialDescriptorArray::Save(const char *szFileName)
 
 	//friend std::ostream &operator << (std::ostream & Output, vtMaterialDescriptorArray &Input)
 	//{
-	//	int iSize = Input.GetSize();
+	//	int iSize = Input.size();
 	//	Output << "<?xml version=\"1.0\"?>" << std::endl;
 	//	Output << "<MaterialDescriptorArray>" << std::endl;
 	//	for (int i = 0; i < iSize; i++)
-	//		Output << *Input.GetAt(i);
+	//		Output << *Input.at(i);
 	//	Output << "</MaterialDescriptorArray>" << std::endl;
 	//	return Output;
 	//}
@@ -374,11 +374,11 @@ bool vtMaterialDescriptorArray::Save(const char *szFileName)
 const vtString *vtMaterialDescriptorArray::FindName(const char *name) const
 {
 	int iIndex;
-	int iSize = GetSize();
+	int iSize = size();
 
 	for (iIndex = 0; iIndex < iSize; iIndex++)
 	{
-		const vtString *pFoundName = &GetAt(iIndex)->GetName();
+		const vtString *pFoundName = &(at(iIndex)->GetName());
 		if (pFoundName && (*pFoundName).CompareNoCase(name) == 0)
 			return pFoundName;
 	}

@@ -124,11 +124,12 @@ typedef vtLayer *vtLayerPtr;
 // Name: LayerArray
 // An array of layer objects.
 //
-class LayerArray : public vtArray<vtLayerPtr>
+class LayerArray : public std::vector<vtLayerPtr>
 {
 public:
-	// don't need explicit destructor here because Clear() is always called
-	virtual void DestructItems(uint first, uint last);
+	~LayerArray();
+	void Remove(vtLayer *lay);
+	void DeleteLayers();
 	vtLayer *FindByFilename(const wxString &name);
 };
 

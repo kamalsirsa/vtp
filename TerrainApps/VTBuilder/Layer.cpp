@@ -11,6 +11,8 @@
 #include "wx/wx.h"
 #endif
 
+#include <algorithm>
+
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
 #include "Builder.h"
@@ -250,25 +252,38 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 
 ////////////////////////////////////////////////
 
-void LayerArray::DestructItems(uint first, uint last)
+LayerArray::~LayerArray()
 {
-	for (uint i = first; i <= last; ++i)
+	DeleteLayers();
+}
+
+void LayerArray::Remove(vtLayer *lay)
+{
+	iterator it = std::find(begin(), end(), lay);
+	if (it != end())
+		erase(it);
+}
+
+void LayerArray::DeleteLayers()
+{
+	for (uint i = 0; i < size(); ++i)
 	{
-		vtLayerPtr lp = GetAt(i);
+		vtLayerPtr lp = at(i);
 
 		// safety check
 		assert(lp->GetType() >= LT_UNKNOWN && lp->GetType() < LAYER_TYPES);
 
 		delete lp;
 	}
+	clear();
 }
 
 vtLayer *LayerArray::FindByFilename(const wxString &name)
 {
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		if (GetAt(i)->GetLayerFilename() == name)
-			return GetAt(i);
+		if (at(i)->GetLayerFilename() == name)
+			return at(i);
 	}
 	return NULL;
 }

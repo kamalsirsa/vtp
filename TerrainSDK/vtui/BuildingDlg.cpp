@@ -689,7 +689,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 {
 	int i, j;
 	int iInitialSelection = -1;
-	int iNumberofMaterials = GetGlobalMaterials()->GetSize();
+	int iNumberofMaterials = GetGlobalMaterials()->size();
 
 	wxString *matstring;
 	if (m_bEdges)
@@ -704,7 +704,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	int iShown = 0;
 	for (i = 0; i < iNumberofMaterials; i++)
 	{
-		vtMaterialDescriptor *mat = GetGlobalMaterials()->GetAt(i);
+		vtMaterialDescriptor *mat = GetGlobalMaterials()->at(i);
 
 		// only show surface materials, not typed feature materials
 		if (mat->GetMatType() > 0)

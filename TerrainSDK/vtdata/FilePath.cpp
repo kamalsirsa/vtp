@@ -133,7 +133,7 @@ dir_iter::dir_iter()
 dir_iter::dir_iter(std::string const &dirname)
 {
 	m_dirname = dirname;
-	if (m_dirname.at(m_dirname.length()-1) != '/')
+	if (m_dirname[m_dirname.length()-1] != '/')
 		m_dirname += "/";
 
 	m_handle = opendir(dirname.c_str());

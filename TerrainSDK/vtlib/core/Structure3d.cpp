@@ -527,11 +527,11 @@ void vtMaterialDescriptorArray3d::CreateMaterials()
 	m_bMaterialsCreated = true;
 
 	vtMaterial *pMat;
-	int i, j, iSize = GetSize();
+	int i, j, iSize = size();
 
 	for (j = 0; j < iSize; j++)
 	{
-		vtMaterialDescriptor *descriptor = GetAt(j);
+		vtMaterialDescriptor *descriptor = at(j);
 		VTLOG(" %s,", (const char *) descriptor->GetName());
 
 		switch (descriptor->GetColorable())
@@ -682,10 +682,10 @@ vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const 
 	float error;
 
 	vtMaterialDescriptor *desc;
-	int i, iSize = GetSize();
+	int i, iSize = size();
 	for (i = 0; i < iSize; i++)
 	{
-		desc = GetAt(i);
+		desc = at(i);
 
 		// omit if the name does not match
 		if (desc->GetName().CompareNoCase(MaterialName) != 0)
@@ -705,7 +705,7 @@ vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const 
 		}
 	}
 	if (bestMatch != -1)
-		return GetAt(bestMatch);
+		return at(bestMatch);
 	return NULL;
 }
 

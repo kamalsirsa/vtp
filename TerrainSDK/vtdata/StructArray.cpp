@@ -1049,7 +1049,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 						vtMaterialDescriptor *mat;
 						mat = new vtMaterialDescriptor(attval, "", VT_MATERIAL_COLOUR);
 						mat->SetRGB(RGBi(255,255,255));	// white means: missing
-						mats->Append(mat);
+						mats->push_back(mat);
 						m_pEdge->m_pMaterial = &mat->GetName();
 					}
 				}

@@ -871,7 +871,7 @@ float GeometryBuilder::MakeFelkelRoof(const FPolygon3 &EavePolygons, const vtLev
 			vtVec3 VAxis;
 			vtVec3 TextureOrigin;
 			int i, j;
-			vtArray<int> iaVertices;
+			std::vector<int> iaVertices;
 
 			C3DPoint& p1 = points[pi].m_Point;
 			C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
@@ -994,7 +994,7 @@ float GeometryBuilder::MakeFelkelRoof(const FPolygon3 &EavePolygons, const vtLev
 									  (Vertex - TextureOrigin) * VAxis);
 				UV /= UVScale;
 				pVertexArray->push_back(Vertex);
-				iaVertices.Append(pVertexArray->size() - 1);
+				iaVertices.push_back(pVertexArray->size() - 1);
 				pNormalArray->push_back(PanelNormal);
 				pTexCoordArray->push_back(UV);
 			}
@@ -1336,8 +1336,8 @@ void GeometryBuilder::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	AddWallSection(pEdge, false, quad, vf2, 1.0f);
 }
 
-int GeometryBuilder::FindVertex(FPoint3 Point, FLine3 &RoofSection3D,
-	vtArray<int> &iaVertices)
+int GeometryBuilder::FindVertex(const FPoint3 &Point, const FLine3 &RoofSection3D,
+	const std::vector<int> &iaVertices)
 {
 	int iSize = RoofSection3D.GetSize();
 

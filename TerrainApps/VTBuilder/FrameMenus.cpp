@@ -672,7 +672,7 @@ void MainFrame::UpdateMRU(wxMenu *menu, const vtStringArray &files, int first_id
 	while (menu->GetMenuItemCount() > 0)
 		menu->Delete(menu->FindItemByPosition(0));
 	for (size_t i = 0; i < files.size(); i++)
-		menu->Append(first_id+i, wxString(files.at(i), wxConvUTF8), wxEmptyString);
+		menu->Append(first_id+i, wxString(files[i], wxConvUTF8), wxEmptyString);
 }
 
 
@@ -1256,7 +1256,7 @@ void MainFrame::OnLayerImportOSM(wxCommandEvent &event)
 
 	CloseProgressDialog();
 
-	for (uint i = 0; i < layers.GetSize(); i++)
+	for (uint i = 0; i < layers.size(); i++)
 		AddLayerWithCheck(layers[i], true);
 }
 
@@ -1270,7 +1270,7 @@ void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
 
 	LayerArray layers;
 	ImportDataFromNTF(loadFile.GetPath(), layers);
-	for (uint i = 0; i < layers.GetSize(); i++)
+	for (uint i = 0; i < layers.size(); i++)
 		AddLayerWithCheck(layers[i], true);
 }
 
@@ -1475,11 +1475,11 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 	dlg.GetProjection(proj);
 
 	// count through the layer array, converting
-	int layers = m_Layers.GetSize();
+	int layers = m_Layers.size();
 	int succeeded = 0;
 	for (int i = 0; i < layers; i++)
 	{
-		vtLayer *lp = m_Layers.GetAt(i);
+		vtLayer *lp = m_Layers[i];
 
 		OpenProgressDialog(_("Reprojecting"), false, this);
 		bool success = lp->TransformCoords(proj);
@@ -1523,12 +1523,9 @@ void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
 	dlg.GetProjection(proj);
 
 	// count through the layer array, converting
-	int layers = m_Layers.GetSize();
+	int layers = m_Layers.size();
 	for (int i = 0; i < layers; i++)
-	{
-		vtLayer *lp = m_Layers.GetAt(i);
-		lp->SetProjection(proj);
-	}
+		m_Layers[i]->SetProjection(proj);
 
 	SetProjection(proj);
 	ZoomAll();
@@ -1537,7 +1534,7 @@ void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
 
 void MainFrame::OnUpdateLayerConvert(wxUpdateUIEvent& event)
 {
-	event.Enable(m_Layers.GetSize() != 0);
+	event.Enable(m_Layers.size() != 0);
 }
 
 void MainFrame::OnLayerCombine(wxCommandEvent &event)
@@ -1548,10 +1545,10 @@ void MainFrame::OnLayerCombine(wxCommandEvent &event)
 	int layers_merged = 0;
 
 	// count down through the layer array, flattening
-	int layers = m_Layers.GetSize();
+	int layers = m_Layers.size();
 	for (int i = layers-1; i >= 0; i--)
 	{
-		vtLayer *pL = m_Layers.GetAt(i);
+		vtLayer *pL = m_Layers[i];
 		if (pL == pActive) continue;
 		if (pL->GetType() != t) continue;
 
@@ -1615,7 +1612,7 @@ void MainFrame::OnLayerUp(wxCommandEvent &event)
 	if (!pLayer)
 		return;
 	int num = LayerNum(pLayer);
-	if (num < NumLayers()-1)
+	if (num < (int) NumLayers() - 1)
 		SwapLayerOrder(num, num+1);
 
 	RefreshLayerInView(pLayer);
@@ -1625,7 +1622,7 @@ void MainFrame::OnLayerUp(wxCommandEvent &event)
 void MainFrame::OnUpdateLayerUp(wxUpdateUIEvent& event)
 {
 	vtLayer *pLayer = GetActiveLayer();
-	event.Enable(pLayer != NULL && LayerNum(pLayer) < NumLayers()-1);
+	event.Enable(pLayer != NULL && LayerNum(pLayer) < (int) NumLayers() - 1);
 }
 
 void MainFrame::OnLayerDown(wxCommandEvent &event)
@@ -2334,10 +2331,10 @@ void MainFrame::OnElevContours(wxCommandEvent& event)
 
 	// Put any existing raw polyline layers in the drop-down choice
 	dlg.LayerChoice()->Clear();
-	int layers = m_Layers.GetSize();
+	int layers = m_Layers.size();
 	for (int i = 0; i < layers; i++)
 	{
-		vtLayer *pL = m_Layers.GetAt(i);
+		vtLayer *pL = m_Layers[i];
 		if (pL->GetType() != LT_RAW) continue;
 		vtRawLayer *raw = (vtRawLayer*) pL;
 		if (raw->GetGeomType() == wkbLineString)
@@ -2466,7 +2463,7 @@ void MainFrame::OnImageCreateOverviews(wxCommandEvent& event)
 void MainFrame::OnImageCreateOverviewsAll(wxCommandEvent& event)
 {
 	OpenProgressDialog(_("Creating Overviews"), false, this);
-	for (int i = 0; i < NumLayers(); i++)
+	for (uint i = 0; i < NumLayers(); i++)
 	{
 		vtImageLayer *pIL = dynamic_cast<vtImageLayer *>(GetLayer(i));
 		if (pIL)
@@ -3223,10 +3220,10 @@ void MainFrame::OnStructureSelectUsingPolygons(wxCommandEvent &event)
 
 	pStructureLayer->DeselectAll();
 
-	int iNumLayers = m_Layers.GetSize();
+	int iNumLayers = m_Layers.size();
 	for (int i = 0; i < iNumLayers; i++)
 	{
-		vtLayer *pLayer = m_Layers.GetAt(i);
+		vtLayer *pLayer = m_Layers[i];
 		if (LT_RAW != pLayer->GetType())
 			continue;
 
@@ -3266,10 +3263,10 @@ void MainFrame::OnStructureSelectUsingPolygons(wxCommandEvent &event)
 void MainFrame::OnUpdateStructureSelectUsingPolygons(wxUpdateUIEvent &event)
 {
 	bool bFoundSelectedPolygons = false;
-	int iNumLayers = m_Layers.GetSize();
+	int iNumLayers = m_Layers.size();
 	for (int i = 0; i < iNumLayers; i++)
 	{
-		vtLayer *pLayer = m_Layers.GetAt(i);
+		vtLayer *pLayer = m_Layers[i];
 		if (LT_RAW == pLayer->GetType())
 		{
 			vtRawLayer* pRawLayer = dynamic_cast<vtRawLayer*>(pLayer);
@@ -3999,10 +3996,9 @@ void MainFrame::OnDistanceClear(wxCommandEvent &event)
 
 void MainFrame::OnShowAll(wxCommandEvent& event)
 {
-	int layers = m_Layers.GetSize();
-	for (int l = 0; l < layers; l++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
-		vtLayer *lp = m_Layers.GetAt(l);
+		vtLayer *lp = m_Layers[i];
 		if (lp->GetType() == m_pTree->m_clicked_layer_type)
 		{
 			lp->SetVisible(true);
@@ -4014,10 +4010,9 @@ void MainFrame::OnShowAll(wxCommandEvent& event)
 
 void MainFrame::OnHideAll(wxCommandEvent& event)
 {
-	int layers = m_Layers.GetSize();
-	for (int l = 0; l < layers; l++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
-		vtLayer *lp = m_Layers.GetAt(l);
+		vtLayer *lp = m_Layers[i];
 		if (lp->GetType() == m_pTree->m_clicked_layer_type)
 		{
 			lp->SetVisible(false);

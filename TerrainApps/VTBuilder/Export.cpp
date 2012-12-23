@@ -646,9 +646,9 @@ void Builder::ExportAreaOptimizedImageTileset(BuilderView *pView)
 	m_tileopts.numlods = 3;
 
 	DPoint2 spacing(0, 0);
-	for (uint i = 0; i < m_Layers.GetSize(); i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
-		vtLayer *l = m_Layers.GetAt(i);
+		vtLayer *l = m_Layers[i];
 		if (l->GetType() == LT_IMAGE)
 		{
 			vtImageLayer *im = (vtImageLayer *)l;
@@ -1123,11 +1123,11 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
 
 	// Gather array of existing image layers we will sample from
-	uint l, layers = m_Layers.GetSize(), num_image = 0;
+	uint l, layers = m_Layers.size(), num_image = 0;
 	vtImageLayer **images = new vtImageLayer *[LayersOfType(LT_IMAGE)];
 	for (l = 0; l < layers; l++)
 	{
-		vtLayer *lp = m_Layers.GetAt(l);
+		vtLayer *lp = m_Layers[l];
 		if (lp->GetType() == LT_IMAGE)
 			images[num_image++] = (vtImageLayer *)lp;
 	}

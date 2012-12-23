@@ -179,14 +179,14 @@ private:
 /**
  * Contains a set of material descriptors.
  */
-class vtMaterialDescriptorArray : public vtArray<vtMaterialDescriptor*>
+class vtMaterialDescriptorArray : public std::vector<vtMaterialDescriptor*>
 {
 public:
-	virtual ~vtMaterialDescriptorArray() { Clear(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	void DestructItems(uint first, uint last)
+	~vtMaterialDescriptorArray() { DestructItems(); }
+	void DestructItems()
 	{
-		for (uint i = first; i <= last; i++)
-			delete GetAt(i);
+		for (uint i = 0; i < size(); i++)
+			delete at(i);
 	}
 	bool LoadExternalMaterials();
 	const vtString *FindName(const char *matname) const;

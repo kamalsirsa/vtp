@@ -120,7 +120,7 @@ Builder::~Builder()
 
 void Builder::DeleteContents()
 {
-	m_Layers.Clear();
+	m_Layers.DeleteLayers();
 	m_pActiveLayer = NULL;
 	FreeGlobalMaterials();
 	FreeContentFiles();
@@ -418,7 +418,7 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 
 void Builder::AddLayer(vtLayer *lp)
 {
-	m_Layers.Append(lp);
+	m_Layers.push_back(lp);
 }
 
 bool Builder::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
@@ -428,7 +428,7 @@ bool Builder::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 	vtProjection proj;
 	pLayer->GetProjection(proj);
 
-	bool bFirst = (m_Layers.GetSize() == 0);
+	bool bFirst = (m_Layers.size() == 0);
 	if (bFirst && m_bAdoptFirstCRS)
 	{
 		// if this is our first layer, adopt its projection
@@ -500,8 +500,8 @@ void Builder::RemoveLayer(vtLayer *lp)
 	// check the type of the layer we're deleting
 	LayerType lt = lp->GetType();
 
-	// remove and delete the layer
-	m_Layers.RemoveAt(m_Layers.Find(lp));
+	// remove
+	m_Layers.Remove(lp);
 
 	// if it was the active layer, select another layer of the same type
 	if (GetActiveLayer() == lp)
@@ -509,6 +509,7 @@ void Builder::RemoveLayer(vtLayer *lp)
 		vtLayer *lp_new = FindLayerOfType(lt);
 		SetActiveLayer(lp_new, true);
 	}
+	// then delete
 	DeleteLayer(lp);
 }
 
@@ -528,10 +529,9 @@ void Builder::SetActiveLayer(vtLayer *lp, bool refresh)
 int Builder::LayersOfType(LayerType lt)
 {
 	int count = 0;
-	int layers = m_Layers.GetSize();
-	for (int l = 0; l < layers; l++)
+	for (uint l = 0; l < m_Layers.size(); l++)
 	{
-		if (m_Layers.GetAt(l)->GetType() == lt)
+		if (m_Layers[l]->GetType() == lt)
 			count++;
 	}
 	return count;
@@ -540,8 +540,7 @@ int Builder::LayersOfType(LayerType lt)
 int Builder::NumModifiedLayers()
 {
 	int count = 0;
-	int layers = m_Layers.GetSize();
-	for (int l = 0; l < layers; l++)
+	for (uint l = 0; l < m_Layers.size(); l++)
 	{
 		vtLayer *lp = m_Layers[l];
 		if (lp->GetModified() && lp->CanBeSaved())
@@ -552,10 +551,9 @@ int Builder::NumModifiedLayers()
 
 vtLayer *Builder::FindLayerOfType(LayerType lt)
 {
-	int layers = m_Layers.GetSize();
-	for (int l = 0; l < layers; l++)
+	for (uint l = 0; l < m_Layers.size(); l++)
 	{
-		vtLayer *lp = m_Layers.GetAt(l);
+		vtLayer *lp = m_Layers[l];
 		if (lp->GetType() == lt)
 			return lp;
 	}
@@ -564,8 +562,7 @@ vtLayer *Builder::FindLayerOfType(LayerType lt)
 
 int Builder::LayerNum(vtLayer *lp)
 {
-	int layers = m_Layers.GetSize();
-	for (int i = 0; i < layers; i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 		if (lp == m_Layers[i])
 			return i;
 	return -1;
@@ -677,11 +674,11 @@ DRECT Builder::GetExtents()
 
 	// Acculumate the extents of all the layers
 	DRECT rect2;
-	int iLayers = m_Layers.GetSize();
+	int iLayers = m_Layers.size();
 
 	for (int i = 0; i < iLayers; i++)
 	{
-		if (m_Layers.GetAt(i)->GetExtent(rect2))
+		if (m_Layers[i]->GetExtent(rect2))
 		{
 			rect.GrowToContainRect(rect2);
 			has_bounds = true;
@@ -788,7 +785,7 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	pTarget->GetExtent(area);
 	DPoint2 step = pTarget->GetGrid()->GetSpacing();
 
-	int layers = m_Layers.GetSize();
+	int layers = m_Layers.size();
 	float fData=0, fBestData;
 	int iColumns, iRows;
 	pTarget->GetGrid()->GetDimensions(iColumns, iRows);
@@ -849,12 +846,12 @@ float Builder::GetHeightFromTerrain(const DPoint2 &p)
 {
 	float height = INVALID_ELEVATION;
 
-	int layers = m_Layers.GetSize();
+	int layers = m_Layers.size();
 	for (int i = 0; i < layers; i++)
 	{
-		vtLayer *l = m_Layers.GetAt(i);
-		if (l->GetType() != LT_ELEVATION || !l->GetVisible()) continue;
-		vtElevLayer *pEL = (vtElevLayer *)l;
+		vtLayer *lay = m_Layers[i];
+		if (lay->GetType() != LT_ELEVATION || !lay->GetVisible()) continue;
+		vtElevLayer *pEL = (vtElevLayer *) lay;
 		float val = pEL->GetElevation(p);
 		if (val != INVALID_ELEVATION)
 			height = val;
@@ -864,9 +861,9 @@ float Builder::GetHeightFromTerrain(const DPoint2 &p)
 
 uint Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 {
-	for (int l = 0; l < NumLayers(); l++)
+	for (uint l = 0; l < NumLayers(); l++)
 	{
-		vtLayer *lp = m_Layers.GetAt(l);
+		vtLayer *lp = m_Layers[l];
 		if (lp->GetType() == LT_ELEVATION && lp->GetVisible())
 			elevs.push_back((vtElevLayer *)lp);
 	}
@@ -908,7 +905,7 @@ bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
 void Builder::FlagStickyLayers(const std::vector<vtElevLayer*> &elevs)
 {
 	// Clear sticky flag for all layers
-	for (uint i = 0; i < m_Layers.GetSize(); i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 		m_Layers[i]->SetSticky(false);
 
 	// Set sticky flag for the desired layers
@@ -936,7 +933,7 @@ vtElevLayer *Builder::ComputeDifference(vtElevLayer *pElev)
 	// Make an array of pointers to all the visible existing elevation layers
 	//  other than this one.
 	std::vector<vtElevLayer*> elevs;
-	for (int l = 0; l < NumLayers(); l++)
+	for (uint l = 0; l < NumLayers(); l++)
 	{
 		vtLayer *lp = GetLayer(l);
 		if (lp->GetType() == LT_ELEVATION && lp->GetVisible() && lp != pElev)
@@ -997,7 +994,7 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 	pTarget->GetExtent(area);
 	DPoint2 step = pTarget->GetSpacing();
 
-	int i, j, l, layers = m_Layers.GetSize();
+	int i, j, l, layers = m_Layers.size();
 	int iColumns, iRows;
 	pTarget->GetDimensions(iColumns, iRows);
 
@@ -1008,7 +1005,7 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 	int g, num_image = 0;
 	for (l = 0; l < layers; l++)
 	{
-		vtLayer *lp = m_Layers.GetAt(l);
+		vtLayer *lp = m_Layers[l];
 		if (lp->GetType() == LT_IMAGE)
 			images[num_image++] = ((vtImageLayer *)lp)->GetImage();
 	}
@@ -1068,13 +1065,13 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 bool Builder::GetRGBUnderCursor(const DPoint2 &p, RGBi &rgb)
 {
 	bool success = false;
-	int layers = m_Layers.GetSize();
 	RGBi value;
-	for (int i = 0; i < layers; i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
-		vtLayer *l = m_Layers.GetAt(i);
-		if (l->GetType() != LT_IMAGE || !l->GetVisible()) continue;
-		vtImageLayer *pIL = (vtImageLayer *)l;
+		vtLayer *lay = m_Layers[i];
+		if (lay->GetType() != LT_IMAGE || !lay->GetVisible())
+			continue;
+		vtImageLayer *pIL = (vtImageLayer *) lay;
 		if (pIL->GetImage()->GetColorSolid(p, value))
 		{
 			rgb = value;
@@ -1127,14 +1124,14 @@ void Builder::ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 
 {
 	count = floating = tins = 0;
 	spacing.Set(0,0);
-	for (uint i = 0; i < m_Layers.GetSize(); i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
-		vtLayer *l = m_Layers.GetAt(i);
-		if (l->GetType() != LT_ELEVATION)
+		vtLayer *lay = m_Layers[i];
+		if (lay->GetType() != LT_ELEVATION)
 			continue;
 
 		count++;
-		vtElevLayer *el = (vtElevLayer *)l;
+		vtElevLayer *el = (vtElevLayer *) lay;
 		if (el->IsGrid())
 		{
 			vtElevationGrid *grid = el->GetGrid();
@@ -1278,12 +1275,12 @@ void Builder::MergeResampleImages(BuilderView *pView)
 {
 	// sample spacing in meters/heixel or degrees/heixel
 	DPoint2 spacing(0, 0);
-	for (uint i = 0; i < m_Layers.GetSize(); i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
-		vtLayer *l = m_Layers.GetAt(i);
-		if (l->GetType() == LT_IMAGE)
+		vtLayer *lay = m_Layers[i];
+		if (lay->GetType() == LT_IMAGE)
 		{
-			vtImageLayer *im = (vtImageLayer *)l;
+			vtImageLayer *im = (vtImageLayer *) lay;
 			spacing = im->GetSpacing();
 		}
 	}

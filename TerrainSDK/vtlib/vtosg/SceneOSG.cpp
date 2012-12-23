@@ -281,7 +281,7 @@ void vtScene::OnMouse(vtMouseEvent &event, vtWindow *pWindow)
 {
 	// Pass event to Engines
 	vtEngineArray list(m_pRootEngine);
-	for (uint i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.size(); i++)
 	{
 		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled() &&
@@ -294,7 +294,7 @@ void vtScene::OnKey(int key, int flags, vtWindow *pWindow)
 {
 	// Pass event to Engines
 	vtEngineArray list(m_pRootEngine);
-	for (uint i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.size(); i++)
 	{
 		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled() &&
@@ -322,7 +322,7 @@ void vtScene::DoEngines(vtEngine *eng)
 {
 	// Evaluate Engines
 	vtEngineArray list(eng);
-	for (uint i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.size(); i++)
 	{
 		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled())
@@ -343,7 +343,7 @@ void vtScene::TargetRemoved(osg::Referenced *tar)
 {
 	// Look at all Engines
 	vtEngineArray list(m_pRootEngine);
-	for (uint i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.size(); i++)
 	{
 		// If this engine targets something that is no longer there
 		vtEngine *pEng = list[i];
@@ -628,7 +628,7 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 
 	// Pass event to Engines
 	vtEngineArray list(m_pRootEngine);
-	for (uint i = 0; i < list.GetSize(); i++)
+	for (uint i = 0; i < list.size(); i++)
 	{
 		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled() &&

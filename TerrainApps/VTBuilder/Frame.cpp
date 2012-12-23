@@ -978,13 +978,13 @@ bool MainFrame::SaveProject(const wxString &strPathName) const
 	}
 
 	// write list of layers
-	int iLayers = m_Layers.GetSize();
+	int iLayers = m_Layers.size();
 	fprintf(fp, "layers: %d\n", iLayers);
 
 	vtLayer *lp;
 	for (int i = 0; i < iLayers; i++)
 	{
-		lp = m_Layers.GetAt(i);
+		lp = m_Layers[i];
 
 		bool bNative = lp->IsNative();
 
@@ -1050,12 +1050,12 @@ void MainFrame::ShowOptionsDialog()
 		vtElevLayer::m_draw = opt;
 
 		// tell them to redraw themselves
-		for (uint i = 0; i < m_Layers.GetSize(); i++)
+		for (uint i = 0; i < m_Layers.size(); i++)
 		{
-			vtLayer *lp = m_Layers.GetAt(i);
+			vtLayer *lp = m_Layers[i];
 			if (lp->GetType() == LT_ELEVATION)
 			{
-				vtElevLayer *elp = (vtElevLayer *)lp;
+				vtElevLayer *elp = (vtElevLayer *) lp;
 				elp->ReRender();
 				bNeedRefresh = true;
 			}

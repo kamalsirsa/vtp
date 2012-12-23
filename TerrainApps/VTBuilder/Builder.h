@@ -52,7 +52,7 @@ public:
 	void DeleteContents();
 
 	// Layer methods
-	int NumLayers() const { return m_Layers.GetSize(); }
+	uint NumLayers() const { return m_Layers.size(); }
 	vtLayer *GetLayer(int i) const { return m_Layers[i]; }
 	vtLayer *LoadLayer(const wxString &fname);
 	void AddLayer(vtLayer *lp);

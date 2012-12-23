@@ -2295,7 +2295,7 @@ void DPolygon2ToOGR(const DPolygon2 &dp, OGRPolygon &op)
 	op.empty();
 	for (uint ringnum = 0; ringnum < dp.size(); ringnum++)
 	{
-		const DLine2 &ring = dp.at(ringnum);
+		const DLine2 &ring = dp[ringnum];
 		OGRLinearRing *poNewRing = new OGRLinearRing;
 
 		uint numpoints = ring.GetSize();

@@ -139,7 +139,7 @@ protected:
 	void AddWallNormal(vtEdge *pEdge, vtEdgeFeature *pFeat, const FLine3 &quad);
 	void AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat, const FLine3 &quad);
 	void AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat, const FLine3 &quad);
-	int FindVertex(FPoint3 Point, FLine3 &RoofSection3D, vtArray<int> &iaVertices);
+	int FindVertex(const FPoint3 &Point, const FLine3 &RoofSection3D, const std::vector<int> &iaVertices);
 	~GeometryBuilder() {}
 	const vtBuilding3d& m_Building;
 	osg::ref_ptr<PrimitiveCache> m_pPrimitiveCache;

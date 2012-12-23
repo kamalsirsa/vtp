@@ -1037,7 +1037,7 @@ void BuilderView::CheckForTerrainSelect(const DPoint2 &loc)
 	// perhaps the user clicked on a terrain
 	bool bFound = false;
 	DRECT rect;
-	for (int l = 0; l < g_bld->NumLayers(); l++)
+	for (uint l = 0; l < g_bld->NumLayers(); l++)
 	{
 		vtLayerPtr lp = g_bld->GetLayer(l);
 		if (lp->GetType() != LT_ELEVATION) continue;

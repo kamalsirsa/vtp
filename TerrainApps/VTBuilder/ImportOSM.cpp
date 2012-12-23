@@ -625,8 +625,8 @@ void Builder::ImportDataFromOSM(const wxString &strFileName, LayerArray &layers,
 	visitor.SetSignalLights();
 
 	if (visitor.m_road_layer)
-		layers.Append(visitor.m_road_layer);
+		layers.push_back(visitor.m_road_layer);
 
 	if (visitor.m_struct_layer)
-		layers.Append(visitor.m_struct_layer);
+		layers.push_back(visitor.m_struct_layer);
 }

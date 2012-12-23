@@ -92,7 +92,7 @@ void MatchDlg::UpdateLayers()
 {
 	// (Re-)fill the 'Layers' control with all available layers
 	GetMatchLayer()->Clear();
-	for (int i = 0; i < g_bld->NumLayers(); i++)
+	for (uint i = 0; i < g_bld->NumLayers(); i++)
 	{
 		vtLayer *lay = g_bld->GetLayer(i);
 
