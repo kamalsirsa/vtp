@@ -39,7 +39,7 @@ vtStructureArray::vtStructureArray()
 
 vtStructureArray::~vtStructureArray()
 {
-	clear();
+	DestructItems();
 }
 
 // Factories
@@ -79,9 +79,9 @@ vtStructInstance *vtStructureArray::AddNewInstance()
 	return ni;
 }
 
-void vtStructureArray::DestructItems(uint first, uint last)
+void vtStructureArray::DestructItems()
 {
-	for (uint i = first; i <= last; i++)
+	for (uint i = 0; i < size(); i++)
 		delete at(i);
 }
 

@@ -1097,15 +1097,15 @@ vtStructureLayer *vtTerrain::NewStructureLayer()
 
 /**
  * Delete all the selected structures in the terrain's active structure array.
+ *
+ * \return the number of structures deleted.
  */
-int vtTerrain::DeleteSelectedStructures()
+int vtTerrain::DeleteSelectedStructures(vtStructureLayer *st_layer)
 {
-	vtStructureArray3d *structures = GetStructureLayer();
-
 	// first remove them from the terrain
-	for (uint i = 0; i < structures->size(); i++)
+	for (uint i = 0; i < st_layer->size(); i++)
 	{
-		vtStructure *str = structures->at(i);
+		vtStructure *str = st_layer->at(i);
 		if (str->IsSelected())
 		{
 			// notify any structure-handling extension
@@ -1114,9 +1114,9 @@ int vtTerrain::DeleteSelectedStructures()
 
 			// Remove it from the paging grid
 			if (m_pPagedStructGrid)
-				m_pPagedStructGrid->RemoveFromGrid(structures, i);
+				m_pPagedStructGrid->RemoveFromGrid(st_layer, i);
 
-			vtStructure3d *str3d = structures->GetStructure3d(i);
+			vtStructure3d *str3d = st_layer->GetStructure3d(i);
 			osg::Node *node = str3d->GetContainer();
 			if (!node)
 				node = str3d->GetGeom();
@@ -1129,7 +1129,7 @@ int vtTerrain::DeleteSelectedStructures()
 	}
 
 	// then do a normal delete-selected
-	return structures->DeleteSelected();
+	return st_layer->DeleteSelected();
 }
 
 bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
@@ -2478,7 +2478,7 @@ void vtTerrain::CreateStep9()
 		}
 		vtAnimPathEngine *engine = new vtAnimPathEngine(anim);
 		engine->setName("AnimPathEngine");
-		engine->SetTarget(vtGetScene()->GetCamera());
+		engine->AddTarget(vtGetScene()->GetCamera());
 		engine->SetEnabled(false);
 		AddEngine(engine);
 
@@ -2800,10 +2800,9 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
 }
 
 /**
- * Create geometry on the terrain for a 2D line by draping the point onto
+ * Create a set of points on the terrain for a 2D polyline by draping the point onto
  * the terrain surface.
  *
- * \param pMF	A vtGeomFactory which will produces the mesh geometry.
  * \param line	The 2D line to drape, in Earth coordinates.
  * \param fOffset	An offset to elevate each point in the resulting geometry,
  *		useful for keeping it visibly above the ground.
@@ -2816,21 +2815,11 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
  * \param bTrue		True to use the true elevation of the terrain, ignoring
  *		whatever scale factor is being used to exaggerate elevation for
  *		display.
- * \return The approximate length of the resulting 3D line mesh.
- *
- * \par Example:
-	\code
-	DLine2 line = ...;
-	vtTerrain *pTerr = ...;
-	vtGeode *pLineGeom = new vtGeode;
-	pTerr->AddNode(pLineGeom);
-	vtGeomFactory mf(pLineGeom, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
-	float length = pTerr->AddSurfaceLineToMesh(&mf, dline, 10, true);
-	\endcode
+ * \param output	Received the points.
+ * \return The approximate length of the resulting 3D polyline.
  */
-float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
-									 float fOffset, bool bInterp, bool bCurve,
-									 bool bTrue)
+float vtTerrain::LineOnSurface(const DLine2 &line, float fOffset, bool bInterp,
+	bool bCurve, bool bTrue, FLine3 &output)
 {
 	uint i, j;
 	FPoint3 v1, v2, v;
@@ -2865,7 +2854,6 @@ float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 	}
 
 	float fTotalLength = 0.0f;
-	pMF->PrimStart();
 	int iVerts = 0;
 	uint points = line.GetSize();
 	if (bCurve)
@@ -2906,7 +2894,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 			m_pHeightField->m_Conversion.convert_earth_to_local_xz(p3.x, p3.y, v.x, v.z);
 			m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
 			v.y += fOffset;
-			pMF->AddVertex(v);
+			output.Append(v);
 			iVerts++;
 
 			// keep a running total of approximate ground length
@@ -2940,7 +2928,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 					v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
 					m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
 					v.y += fOffset;
-					pMF->AddVertex(v);
+					output.Append(v);
 					iVerts++;
 
 					// keep a running total of approximate ground length
@@ -2954,11 +2942,54 @@ float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 				m_pHeightField->m_Conversion.ConvertFromEarth(line[i], v.x, v.z);
 				m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
 				v.y += fOffset;
-				pMF->AddVertex(v);
+				output.Append(v);
 			}
 		}
 	}
+	return fTotalLength;
+}
+
+/**
+ * Create geometry on the terrain for a 2D line by draping the point onto
+ * the terrain surface.
+ *
+ * \param pMF	A vtGeomFactory which will produces the mesh geometry.
+ * \param line	The 2D line to drape, in Earth coordinates.
+ * \param fOffset	An offset to elevate each point in the resulting geometry,
+ *		useful for keeping it visibly above the ground.
+ * \param bInterp	True to interpolate between the vertices of the input
+ *		line. This is generally desirable when the ground is much more finely
+ *		spaced than the input line.
+ * \param bCurve	True to interpret the vertices of the input line as
+ *		control points of a curve.  The created geometry will consist of
+ *		a draped line which passes through the control points.
+ * \param bTrue		True to use the true elevation of the terrain, ignoring
+ *		whatever scale factor is being used to exaggerate elevation for
+ *		display.
+ * \return The approximate length of the resulting 3D line mesh.
+ *
+ * \par Example:
+	\code
+	DLine2 line = ...;
+	vtTerrain *pTerr = ...;
+	vtGeode *pLineGeom = new vtGeode;
+	pTerr->AddNode(pLineGeom);
+	vtGeomFactory mf(pLineGeom, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+	float length = pTerr->AddSurfaceLineToMesh(&mf, dline, 10, true);
+	\endcode
+ */
+float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
+									 float fOffset, bool bInterp, bool bCurve,
+									 bool bTrue)
+{
+	FLine3 tessellated;
+	float fTotalLength = LineOnSurface(line, fOffset, bInterp, bCurve, bTrue, tessellated);
+
+	pMF->PrimStart();
+	for (uint i = 0; i < tessellated.GetSize(); i++)
+		pMF->AddVertex(tessellated[i]);
 	pMF->PrimEnd();
+
 	return fTotalLength;
 }
 
@@ -3093,12 +3124,8 @@ vtVegLayer *vtTerrain::NewVegLayer()
  *		 vtSpeciesList::GetSpeciesIdByName or vtSpeciesList::GetSpeciesIdByCommonName.
  * \param fSize Height of the new plant (meters).
  */
-bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
+bool vtTerrain::AddPlant(vtVegLayer *v_layer, const DPoint2 &pos, int iSpecies, float fSize)
 {
-	vtVegLayer *v_layer = GetVegLayer();
-	if (!v_layer)
-		return false;
-
 	int num = v_layer->AddPlant(pos, fSize, iSpecies);
 	if (num == -1)
 		return false;
@@ -3114,12 +3141,8 @@ bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 /**
  * Delete all the selected plants in the terrain's plant array.
  */
-int vtTerrain::DeleteSelectedPlants()
+int vtTerrain::DeleteSelectedPlants(vtVegLayer *v_layer)
 {
-	vtVegLayer *v_layer = GetVegLayer();
-	if (!v_layer)
-		return false;
-
 	int num_deleted = 0;
 
 	// first remove them from the terrain
@@ -3315,48 +3338,40 @@ void vtTerrain::RemoveFeatureGeometries(vtAbstractLayer *alay)
 	alay->ReleaseGeometry();
 }
 
-int vtTerrain::DeleteSelectedFeatures()
+int vtTerrain::DeleteSelectedFeatures(vtAbstractLayer *alay)
 {
 	int count = 0;
 
-	uint i, size = m_Layers.size();
-	for (i = 0; i < size; i++)
+	int NumToDelete = 0;
+	vtFeatureSet *fset = alay->GetFeatureSet();
+	for (uint j = 0; j < fset->GetNumEntities(); j++)
 	{
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(m_Layers[i].get());
-		if (!alay)
-			continue;
+		if (fset->IsSelected(j))
+		{
+			fset->SetToDelete(j);
+			NumToDelete++;
+		}
+	}
+	if (NumToDelete > 0)
+	{
+		VTLOG("Set %d items to delete, removing visuals..\n", NumToDelete);
 
-		int NumToDelete = 0;
-		vtFeatureSet *fset = alay->GetFeatureSet();
+		// Delete high-level features first
 		for (uint j = 0; j < fset->GetNumEntities(); j++)
 		{
-			if (fset->IsSelected(j))
+			if (fset->IsDeleted(j))
 			{
-				fset->SetToDelete(j);
-				NumToDelete++;
+				vtFeature *f = fset->GetFeature(j);
+				alay->DeleteFeature(f);
 			}
 		}
-		if (NumToDelete > 0)
-		{
-			VTLOG("Set %d items to delete, removing visuals..\n", NumToDelete);
+		// Then low-level
+		fset->ApplyDeletion();
 
-			// Delete high-level features first
-			for (uint j = 0; j < fset->GetNumEntities(); j++)
-			{
-				if (fset->IsDeleted(j))
-				{
-					vtFeature *f = fset->GetFeature(j);
-					alay->DeleteFeature(f);
-				}
-			}
-			// Then low-level
-			fset->ApplyDeletion();
+		// Finish
+		alay->EditEnd();
 
-			// Finish
-			alay->EditEnd();
-
-			count += NumToDelete;
-		}
+		count += NumToDelete;
 	}
 	return count;
 }

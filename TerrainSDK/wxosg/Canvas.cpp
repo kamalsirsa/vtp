@@ -119,7 +119,7 @@ void vtGLCanvas::EnableSpaceNav()
 #if WIN32
 	// Initialize spacenavigator, if there is one present
 	g_SpaceNav.Init();
-	g_SpaceNav.SetTarget(vtGetScene()->GetCamera());
+	g_SpaceNav.AddTarget(vtGetScene()->GetCamera());
 #endif
 }
 

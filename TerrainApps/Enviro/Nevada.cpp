@@ -73,7 +73,7 @@ void NevadaTerrain::CreateCustomCulture()
 	EpochEngine *pEE = new EpochEngine(this, m_fLow, m_fHigh,
 		m_pDetailMat2, m_pDetailMat);
 	pEE->setName("Epoch Engine");
-	pEE->SetTarget(vtGetScene()->GetCamera());
+	pEE->AddTarget(vtGetScene()->GetCamera());
 	AddEngine(pEE);
 //	addNode(pEE->m_pSprite);
 
@@ -296,7 +296,7 @@ void NevadaTerrain::CreatePast()
 
 		JumpingEngine *pJumper = new JumpingEngine(bigmike->GetTrans(),
 			sc, m_fGround, 100.f, i * PIf * 2.0f / MIKE_COUNT);
-		pJumper->SetTarget(bigmike);
+		pJumper->AddTarget(bigmike);
 		AddEngine(pJumper);
 	}
 #endif

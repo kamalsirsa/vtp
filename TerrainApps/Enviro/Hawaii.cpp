@@ -270,7 +270,7 @@ void IslandTerrain::create_state_park()
 #endif
 
 		vtAnimPathEngine *engine = new vtAnimPathEngine(path, 1.0);
-		engine->SetTarget(table);
+		engine->AddTarget(table);
 		AddEngine(engine);
 #endif
 	}
@@ -667,7 +667,7 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 
 	PlaneEngine *pEng = new PlaneEngine(fSpeedExag, code);
 	pEng->setName("Airplane Engine");
-	pEng->SetTarget(trans);
+	pEng->AddTarget(trans);
 	pEng->SetHoop(i);
 	AddEngine(pEng);
 
@@ -679,7 +679,7 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 		plane->Initialize();
 		plane->setName("Plane Sound");
 		plane->SetModel(1,1,200,200);	//set limit of how far away sound can be heard
-		plane->SetTarget(copy);			//set target
+		plane->AddTarget(copy);			//set target
 		plane->SetMute(true);			//mute the sound until later
 		plane->Play(0, 0.0f);			//play the sound (muted)
 		AddEngine(plane, pScene);

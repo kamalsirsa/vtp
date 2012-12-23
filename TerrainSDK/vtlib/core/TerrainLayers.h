@@ -20,13 +20,13 @@
 class vtLayer : public osg::Referenced
 {
 public:
-	virtual ~vtLayer() { m_bModified = false; }
+	vtLayer() { m_bModified = false; }
 
 	virtual void SetLayerName(const vtString &fname) = 0;
 	virtual vtString GetLayerName() = 0;
 	virtual void SetVisible(bool vis) = 0;
 	virtual bool GetVisible() = 0;
-	virtual void SetModified(bool bModified) { m_bModified = bModified; }
+	virtual void SetModified(bool bModified = true) { m_bModified = bModified; }
 	bool GetModified() const { return m_bModified; }
 
 protected:

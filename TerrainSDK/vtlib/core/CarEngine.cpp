@@ -45,7 +45,7 @@ float angleNormal(float val)
 CarEngine::CarEngine(Vehicle *vehicle, vtHeightField3d *hf)
 {
 	m_pVehicle = vehicle;
-	SetTarget(vehicle);
+	AddTarget(vehicle);
 
 	m_pHeightField = hf;
 

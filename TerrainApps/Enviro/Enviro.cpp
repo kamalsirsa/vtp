@@ -785,7 +785,7 @@ void Enviro::SetupScene2()
 	m_pTerrainPicker->setName("TerrainPicker");
 	vtGetScene()->AddEngine(m_pTerrainPicker);
 
-	m_pTerrainPicker->SetTarget(m_pCursorMGeom);
+	m_pTerrainPicker->AddTarget(m_pCursorMGeom);
 	m_pTerrainPicker->SetEnabled(false); // turn off at startup
 
 	// Connect to the GrabFlyer
@@ -801,21 +801,21 @@ void Enviro::SetupScene2()
 		m_pTopDownCamera = new vtCamera;
 		m_pTopDownCamera->SetOrtho(true);
 		m_pTopDownCamera->setName("Top-Down Camera");
-		m_pOrthoFlyer->SetTarget(m_pTopDownCamera);
+		m_pOrthoFlyer->AddTarget(m_pTopDownCamera);
 	}
 
-	m_pQuakeFlyer->SetTarget(m_pNormalCamera);
-	m_pVFlyer->SetTarget(m_pNormalCamera);
-	m_pTFlyer->SetTarget(m_pNormalCamera);
-	m_pGFlyer->SetTarget(m_pNormalCamera);
-	m_pFlatFlyer->SetTarget(m_pNormalCamera);
-	m_pPanoFlyer->SetTarget(m_pNormalCamera);
+	m_pQuakeFlyer->AddTarget(m_pNormalCamera);
+	m_pVFlyer->AddTarget(m_pNormalCamera);
+	m_pTFlyer->AddTarget(m_pNormalCamera);
+	m_pGFlyer->AddTarget(m_pNormalCamera);
+	m_pFlatFlyer->AddTarget(m_pNormalCamera);
+	m_pPanoFlyer->AddTarget(m_pNormalCamera);
 
 	// An engine to keep the camera above the terrain, comes after the other
 	//  engines which could move the camera.
 	m_pHeightEngine = new vtHeightConstrain(1.0f);
 	m_pHeightEngine->setName("Height Constrain Engine");
-	m_pHeightEngine->SetTarget(m_pNormalCamera);
+	m_pHeightEngine->AddTarget(m_pNormalCamera);
 	vtGetScene()->GetRootEngine()->AddChild(m_pHeightEngine);
 
 	// This HUD group will contain geometry such as the legend
@@ -992,7 +992,7 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerrain)
 	float speed = param.GetValueFloat(STR_NAVSPEED);
 	if (m_pCurrentFlyer != NULL)
 	{
-		m_pCurrentFlyer->SetTarget(m_pNormalCamera);
+		m_pCurrentFlyer->AddTarget(m_pNormalCamera);
 		m_pCurrentFlyer->SetEnabled(true);
 		m_pCurrentFlyer->SetExag(param.GetValueBool(STR_ACCEL));
 	}
@@ -2045,7 +2045,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 					str3d->UpdateTransform(pTerr->GetHeightField());
 				}
 			}
-			st_layer->SetModified(true);
+			st_layer->SetModified();
 		}
 		if (m_bDragging)
 		{
@@ -2054,6 +2054,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 				vtVegLayer *vlay = pTerr->GetVegLayer();
 				if (vlay)
 					vlay->OffsetSelectedPlants(ground_delta);
+				vlay->SetModified();
 			}
 			if (m_bSelectedUtil)
 			{
@@ -2340,6 +2341,8 @@ void Enviro::FinishLinear()
 
 	// Close and create new fence in the current structure array
 	vtFence3d *fence = (vtFence3d*) st_layer->AddNewFence();
+	st_layer->SetModified(true);
+
 	fence->SetParams(m_FenceParams);
 	fence->SetFencePoints(m_Elastic.GetPolyline());
 
@@ -2412,6 +2415,7 @@ void Enviro::FinishBuilding()
 
 	// Close and create new building in the current structure array
 	vtBuilding3d *pbuilding = (vtBuilding3d*) st_layer->AddNewBuilding();
+	st_layer->SetModified(true);
 
 	// Force footprint anticlockwise
 	PolyChecker PolyChecker;
@@ -2569,7 +2573,7 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 	const int size = vlay->GetNumEntities();
 	double len, closest = 1E8;
 
-	bool bPlant = true;
+	bool bValidLocation = true;
 	if (m_PlantOpt.m_fSpacing > 0.0f)
 	{
 		// Spacing is in meters, but the picking functions work in
@@ -2585,17 +2589,19 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 				closest = len;
 		}
 		if (closest < mininum_spacing)
-			bPlant = false;
-		VTLOG(" closest plant %.2fm,%s planting..", closest, bPlant ? "" : " not");
+			bValidLocation = false;
+		VTLOG(" closest plant %.2fm,%s planting..", closest, bValidLocation ? "" : " not");
 	}
-	if (!bPlant)
+	if (!bValidLocation)
 		return false;
 
 	float height = m_PlantOpt.m_fHeight;
 	float variance = m_PlantOpt.m_iVariance / 100.0f;
 	height *= (1.0f + random(variance*2) - variance);
-	if (!pTerr->AddPlant(epos, m_PlantOpt.m_iSpecies, height))
+	if (!pTerr->AddPlant(vlay, epos, m_PlantOpt.m_iSpecies, height))
 		return false;
+
+	vlay->SetModified();
 
 	// If there is a GUI, let it update to show one more plant
 	UpdateLayerView();
@@ -2617,11 +2623,12 @@ void Enviro::CreateInstance()
 void Enviro::CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structs = pTerr->GetStructureLayer();
-	if (!structs)
+	vtStructureLayer *st_layer = pTerr->GetStructureLayer();
+	if (!st_layer)
 		return;
 
-	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
+	vtStructInstance3d *inst = (vtStructInstance3d *) st_layer->AddNewInstance();
+
 	inst->CopyTagsFrom(*tags);
 	inst->SetPoint(pos);
 	VTLOG("Create Instance at %.7g, %.7g: ", pos.x, pos.y);
@@ -2630,12 +2637,13 @@ void Enviro::CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags)
 	//  extending it as desired.
 	ExtendStructure(inst);
 
-	structs->push_back(inst);
-	const int index = structs->size() - 1;
-	bool success = pTerr->CreateStructure(structs, index);
+	st_layer->push_back(inst);
+	const int index = st_layer->size() - 1;
+	bool success = pTerr->CreateStructure(st_layer, index);
 	if (success)
 	{
 		VTLOG(" succeeded.\n");
+		st_layer->SetModified();
 		RefreshLayerView();
 	}
 	else
@@ -2644,7 +2652,7 @@ void Enviro::CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags)
 		VTLOG(" failed.\n");
 		ShowMessage("Could not create instance.");
 		inst->Select(true);
-		structs->DeleteSelected();
+		st_layer->DeleteSelected();
 		return;
 	}
 }
@@ -3160,13 +3168,13 @@ bool Enviro::ImportModelFromKML(const char *kmlfile)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr)
 		return false;
-	vtStructureArray3d *structs = pTerr->GetStructureLayer();
-	if (!structs)
+	vtStructureLayer *st_layer = pTerr->GetStructureLayer();
+	if (!st_layer)
 	{
 		VTLOG(" No structure layer.\n");
 		return false;
 	}
-	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
+	vtStructInstance3d *inst = (vtStructInstance3d *) st_layer->AddNewInstance();
 
 	vtProjection &tproj = pTerr->GetProjection();
 	DPoint2 p = visitor.m_pos;
@@ -3198,12 +3206,12 @@ bool Enviro::ImportModelFromKML(const char *kmlfile)
 	inst->SetValueString("filename", pa, true);
 	VTLOG("  at %.7g, %.7g: ", p.x, p.y);
 
-	structs->push_back(inst);
-	const int index = structs->size() - 1;
-	bool success = pTerr->CreateStructure(structs, index);
+	const int index = st_layer->size() - 1;
+	bool success = pTerr->CreateStructure(st_layer, index);
 	if (success)
 	{
 		VTLOG(" succeeded.\n");
+		st_layer->SetModified();
 		RefreshLayerView();
 	}
 	else
@@ -3212,7 +3220,7 @@ bool Enviro::ImportModelFromKML(const char *kmlfile)
 		VTLOG(" failed.\n");
 		ShowMessage("Could not create instance.");
 		inst->Select(true);
-		structs->DeleteSelected();
+		st_layer->DeleteSelected();
 		return false;
 	}
 	return true;

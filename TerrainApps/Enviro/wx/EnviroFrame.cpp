@@ -3462,12 +3462,33 @@ void EnviroFrame::OnSetDelete(vtFeatureSet *set)
 void EnviroFrame::DeleteAllSelected()
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	int structs = pTerr->DeleteSelectedStructures();
-	int plants = pTerr->DeleteSelectedPlants();
-	int points = pTerr->DeleteSelectedFeatures();
+
+	int structs = 0, plants = 0, features = 0;
+
+	vtStructureLayer *st_layer = pTerr->GetStructureLayer();
+	if (st_layer)
+	{
+		structs = pTerr->DeleteSelectedStructures(st_layer);
+		if (structs)
+			st_layer->SetModified();
+	}
+	vtVegLayer *v_layer = pTerr->GetVegLayer();
+	if (v_layer)
+	{
+		plants = pTerr->DeleteSelectedPlants(v_layer);
+		if (plants)
+			v_layer->SetModified();
+	}
+	vtAbstractLayer *a_layer = pTerr->GetAbstractLayer();
+	if (a_layer)
+	{
+		features = pTerr->DeleteSelectedFeatures(a_layer);
+		if (features)
+			a_layer->SetModified();
+	}
 
 	// layer dialog needs to reflect the change
-	if ((plants != 0 || points != 0) && structs == 0)
+	if ((plants != 0 || features != 0) && structs == 0)
 		m_pLayerDlg->UpdateTreeTerrain();		// we only need to update
 	else if (structs != 0)
 		m_pLayerDlg->RefreshTreeContents();		// we need full refresh

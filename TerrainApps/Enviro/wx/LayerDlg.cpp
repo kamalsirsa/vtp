@@ -663,9 +663,10 @@ void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 }
 
 //Helper
-bool SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
+bool SaveAbstractLayer(vtAbstractLayer *alay, bool bAskFilename)
 {
-	vtString fname = set->GetFilename();
+	vtFeatureSet *fset = alay->GetFeatureSet();
+	vtString fname = fset->GetFilename();
 
 	if (bAskFilename)
 	{
@@ -687,14 +688,14 @@ bool SaveAbstractLayer(vtFeatureSet *set, bool bAskFilename)
 		}
 		wxString str = saveFile.GetPath();
 		fname = str.mb_str(wxConvUTF8);
-		set->SetFilename(fname);
+		fset->SetFilename(fname);
 	}
-	bool success = set->SaveToSHP(fname);
+	bool success = fset->SaveToSHP(fname);
 
-	if (!success)
-	{
+	if (success)
+		alay->SetModified(false);
+	else
 		wxMessageBox(_("Couldn't save layer."));
-	}
 
 	return success;
 }
@@ -797,8 +798,8 @@ void LayerDlg::OnLayerSave( wxCommandEvent &event )
 	if (data->m_type == LT_VEG)
 		bSaved = g_App.SaveVegetation(false);	// don't ask for filename
 
-	if (data->m_fset)
-		bSaved = SaveAbstractLayer(data->m_fset, false);	// don't ask for filename
+	if (data->m_type == LT_ABSTRACT)
+		bSaved = SaveAbstractLayer(data->m_alay, false);	// don't ask for filename
 
 	// Update the (*) next to the modified layer name
 	if (bSaved)
@@ -820,8 +821,8 @@ void LayerDlg::OnLayerSaveAs( wxCommandEvent &event )
 	if (data->m_type == LT_VEG)
 		bSaved = g_App.SaveVegetation(true);	// ask for filename
 
-	if (data->m_fset)
-		bSaved = SaveAbstractLayer(data->m_fset, true);	// ask for filename
+	if (data->m_type == LT_ABSTRACT)
+		bSaved = SaveAbstractLayer(data->m_alay, true);	// ask for filename
 
 	// The filename may have changed
 	if (bSaved)

@@ -181,7 +181,7 @@ void Enviro::MakeGlobe()
 	VTLOG("\tcreating Trackball\n");
 	m_pTrackball = new vtTrackball(INITIAL_SPACE_DIST);
 	m_pTrackball->setName("Trackball2");
-	m_pTrackball->SetTarget(vtGetScene()->GetCamera());
+	m_pTrackball->AddTarget(vtGetScene()->GetCamera());
 	m_pTrackball->SetRotateButton(VT_RIGHT, 0, false);
 	m_pTrackball->SetZoomButton(VT_RIGHT, VT_SHIFT);
 	vtGetScene()->AddEngine(m_pTrackball);
@@ -201,7 +201,7 @@ void Enviro::MakeGlobe()
 	m_pGlobePicker->setName("GlobePicker");
 	m_pGlobePicker->SetGlobe(m_pIcoGlobe);
 	vtGetScene()->AddEngine(m_pGlobePicker);
-	m_pGlobePicker->SetTarget(m_pCursorMGeom);
+	m_pGlobePicker->AddTarget(m_pCursorMGeom);
 	m_pGlobePicker->SetRadius(1.0);
 	m_pGlobePicker->SetEnabled(false);
 

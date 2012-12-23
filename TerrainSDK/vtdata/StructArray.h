@@ -72,7 +72,7 @@ class vtStructureArray : public std::vector<vtStructure*>
 public:
 	vtStructureArray();
 	virtual ~vtStructureArray();
-	virtual void DestructItems(uint first, uint last);
+	void DestructItems();
 
 	void SetFilename(const vtString &str) { m_strFilename = str; }
 	vtString GetFilename() { return m_strFilename; }

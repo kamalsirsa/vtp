@@ -252,7 +252,7 @@ void LocationDlg::AppendAnimPath(vtAnimPath *anim, const char *name)
 {
 	vtAnimPathEngine *engine = new vtAnimPathEngine(anim);
 	engine->setName("AnimPathEngine");
-	engine->SetTarget(m_pSaver->GetTransform());
+	engine->AddTarget(m_pSaver->GetTransform());
 	engine->SetEnabled(false);
 
 	vtAnimEntry entry;

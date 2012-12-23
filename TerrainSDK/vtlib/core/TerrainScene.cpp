@@ -147,7 +147,7 @@ void vtTerrainScene::_CreateSky()
 	m_pSkyTrack = new vtSkyTrackEngine;
 	m_pSkyTrack->setName("Sky-Camera-Following");
 	m_pSkyTrack->m_pCamera = vtGetScene()->GetCamera();
-	m_pSkyTrack->SetTarget(m_pSkyDome);
+	m_pSkyTrack->AddTarget(m_pSkyDome);
 	vtGetScene()->AddEngine(m_pSkyTrack);
 }
 
@@ -175,7 +175,7 @@ void vtTerrainScene::_CreateEngines()
 {
 	// Set Time in motion
 	m_pTimeEngine = new vtTimeEngine;
-	m_pTimeEngine->SetTarget((vtTimeTarget *)this);
+	m_pTimeEngine->AddTarget((vtTimeTarget *)this);
 	m_pTimeEngine->setName("Terrain Time");
 	m_pTimeEngine->SetEnabled(false);
 	vtGetScene()->AddEngine(m_pTimeEngine);

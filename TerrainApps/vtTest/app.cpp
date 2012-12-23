@@ -134,7 +134,7 @@ bool App::CreateScene()
 
 	// Trackball to move camera around the center
 	m_tball = new vtTrackball(5.0f);
-	m_tball->SetTarget(m_pCamera);
+	m_tball->AddTarget(m_pCamera);
 	m_tball->SetRotateButton(VT_LEFT);
 	m_tball->SetZoomButton(VT_RIGHT);
 	m_tball->SetZoomScale(2.0f);

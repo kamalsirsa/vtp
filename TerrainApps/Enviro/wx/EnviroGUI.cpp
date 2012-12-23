@@ -256,7 +256,7 @@ void EnviroGUI::SetupScene3()
 		m_pJFlyer = new vtJoystickEngine;
 		m_pJFlyer->setName("Joystick");
 		vtGetScene()->AddEngine(m_pJFlyer);
-		m_pJFlyer->SetTarget(m_pNormalCamera);
+		m_pJFlyer->AddTarget(m_pNormalCamera);
 	}
 #endif
 }
@@ -302,7 +302,9 @@ bool EnviroGUI::SaveVegetation(bool bAskFilename)
 		fname = str.mb_str(wxConvUTF8);
 		vlay->SetFilename(fname);
 	}
-	vlay->WriteVF(fname);
+	bool success = vlay->WriteVF(fname);
+	if (success)
+		vlay->SetModified(false);
 	return true;
 }
 
@@ -310,8 +312,8 @@ bool EnviroGUI::SaveStructures(bool bAskFilename)
 {
 	VTLOG1("EnviroGUI::SaveStructures\n");
 
-	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructureLayer();
-	vtString fname = sa->GetFilename();
+	vtStructureLayer *st_layer = GetCurrentTerrain()->GetStructureLayer();
+	vtString fname = st_layer->GetFilename();
 	if (bAskFilename)
 	{
 		// save current directory
@@ -333,11 +335,11 @@ bool EnviroGUI::SaveStructures(bool bAskFilename)
 		}
 		wxString str = saveFile.GetPath();
 		fname = str.mb_str(wxConvUTF8);
-		sa->SetFilename(fname);
+		st_layer->SetFilename(fname);
 	}
 	bool success = false;
 	try {
-		success = sa->WriteXML(fname);
+		success = st_layer->WriteXML(fname);
 	}
 	catch (xh_io_exception &e)
 	{
@@ -345,6 +347,8 @@ bool EnviroGUI::SaveStructures(bool bAskFilename)
 		VTLOG("  Error: %s\n", str.c_str());
 		wxMessageBox(wxString(str.c_str(), wxConvUTF8), _("Error"));
 	}
+	if (success)
+		st_layer->SetModified(false);
 	return success;
 }
 

@@ -65,8 +65,6 @@ public:
 	osg::Referenced *GetTarget(uint which = 0);
 	/** Adds a target to the engine. */
 	void AddTarget(osg::Referenced *ptr) { m_Targets.push_back(ptr); }
-	/** Sets a single target for this engine (for backward compatibility.) */
-	void SetTarget(osg::Referenced *ptr) { m_Targets[0] = ptr; }
 	/** Removes a target from the engine. */
 	void RemoveTarget(osg::Referenced *ptr);
 

@@ -1,7 +1,7 @@
 //
 // Elastic.cpp
 //
-// Copyright (c) 2011 Virtual Terrain Project
+// Copyright (c) 2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@ ElasticPolyline::ElasticPolyline()
 	m_Materials = new vtMaterialArray;
 	m_Materials->AddRGBMaterial(RGBf(1, 0.5, 0), true, true);			// orange solid
 	m_Materials->AddRGBMaterial(RGBf(1, 1, 0.5), false, false, true);	// light yellow wireframe
+	m_Materials->AddRGBMaterial(RGBf(1, 0.7, 1), false, false, false, 0.4);	// translucent
 
 	// Create a marker post to use for each corner of the polyline
 	int matidx = 0;		// orange
@@ -130,12 +131,33 @@ void ElasticPolyline::Realize()
 		xform->addChild(m_Marker);
 	}
 
+	FLine3 tessellated;
+	float fTotalLength = m_pTerr->LineOnSurface(m_Line, 0.0f, true,
+		false, false, tessellated);
+
 	// Make lines between them
 	vtGeode *LineGeode = new vtGeode;
 	LineGeode->SetMaterials(m_Materials);
 	m_Container->addChild(LineGeode);
-	int matidx = 1;		// yellow
-	vtGeomFactory mf(LineGeode, osg::PrimitiveSet::LINE_STRIP, 0, 30000, matidx);
-	m_pTerr->AddSurfaceLineToMesh(&mf, m_Line, m_fLineHeight, true);
+	vtGeomFactory mf(LineGeode, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
+
+	mf.PrimStart();
+	for (uint i = 0; i < tessellated.GetSize(); i++)
+		mf.AddVertex(tessellated[i] + FPoint3(0, m_fLineHeight, 0));
+	mf.PrimEnd();
+
+	// Make strips between them
+	vtGeode *StripGeode = new vtGeode;
+	StripGeode->SetMaterials(m_Materials);
+	m_Container->addChild(StripGeode);
+	vtGeomFactory mf2(StripGeode, osg::PrimitiveSet::TRIANGLE_STRIP, 0, 30000, 2);
+
+	mf2.PrimStart();
+	for (uint i = 0; i < tessellated.GetSize(); i++)
+	{
+		mf2.AddVertex(tessellated[i]);
+		mf2.AddVertex(tessellated[i] + FPoint3(0, m_fLineHeight * 0.99f, 0));
+	}
+	mf2.PrimEnd();
 }
 

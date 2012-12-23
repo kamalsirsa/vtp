@@ -223,8 +223,8 @@ public:
 	// plants
 	vtVegLayer *GetVegLayer();
 	vtVegLayer *NewVegLayer();
-	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
-	int DeleteSelectedPlants();
+	bool AddPlant(vtVegLayer *v_layer, const DPoint2 &pos, int iSpecies, float fSize);
+	int DeleteSelectedPlants(vtVegLayer *v_layer);
 	void SetSpeciesList(vtSpeciesList3d *pSpeciesList);
 	vtSpeciesList3d *GetSpeciesList() { return m_pSpeciesList; }
 	/// Get the plant array for this terrain.  You can modify it directly.
@@ -239,7 +239,7 @@ public:
 	vtStructureLayer *LoadStructuresFromXML(const vtString &strFilename);
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
-	int DeleteSelectedStructures();
+	int DeleteSelectedStructures(vtStructureLayer *st_layer);
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 							  int &structure, vtStructureLayer **st_layer,
 							  double &closest, float fMaxInstRadius,
@@ -263,7 +263,7 @@ public:
 	// abstract layers
 	vtAbstractLayer *GetAbstractLayer();
 	void RemoveFeatureGeometries(vtAbstractLayer *alay);
-	int DeleteSelectedFeatures();
+	int DeleteSelectedFeatures(vtAbstractLayer *alay);
 	void SetFeatureLoader(vtFeatureLoader *loader) { m_pFeatureLoader = loader; }
 
 	/// You should add your nodes to this terrain's scaled features if
@@ -312,6 +312,8 @@ public:
 	int GetShadowTextureUnit();
 
 	// symbols and labels for abstract data
+	float LineOnSurface(const DLine2 &line, float fOffset, bool bInterp,
+		bool bCurve, bool bTrue, FLine3 &output);
 	float AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
 		float fOffset, bool bInterp = true, bool bCurve = false, bool bTrue = false);
 

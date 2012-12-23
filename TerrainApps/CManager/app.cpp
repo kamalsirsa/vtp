@@ -125,7 +125,7 @@ bool vtApp::OnInit(void)
 	// make a trackball controller for the camera
 	VTLOG(" creating trackball\n");
 	m_pTrackball = new vtTrackball(3.0f);
-	m_pTrackball->SetTarget(pScene->GetCamera());
+	m_pTrackball->AddTarget(pScene->GetCamera());
 	m_pTrackball->setName("Trackball");
 	m_pTrackball->SetRotateButton(VT_LEFT, 0);
 	m_pTrackball->SetZoomButton(VT_LEFT|VT_RIGHT, 0);
