@@ -64,11 +64,11 @@ public:
 
 	void SetName(const vtString& Name)
 	{
-		m_pName = &Name;
+		m_Name = Name;
 	}
 	const vtString& GetName() const
 	{
-		return *m_pName;
+		return m_Name;
 	}
 	/**
 	\param type One of:
@@ -146,11 +146,7 @@ public:
 	// Operator  overloads
 	bool operator == (const vtMaterialDescriptor& rhs) const
 	{
-		return (*m_pName == *rhs.m_pName);
-	}
-	bool operator == (const vtMaterialDescriptor& rhs)
-	{
-		return (*m_pName == *rhs.m_pName);
+		return (m_Name == rhs.m_Name);
 	}
 	void WriteToFile(FILE *fp);
 
@@ -160,7 +156,7 @@ public:
 	ColorIndexMap m_ColorIndexMap;
 
 private:
-	const vtString *m_pName; // Name of material
+	vtString m_Name;		// Name of material
 	int m_Type;				// 0 for surface materials, >0 for classification type
 	vtMaterialColorEnum m_Colorable;
 	vtString m_TextureFilename;	// Filename of texture, or ""

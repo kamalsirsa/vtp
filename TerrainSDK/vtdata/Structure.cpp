@@ -218,7 +218,6 @@ void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAtt
 //
 vtMaterialDescriptor::vtMaterialDescriptor()
 {
-	m_pName = NULL;
 	m_Type = 0;
 	m_Colorable = VT_MATERIAL_SELFCOLOURED_TEXTURE;
 	m_UVScale.Set(1,1);
@@ -254,7 +253,7 @@ vtMaterialDescriptor::vtMaterialDescriptor(const char *Name,
 	const float fUVScaleX, const float fUVScaleY, const bool bTwoSided,
 	const bool bAmbient, const bool bBlending, const RGBi &Color)
 {
-	m_pName = new vtString(Name);
+	m_Name = Name;
 	m_Type = 0;
 	m_TextureFilename = TextureFilename;
 	m_Colorable = Colorable;
@@ -267,14 +266,12 @@ vtMaterialDescriptor::vtMaterialDescriptor(const char *Name,
 
 vtMaterialDescriptor::~vtMaterialDescriptor()
 {
-	if (m_pName)
-		delete m_pName;
 }
 
 void vtMaterialDescriptor::WriteToFile(FILE *fp)
 {
 	fprintf(fp, "\t<MaterialDescriptor Name=\"");
-	fprintf(fp, "%s", (pcchar) (*m_pName));
+	fprintf(fp, "%s", (pcchar) m_Name);
 	fprintf(fp, "\"");
 
 	if (m_Type != 0)
