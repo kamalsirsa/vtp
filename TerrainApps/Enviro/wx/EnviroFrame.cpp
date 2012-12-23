@@ -979,9 +979,9 @@ void EnviroFrame::SetMode(MouseMode mode)
 
 		// Make sure the species file and appearances are available
 		g_App.LoadSpeciesList();
-		GetCurrentTerrain()->SetPlantList(g_App.GetPlantList());
+		GetCurrentTerrain()->SetSpeciesList(g_App.GetSpeciesList());
 
-		m_pPlantDlg->SetPlantList(g_App.GetPlantList());
+		m_pPlantDlg->SetSpeciesList(g_App.GetSpeciesList());
 		m_pPlantDlg->SetDlgPlantOptions(g_App.GetPlantOptions());
 	}
 	m_pPlantDlg->Show(mode == MM_PLANTS);
@@ -3674,7 +3674,7 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 			opt.m_iSpecies = species_id;
 			opt.m_fHeight = size;
 
-			m_pPlantDlg->SetPlantList(g_App.GetPlantList());
+			m_pPlantDlg->SetSpeciesList(g_App.GetSpeciesList());
 			m_pPlantDlg->SetDlgPlantOptions(opt);
 			m_pPlantDlg->Show(true);
 		}

@@ -208,7 +208,7 @@ public:
 
 	// plants
 	void LoadSpeciesList();
-	vtSpeciesList3d	*GetPlantList() { return m_pPlantList; }
+	vtSpeciesList3d	*GetSpeciesList() { return m_pSpeciesList; }
 	PlantingOptions &GetPlantOptions() { return m_PlantOpt; }
 	bool PlantATree(const DPoint2 &epos);
 	void SetPlantOptions(const PlantingOptions &opt);
@@ -332,7 +332,7 @@ protected:
 	void SetWindowBox(const IPoint2 &ul, const IPoint2 &lr);
 
 	// plants
-	vtSpeciesList3d	*m_pPlantList;
+	vtSpeciesList3d	*m_pSpeciesList;
 	PlantingOptions m_PlantOpt;
 	bool		m_bPlantsLoaded;
 

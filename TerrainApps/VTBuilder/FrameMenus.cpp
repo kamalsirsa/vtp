@@ -690,7 +690,7 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 	// reset veg too
 	m_strSpeciesFilename = "";
 	m_strBiotypesFilename = "";
-	m_PlantList.Clear();
+	m_SpeciesList.Clear();
 	m_BioRegion.Clear();
 
 	RefreshTreeView();
@@ -2795,7 +2795,7 @@ void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)
 
 void MainFrame::OnVegPlants(wxCommandEvent& event)
 {
-	// if PlantList has not previously been open, get the data from file first
+	// if SpeciesList has not previously been open, get the data from file first
 	if (m_strSpeciesFilename == "")
 	{
 		wxString filter = _("Plant Species List Files (*.xml)|*.xml");
@@ -2878,7 +2878,7 @@ void MainFrame::OnVegRemap(wxCommandEvent& event)
 	vtVegLayer *pVeg = GetMainFrame()->GetActiveVegLayer();
 	if (!pVeg) return;
 
-	vtSpeciesList *list = GetPlantList();
+	vtSpeciesList *list = GetSpeciesList();
 
 	wxArrayString choices;
 	uint i, n = list->NumSpecies();
@@ -2942,7 +2942,7 @@ void MainFrame::OnVegExportSHP(wxCommandEvent& event)
 
 void MainFrame::OnVegHTML(wxCommandEvent& event)
 {
-	vtSpeciesList *list = GetPlantList();
+	vtSpeciesList *list = GetSpeciesList();
 	if (list->NumSpecies() == 0)
 		return;
 
@@ -3005,7 +3005,7 @@ void MainFrame::OnAreaVegDensity(wxCommandEvent& event)
 	vtPlantInstanceArray *pia = vlay->GetPIA();
 	if (!pia) return;
 	uint ent = pia->GetNumEntities();
-	vtSpeciesList *list = GetMainFrame()->GetPlantList();
+	vtSpeciesList *list = GetMainFrame()->GetSpeciesList();
 
 	// Put the results in a biotype as well
 	vtBioType btype;

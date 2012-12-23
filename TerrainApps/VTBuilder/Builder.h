@@ -156,8 +156,8 @@ public:
 	// Vegetation
 	vtString m_strSpeciesFilename;
 	vtString m_strBiotypesFilename;
-	vtSpeciesList m_PlantList;
-	vtSpeciesList *GetPlantList() { return &m_PlantList; }
+	vtSpeciesList m_SpeciesList;
+	vtSpeciesList *GetSpeciesList() { return &m_SpeciesList; }
 	bool LoadSpeciesFile(const char *fname);
 	bool LoadBiotypesFile(const char *fname);
 

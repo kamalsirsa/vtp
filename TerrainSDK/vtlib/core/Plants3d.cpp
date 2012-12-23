@@ -725,7 +725,7 @@ void PlantCell::bin()
 vtPlantInstanceArray3d::vtPlantInstanceArray3d()
 {
 	m_pHeightField = NULL;
-	m_pPlantList = NULL;
+	m_pSpeciesList = NULL;
 }
 
 vtPlantInstanceArray3d::~vtPlantInstanceArray3d()
@@ -808,7 +808,7 @@ osg::Geometry *MakeOrthogonalQuads(float w, float h)
 void vtPlantInstanceArray3d::AddShaderGeometryForPlant(PlantCell *cell,
 	vtPlantInstanceShader &pi)
 {
-	vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(pi.m_species_id);
+	vtPlantSpecies3d *ps = GetSpeciesList()->GetSpecies(pi.m_species_id);
 	if (!ps)
 		return;
 
@@ -941,7 +941,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(uint i)
 	// If it was already constructed, destruct so we can build again
 	ReleasePlantGeometry(i);
 
-	if (!m_pPlantList)
+	if (!m_pSpeciesList)
 		return false;
 
 	DPoint2 pos = GetPoint(i);
@@ -962,7 +962,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(uint i)
 		m_Instances3d.SetAt(i, inst3d);
 	}
 
-	vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(species_id);
+	vtPlantSpecies3d *ps = GetSpeciesList()->GetSpecies(species_id);
 	if (!ps)
 		return false;
 

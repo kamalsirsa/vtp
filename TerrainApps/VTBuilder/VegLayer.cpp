@@ -69,7 +69,7 @@ void vtVegLayer::GetPropertyText(wxString &str)
 		s.Printf(_("Number of Instances: %d\n"), ent);
 		str += s;
 
-		vtSpeciesList *list = g_bld->GetPlantList();
+		vtSpeciesList *list = g_bld->GetSpeciesList();
 		for (uint i = 0; i < list->NumSpecies(); i++)
 		{
 			int num = pPIA->InstancesOfSpecies(i);
@@ -110,7 +110,7 @@ bool vtVegLayer::OnSave(bool progress_callback(int))
 
 bool vtVegLayer::OnLoad()
 {
-	vtSpeciesList *plants = g_bld->GetPlantList();
+	vtSpeciesList *plants = g_bld->GetSpeciesList();
 	if (plants->NumSpecies() == 0)
 	{
 		DisplayAndLog(_("You must specify a species file (plant list) to use when working with vegetation files.\n"));
@@ -127,7 +127,7 @@ bool vtVegLayer::OnLoad()
 	{
 		// read VF file
 		SetVegType(VLT_Instances);
-		GetPIA()->SetPlantList(plants);
+		GetPIA()->SetSpeciesList(plants);
 		if (GetPIA()->ReadVF(fname.mb_str(wxConvUTF8)))
 		{
 			m_pSet->SetFilename((const char *)fname.mb_str(wxConvUTF8));
@@ -410,9 +410,9 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString &filename,
 	// We will be creating plant instances
 	SetVegType(VLT_Instances);
 
-	vtSpeciesList *pPlantList = g_bld->GetPlantList();
+	vtSpeciesList *pSpeciesList = g_bld->GetSpeciesList();
 	vtBioRegion *pBioRegion = g_bld->GetBioRegion();
-	GetPIA()->SetPlantList(pPlantList);
+	GetPIA()->SetSpeciesList(pSpeciesList);
 
 	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(filename.mb_str(wxConvUTF8));
@@ -492,7 +492,7 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString &filename,
 		// Read DBF Attributes per point
 		int species_id = -1;
 		if (opt.bFixedSpecies)
-			species_id = pPlantList->GetSpeciesIdByName(opt.strFixedSpeciesName.mb_str(wxConvUTF8));
+			species_id = pSpeciesList->GetSpeciesIdByName(opt.strFixedSpeciesName.mb_str(wxConvUTF8));
 		else
 		{
 			switch (opt.iInterpretSpeciesField)
@@ -502,13 +502,13 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString &filename,
 				break;
 			case 1:
 				str = DBFReadStringAttribute(db, i, opt.iSpeciesFieldIndex);
-				species_id = pPlantList->GetSpeciesIdByName(str);
+				species_id = pSpeciesList->GetSpeciesIdByName(str);
 				if (species_id == -1)
 					unfound++;
 				break;
 			case 2:
 				str = DBFReadStringAttribute(db, i, opt.iSpeciesFieldIndex);
-				species_id = pPlantList->GetSpeciesIdByCommonName(str);
+				species_id = pSpeciesList->GetSpeciesIdByCommonName(str);
 				if (species_id == -1)
 					unfound++;
 				break;
@@ -531,7 +531,7 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString &filename,
 		// Make sure we have a valid species
 		if (species_id == -1)
 			continue;
-		vtPlantSpecies *pSpecies = pPlantList->GetSpecies(species_id);
+		vtPlantSpecies *pSpecies = pSpeciesList->GetSpecies(species_id);
 		if (!pSpecies)
 			continue;
 

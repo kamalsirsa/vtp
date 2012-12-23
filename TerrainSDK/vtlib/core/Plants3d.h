@@ -255,7 +255,7 @@ public:
 	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
 
 	/// Indicate the Plant List to use
-	vtSpeciesList3d *GetPlantList() { return (vtSpeciesList3d *) m_pPlantList; }
+	vtSpeciesList3d *GetSpeciesList() { return (vtSpeciesList3d *) m_pSpeciesList; }
 
 	void SetEnabled(bool en);
 	bool GetEnabled() const;

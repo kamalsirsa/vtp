@@ -305,15 +305,15 @@ short vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Visitor class, for XML parsing of PlantList files.
+// Visitor class, for XML parsing of SpeciesList files.
 
-class PlantListVisitor : public XMLVisitor
+class SpeciesListVisitor : public XMLVisitor
 {
 public:
-	PlantListVisitor(vtSpeciesList *pl) :
+	SpeciesListVisitor(vtSpeciesList *pl) :
 		m_state(0), m_pPL(pl) { m_pSpecies = NULL; }
 
-	virtual ~PlantListVisitor () { delete m_pSpecies; }
+	virtual ~SpeciesListVisitor () { delete m_pSpecies; }
 
 	void startXML() { m_state = 0; }
 	void startElement(const char *name, const XMLAttributes &atts);
@@ -325,7 +325,7 @@ private:
 	int m_state;
 };
 
-void PlantListVisitor::startElement(const char *name, const XMLAttributes &atts)
+void SpeciesListVisitor::startElement(const char *name, const XMLAttributes &atts)
 {
 	const char *attval;
 
@@ -401,7 +401,7 @@ void PlantListVisitor::startElement(const char *name, const XMLAttributes &atts)
 	}
 }
 
-void PlantListVisitor::endElement(const char *name)
+void SpeciesListVisitor::endElement(const char *name)
 {
 	if (m_pSpecies != NULL && m_state == 2)
 	{
@@ -416,7 +416,7 @@ bool vtSpeciesList::ReadXML(const char *pathname, vtString *msg)
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	PlantListVisitor visitor(this);
+	SpeciesListVisitor visitor(this);
 	try
 	{
 		readXML(pathname, visitor);
@@ -730,7 +730,7 @@ int vtPlantInstanceArray::AddPlant(const DPoint2 &pos, float size,
 int vtPlantInstanceArray::AddPlant(const DPoint2 &pos, float size,
 									vtPlantSpecies *ps)
 {
-	short species_id = m_pPlantList->FindSpeciesId(ps);
+	short species_id = m_pSpeciesList->FindSpeciesId(ps);
 	if (species_id == -1)
 		return -1;
 	return AddPlant(pos, size, species_id);
@@ -854,7 +854,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 {
 	VTLOG("Reading VF file '%s'\n", fname);
 
-	if (m_pPlantList == NULL)
+	if (m_pSpeciesList == NULL)
 	{
 		VTLOG(" can't read, because there are no known species.\n");
 		return false;
@@ -910,7 +910,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 		quiet = fread(&len, sizeof(short), 1, fp);
 		quiet = fread(name, len, 1, fp);
 		name[len] = 0;
-		species_id = m_pPlantList->GetSpeciesIdByName(name);
+		species_id = m_pSpeciesList->GetSpeciesIdByName(name);
 		if (species_id == -1)
 		{
 			VTLOG("  Unknown species: %s\n", name);
@@ -973,9 +973,9 @@ bool vtPlantInstanceArray::WriteVF(const char *fname) const
 	int i, numinstances = GetNumEntities();
 	if (numinstances == 0)
 		return false;	// empty files not allowed
-	if (!m_pPlantList)
+	if (!m_pSpeciesList)
 		return false;
-	int numspecies = m_pPlantList->NumSpecies();
+	int numspecies = m_pSpeciesList->NumSpecies();
 	short len;	// for string lengths
 	short species_id;
 	float size;
@@ -1020,7 +1020,7 @@ bool vtPlantInstanceArray::WriteVF(const char *fname) const
 	for (i = 0; i < used; i++)
 	{
 		species_id = index_table[i];
-		const char *name = m_pPlantList->GetSpecies(species_id)->GetSciName();
+		const char *name = m_pSpeciesList->GetSpecies(species_id)->GetSciName();
 		len = (short) strlen(name);
 		fwrite(&len, sizeof(short), 1, fp);
 		fwrite(name, len, 1, fp);

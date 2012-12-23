@@ -84,7 +84,7 @@ typedef bool (*ProgFuncPtrType)(int);
 	- Elevation grid: use SetLocalGrid().
 	- Elevation TIN: use SetTin().
 	- Structures: use NewStructureLayer(), then fill it with your structures.
-	- Vegetation: call SetPlantList(), then GetPlantInstances().
+	- Vegetation: call SetSpeciesList(), then GetPlantInstances().
 	- Abstract layers: use GetLayers() to get the LayerSet, then create and append
 	  your vtAbstractLayer objects. The features will be created
 	  according to the properties you have set with vtAbstractLayer::SetProperties().
@@ -225,8 +225,8 @@ public:
 	vtVegLayer *NewVegLayer();
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	int DeleteSelectedPlants();
-	void SetPlantList(vtSpeciesList3d *pPlantList);
-	vtSpeciesList3d *GetPlantList() { return m_pPlantList; }
+	void SetSpeciesList(vtSpeciesList3d *pSpeciesList);
+	vtSpeciesList3d *GetSpeciesList() { return m_pSpeciesList; }
 	/// Get the plant array for this terrain.  You can modify it directly.
 	bool AddNodeToVegGrid(osg::Node *pNode);
 	int NumVegLayers() const;
@@ -472,7 +472,7 @@ protected:
 	vtRoadMap3dPtr	m_pRoadMap;
 
 	// plants
-	vtSpeciesList3d	*m_pPlantList;
+	vtSpeciesList3d	*m_pSpeciesList;
 	vtGroup			*m_pVegGroup;
 	vtSimpleLodGrid	*m_pVegGrid;
 

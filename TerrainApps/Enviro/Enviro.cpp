@@ -79,7 +79,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_pHUDMessage = NULL;
 
 	// plants
-	m_pPlantList = NULL;
+	m_pSpeciesList = NULL;
 	m_bPlantsLoaded = false;
 	m_PlantOpt.m_iMode = 0;
 	m_PlantOpt.m_iSpecies = -1;
@@ -142,7 +142,7 @@ void Enviro::Shutdown()
 {
 	VTLOG1("Shutdown.\n");
 
-	delete m_pPlantList;
+	delete m_pSpeciesList;
 
 	m_pTopDownCamera = NULL;
 
@@ -533,7 +533,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			LoadSpeciesList();
 		}
 
-		pTerr->SetPlantList(m_pPlantList);
+		pTerr->SetSpeciesList(m_pSpeciesList);
 		pTerr->CreateStep1();
 
 		// connect the terrain's engines
@@ -889,16 +889,16 @@ void Enviro::LoadSpeciesList()
 	if (sp_list.ReadXML(species_path, &errmsg))
 	{
 		VTLOG(" Using species file: '%s'\n", (const char *) species_path);
-		m_pPlantList = new vtSpeciesList3d;
-		*m_pPlantList = sp_list;
+		m_pSpeciesList = new vtSpeciesList3d;
+		*m_pSpeciesList = sp_list;
 
 		// global options
 		vtPlantAppearance3d::s_fPlantScale = g_Options.m_fPlantScale;
 		vtPlantAppearance3d::s_bPlantShadows = g_Options.m_bShadows;
 
 		// Don't load all the plant appearances now, just check which are available
-//			m_pPlantList->CreatePlantSurfaces();
-		int available = m_pPlantList->CheckAvailability();
+//			m_pSpeciesList->CreatePlantSurfaces();
+		int available = m_pSpeciesList->CheckAvailability();
 		VTLOG(" %d plant appearances available.\n", available);
 
 		m_bPlantsLoaded = true;
@@ -2587,7 +2587,7 @@ void Enviro::SetVehicleOptions(const VehicleOptions &opt)
  */
 bool Enviro::PlantATree(const DPoint2 &epos)
 {
-	if (!m_pPlantList)
+	if (!m_pSpeciesList)
 		return false;
 
 	vtTerrain *pTerr = GetCurrentTerrain();

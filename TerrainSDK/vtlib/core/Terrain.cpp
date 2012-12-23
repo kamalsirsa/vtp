@@ -71,7 +71,7 @@ vtTerrain::vtTerrain()
 	// vegetation
 	m_pVegGroup = NULL;
 	m_pVegGrid = NULL;
-	m_pPlantList = NULL;
+	m_pSpeciesList = NULL;
 
 	m_pDynGeom = NULL;
 	m_pDynGeomScale = NULL;
@@ -108,7 +108,7 @@ vtTerrain::~vtTerrain()
 
 	m_Layers.clear();
 
-	// Do not delete the PlantList, the application may be sharing the same
+	// Do not delete the SpeciesList, the application may be sharing the same
 	// list with several different terrains.
 
 	if (m_bPreserveInputGrid)
@@ -3077,7 +3077,7 @@ vtVegLayer *vtTerrain::NewVegLayer()
 	vtVegLayer *vlay = new vtVegLayer;
 
 	// Apply properties from the terrain
-	vlay->SetPlantList(m_pPlantList);
+	vlay->SetSpeciesList(m_pSpeciesList);
 	vlay->SetProjection(m_proj);
 	vlay->SetHeightField(m_pHeightField);
 
@@ -3147,9 +3147,9 @@ int vtTerrain::DeleteSelectedPlants()
  * Set the list of plant species that this terrain should use.  Using this
  * method allows a set of species to be shared between many terrains.
  */
-void vtTerrain::SetPlantList(vtSpeciesList3d *pPlantList)
+void vtTerrain::SetSpeciesList(vtSpeciesList3d *pSpeciesList)
 {
-	m_pPlantList = pPlantList;
+	m_pSpeciesList = pSpeciesList;
 }
 
 /**

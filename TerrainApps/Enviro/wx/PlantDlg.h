@@ -32,7 +32,7 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	~PlantDlg();
 
-	void SetPlantList(vtSpeciesList3d *plants);
+	void SetSpeciesList(vtSpeciesList3d *plants);
 	void SetDlgPlantOptions(PlantingOptions &opt);
 	void ShowOnlyAvailableSpecies(bool bFlag) { m_bOnlyAvailableSpecies = bFlag; }
 	void SetLang(const wxString &strTwoLetterLangCode);
@@ -75,7 +75,7 @@ private:
 
 	wxSlider		*m_pHeightSlider;
 	wxChoice		*m_pSpecies;
-	vtSpeciesList3d *m_pPlantList;
+	vtSpeciesList3d *m_pSpeciesList;
 
 	// Each species has a size (height) which the user has indicated
 	std::vector<float> m_PreferredSizes;

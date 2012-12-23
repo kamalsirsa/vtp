@@ -93,16 +93,16 @@ void PlantDlg::SetLang(const wxString &strTwoLetterLangCode)
 	m_strLang = strTwoLetterLangCode.Left(2);
 }
 
-void PlantDlg::SetPlantList(vtSpeciesList3d *plants)
+void PlantDlg::SetSpeciesList(vtSpeciesList3d *plants)
 {
-	VTLOG1("PlantDlg SetPlantList: ");
+	VTLOG1("PlantDlg SetSpeciesList: ");
 	if (plants)
 		VTLOG("%d plants\n", plants->NumSpecies());
 	else
 		VTLOG1("no plant list\n");
-	if (m_pPlantList == plants)
+	if (m_pSpeciesList == plants)
 		return;
-	m_pPlantList = plants;
+	m_pSpeciesList = plants;
 	UpdateAvailableLanguages();
 	UpdatePlantSizes();
 	UpdatePlantNames();
@@ -127,9 +127,9 @@ void PlantDlg::SetDlgPlantOptions(PlantingOptions &opt)
 	if (m_opt.m_fHeight < 0)
 		m_opt.m_fHeight = 0;
 
-	if (m_pPlantList)
+	if (m_pSpeciesList)
 	{
-		vtPlantSpecies *ps = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
+		vtPlantSpecies *ps = m_pSpeciesList->GetSpecies(m_opt.m_iSpecies);
 		if (ps)
 		{
 			float size = ps->GetMaxHeight();
@@ -149,15 +149,15 @@ void PlantDlg::SetDlgPlantOptions(PlantingOptions &opt)
 
 void PlantDlg::UpdatePlantSizes()
 {
-	if (!m_pPlantList)
+	if (!m_pSpeciesList)
 		return;
 
-	uint num = m_pPlantList->NumSpecies();
+	uint num = m_pSpeciesList->NumSpecies();
 	m_PreferredSizes.resize(num);
 	for (uint i = 0; i < num; i++)
 	{
 		// Default to 80% of the maximum height of each species
-		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
+		vtPlantSpecies *plant = m_pSpeciesList->GetSpecies(i);
 		m_PreferredSizes[i] = plant->GetMaxHeight() * 0.80f;
 	}
 }
@@ -167,14 +167,14 @@ void PlantDlg::UpdateAvailableLanguages()
 	GetLanguage()->Clear();
 	GetLanguage()->Append(_T("en"));
 
-	if (!m_pPlantList)
+	if (!m_pSpeciesList)
 		return;
 
 	// Collect every unique language string
 	wxString str;
-	for (uint i = 0; i < m_pPlantList->NumSpecies(); i++)
+	for (uint i = 0; i < m_pSpeciesList->NumSpecies(); i++)
 	{
-		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
+		vtPlantSpecies *plant = m_pSpeciesList->GetSpecies(i);
 		for (uint j = 0; j < plant->NumCommonNames(); j++)
 		{
 			vtPlantSpecies::CommonName cname = plant->GetCommonName(j);
@@ -212,13 +212,13 @@ void PlantDlg::UpdatePlantNames()
 
 	m_pSpecies->Clear();
 
-	if (!m_pPlantList)
+	if (!m_pSpeciesList)
 		return;
 
 	wxString str;
-	for (uint i = 0; i < m_pPlantList->NumSpecies(); i++)
+	for (uint i = 0; i < m_pSpeciesList->NumSpecies(); i++)
 	{
-		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
+		vtPlantSpecies *plant = m_pSpeciesList->GetSpecies(i);
 
 		// filter
 		if (m_bOnlyAvailableSpecies)
@@ -287,11 +287,11 @@ void PlantDlg::UpdateEnabling()
 
 void PlantDlg::SpeciesIdToSpeciesIndex()
 {
-	if (!m_pPlantList)
+	if (!m_pSpeciesList)
 		return;
 
 	// look up corresponding species choice index
-	vtPlantSpecies *ps = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
+	vtPlantSpecies *ps = m_pSpeciesList->GetSpecies(m_opt.m_iSpecies);
 	for (uint i = 0; i < m_pSpecies->GetCount(); i++)
 	{
 		if (ps == m_pSpecies->GetClientData(i))
@@ -303,7 +303,7 @@ void PlantDlg::SpeciesIdToSpeciesIndex()
 }
 void PlantDlg::SpeciesIndexToSpeciesId()
 {
-	if (!m_pPlantList)
+	if (!m_pSpeciesList)
 		return;
 
 	// convert displayed species index to a real species id
@@ -311,7 +311,7 @@ void PlantDlg::SpeciesIndexToSpeciesId()
 	if (m_iSpeciesChoice < count)
 	{
 		vtPlantSpecies *ps = (vtPlantSpecies *) m_pSpecies->GetClientData(m_iSpeciesChoice);
-		m_opt.m_iSpecies = m_pPlantList->FindSpeciesId(ps);
+		m_opt.m_iSpecies = m_pSpeciesList->FindSpeciesId(ps);
 	}
 }
 
@@ -421,13 +421,13 @@ void PlantDlg::OnHeightSlider( wxCommandEvent &event )
 	if (m_bSetting)
 		return;
 
-	if (!m_pPlantList) return;
+	if (!m_pSpeciesList) return;
 
 	if (m_opt.m_iSpecies == -1)
 		return;
 
 	m_iHeightSlider = m_pHeightSlider->GetValue();
-	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
+	vtPlantSpecies *pSpecies = m_pSpeciesList->GetSpecies(m_opt.m_iSpecies);
 	if (pSpecies)
 		m_opt.m_fHeight = m_iHeightSlider * pSpecies->GetMaxHeight() / 100.0f;
 	else
@@ -457,12 +457,12 @@ void PlantDlg::OnHeightEdit( wxCommandEvent &event )
 
 void PlantDlg::HeightToSlider()
 {
-	if (!m_pPlantList) return;
+	if (!m_pSpeciesList) return;
 
 	if (m_opt.m_iSpecies == -1)
 		return;
 
-	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
+	vtPlantSpecies *pSpecies = m_pSpeciesList->GetSpecies(m_opt.m_iSpecies);
 	if (pSpecies)
 		m_iHeightSlider = (int) (m_opt.m_fHeight / pSpecies->GetMaxHeight() * 100.0f);
 	else

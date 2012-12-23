@@ -2166,9 +2166,9 @@ int Builder::ImportDataFromSCC(const char *filename)
 	pVL->SetLayerFilename(wxString(shortname + "_vegetation", wxConvUTF8));
 	pVL->SetProjection(proj);
 	vtPlantInstanceArray *pia = pVL->GetPIA();
-	pia->SetPlantList(&m_PlantList);
-	int id = m_PlantList.GetSpeciesIdByCommonName("Ponderosa Pine");
-	vtPlantSpecies *ps = m_PlantList.GetSpecies(id);
+	pia->SetSpeciesList(&m_SpeciesList);
+	int id = m_SpeciesList.GetSpeciesIdByCommonName("Ponderosa Pine");
+	vtPlantSpecies *ps = m_SpeciesList.GetSpecies(id);
 
 	// Progress Dialog
 	OpenProgressDialog(_("Importing from SCC..."));

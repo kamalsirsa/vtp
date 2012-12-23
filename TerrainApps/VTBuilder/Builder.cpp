@@ -331,7 +331,7 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 	if (ext.CmpNoCase(_T("vf")) == 0)
 	{
 		// Make sure we have some species first.
-		if (GetPlantList()->NumSpecies() == 0)
+		if (GetSpeciesList()->NumSpecies() == 0)
 		{
 			vtString species_path = FindFileOnPaths(vtGetDataPath(), "PlantData/species.xml");
 			wxString msg;
@@ -669,14 +669,12 @@ void Builder::AddToMRU(vtStringArray &arr, const vtString &fname)
 DRECT Builder::GetExtents()
 {
 	DRECT rect(1E9,-1E9,-1E9,1E9);
+	DRECT rect2;
 
 	bool has_bounds = false;
 
 	// Acculumate the extents of all the layers
-	DRECT rect2;
-	int iLayers = m_Layers.size();
-
-	for (int i = 0; i < iLayers; i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
 		if (m_Layers[i]->GetExtent(rect2))
 		{
@@ -687,11 +685,9 @@ DRECT Builder::GetExtents()
 	if (has_bounds)
 		return rect;
 	else if (m_proj.IsDymaxion())
-	{
 		return DRECT(0, 1.5*sqrt(3.0), 5.5, 0);
-	}
 	else
-		return DRECT(-180,90,180,-90);	// geo extents of whole planet
+		return DRECT(-180,90,180,-90);	// degree extents of whole planet
 }
 
 //
@@ -1096,7 +1092,7 @@ void Builder::SetProjection(const vtProjection &p)
 
 bool Builder::LoadSpeciesFile(const char *fname)
 {
-	if (!GetPlantList()->ReadXML(fname))
+	if (!GetSpeciesList()->ReadXML(fname))
 	{
 		DisplayAndLog("Couldn't read plant list from file '%s'.", fname);
 		return false;
@@ -1107,7 +1103,7 @@ bool Builder::LoadSpeciesFile(const char *fname)
 
 bool Builder::LoadBiotypesFile(const char *fname)
 {
-	if (!m_BioRegion.Read(fname, m_PlantList))
+	if (!m_BioRegion.Read(fname, m_SpeciesList))
 	{
 		DisplayAndLog("Couldn't read bioregion list from file '%s'.", fname);
 		return false;
@@ -1374,7 +1370,7 @@ void Builder::GenerateVegetation(const char *vf_file, DRECT area,
 	if (opt.m_iSingleSpecies != -1)
 	{
 		// simply use a single species
-		vtPlantSpecies *ps = m_PlantList.GetSpecies(opt.m_iSingleSpecies);
+		vtPlantSpecies *ps = m_SpeciesList.GetSpecies(opt.m_iSingleSpecies);
 		SingleBiotype.AddPlant(ps, opt.m_fFixedDensity);
 		opt.m_iSingleBiotype = m_BioRegion.AddType(&SingleBiotype);
 	}
@@ -1430,7 +1426,7 @@ void Builder::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	pia.SetProjection(proj);
 
 	m_BioRegion.ResetAmounts();
-	pia.SetPlantList(&m_PlantList);
+	pia.SetSpeciesList(&m_SpeciesList);
 
 	// Iterate over the whole area, creating plant instances
 	for (i = 0; i < x_trees; i ++)

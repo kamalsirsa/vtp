@@ -199,7 +199,7 @@ class vtPlantInstanceArray : public vtFeatureSetPoint2D
 public:
 	vtPlantInstanceArray();
 
-	void SetPlantList(vtSpeciesList *list) { m_pPlantList = list; }
+	void SetSpeciesList(vtSpeciesList *list) { m_pSpeciesList = list; }
 	int AddPlant(const DPoint2 &pos, float size, short species_id);
 	int AddPlant(const DPoint2 &pos, float size, vtPlantSpecies *ps);
 	void SetPlant(int iNum, float size, short species_id);
@@ -212,7 +212,7 @@ public:
 	bool WriteVF(const char *fname) const;
 
 protected:
-	vtSpeciesList *m_pPlantList;
+	vtSpeciesList *m_pSpeciesList;
 
 	int m_SizeField;
 	int m_SpeciesField;
