@@ -240,7 +240,7 @@ void vtDynTerrainGeom::SetPolygonTarget(int iCount)
  * Get the polygon target, which is the number of polygons (generally
  * triangles) which the CLOD algorithm will try to maintain.
  */
-int vtDynTerrainGeom::GetPolygonTarget()
+int vtDynTerrainGeom::GetPolygonTarget() const
 {
 	return m_iPolygonTarget;
 }
@@ -262,7 +262,7 @@ void vtDynTerrainGeom::EnableDetail(bool bOn)
  * Return the number of triangles that were rendered by this dynamic terrain
  * last frame.
  */
-int vtDynTerrainGeom::GetNumDrawnTriangles()
+int vtDynTerrainGeom::GetNumDrawnTriangles() const
 {
 	return m_iDrawnTriangles;
 }

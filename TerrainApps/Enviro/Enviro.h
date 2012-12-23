@@ -180,14 +180,16 @@ public:
 	void OnMouseSelectCursorPick(vtMouseEvent &event);
 	bool OnMouseCompass(vtMouseEvent &event);
 
+	// Elastic geometry useful for drawing polylines, such as for building or linears
+	void AddElasticPoint(const DPoint2 &p);
+	bool IsMakingElastic();
+	void CancelElastic();
+
 	// linear structure methods
-	void start_new_fence();
-	void finish_fence();
-	void close_fence();
+	void FinishLinear();
 	void SetFenceOptions(const vtLinearParams &param, bool bProfileChanged = false);
 
 	// building methods
-	void AddBuildingPoint(const DPoint2 &p);
 	void FinishBuilding();
 	void FlipBuildingFooprints();
 	void CopyBuildingStyle();
@@ -338,8 +340,6 @@ protected:
 	VehicleOptions m_VehicleOpt;
 
 	// fence members
-	bool		m_bActiveFence, m_bFenceClosed;
-	vtFence3d	*m_pCurFence;
 	vtLinearParams m_FenceParams;
 
 	// buildings

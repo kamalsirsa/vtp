@@ -1,7 +1,7 @@
 //
 // StructArray.h
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -71,7 +71,7 @@ class vtStructureArray : public vtArray<vtStructure*>
 {
 public:
 	vtStructureArray();
-	virtual ~vtStructureArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	virtual ~vtStructureArray();
 	virtual void DestructItems(uint first, uint last);
 
 	void SetFilename(const vtString &str) { m_strFilename = str; }

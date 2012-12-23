@@ -95,7 +95,7 @@ public:
 	vtTerrainFlyer(float fSpeed, bool bAllowRoll = false);
 
 	/// Set the heightfield on which to do the terrain following.
-	void SetHeightField(vtHeightField3d *pHF) { m_pHeightField = pHF; }
+	void SetHeightField(const vtHeightField3d *pHF) { m_pHeightField = pHF; }
 
 	// If true, exaggerate the speed of the view by height above ground
 	void SetExag(bool bDo) { m_bExag = bDo; }
@@ -105,7 +105,7 @@ public:
 	void Eval();
 
 protected:
-	vtHeightField3d *m_pHeightField;
+	const vtHeightField3d *m_pHeightField;
 	bool	m_bExag;		// exaggerate speed based on height
 
 protected:
@@ -234,7 +234,7 @@ public:
 	vtHeightConstrain(float fMinHeight);
 
 	/// Set the heightfield on which to do the terrain following.
-	void SetHeightField(vtHeightField3d *pHF) { m_pHF = pHF; }
+	void SetHeightField(const vtHeightField3d *pHF) { m_pHF = pHF; }
 
 	/// Set the height above the terrain to allow.
 	void SetMinGroundOffset(float fMeters) { m_fMinGroundOffset = fMeters; }
@@ -262,7 +262,7 @@ public:
 protected:
 	bool	m_bMaintain;
 	float	m_fMaintainHeight;
-	vtHeightField3d *m_pHF;
+	const vtHeightField3d *m_pHF;
 	float m_fMinGroundOffset;
 	bool	m_bUseCulture;
 	bool	m_bOnGround;

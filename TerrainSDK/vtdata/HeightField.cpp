@@ -268,14 +268,14 @@ bool vtHeightField3d::ConvertEarthToSurfacePoint(const DPoint2 &epos,
 /**
  * Tests whether a given point is within the current terrain
  */
-bool vtHeightField3d::ContainsWorldPoint(float x, float z)
+bool vtHeightField3d::ContainsWorldPoint(float x, float z) const
 {
 	const FRECT &we = m_WorldExtents;
 	return (x > we.left && x < we.right && z < we.bottom && z > we.top);
 }
 
 
-void vtHeightField3d::GetCenter(FPoint3 &center)
+void vtHeightField3d::GetCenter(FPoint3 &center) const
 {
 	FPoint2 c;
 	m_WorldExtents.Center(c);

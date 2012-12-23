@@ -204,11 +204,6 @@ public:
 	// set global projection based on this terrain
 	void SetGlobalProjection();
 
-	// fences
-	bool AddFence(vtFence3d *f);
-	void AddFencepoint(vtFence3d *f, const DPoint2 &epos);
-	void RedrawFence(vtFence3d *f);
-
 	// Route
 	void AddRoute(vtRoute *f);
 	void add_routepoint_earth(vtRoute *f, const DPoint2 &epos, const char *structname);

@@ -772,42 +772,9 @@ void vtTerrain::_SetErrorMessage(const vtString &msg)
 }
 
 
-bool vtTerrain::AddFence(vtFence3d *fen)
-{
-	vtStructureArray3d *structs = GetStructureLayer();
-	if (!structs)
-		return false;
-
-	structs->Append(fen);
-	fen->CreateNode(this);
-
-	// Add to LOD grid
-	AddNodeToStructGrid(fen->GetGeom());
-	return true;
-}
-
-void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
-{
-	VTLOG("AddFencepoint %.1lf %.1lf\n", epos.x, epos.y);
-
-	// Adding a fence point might change the fence extents such that it moves
-	// to a new LOD cell.  So, remove it from the LOD grid, add the point,
-	// then add it back.
-	m_pStructGrid->RemoveFromGrid(f->GetGeom());
-
-	f->AddPoint(epos);
-
-	f->CreateNode(this);
-
-	AddNodeToStructGrid(f->GetGeom());
-}
-
-void vtTerrain::RedrawFence(vtFence3d *f)
-{
-	f->CreateNode(this);
-}
-
-// routes
+/////////////////////////////////////////////////////////////////////////////
+// Routes
+//
 void vtTerrain::AddRoute(vtRoute *f)
 {
 	m_Routes.Append(f);

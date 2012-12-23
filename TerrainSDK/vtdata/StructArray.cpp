@@ -4,7 +4,7 @@
 // It supports operations including loading and saving to a file
 // and picking of building elements.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -37,6 +37,13 @@ vtStructureArray::vtStructureArray()
 	m_iLastSelected = -1;
 }
 
+vtStructureArray::~vtStructureArray()
+{
+	Empty();
+	free(m_Data);
+	m_Data = NULL;
+	m_MaxSize = 0;
+}
 
 // Factories
 vtBuilding *vtStructureArray::NewBuilding()

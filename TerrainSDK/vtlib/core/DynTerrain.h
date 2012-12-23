@@ -46,9 +46,9 @@ public:
 	virtual float GetVerticalExag() const = 0;
 
 	virtual void SetPolygonTarget(int iPolygonCount);
-	int GetPolygonTarget();
+	int GetPolygonTarget() const;
 
-	int GetNumDrawnTriangles();
+	int GetNumDrawnTriangles() const;
 
 	void SetDetailMaterial(vtMaterial *pApp, float fTiling, float fDistance);
 	void EnableDetail(bool bOn);

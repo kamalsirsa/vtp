@@ -967,7 +967,7 @@ void EnviroFrame::SetMode(MouseMode mode)
 
 	g_App.SetMode(mode);
 
-	if (mode == MM_FENCES)
+	if (mode == MM_LINEARS)
 		OpenFenceDialog();
 	else
 		m_pFenceDlg->Show(false);
@@ -997,12 +997,19 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 	switch (key)
 	{
 	case 27:
-		// Esc: exit application
-		// It's not safe to close immediately, as that will kill the canvas,
-		//  and it might some Canvas event that caused us to close.  So,
-		//  simply stop rendering, and delay closing until the next Idle event.
-		m_canvas->m_bRunning = false;
-		m_bCloseOnIdle = true;
+		// Esc: cancel a building or linear we're making
+		if (g_App.m_mode == MM_BUILDINGS && g_App.IsMakingElastic())
+			g_App.CancelElastic();
+		else if (g_App.m_mode == MM_LINEARS && g_App.IsMakingElastic())
+			g_App.CancelElastic();
+		else	// or exit the application
+		{
+			// It's not safe to close immediately, as that will kill the canvas,
+			//  and it might some Canvas event that caused us to close.  So,
+			//  simply stop rendering, and delay closing until the next Idle event.
+			m_canvas->m_bRunning = false;
+			m_bCloseOnIdle = true;
+		}
 		break;
 
 	case ' ':
@@ -2044,13 +2051,13 @@ void EnviroFrame::OnUpdateToolsSelectMove(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnToolsFences(wxCommandEvent& event)
 {
-	SetMode(MM_FENCES);
+	SetMode(MM_LINEARS);
 }
 
 void EnviroFrame::OnUpdateToolsFences(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
-	event.Check(g_App.m_mode == MM_FENCES);
+	event.Check(g_App.m_mode == MM_LINEARS);
 }
 
 void EnviroFrame::OnToolsBuildings(wxCommandEvent& event)

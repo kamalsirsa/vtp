@@ -16,7 +16,7 @@ class TerrainPicker : public vtLastMouse
 public:
 	TerrainPicker();
 	void Eval();
-	void SetHeightField(vtHeightField3d *pHeight) { m_pHeightField = pHeight; }
+	void SetHeightField(const vtHeightField3d *pHeight) { m_pHeightField = pHeight; }
 
 	bool GetCurrentPoint(FPoint3 &p);
 	bool GetCurrentEarthPos(DPoint3 &p);
@@ -27,7 +27,7 @@ protected:
 	void FindGroundPoint();
 
 	FPoint3			m_GroundPoint;
-	vtHeightField3d *m_pHeightField;
+	const vtHeightField3d *m_pHeightField;
 	DPoint3			m_EarthPos;
 	bool			m_bOnTerrain;
 };

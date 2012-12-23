@@ -138,8 +138,8 @@ public:
 	bool ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3,
 		int iCultureFlags = 0, bool bTrue = false);
 
-	bool ContainsWorldPoint(float x, float z);
-	void GetCenter(FPoint3 &center);
+	bool ContainsWorldPoint(float x, float z) const;
+	void GetCenter(FPoint3 &center) const;
 
 	void SetCulture(CultureExtension *ext) { m_pCulture = ext; }
 
