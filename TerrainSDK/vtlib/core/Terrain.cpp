@@ -1468,9 +1468,11 @@ void vtTerrain::_CreateStructures()
 	// Always create a LOD grid for structures, as the user might create some
 	// The LOD distances are in meters
 	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
-	// create built structures
+
+	// Make sure we have our global material descriptors.
 	vtStructure3d::InitializeMaterialArrays();
 
+	// Create built structures
 	uint i, num = m_Params.m_Layers.size();
 	for (i = 0; i < num; i++)
 	{

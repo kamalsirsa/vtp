@@ -16,8 +16,6 @@
 
 #include "vtdata/StructArray.h"
 
-#define COLOR_SPREAD	216		// 216 color variations
-
 class vtBuilding3d;
 class vtFence3d;
 class vtTerrain;
@@ -36,13 +34,15 @@ class vtMaterialDescriptorArray3d : public vtMaterialDescriptorArray
 public:
 	vtMaterialDescriptorArray3d();
 
-	vtMaterial *MakeMaterial(vtMaterialDescriptor *desc, const RGBf &color);
-	int FindMatIndex(const vtString & Material, const RGBf &inputColor = RGBf(),
-		int iType = -1);
-	vtMaterialDescriptor *FindMaterialDescriptor(const vtString& MaterialName,
+	// You can get a material index directly from its name.
+	int GetMatIndex(const vtString &Material, const RGBf &inputColor = RGBf(), int iType = -1);
+
+	// Or you can get its descriptor, then use that to get its material index.
+	vtMaterialDescriptor *GetMatDescriptor(const vtString& MaterialName,
 		const RGBf &color = RGBf(), int iType = -1) const;
+	int GetMatIndex(vtMaterialDescriptor *desc, const RGBf &inputColor = RGBf());
+
 	void InitializeMaterials();
-	void CreateMaterials();
 	vtMaterialArray *GetMatArray() const { return m_pMaterials; };
 
 protected:
@@ -51,12 +51,10 @@ protected:
 	//  save about 200MB of RAM.
 	vtMaterialArrayPtr m_pMaterials;
 
-	bool m_bMaterialsCreated;
-
-	void CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor);
-	void CreateColorableTextureMaterial(vtMaterialDescriptor *descriptor);
-
-	RGBf m_Colors[COLOR_SPREAD];
+	vtMaterial *MakeMaterial(vtMaterialDescriptor *desc, const RGBf &color);
+	int CreateColoredMaterial(vtMaterialDescriptor *descriptor, const RGBf &color);
+	int CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor);
+	int CreateColorableTextureMaterial(vtMaterialDescriptor *descriptor, const RGBf &color);
 
 	// indices of internal materials
 	int m_hightlight1, m_hightlight2, m_hightlight3, m_wire;
@@ -89,49 +87,52 @@ public:
 	void SetCastShadow(bool b);
 	bool GetCastShadow();
 
-	// Get the material descriptors
-	static vtMaterialDescriptorArray3d& GetMaterialDescriptors()
-	{
-		return s_MaterialDescriptors;
-	}
-	static vtMaterialDescriptor *FindMaterialDescriptor(const vtString &name,
-		const RGBf &color = RGBf(), int type = -1)
-	{
-		return s_MaterialDescriptors.FindMaterialDescriptor(name, color, type);
-	}
-	static void InitializeMaterialArrays();
-
-	// all fences share the same set of materials
-	static void CreateSharedMaterials();
-
 	// Visual Impact
 	const bool GetVIAContributor() const { return m_bIsVIAContributor; }
 	const bool GetVIATarget() const { return m_bIsVIATarget; }
 	void SetVIAContributor(const bool bVIAContributor) { m_bIsVIAContributor = bVIAContributor; }
 	void SetVIATarget(const bool bVIATarget) { m_bIsVIATarget = bVIATarget; }
 
-protected:
-	// material
-	int FindMatIndex(const vtString &Material, const RGBf &inputColor = RGBf(), int iType = -1)
+public:
+	// A number of convenience methods access the global materials table.
+	static void InitializeMaterialArrays();
+
+	// Get the material descriptors
+	static vtMaterialDescriptorArray3d& GetMaterialDescriptors()
 	{
-		return s_MaterialDescriptors.FindMatIndex(Material, inputColor, iType);
+		return s_MaterialDescriptors;
 	}
-	vtMaterialArray *GetSharedMaterialArray() const
+
+protected:
+	// You can get a material index directly from its name.
+	static int GetMatIndex(const vtString &Material, const RGBf &inputColor = RGBf(), int iType = -1)
+	{
+		return s_MaterialDescriptors.GetMatIndex(Material, inputColor, iType);
+	}
+	// Or you can get its descriptor, then use that to get its material index.
+	static vtMaterialDescriptor *GetMatDescriptor(const vtString &name,
+		const RGBf &color = RGBf(), int type = -1)
+	{
+		return s_MaterialDescriptors.GetMatDescriptor(name, color, type);
+	}
+	static int GetMatIndex(vtMaterialDescriptor *desc, const RGBf &color = RGBf())
+	{
+		return s_MaterialDescriptors.GetMatIndex(desc, color);
+	}
+	static vtMaterialArray *GetSharedMaterialArray()
 	{
 		return s_MaterialDescriptors.GetMatArray();
 	}
-	vtTransformPtr m_pContainer;	// The transform which is used to position the object
 
 protected:
-	float ColorDiff(const RGBi &c1, const RGBi &c2);
+	vtTransformPtr m_pContainer;	// The transform which is used to position the object
 
 	static vtMaterialDescriptorArray3d s_MaterialDescriptors;
-	static bool s_bMaterialsLoaded;
+	static bool s_bMaterialsInitialized;
 
 	// Visual Impact
     bool m_bIsVIAContributor;
 	bool m_bIsVIATarget;
-
 };
 
 

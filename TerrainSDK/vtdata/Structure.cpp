@@ -1,7 +1,7 @@
 //
 // Structure.cpp
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -180,7 +180,7 @@ void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAtt
 				pDescriptor->SetMatType(atoi(attval));
 			attval = atts.getValue("Source");
 			if (attval)
-				pDescriptor->SetSourceName(attval);
+				pDescriptor->SetTextureFilename(attval);
 			attval = atts.getValue("Scale");
 			if (attval)
 			{
@@ -226,17 +226,15 @@ vtMaterialDescriptor::vtMaterialDescriptor()
 	m_bAmbient = false;
 	m_bBlending = false;
 	m_RGB.Set(0,0,0);
-	m_iMaterialIndex = -1;
 }
 
 /**
  * Create a high-level description of a material.
  *
  * \param Name Name of the new material.
- * \param SourceName Filename of the source imagery, for a textured material,
+ * \param TextureFilename Filename of the source imagery, for a textured material,
  *		 or "" otherwise.
  * \param Colorable Enumeration, one of:
-	- VT_MATERIAL_COLOUR A plain surface of a single color.
 	- VT_MATERIAL_COLOURABLE A plain surface that can be any color.
 	- VT_MATERIAL_SELFCOLOURED_TEXTURE A textured surface.
 	- VT_MATERIAL_COLOURABLE_TEXTURE A textured surface which can be made any color.
@@ -248,23 +246,23 @@ vtMaterialDescriptor::vtMaterialDescriptor()
  * \param bTwoSided True for surfaces which should be visible from both sides.
  * \param bAmbient True for surfaces which are only affected by ambient light.
  * \param bBlending True for textures with transparency.
- * \param Color For VT_MATERIAL_COLOUR only, the single color.
+ * \param Color For VT_MATERIAL_SELFCOLOURED_TEXTURE, the color intrinsic to
+ *		the texture, e.g. for a texture of orange bricks, the color is orange.
  */
 vtMaterialDescriptor::vtMaterialDescriptor(const char *Name,
-	const vtString &SourceName, const vtMaterialColorEnum Colorable,
+	const vtString &TextureFilename, const vtMaterialColorEnum Colorable,
 	const float fUVScaleX, const float fUVScaleY, const bool bTwoSided,
 	const bool bAmbient, const bool bBlending, const RGBi &Color)
 {
-	m_pName = new vtString(Name);	//GetGlobalMaterials()->FindName(name);
+	m_pName = new vtString(Name);
 	m_Type = 0;
-	m_SourceName = SourceName;
+	m_TextureFilename = TextureFilename;
 	m_Colorable = Colorable;
 	m_UVScale.Set(fUVScaleX, fUVScaleY);
 	m_bTwoSided = bTwoSided;
 	m_bAmbient = bAmbient;
 	m_bBlending = bBlending;
 	m_RGB = Color;
-	m_iMaterialIndex = -1;
 }
 
 vtMaterialDescriptor::~vtMaterialDescriptor()
@@ -285,7 +283,7 @@ void vtMaterialDescriptor::WriteToFile(FILE *fp)
 	fprintf(fp, " Colorable=\"%s\"", m_Colorable == VT_MATERIAL_COLOURABLE_TEXTURE ? "true" : "false");
 
 	fprintf(fp, " Source=\"");
-	fprintf(fp, "%s", (pcchar) m_SourceName);
+	fprintf(fp, "%s", (pcchar) m_TextureFilename);
 	fprintf(fp, "\"");
 
 	fprintf(fp, " Scale=\"%f, %f\"", m_UVScale.x, m_UVScale.y);
@@ -304,7 +302,7 @@ void vtMaterialDescriptor::WriteToFile(FILE *fp)
 	//	const RGBi &rgb = Input.m_RGB;
 	//	Output << "\t<MaterialDescriptor Name=\""<< (pcchar)*Input.m_pName << "\""
 	//		<< " Colorable=\"" << (Input.m_Colorable == VT_MATERIAL_COLOURABLE_TEXTURE) << "\""
-	//		<< " Source=\"" << (pcchar)Input.m_SourceName << "\""
+	//		<< " Source=\"" << (pcchar)Input.m_TextureFilename << "\""
 	//		<< " Scale=\"" << Input.m_UVScale.x << ", " << Input.m_UVScale.y << "\""
 	//		<< " RGB=\"" << rgb.r << " " << rgb.g << " " << rgb.b << "\""
 	//		<< "/>" << std::endl;

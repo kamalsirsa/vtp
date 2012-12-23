@@ -68,7 +68,7 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 	{
 		// Should we drape structure instances on all culture, including roads
 		//  and other structures?  There are some cases where this is not
-		//  desirable, such as buildings composed of multiple instance which
+		//  desirable, such as buildings composed of multiple footprints which
 		//  should intersect, not stack.  Should it be a user option, global,
 		//  per-layer, or per-structure?
 
@@ -478,7 +478,6 @@ void vtStructureArray3d::DestroyStructure(int i)
 vtMaterialDescriptorArray3d::vtMaterialDescriptorArray3d()
 {
 	m_pMaterials = NULL;
-	m_bMaterialsCreated = false;
 }
 
 void vtMaterialDescriptorArray3d::InitializeMaterials()
@@ -487,22 +486,6 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 		return;
 
 	VTLOG("Initializing MaterialDescriptorArray3d\n");
-
-	int i, j, k;
-	RGBf color;
-	int count = 0;
-	int divisions = 6;
-	float start = .25f;
-	float step = (1.0f-start)/(divisions-1);
-
-	// set up colour spread
-	for (i = 0; i < divisions; i++) {
-		for (j = 0; j < divisions; j++) {
-			for (k = 0; k < divisions; k++) {
-				m_Colors[count++].Set(start+i*step, start+j*step, start+k*step);
-			}
-		}
-	}
 
 	m_pMaterials = new vtMaterialArray;
 	m_pMaterials->reserve(500);
@@ -519,109 +502,98 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 		0.6f);					// alpha
 }
 
-void vtMaterialDescriptorArray3d::CreateMaterials()
+int vtMaterialDescriptorArray3d::CreateColoredMaterial(vtMaterialDescriptor *descriptor,
+	const RGBf &color)
 {
-	VTLOG1("Creating Materials:\n");
-	clock_t clock1 = clock();
+	// Do we already have this material in this color?
+	ColorIndexMap::iterator it = descriptor->m_ColorIndexMap.find(color);
+	if (it != descriptor->m_ColorIndexMap.end())
+		return it->second;
 
-	m_bMaterialsCreated = true;
+	// Otherwise, make it.
+	vtMaterial *pMat = MakeMaterial(descriptor, color);
+	if (descriptor->GetBlending())
+		pMat->SetTransparent(true);
 
-	vtMaterial *pMat;
-	int i, j, iSize = size();
+	int index = m_pMaterials->AppendMaterial(pMat);
 
-	for (j = 0; j < iSize; j++)
-	{
-		vtMaterialDescriptor *descriptor = at(j);
-		VTLOG(" %s,", (const char *) descriptor->GetName());
+	// Store in map
+	descriptor->m_ColorIndexMap[color] = index;
 
-		switch (descriptor->GetColorable())
-		{
-		case VT_MATERIAL_COLOUR:
-			pMat = MakeMaterial(descriptor, descriptor->GetRGB());
-			descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
-			break;
-
-		case VT_MATERIAL_COLOURABLE:
-			for (i = 0; i < COLOR_SPREAD; i++)
-			{
-				pMat = MakeMaterial(descriptor, m_Colors[i]);
-				if (i == 0)
-					descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
-				else
-					m_pMaterials->AppendMaterial(pMat);
-			}
-			break;
-
-		case VT_MATERIAL_SELFCOLOURED_TEXTURE:
-			CreateSelfColoredMaterial(descriptor);
-			break;
-
-		case VT_MATERIAL_COLOURABLE_TEXTURE:
-			CreateColorableTextureMaterial(descriptor);
-			break;
-		}
-	}
-	clock_t clock2 = clock();
-	VTLOG(" done in %.3f seconds.\n", (float)(clock2-clock1)/CLOCKS_PER_SEC);
+	return index;
 }
 
-void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor)
+int vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor)
 {
+	// Do we already have this material?
+	ColorIndexMap::iterator it = descriptor->m_ColorIndexMap.begin();
+	if (it != descriptor->m_ColorIndexMap.end())
+	{
+		return it->second;
+	}
+
 	RGBf color(1.0f, 1.0f, 1.0f);
 	vtMaterial *pMat = MakeMaterial(descriptor, color);
 
-	vtString path = FindFileOnPaths(vtGetDataPath(), descriptor->GetSourceName());
+	vtString path = FindFileOnPaths(vtGetDataPath(), descriptor->GetTextureFilename());
 	pMat->SetTexture(osgDB::readImageFile((const char *)path));
 	pMat->SetClamp(false);	// material needs to repeat
 
 	if (descriptor->GetBlending())
 		pMat->SetTransparent(true);
 
-	descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
+	int index = m_pMaterials->AppendMaterial(pMat);
+
+	// Store in map
+	descriptor->m_ColorIndexMap[descriptor->GetRGB()] = index;
+
+	return index;
 }
 
-void vtMaterialDescriptorArray3d::CreateColorableTextureMaterial(vtMaterialDescriptor *descriptor)
+int vtMaterialDescriptorArray3d::CreateColorableTextureMaterial(vtMaterialDescriptor *descriptor,
+	const RGBf &color)
 {
-	vtString source = descriptor->GetSourceName();
-	vtString path = FindFileOnPaths(vtGetDataPath(), source);
+	// Do we already have this material in this color?
+	ColorIndexMap::iterator it = descriptor->m_ColorIndexMap.find(color);
+	if (it != descriptor->m_ColorIndexMap.end())
+	{
+		return it->second;
+	}
+	// Otherwise, try to make it.
+	vtString texture_filename = descriptor->GetTextureFilename();
+	vtString path = FindFileOnPaths(vtGetDataPath(), texture_filename);
 	if (path == "")
 	{
-		VTLOG("\n\tMissing texture: %s\n", (const char *) source);
-		return;
+		VTLOG("\n\tMissing texture: %s\n", (const char *) texture_filename);
+		return -1;
 	}
 	ImagePtr img = osgDB::readImageFile((const char *)path);
+	if (!img.valid())
+		return -1;
 
-	for (int i = 0; i < COLOR_SPREAD; i++)
-	{
-		vtMaterial *pMat = MakeMaterial(descriptor, m_Colors[i]);
-		pMat->SetTexture(img);
-		pMat->SetMipMap(true);
-		pMat->SetClamp(false);
+	vtMaterial *pMat = MakeMaterial(descriptor, color);
+	pMat->SetTexture(img);
+	pMat->SetMipMap(true);
+	pMat->SetClamp(false);
+	if (descriptor->GetBlending())
+		pMat->SetTransparent(true);
 
-		if (descriptor->GetBlending())
-			pMat->SetTransparent(true);
+	int index = m_pMaterials->AppendMaterial(pMat);
 
-		int index = m_pMaterials->AppendMaterial(pMat);
-		if (i == 0)
-			descriptor->SetMaterialIndex(index);
-	}
+	// Store in map
+	descriptor->m_ColorIndexMap[color] = index;
+
+	return index;
 }
-
 
 //
 // Takes the building material and color, and tries to find the closest
 // existing vtMaterial.
 //
-int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
-											  const RGBf &inputColor,
-											  int iType)
+int vtMaterialDescriptorArray3d::GetMatIndex(const vtString& Material,
+											 const RGBf &inputColor,
+											 int iType)
 {
-	if (!m_bMaterialsCreated)
-	{
-		// postpone material creation until the first time they're needed
-		CreateMaterials();
-	}
-
 	// handle special case of internal materials
 	if (Material == "Highlight")
 	{
@@ -634,45 +606,34 @@ int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
 			return m_hightlight3;
 	}
 	if (Material == "Wire")
-	{
 		return m_wire;
-	}
 
-	const vtMaterialDescriptor  *pMaterialDescriptor;
-	pMaterialDescriptor = FindMaterialDescriptor(Material, inputColor, iType);
-
-	if (pMaterialDescriptor == NULL)
+	vtMaterialDescriptor *desc = GetMatDescriptor(Material, inputColor, iType);
+	if (desc == NULL)
 		return -1;
-	int iIndex = pMaterialDescriptor->GetMaterialIndex();
-	vtMaterialColorEnum Type = pMaterialDescriptor->GetColorable();
 
-	if (Type == VT_MATERIAL_COLOUR)
-		return iIndex;
-
-	if (Type == VT_MATERIAL_SELFCOLOURED_TEXTURE)
-		return iIndex;
-
-	// otherwise, it is of type VT_MATERIAL_COLOURABLE or VT_MATERIAL_COLOURABLE_TEXTURE
-	// match the closest color.
-	float bestError = 1E8;
-	int bestMatch = -1;
-	float error;
-
-	for (int i = 0; i < COLOR_SPREAD; i++)
-	{
-		error = ColorDiff(m_Colors[i], inputColor);
-		if (error < bestError)
-		{
-			bestMatch  = iIndex + i;
-			bestError = error;
-		}
-	}
-	return bestMatch;
+	return GetMatIndex(desc, inputColor);
 }
 
-vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const vtString& MaterialName,
-																		  const RGBf &color,
-																		  int iType) const
+int vtMaterialDescriptorArray3d::GetMatIndex(vtMaterialDescriptor *desc,
+											 const RGBf &inputColor)
+{
+	switch (desc->GetColorable())
+	{
+		case VT_MATERIAL_COLOURABLE:
+			return CreateColoredMaterial(desc, inputColor);
+
+		case VT_MATERIAL_SELFCOLOURED_TEXTURE:
+			return CreateSelfColoredMaterial(desc);
+
+		case VT_MATERIAL_COLOURABLE_TEXTURE:
+			return CreateColorableTextureMaterial(desc, inputColor);
+	}
+	return -1;
+}
+
+vtMaterialDescriptor *vtMaterialDescriptorArray3d::GetMatDescriptor(const vtString& MaterialName,
+	const RGBf &color, int iType) const
 {
 	if (&MaterialName == NULL)
 		return NULL;
@@ -709,18 +670,17 @@ vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const 
 	return NULL;
 }
 
-
 /////////////////////////////////////////////////////////////////////////////
 // Methods for vtStructure3d
 //
 
-bool vtStructure3d::s_bMaterialsLoaded = false;
+bool vtStructure3d::s_bMaterialsInitialized = false;
 
 void vtStructure3d::InitializeMaterialArrays()
 {
-	if (!s_bMaterialsLoaded)
+	if (!s_bMaterialsInitialized)
 	{
-		s_bMaterialsLoaded = true;
+		s_bMaterialsInitialized = true;
 
 		s_MaterialDescriptors.InitializeMaterials();
 
@@ -768,5 +728,4 @@ vtMaterial *vtMaterialDescriptorArray3d::MakeMaterial(vtMaterialDescriptor *desc
 	pMat->SetLighting(true);
 	return pMat;
 }
-
 

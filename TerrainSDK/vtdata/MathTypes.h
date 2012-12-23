@@ -1349,6 +1349,12 @@ public:
 	{ return (r == v2.r && g == v2.g && b == v2.b); }
 	bool operator!=(const RGBf &v2) const
 	{ return (r != v2.r || g != v2.g || b != v2.b); }
+	bool operator<(const RGBf &v2) const
+	{ if (r < v2.r) return true; else if (r > v2.r) return false;
+	  if (g < v2.g) return true; else if (g > v2.g) return false;
+	  if (b < v2.b) return true; else if (b > v2.b) return false;
+	  return false;
+	}
 
 	float r, g, b;
 };

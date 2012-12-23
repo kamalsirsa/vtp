@@ -3,14 +3,15 @@
 //
 // Implements the vtStructure class which represents a single built structure.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file Structure.h */
 
-
 #ifndef STRUCTUREH
 #define STRUCTUREH
+
+#include <map>
 
 #include "MathTypes.h"
 #include "Selectable.h"
@@ -36,11 +37,12 @@ class vtStructInstance;
 
 enum vtMaterialColorEnum
 {
-	VT_MATERIAL_COLOUR,			// a single color
-	VT_MATERIAL_COLOURABLE,		// any color, untextured
+	VT_MATERIAL_COLOURABLE,				// any color, untextured
 	VT_MATERIAL_SELFCOLOURED_TEXTURE,	// a single texture
 	VT_MATERIAL_COLOURABLE_TEXTURE		// any color, textured
 };
+
+typedef std::map<RGBf,int> ColorIndexMap;
 
 /**
  * This class encapsulates the description of a shared material
@@ -50,7 +52,7 @@ class vtMaterialDescriptor
 public:
 	vtMaterialDescriptor();
 	vtMaterialDescriptor(const char *name,
-					const vtString &SourceName,
+					const vtString &TextureFilename,
 					const vtMaterialColorEnum Colorable = VT_MATERIAL_SELFCOLOURED_TEXTURE,
 					const float fUVScaleX=-1,
 					const float fUVScaleY=-1,
@@ -71,7 +73,7 @@ public:
 	/**
 	\param type One of:
 	- 0: A surface material, such as brick, siding, or stucco.
-	- 1: An element of a strcture edge, such as a door or window.
+	- 1: An element of a structure edge, such as a door or window.
 	- 2: Reserved for "Window Wall", an efficiency optimization material
 		which contains both a window and a wall.
 	- 3: A post material, for linear structures, such as a fencepost.
@@ -93,14 +95,6 @@ public:
 	{
 		return m_UVScale;
 	}
-	void SetMaterialIndex(const int Index)
-	{
-		m_iMaterialIndex = Index;
-	}
-	const int GetMaterialIndex() const
-	{
-		return m_iMaterialIndex;
-	}
 	void SetColorable(const vtMaterialColorEnum Type)
 	{
 		m_Colorable = Type;
@@ -109,13 +103,13 @@ public:
 	{
 		return m_Colorable;
 	}
-	void SetSourceName(const vtString &SourceName)
+	void SetTextureFilename(const vtString &TextureFilename)
 	{
-		m_SourceName = SourceName;
+		m_TextureFilename = TextureFilename;
 	}
-	const vtString& GetSourceName() const
+	const vtString& GetTextureFilename() const
 	{
-		return m_SourceName;
+		return m_TextureFilename;
 	}
 	void SetRGB(const RGBi Color)
 	{
@@ -160,20 +154,21 @@ public:
 	}
 	void WriteToFile(FILE *fp);
 
+	// The following field is only used in 3d construction, but it's not
+	//  enough distinction to warrant creating a subclass to contain it.
+	// For colourable materials, maps color to material indices.
+	ColorIndexMap m_ColorIndexMap;
+
 private:
 	const vtString *m_pName; // Name of material
 	int m_Type;				// 0 for surface materials, >0 for classification type
 	vtMaterialColorEnum m_Colorable;
-	vtString m_SourceName;	// Source of material
+	vtString m_TextureFilename;	// Filename of texture, or ""
 	FPoint2 m_UVScale;		// Texel scale;
-	RGBi m_RGB;				// Color for VT_MATERIAL_COLOUR
+	RGBi m_RGB;				// Color for VT_MATERIAL_SELFCOLOURED_TEXTURE
 	bool m_bTwoSided;		// default false
 	bool m_bAmbient;		// default false
 	bool m_bBlending;		// default false
-
-	// The following field is only used in 3d construction, but it's not
-	//  enough distinction to warrant creating a subclass to contain it.
-	int m_iMaterialIndex; // Starting or only index of this material in the shared materials array
 };
 
 /**

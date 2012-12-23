@@ -3549,7 +3549,7 @@ ProfileDlg *EnviroFrame::ShowProfileDlg()
 void EnviroFrame::OpenFenceDialog()
 {
 	// inform the dialog about the materials
-	m_pFenceDlg->SetStructureMaterials(&vtStructure3d::GetMaterialDescriptors());
+	m_pFenceDlg->SetStructureMaterials(GetGlobalMaterials());
 	m_pFenceDlg->Show(true);
 }
 

@@ -106,7 +106,7 @@ void vtFence3d::AddWireMeshes(const FLine3 &p3)
 			}
 			pWireMesh->AddStrip2(npoints, start);
 		}
-		m_pFenceGeom->AddMesh(pWireMesh, FindMatIndex("Wire"));
+		m_pFenceGeom->AddMesh(pWireMesh, GetMatIndex("Wire"));
 	}
 }
 
@@ -117,7 +117,7 @@ void vtFence3d::AddFlatConnectionMesh(const FLine3 &p3)
 {
 	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords, 100);
 
-	vtMaterialDescriptor *desc = FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+	vtMaterialDescriptor *desc = GetMatDescriptor(m_Params.m_ConnectMaterial);
 	if (!desc)
 	{
 		VTLOG1("Warning: could not find material:");
@@ -152,7 +152,7 @@ void vtFence3d::AddFlatConnectionMesh(const FLine3 &p3)
 	}
 	pMesh->AddStrip2(npoints * 2, 0);
 
-	m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
+	m_pFenceGeom->AddMesh(pMesh, GetMatIndex(desc));
 }
 
 void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
@@ -160,7 +160,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_TexCoords | VT_Normals, 100);
 
 	// a solid block, with top/left/right sides, made of 3 strips
-	vtMaterialDescriptor *desc = FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+	vtMaterialDescriptor *desc = GetMatDescriptor(m_Params.m_ConnectMaterial);
 	if (!desc)
 	{
 		VTLOG1("Warning: could not find material: ");
@@ -314,7 +314,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 	pMesh->SetVtxTexCoord(start+3, FPoint2(u, v2));
 	pMesh->AddStrip2(4, start);
 
-	m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
+	m_pFenceGeom->AddMesh(pMesh, GetMatIndex(desc));
 }
 
 void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
@@ -335,7 +335,7 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP,
 		VT_TexCoords | VT_Normals, iEstimateVerts);
 
-	vtMaterialDescriptor *desc = FindMaterialDescriptor(m_Params.m_ConnectMaterial);
+	vtMaterialDescriptor *desc = GetMatDescriptor(m_Params.m_ConnectMaterial);
 	if (!desc)
 	{
 		VTLOG1("Warning: could not find material: ");
@@ -498,7 +498,7 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 		pMesh->AddTri(ind[0], ind[2], ind[1]);
 	}
 
-	m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
+	m_pFenceGeom->AddMesh(pMesh, GetMatIndex(desc));
 }
 
 void vtFence3d::AddPostExtensions(const FLine3 &p3)
@@ -561,28 +561,28 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 				pWiresRight->SetVtxPos(j*npoints + i, base + upward * wire_height[j]);
 		}
 	}
-	m_pFenceGeom->AddMesh(pMesh, FindMatIndex("Steel"));
+	m_pFenceGeom->AddMesh(pMesh, GetMatIndex("Steel"));
 
 	if (bLeft && bWires)
 	{
 		pWiresLeft->AddStrip2(npoints, 0);
 		pWiresLeft->AddStrip2(npoints, npoints);
 		pWiresLeft->AddStrip2(npoints, npoints*2);
-		m_pFenceGeom->AddMesh(pWiresLeft, FindMatIndex("Wire"));
+		m_pFenceGeom->AddMesh(pWiresLeft, GetMatIndex("Wire"));
 	}
 	if (bRight && bWires)
 	{
 		pWiresRight->AddStrip2(npoints, 0);
 		pWiresRight->AddStrip2(npoints, npoints);
 		pWiresRight->AddStrip2(npoints, npoints*2);
-		m_pFenceGeom->AddMesh(pWiresRight, FindMatIndex("Wire"));
+		m_pFenceGeom->AddMesh(pWiresRight, GetMatIndex("Wire"));
 	}
 }
 
 void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 {
 	// Trigger the creation of any materials we may need
-	FindMatIndex("");
+	GetMatIndex("");
 
 	uint i, j;
 	uint numfencepts = m_pFencePts.GetSize();
@@ -647,11 +647,11 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 		}
 		// generate the posts
 		// Look first for post materials (type 3)
-		int iMatIdx = FindMatIndex(m_Params.m_PostType, RGBf(), 3);
+		int iMatIdx = GetMatIndex(m_Params.m_PostType, RGBf(), 3);
 
 		// If that didn't work, look for any material by that name
 		if (iMatIdx == -1)
-			int iMatIdx = FindMatIndex(m_Params.m_PostType);
+			int iMatIdx = GetMatIndex(m_Params.m_PostType);
 		for (i = 0; i < p3.GetSize(); i++)
 			AddFencepost(p3[i], iMatIdx);
 	}
@@ -818,7 +818,7 @@ void vtFence3d::ShowBounds(bool bShow)
 		}
 
 		// Use yellow highlight material
-		int highlight_matidx = FindMatIndex("Highlight", RGBf(1,1,0));
+		int highlight_matidx = GetMatIndex("Highlight", RGBf(1,1,0));
 
 		m_pFenceGeom->AddMesh(m_pHighlightMesh, highlight_matidx);
 	}

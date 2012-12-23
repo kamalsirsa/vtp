@@ -376,8 +376,8 @@ void GeometryBuilder::AddFlatRoof(const FPolygon3 &pp,  const vtLevel *pLev)
 	// Use the material of the first edge
 	vtEdge *pEdge = pLev->GetEdge(0);
 	const vtString& Material = *pEdge->m_pMaterial;
-	int MaterialIndex = FindMatIndex(Material, pEdge->m_Color);
-	vtMaterialDescriptor *md = FindMaterialDescriptor(Material, pEdge->m_Color);
+	int MaterialIndex = GetMatIndex(Material, pEdge->m_Color);
+	vtMaterialDescriptor *md = GetMatDescriptor(Material, pEdge->m_Color);
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
 	DATriangles* pTriangles = m_pPrimitiveCache->FindOrCreateDATriangles(VT_Normals|VT_TexCoords, pMaterial);
@@ -626,9 +626,9 @@ void GeometryBuilder::AddWallSection(vtEdge *pEdge, bool bUniform,
 
 	int MaterialIndex;
 	if (bUniform)
-		MaterialIndex = FindMatIndex(BMAT_NAME_WINDOWWALL, pEdge->m_Color);
+		MaterialIndex = GetMatIndex(BMAT_NAME_WINDOWWALL, pEdge->m_Color);
 	else
-		MaterialIndex = FindMatIndex(*pEdge->m_pMaterial, pEdge->m_Color);
+		MaterialIndex = GetMatIndex(*pEdge->m_pMaterial, pEdge->m_Color);
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
 	DALTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDALTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
@@ -655,7 +655,7 @@ void GeometryBuilder::AddWallSection(vtEdge *pEdge, bool bUniform,
 		float u2 = (p2 - p0) * axis0;
 		float u3 = (p3 - p0) * axis0;
 		float v2 = (p2 - p0) * axis1;
-		vtMaterialDescriptor *md = FindMaterialDescriptor(*pEdge->m_pMaterial, pEdge->m_Color);
+		vtMaterialDescriptor *md = GetMatDescriptor(*pEdge->m_pMaterial, pEdge->m_Color);
 		uv0.set(0, 0);
 		uv1.set(u1, 0);
 		uv2.set(u2, v2);
@@ -698,7 +698,7 @@ void GeometryBuilder::AddHighlightSection(vtEdge *pEdge,
 	vtVec3 p3 = quad[2];
 	vtVec3 p2 = quad[3];
 
-	int MaterialIndex = FindMatIndex(BMAT_NAME_PLAIN, RGBi(255,255,255));
+	int MaterialIndex = GetMatIndex(BMAT_NAME_PLAIN, RGBi(255,255,255));
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
 	DALLineStrip* pLineStrip = m_pPrimitiveCache->FindOrCreateDALLineStrip(0, pMaterial);
@@ -731,7 +731,7 @@ void GeometryBuilder::AddHighlightSection(vtEdge *pEdge,
 
 	norm *= 0.95f;
 
-	MaterialIndex = FindMatIndex(BMAT_NAME_PLAIN, RGBi(255,0,0));
+	MaterialIndex = GetMatIndex(BMAT_NAME_PLAIN, RGBi(255,0,0));
 	pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
 	pLineStrip = m_pPrimitiveCache->FindOrCreateDALLineStrip(0, pMaterial);
@@ -848,8 +848,8 @@ float GeometryBuilder::MakeFelkelRoof(const FPolygon3 &EavePolygons, const vtLev
 			// and build the vertex array
 			const vtString bmat = *points[pi].m_pMaterial;
 			const vtString& Material = *points[pi].m_pMaterial;
-			int MaterialIndex = FindMatIndex(Material, points[pi].m_Color);
-			vtMaterialDescriptor *pMd = FindMaterialDescriptor(Material, points[pi].m_Color);
+			int MaterialIndex = GetMatIndex(Material, points[pi].m_Color);
+			vtMaterialDescriptor *pMd = GetMatDescriptor(Material, points[pi].m_Color);
 			vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
 			DATriangles* pTriangles = m_pPrimitiveCache->FindOrCreateDATriangles(VT_Normals|VT_TexCoords, pMaterial);
@@ -1269,7 +1269,7 @@ void GeometryBuilder::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	vtVec3 p3 = quad[0] + (up1 * vf2);
 	vtVec3 p2 = quad[1] + (up2 * vf2);
 
-	int MaterialIndex = MaterialIndex = FindMatIndex(BMAT_NAME_WINDOW, pEdge->m_Color);
+	int MaterialIndex = MaterialIndex = GetMatIndex(BMAT_NAME_WINDOW, pEdge->m_Color);
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
 	DALTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDALTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
@@ -1310,7 +1310,7 @@ void GeometryBuilder::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	vtVec3 p3 = quad[0] + (up1 * vf2);
 	vtVec3 p2 = quad[1] + (up2 * vf2);
 
-	int MaterialIndex = MaterialIndex = FindMatIndex(BMAT_NAME_DOOR, pEdge->m_Color);
+	int MaterialIndex = MaterialIndex = GetMatIndex(BMAT_NAME_DOOR, pEdge->m_Color);
 	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
 	DALTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDALTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
