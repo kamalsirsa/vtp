@@ -240,7 +240,7 @@ bool Triangulate_f::Process(const FLine3 &contour,FLine3 &result)
 	return true;
 }
 
-bool Triangulate_f::Process(const FLine3 &contour, vtArray<int> &result)
+bool Triangulate_f::Process(const FLine3 &contour, std::vector<int> &result)
 {
 	/* allocate and initialize list of Vertices in polygon */
 
@@ -284,9 +284,9 @@ bool Triangulate_f::Process(const FLine3 &contour, vtArray<int> &result)
 			a = V[u]; b = V[v]; c = V[w];
 
 			/* output Triangle */
-			result.Append( a );
-			result.Append( b );
-			result.Append( c );
+			result.push_back( a );
+			result.push_back( b );
+			result.push_back( c );
 
 			m++;
 

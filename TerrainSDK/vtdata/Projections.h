@@ -132,7 +132,7 @@ struct EPSGDatum
 	const char *szName;
 	const char *szShortName;
 };
-extern vtArray<EPSGDatum> g_EPSGDatums;
+extern std::vector<EPSGDatum> g_EPSGDatums;
 void SetupEPSGDatums();
 
 StatePlaneInfo *GetStatePlaneTable();

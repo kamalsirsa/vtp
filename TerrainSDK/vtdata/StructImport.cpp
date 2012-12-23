@@ -168,7 +168,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 				bld->SetRoofType((RoofType) rt);
 			}
 		}
-		Append(bld);
+		push_back(bld);
 	}
 	fclose(fp);
 	return true;
@@ -187,7 +187,7 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
 		int quiet = fscanf(fp, "%lf %lf\n", &point.x, &point.y);
 		vtBuilding *bld = NewBuilding();
 		bld->SetRectangle(point, 10, 10);
-		Append(bld);
+		push_back(bld);
 	}
 
 	fclose(fp);
@@ -389,7 +389,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			else if (opt.m_eRoofType != ROOF_UNKNOWN)
 				bld->SetRoofType(opt.m_eRoofType, opt.m_iSlope);
 
-			Append(bld);
+			push_back(bld);
 		}
 		if (opt.type == ST_INSTANCE)
 		{
@@ -427,7 +427,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 				double rotation = DBFReadDoubleAttribute(db, i, field_rotation);
 				inst->SetRotation((float)rotation / 180.0f * PIf);
 			}
-			Append(inst);
+			push_back(inst);
 		}
 		if (opt.type == ST_LINEAR)
 		{
@@ -438,7 +438,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 				point.y = psShape->padfY[j];
 				fen->AddPoint(point);
 			}
-			Append(fen);
+			push_back(fen);
 		}
 		SHPDestroyObject(psShape);
 	}
@@ -518,7 +518,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 				pBld->SetRectangle(point, 10, 10);
 				pBld->SetStories(1);
 
-				Append(pBld);
+				push_back(pBld);
 
 				count++;
 			}
@@ -599,7 +599,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 				else
 					pBld->SetStories(1);
 
-				Append(pBld);
+				push_back(pBld);
 			}
 		}
 	}
@@ -866,7 +866,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 				pBld->SetElevationOffset(fDiff);
 
 		}
-		Append(pBld);
+		push_back(pBld);
 	}
 }
 
@@ -990,7 +990,7 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 			pFence->GetParams().m_fPostHeight = f;
 			pFence->GetParams().m_fConnectTop = f;
 		}
-		Append(pFence);
+		push_back(pFence);
 	}
 }
 
@@ -1072,7 +1072,7 @@ void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
 		}
 		pInstance->SetPoint(p2);
 
-		Append(pInstance);
+		push_back(pInstance);
 	}
 }
 

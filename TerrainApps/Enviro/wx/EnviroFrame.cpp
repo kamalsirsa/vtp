@@ -2207,7 +2207,7 @@ void EnviroFrame::OnUpdateVIACalculate(wxUpdateUIEvent& event)
 			vtStructureArray3d *pStructures = dynamic_cast<vtStructureArray3d*>(Layers[i].get());
 			if (NULL != pStructures)
 			{
-				int iNumberOfStructures = pStructures->GetSize();
+				int iNumberOfStructures = pStructures->size();
 				for (int j = 0; (j < iNumberOfStructures) && !bFound; j++)
 				{
 					vtStructure3d *pStructure3d = pStructures->GetStructure3d(j);
@@ -2487,7 +2487,7 @@ void EnviroFrame::OnUpdateVIAPlot(wxUpdateUIEvent& event)
 			vtStructureArray3d *pStructures = dynamic_cast<vtStructureArray3d*>(Layers[i].get());
 			if (NULL != pStructures)
 			{
-				int iNumberOfStructures = pStructures->GetSize();
+				int iNumberOfStructures = pStructures->size();
 				for (int j = 0; (j < iNumberOfStructures) && !(bFoundContributor && bFoundTarget); j++)
 				{
 					vtStructure3d *pStructure3d = pStructures->GetStructure3d(j);
@@ -2515,7 +2515,7 @@ void EnviroFrame::OnVIAClear(wxCommandEvent& event)
 			vtStructureArray3d *pStructures = dynamic_cast<vtStructureArray3d*>(Layers[i].get());
 			if (NULL != pStructures)
 			{
-				int iNumberOfStructures = pStructures->GetSize();
+				int iNumberOfStructures = pStructures->size();
 				for (int j = 0; j < iNumberOfStructures; j++)
 				{
 					vtStructure3d *pStructure3d = pStructures->GetStructure3d(j);
@@ -2542,7 +2542,7 @@ void EnviroFrame::OnUpdateVIAClear(wxUpdateUIEvent& event)
 			vtStructureArray3d *pStructures = dynamic_cast<vtStructureArray3d*>(Layers[i].get());
 			if (NULL != pStructures)
 			{
-				int iNumberOfStructures = pStructures->GetSize();
+				int iNumberOfStructures = pStructures->size();
 				for (int j = 0; (j < iNumberOfStructures) && !(bFoundContributor || bFoundTarget); j++)
 				{
 					vtStructure3d *pStructure3d = pStructures->GetStructure3d(j);
@@ -2874,12 +2874,12 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 		OpenProgressDialog(_("Removing Foundations"));
 		sa->RemoveFoundations();
 	}
-	int i, size = sa->GetSize(), selected = sa->NumSelected();
+	int i, size = sa->size(), selected = sa->NumSelected();
 	for (i = 0; i < size; i++)
 	{
 		progress_callback(i * 99 / size);
 
-		vtStructure *s = sa->GetAt(i);
+		vtStructure *s = sa->at(i);
 		if (selected > 0 && !s->IsSelected())
 			continue;
 		if (s->GetType() != ST_BUILDING)
@@ -2892,7 +2892,7 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 void EnviroFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	event.Enable(t && t->GetStructureLayer() && t->GetStructureLayer()->GetSize() > 0);
+	event.Enable(t && t->GetStructureLayer() && t->GetStructureLayer()->size() > 0);
 	event.Check(s_bBuilt);
 }
 
@@ -3701,12 +3701,12 @@ void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structures = pTerr->GetStructureLayer();
 
-	int count = structures->GetSize();
+	int count = structures->size();
 	vtStructure *str;
 	vtStructInstance3d *inst;
 	for (int i = 0; i < count; i++)
 	{
-		str = structures->GetAt(i);
+		str = structures->at(i);
 		if (!str->IsSelected())
 			continue;
 
@@ -3722,11 +3722,11 @@ void EnviroFrame::OnPopupShadow(wxCommandEvent& event)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structures = pTerr->GetStructureLayer();
 
-	int count = structures->GetSize();
+	int count = structures->size();
 	vtStructure *str;
 	for (int i = 0; i < count; i++)
 	{
-		str = structures->GetAt(i);
+		str = structures->at(i);
 		if (!str->IsSelected())
 			continue;
 
@@ -3817,10 +3817,10 @@ void EnviroFrame::OnPopupAdjust(wxCommandEvent& event)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structures = pTerr->GetStructureLayer();
 
-	int count = structures->GetSize();
+	int count = structures->size();
 	for (int i = 0; i < count; i++)
 	{
-		vtStructure *str = structures->GetAt(i);
+		vtStructure *str = structures->at(i);
 		if (str->IsSelected())
 		{
 			vtStructInstance3d *inst = structures->GetInstance(i);
@@ -3845,7 +3845,7 @@ void EnviroFrame::OnPopupDelete(wxCommandEvent& event)
 void EnviroFrame::OnPopupURL(wxCommandEvent& event)
 {
 	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructureLayer();
-	vtStructure *struc = sa->GetAt(sa->GetFirstSelected());
+	vtStructure *struc = sa->at(sa->GetFirstSelected());
 	wxLaunchDefaultBrowser(wxString(struc->GetValueString("url"), wxConvUTF8));
 }
 

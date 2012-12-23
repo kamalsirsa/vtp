@@ -245,7 +245,7 @@ vtPagedStructureLOD *vtPagedStructureLodGrid::FindGroup(vtStructure *str)
 bool vtPagedStructureLodGrid::AppendToGrid(vtStructureArray3d *pArray, int iIndex)
 {
 	// Get 2D extents from the unbuild structure
-	vtStructure *str = pArray->GetAt(iIndex);
+	vtStructure *str = pArray->at(iIndex);
 	vtPagedStructureLOD *pGroup = FindGroup(str);
 	if (pGroup)
 	{
@@ -258,7 +258,7 @@ bool vtPagedStructureLodGrid::AppendToGrid(vtStructureArray3d *pArray, int iInde
 void vtPagedStructureLodGrid::RemoveFromGrid(vtStructureArray3d *pArray, int iIndex)
 {
 	// Get 2D extents from the unbuild structure
-	vtStructure *str = pArray->GetAt(iIndex);
+	vtStructure *str = pArray->at(iIndex);
 	vtPagedStructureLOD *pGroup = FindGroup(str);
 	if (pGroup)
 		pGroup->Remove(pArray, iIndex);
@@ -389,7 +389,7 @@ void vtPagedStructureLodGrid::SortQueue()
 	for (uint i = 0; i < m_Queue.size(); i++)
 	{
 		QueueEntry &e = m_Queue[i];
-		vtStructure *st = e.pStructureArray->GetAt(e.iStructIndex);
+		vtStructure *st = e.pStructureArray->at(e.iStructIndex);
 		vtBuilding *bld = st->GetBuilding();
 		vtStructInstance *inst = st->GetInstance();
 		if (bld)
@@ -429,10 +429,10 @@ void vtPagedStructureLodGrid::ClearQueue(vtStructureArray3d *pArray)
  */
 void vtPagedStructureLodGrid::RefreshPaging(vtStructureArray3d *pArray)
 {
-	for (uint i = 0; i < pArray->GetSize(); i++)
+	for (uint i = 0; i < pArray->size(); i++)
 	{
 		// Get 2D extents from the unbuild structure
-		vtStructure *str = pArray->GetAt(i);
+		vtStructure *str = pArray->at(i);
 		vtPagedStructureLOD *pGroup = FindGroup(str);
 		if (pGroup)
 			pGroup->m_bAddedToQueue = false;

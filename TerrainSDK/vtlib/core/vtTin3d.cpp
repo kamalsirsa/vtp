@@ -81,7 +81,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 	bool bGeoSpecific = (m_pMats != NULL);
 
 	uint iSurfTypes = m_surftypes.size();
-	bool bUseSurfaceTypes = (m_surfidx.GetSize() > 0 && iSurfTypes > 0);
+	bool bUseSurfaceTypes = (m_surfidx.size() > 0 && iSurfTypes > 0);
 	bool bTextured = bGeoSpecific || bUseSurfaceTypes;
 	bool bExplicitNormals = HasVertexNormals();
 
@@ -171,8 +171,8 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 			by = (int) (divy * (gp.y - rect.bottom) / sizey);
 
 			Bin &bref = bins[bx * divy + by];
-			bref.Append(i);
-			newsize = bref.GetSize();
+			bref.push_back(i);
+			newsize = bref.size();
 			if (newsize > most)
 				most = newsize;
 		}
@@ -194,7 +194,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 	for (i = 0; i < dsize; i++)
 	{
 		Bin &bref = bins[i];
-		in_bin = bref.GetSize();
+		in_bin = bref.size();
 		if (!in_bin)
 			continue;
 

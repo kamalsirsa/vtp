@@ -64,7 +64,7 @@ protected:
 protected:
 
 	// the geometry is composed of several meshes, one for each potential material used
-	vtArray<MatMesh>	m_Mesh;
+	std::vector<MatMesh>	m_Mesh;
 
 	vtMesh *FindMatMesh(const vtString &Material, const RGBi &color, vtMesh::PrimType ePrimType);
 	// center of the building in world coordinates (the origin of
@@ -106,7 +106,7 @@ protected:
 	// Felkel straight skeleton
 	float MakeFelkelRoof(const FPolygon3 &pp, vtLevel *pLev);
 	bool Collinear2d(const FPoint3& p1, const FPoint3& p2, const FPoint3& p3);
-	int FindVertex(FPoint3 Point, FLine3 &RoofSection3D, vtArray<int> &iaVertices);
+	int FindVertex(const FPoint3 &Point, const FLine3 &RoofSection3D, const std::vector<int> &iaVertices);
 
 	vtGeode		*m_pGeode;		// The geometry node which contains the building geometry
 	vtGeode		*m_pHighlight;	// The wireframe highlight

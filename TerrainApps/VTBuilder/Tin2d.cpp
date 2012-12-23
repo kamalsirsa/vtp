@@ -215,8 +215,8 @@ int vtTin2d::GetMemoryUsed() const
 
 	bytes += sizeof(vtTin2d);
 	bytes += sizeof(DPoint2) * m_vert.GetSize();
-	bytes += sizeof(int) * m_tri.GetSize();
-	bytes += sizeof(float) * m_z.GetSize();
+	bytes += sizeof(int) * m_tri.size();
+	bytes += sizeof(float) * m_z.size();
 
 	if (m_fEdgeLen)
 		bytes += sizeof(double) * NumTris();
@@ -321,7 +321,7 @@ void vtTin2d::CullLongEdgeTris()
 			kept++;
 		}
 	}
-	m_tri.SetSize(kept*3);
+	m_tri.resize(kept*3);
 }
 
 void vtTin2d::FreeEdgeLengths()

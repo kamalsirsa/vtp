@@ -202,7 +202,7 @@ int vtProjection::GetDatum() const
 	vtString strDatum = datum_string;
 	MassageDatumFromWKT(strDatum);	// Convert WKT name to EPSG name
 
-	for (uint i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (uint i = 0; i < g_EPSGDatums.size(); i++)
 	{
 		if (!strcmp((const char *)strDatum, g_EPSGDatums[i].szName))
 			return g_EPSGDatums[i].iCode;
@@ -807,7 +807,7 @@ const char *DatumToString(int d)
 	if (d < 24)
 		return datumToString((DATUM)d);	// allow backward compatibility
 
-	for (uint i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (uint i = 0; i < g_EPSGDatums.size(); i++)
 	{
 		if (g_EPSGDatums[i].iCode == d)
 			return g_EPSGDatums[i].szName;
@@ -886,7 +886,7 @@ const char *DatumToStringShort(int d)
 	if (d < 24)
 		return datumToStringShort((DATUM)d); // allow backward compatibility
 
-	for (uint i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (uint i = 0; i < g_EPSGDatums.size(); i++)
 	{
 		if (g_EPSGDatums[i].iCode == d)
 		{
@@ -901,7 +901,7 @@ const char *DatumToStringShort(int d)
 
 #include "EPSG_Datums.h"
 
-vtArray<EPSGDatum> g_EPSGDatums;
+std::vector<EPSGDatum> g_EPSGDatums;
 
 int compare_datum(const void *aa, const void *bb)
 {
@@ -920,22 +920,22 @@ void SetupEPSGDatums()
 	int count = sizeof(epsg_datums) / sizeof(epsg_datum);
 	EPSGDatum dat;
 
-	g_EPSGDatums.SetMaxSize(count);
+	g_EPSGDatums.reserve(count);
 	for (int i = 0; i < count; i++)
 	{
 		dat.bCommon = epsg_datums[i].common != 0;
 		dat.iCode = epsg_datums[i].code;
 		dat.szName = epsg_datums[i].name;
 		dat.szShortName = epsg_datums[i].shortname;
-		g_EPSGDatums.Append(dat);
+		g_EPSGDatums.push_back(dat);
 	}
 	// sort them
-	qsort(g_EPSGDatums.GetData(), count, sizeof(EPSGDatum), compare_datum);
+	qsort(g_EPSGDatums.data(), count, sizeof(EPSGDatum), compare_datum);
 }
 
 void CleanupEPSGDatums()
 {
-	g_EPSGDatums.Clear();
+	g_EPSGDatums.clear();
 }
 
 /**

@@ -79,7 +79,7 @@ void vtBuilding3d::DestroyGeometry()
 
 	m_pContainer->removeChild(m_pGeode);
 	m_pGeode = NULL;
-	m_Mesh.Clear();
+	m_Mesh.clear();
 }
 
 void vtBuilding3d::AdjustHeight(vtHeightField3d *pHeightField)
@@ -271,7 +271,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	vtMaterialArray *pShared = GetSharedMaterialArray();
 	m_pGeode->SetMaterials(pShared);
 
-	for (j = 0; j < m_Mesh.GetSize(); j++)
+	for (j = 0; j < m_Mesh.size(); j++)
 	{
 		vtMesh *mesh = m_Mesh[j].m_pMesh;
 		int index = m_Mesh[j].m_iMatIdx;
@@ -327,7 +327,7 @@ vtMesh *vtBuilding3d::FindMatMesh(const vtString &Material,
 		VertType = VT_Normals | VT_TexCoords;
 	}
 
-	int i, size = m_Mesh.GetSize();
+	int i, size = m_Mesh.size();
 	for (i = 0; i < size; i++)
 	{
 		if (m_Mesh[i].m_iMatIdx == mi && m_Mesh[i].m_ePrimType == ePrimType)
@@ -343,7 +343,7 @@ vtMesh *vtBuilding3d::FindMatMesh(const vtString &Material,
 	// just use 40 as a reasonable starting point for each mesh.
 
 	mm.m_pMesh = new vtMesh(ePrimType, VertType, 40);
-	m_Mesh.Append(mm);
+	m_Mesh.push_back(mm);
 	return mm.m_pMesh;
 }
 
@@ -847,7 +847,7 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 			FPoint3 VAxis;
 			FPoint3 TextureOrigin;
 			int i, j;
-			vtArray<int> iaVertices;
+			std::vector<int> iaVertices;
 
 			C3DPoint& p1 = points[pi].m_Point;
 			C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
@@ -963,7 +963,7 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, vtLevel *pLev)
 				FPoint3 Vertex = RoofSection3D[i];
 				FPoint2 UV = FPoint2((Vertex - TextureOrigin).Dot(UAxis), (Vertex - TextureOrigin).Dot(VAxis));
 				UV.Div(UVScale);
-				iaVertices.Append(pMesh->AddVertexNUV(Vertex, PanelNormal, UV));
+				iaVertices.push_back(pMesh->AddVertexNUV(Vertex, PanelNormal, UV));
 			}
 
 			if ((PanelNormal.x != 0) && (PanelNormal.z != 0))
@@ -1026,8 +1026,8 @@ bool vtBuilding3d::Collinear2d(const FPoint3& Previous, const FPoint3& Current, 
 		return false;
 }
 
-int vtBuilding3d::FindVertex(FPoint3 Point, FLine3 &RoofSection3D,
-	vtArray<int> &iaVertices)
+int vtBuilding3d::FindVertex(const FPoint3 &Point, const FLine3 &RoofSection3D,
+	const std::vector<int> &iaVertices)
 {
 	int iSize = RoofSection3D.GetSize();
 
@@ -1158,7 +1158,7 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 
 	// Create a mesh for the new material and add this to the mesh array
 	mm.m_pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 6);
-	m_Mesh.Append(mm);
+	m_Mesh.push_back(mm);
 
 	// Calculate the vertices and add them to the mesh
 	float v = (float) stories;

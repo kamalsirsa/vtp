@@ -255,7 +255,7 @@ public:
 	const DPoint2 &GetPoint(uint num) const { return m_Point2[num]; }
 
 	int FindClosestPoint(const DPoint2 &p, double epsilon, double *distance = NULL);
-	void FindAllPointsAtLocation(const DPoint2 &p, vtArray<int> &found);
+	void FindAllPointsAtLocation(const DPoint2 &p, std::vector<int> &found);
 	void GetPoint(uint num, DPoint2 &p) const;
 
 	// implement necessary virtual methods

@@ -153,7 +153,7 @@ void PlantDlg::UpdatePlantSizes()
 		return;
 
 	uint num = m_pPlantList->NumSpecies();
-	m_PreferredSizes.SetSize(num);
+	m_PreferredSizes.resize(num);
 	for (uint i = 0; i < num; i++)
 	{
 		// Default to 80% of the maximum height of each species

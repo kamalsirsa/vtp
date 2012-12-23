@@ -284,10 +284,10 @@ vtStructInstance *vtStructureArray3d::NewInstance()
 vtStructure3d *vtStructureArray3d::GetStructure3d(int i)
 {
 	// Safety check
-	if (i < 0 || i >= (int) GetSize())
+	if (i < 0 || i >= (int) size())
 		return NULL;
 
-	vtStructure *str = GetAt(i);
+	vtStructure *str = at(i);
 
 	// Due to the somewhat complicated structure of the multiple inheritance
 	// here, we must do a double-cast: first cast down to the object's true
@@ -321,9 +321,9 @@ bool vtStructureArray3d::ConstructStructure(int index)
 void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 {
 	vtStructure *str;
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		str = GetAt(i);
+		str = at(i);
 		if (!str->IsSelected())
 			continue;
 		if (str->GetType() == ST_BUILDING)
@@ -353,9 +353,9 @@ void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 void vtStructureArray3d::OffsetSelectedStructuresVertical(float offset)
 {
 	vtStructure *str;
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		str = GetAt(i);
+		str = at(i);
 		if (!str->IsSelected())
 			continue;
 		if (str->GetType() == ST_BUILDING)
@@ -375,9 +375,9 @@ void vtStructureArray3d::OffsetSelectedStructuresVertical(float offset)
 
 void vtStructureArray3d::VisualDeselectAll()
 {
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = (vtStructure *) GetAt(i);
+		vtStructure *str = (vtStructure *) at(i);
 		vtStructure3d *str3d = GetStructure3d(i);
 
 		str->Select(false);
@@ -387,7 +387,7 @@ void vtStructureArray3d::VisualDeselectAll()
 
 void vtStructureArray3d::SetEnabled(bool bTrue)
 {
-	for (uint j = 0; j < GetSize(); j++)
+	for (uint j = 0; j < size(); j++)
 	{
 		vtStructure3d *str3d = GetStructure3d(j);
 		if (str3d)
@@ -423,7 +423,7 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 
 void vtStructureArray3d::SetShadows(bool bTrue)
 {
-	for (uint j = 0; j < GetSize(); j++)
+	for (uint j = 0; j < size(); j++)
 	{
 		vtStructure3d *str3d = GetStructure3d(j);
 		if (str3d)

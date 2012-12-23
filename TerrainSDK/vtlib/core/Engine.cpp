@@ -9,6 +9,8 @@
 #include "Engine.h"
 #include "Event.h"
 
+#include <algorithm>
+
 vtEngine::vtEngine() : vtEnabledBase()
 {
 	m_pWindow = NULL;
@@ -17,16 +19,16 @@ vtEngine::vtEngine() : vtEnabledBase()
 osg::Referenced *vtEngine::GetTarget(uint which)
 {
 	if (which < NumTargets())
-		return m_Targets.GetAt(which);
+		return m_Targets[which];
 	else
 		return NULL;
 }
 
 void vtEngine::RemoveTarget(osg::Referenced *ptr)
 {
-	int index = m_Targets.Find(ptr);
-	if (index != -1)
-		m_Targets.RemoveAt(index);
+	std::vector<ReferencePtr>::iterator it = std::find(m_Targets.begin(), m_Targets.end(), ptr);
+	if (it != m_Targets.end())
+		m_Targets.erase(it);
 }
 
 void vtEngine::Eval()

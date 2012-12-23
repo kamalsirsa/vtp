@@ -906,14 +906,14 @@ void MainFrame::UpdateFeatureDialog(vtRawLayer *raw,
 									vtFeatureSetPoint2D *pSetP2, int iEntity)
 {
 	DPoint2 &p2 = pSetP2->GetPoint(iEntity);
-	vtArray<int> found;
+	std::vector<int> found;
 	pSetP2->FindAllPointsAtLocation(p2, found);
 
 	FeatInfoDlg	*fdlg = ShowFeatInfoDlg();
 	fdlg->SetLayer(raw);
 	fdlg->SetFeatureSet(pSetP2);
 	pSetP2->DePickAll();
-	for (uint i = 0; i < found.GetSize(); i++)
+	for (uint i = 0; i < found.size(); i++)
 		pSetP2->Pick(found[i]);
 	fdlg->ShowPicked();
 }

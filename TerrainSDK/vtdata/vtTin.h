@@ -14,7 +14,7 @@
 #include "vtString.h"
 
 // a type useful for the Merge algorithm
-typedef vtArray<int> Bin;
+typedef std::vector<int> Bin;
 
 class BinArray
 {
@@ -38,7 +38,7 @@ public:
 		int bins = iCols * iRows;
 		int bytes = sizeof(BinArray) + sizeof(Bin*) * bins;
 		for (int i = 0; i < bins; i++)
-			bytes += (sizeof(int) * iData[i].GetSize());
+			bytes += (sizeof(int) * iData[i].size());
 		return bytes;
 	}
 private:
@@ -62,7 +62,7 @@ public:
 	virtual ~vtTin();
 
 	uint NumVerts() const { return m_vert.GetSize(); }
-	uint NumTris() const { return m_tri.GetSize()/3; }
+	uint NumTris() const { return m_tri.size()/3; }
 
 	void AddVert(const DPoint2 &p, float z);
 	void AddVert(const DPoint2 &p, float z, FPoint3 &normal);
@@ -101,7 +101,7 @@ public:
 	// Accessors
 	void GetVert(int v, DPoint2 &p, float &z) const { p = m_vert.GetAt(v); z = m_z[v]; }
 	void GetTri(int t, int &v0, int &v1, int &v2) const { v0 = m_tri[t*3]; v1 = m_tri[t*3+1]; v2 = m_tri[t*3+2]; }
-	int *GetAtTri(int t) const { return m_tri.GetData() + (t*3); }
+	const int *GetAtTri(int t) const { return m_tri.data() + (t*3); }
 
 	// Implement required vtHeightField methods
 	virtual bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
@@ -135,15 +135,15 @@ protected:
 	void _UpdateIndicesInInBin(int bin);
 	void _CompareBins(int bin1, int bin2);
 
-	DLine2			m_vert;
-	vtArray<float>	m_z;
-	vtArray<int>	m_tri;
-	FLine3			m_vert_normal;
+	DLine2				m_vert;
+	std::vector<float>	m_z;
+	std::vector<int>	m_tri;
+	FLine3				m_vert_normal;
 
 	// Surface Types
-	vtArray<int>	m_surfidx;
-	vtStringArray	m_surftypes;
-	vtArray<bool>	m_surftype_tiled;
+	std::vector<int>	m_surfidx;
+	vtStringArray		m_surftypes;
+	std::vector<bool>	m_surftype_tiled;
 
 	// These members are used only during MergeSharedVerts
 	int *m_bReplace;

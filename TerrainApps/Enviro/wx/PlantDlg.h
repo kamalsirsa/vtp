@@ -78,7 +78,7 @@ private:
 	vtSpeciesList3d *m_pPlantList;
 
 	// Each species has a size (height) which the user has indicated
-	vtArray<float> m_PreferredSizes;
+	std::vector<float> m_PreferredSizes;
 
 private:
 	// WDR: handler declarations for PlantDlg

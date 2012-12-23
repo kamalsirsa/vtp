@@ -39,10 +39,7 @@ vtStructureArray::vtStructureArray()
 
 vtStructureArray::~vtStructureArray()
 {
-	Clear();
-	free(m_Data);
-	m_Data = NULL;
-	m_MaxSize = 0;
+	clear();
 }
 
 // Factories
@@ -64,28 +61,28 @@ vtStructInstance *vtStructureArray::NewInstance()
 vtBuilding *vtStructureArray::AddNewBuilding()
 {
 	vtBuilding *nb = NewBuilding();
-	Append(nb);
+	push_back(nb);
 	return nb;
 }
 
 vtFence *vtStructureArray::AddNewFence()
 {
 	vtFence *nf = NewFence();
-	Append(nf);
+	push_back(nf);
 	return nf;
 }
 
 vtStructInstance *vtStructureArray::AddNewInstance()
 {
 	vtStructInstance *ni = NewInstance();
-	Append(ni);
+	push_back(ni);
 	return ni;
 }
 
 void vtStructureArray::DestructItems(uint first, uint last)
 {
 	for (uint i = first; i <= last; i++)
-		delete GetAt(i);
+		delete at(i);
 }
 
 void vtStructureArray::SetEditedEdge(vtBuilding *bld, int lev, int edge)
@@ -110,9 +107,9 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 	building = -1;
 	closest = 1E8;
 
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		if (str->GetType() != ST_BUILDING)
 			continue;
 		vtBuilding *bld = str->GetBuilding();
@@ -149,9 +146,9 @@ bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 	double dist;
 	closest = 1E8;
 
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (!bld)
 			continue;
@@ -180,9 +177,9 @@ bool vtStructureArray::FindClosestLinearCorner(const DPoint2 &point, double epsi
 	corner = -1;
 	closest = 1E8;
 
-	for (i = 0; i < GetSize(); i++)
+	for (i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		vtFence *fen = str->GetFence();
 		if (!fen)
 			continue;
@@ -224,9 +221,9 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 	double dist;
 
 	// Check buildings and instances first
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		dist = 1E9;
 
 		// or a building
@@ -248,9 +245,9 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 		}
 	}
 	// then check fences
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 
 		vtFence *fen = str->GetFence();
 		if (fen)
@@ -292,9 +289,9 @@ bool vtStructureArray::FindClosestBuilding(const DPoint2 &point,
 	DPoint2 loc;
 	double dist;
 
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (!bld) continue;
 
@@ -313,16 +310,15 @@ bool vtStructureArray::FindClosestBuilding(const DPoint2 &point,
 
 void vtStructureArray::GetExtents(DRECT &rect) const
 {
-	if (GetSize() == 0)
+	if (size() == 0)
 		return;
 
 	rect.SetRect(1E9, -1E9, -1E9, 1E9);
 
 	DRECT rect2;
-	int i, size = GetSize();
-	for (i = 0; i < size; i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		if (str->GetExtents(rect2))
 			rect.GrowToContainRect(rect2);
 	}
@@ -330,7 +326,7 @@ void vtStructureArray::GetExtents(DRECT &rect) const
 
 void vtStructureArray::Offset(const DPoint2 &delta)
 {
-	uint npoints = GetSize();
+	uint npoints = size();
 	if (!npoints)
 		return;
 
@@ -338,7 +334,7 @@ void vtStructureArray::Offset(const DPoint2 &delta)
 	DPoint2 temp;
 	for (i = 0; i < npoints; i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (bld)
 			bld->Offset(delta);
@@ -358,19 +354,18 @@ void vtStructureArray::Offset(const DPoint2 &delta)
 int vtStructureArray::AddFoundations(vtHeightField *pHF, bool progress_callback(int))
 {
 	vtLevel *pLev, *pNewLev;
-	int i, j, pts, built = 0;
+	int j, pts, built = 0;
 	float fElev;
 
 	int selected = NumSelected();
-	int size = GetSize();
-	VTLOG("AddFoundations: %d selected, %d total, ", selected, size);
+	VTLOG("AddFoundations: %d selected, %d total, ", selected, size());
 
-	for (i = 0; i < size; i++)
+	for (uint i = 0; i < size(); i++)
 	{
 		if (progress_callback != NULL)
-			progress_callback(i * 99 / size);
+			progress_callback(i * 99 / size());
 
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (!bld)
 			continue;
@@ -414,10 +409,9 @@ int vtStructureArray::AddFoundations(vtHeightField *pHF, bool progress_callback(
 void vtStructureArray::RemoveFoundations()
 {
 	vtLevel *pLev;
-	int i, size = GetSize();
-	for (i = 0; i < size; i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (!bld)
 			continue;
@@ -433,9 +427,9 @@ void vtStructureArray::RemoveFoundations()
 int vtStructureArray::NumSelected()
 {
 	int sel = 0;
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		if (GetAt(i)->IsSelected()) sel++;
+		if (at(i)->IsSelected()) sel++;
 	}
 	return sel;
 }
@@ -443,17 +437,17 @@ int vtStructureArray::NumSelected()
 int vtStructureArray::NumSelectedOfType(vtStructureType t)
 {
 	int sel = 0;
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		if (GetAt(i)->IsSelected() && GetAt(i)->GetType() == t) sel++;
+		if (at(i)->IsSelected() && at(i)->GetType() == t) sel++;
 	}
 	return sel;
 }
 
 void vtStructureArray::DeselectAll()
 {
-	for (uint i = 0; i < GetSize(); i++)
-		GetAt(i)->Select(false);
+	for (uint i = 0; i < size(); i++)
+		at(i)->Select(false);
 }
 
 /**
@@ -463,14 +457,14 @@ void vtStructureArray::DeselectAll()
 int vtStructureArray::DeleteSelected()
 {
 	int num_deleted = 0;
-	for (uint i = 0; i < GetSize();)
+	for (uint i = 0; i < size();)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		if (str->IsSelected())
 		{
 			DestroyStructure(i);
 			delete str;
-			RemoveAt(i);
+			erase(begin() + i);
 			num_deleted++;
 		}
 		else
@@ -485,8 +479,8 @@ int vtStructureArray::DeleteSelected()
  */
 int vtStructureArray::GetFirstSelected()
 {
-	for (uint i = 0; i < GetSize(); i++)
-		if (GetAt(i)->IsSelected())
+	for (uint i = 0; i < size(); i++)
+		if (at(i)->IsSelected())
 		{
 			m_iLastSelected = i;
 			return i;
@@ -498,8 +492,8 @@ int vtStructureArray::GetNextSelected()
 {
 	if (-1 == m_iLastSelected)
 		return -1;
-	for (uint i = m_iLastSelected + 1; i < GetSize(); i++)
-		if (GetAt(i)->IsSelected())
+	for (uint i = m_iLastSelected + 1; i < size(); i++)
+		if (at(i)->IsSelected())
 		{
 			m_iLastSelected = i;
 			return i;
@@ -509,9 +503,9 @@ int vtStructureArray::GetNextSelected()
 
 vtStructure *vtStructureArray::GetFirstSelectedStructure()
 {
-	for (uint i = 0; i < GetSize(); i++)
-		if (GetAt(i)->IsSelected())
-			return GetAt(i);
+	for (uint i = 0; i < size(); i++)
+		if (at(i)->IsSelected())
+			return at(i);
 	return NULL;
 }
 
@@ -878,7 +872,7 @@ void StructureVisitor::endElement(const char * name)
 	if (string(name) == (string)"structure")
 	{
 		if (st.item != NULL)
-			m_pSA->Append(st.item);
+			m_pSA->push_back(st.item);
 		pop_state();
 	}
 	if (string(name) == (string)"shapes")
@@ -1289,7 +1283,7 @@ void StructVisitorGML::endElement(const char *name)
 			// do this once after we done adding levels
 			m_pBuilding->DetermineLocalFootprints();
 
-			m_pSA->Append(m_pStructure);
+			m_pSA->push_back(m_pStructure);
 			m_pStructure = NULL;
 		}
 		else
@@ -1308,7 +1302,7 @@ void StructVisitorGML::endElement(const char *name)
 		{
 			m_state = 1;
 
-			m_pSA->Append(m_pStructure);
+			m_pSA->push_back(m_pStructure);
 			m_pStructure = NULL;
 		}
 	}
@@ -1336,7 +1330,7 @@ void StructVisitorGML::endElement(const char *name)
 		if (!strcmp(name, "Imported"))
 		{
 			m_state = 1;
-			m_pSA->Append(m_pStructure);
+			m_pSA->push_back(m_pStructure);
 			m_pStructure = NULL;
 		}
 		else if (!strcmp(name, "Rotation"))
@@ -1435,9 +1429,9 @@ bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 
 	bool bDegrees = (m_proj.IsGeographic() == 1);
 
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		str->WriteXML(out, bDegrees);
 	}
 	gfprintf(out, "</StructureCollection>\n");
@@ -1528,10 +1522,10 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* filename)
 	// Field 0: height in meters
 	DBFAddField(db, "Height", FTDouble, 3, 2);	// width, decimals
 
-	uint i, j, count = GetSize(), record = 0;
+	uint i, j, count = size(), record = 0;
 	for (i = 0; i < count; i++)	//for each coordinate
 	{
-		vtBuilding *bld = GetAt(i)->GetBuilding();
+		vtBuilding *bld = at(i)->GetBuilding();
 		if (!bld)
 			continue;
 
@@ -1616,10 +1610,10 @@ bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DR
 
 	fprintf(fp3DV, "version 1\n");
 
-	uint i, j, count = GetSize(), record = 0;
+	uint i, j, count = size(), record = 0;
 	for (i = 0; i < count; i++)	//for each coordinate
 	{
-		vtBuilding *bld = GetAt(i)->GetBuilding();
+		vtBuilding *bld = at(i)->GetBuilding();
 		if (!bld)
 			continue;
 
@@ -1855,7 +1849,7 @@ int GetSHPType(const char *filename)
 vtBuilding *GetClosestDefault(vtBuilding *pBld)
 {
 	// For now, just grab the first building from the defaults
-	int i, num = g_DefaultStructures.GetSize();
+	int i, num = g_DefaultStructures.size();
 	for (i = 0; i < num; i++)
 	{
 		vtStructure *pStr = g_DefaultStructures[i];
@@ -1869,7 +1863,7 @@ vtBuilding *GetClosestDefault(vtBuilding *pBld)
 vtFence *GetClosestDefault(vtFence *pFence)
 {
 	// For now, just grab the first fence from the defaults
-	int i, num = g_DefaultStructures.GetSize();
+	int i, num = g_DefaultStructures.size();
 	for (i = 0; i < num; i++)
 	{
 		vtStructure *pStr = g_DefaultStructures[i];
@@ -1883,7 +1877,7 @@ vtFence *GetClosestDefault(vtFence *pFence)
 vtStructInstance *GetClosestDefault(vtStructInstance *pInstance)
 {
 	// For now, just grab the first instance from the defaults
-	int i, num = g_DefaultStructures.GetSize();
+	int i, num = g_DefaultStructures.size();
 	for (i = 0; i < num; i++)
 	{
 		vtStructure *pStr = g_DefaultStructures[i];
@@ -1935,7 +1929,7 @@ bool SetupDefaultStructures(const vtString &fname)
 	pLevel->SetEdgeColor(RGBi(255,240,225)); // Tan
 	pLevel->GetEdge(0)->m_iSlope = 0;		 // Flat
 
-	g_DefaultStructures.Append(pBld);
+	g_DefaultStructures.push_back(pBld);
 
 	return false;
 }

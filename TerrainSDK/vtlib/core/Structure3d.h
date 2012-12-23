@@ -181,9 +181,9 @@ public:
 	virtual vtStructInstance *NewInstance();
 
 	vtStructure3d *GetStructure3d(int i);
-	vtBuilding3d *GetBuilding(int i) { return (vtBuilding3d *) GetAt(i)->GetBuilding(); }
-	vtFence3d *GetFence(int i) { return (vtFence3d *) GetAt(i)->GetFence(); }
-	vtStructInstance3d *GetInstance(int i) { return (vtStructInstance3d *) GetAt(i)->GetInstance(); }
+	vtBuilding3d *GetBuilding(int i) { return (vtBuilding3d *) at(i)->GetBuilding(); }
+	vtFence3d *GetFence(int i) { return (vtFence3d *) at(i)->GetFence(); }
+	vtStructInstance3d *GetInstance(int i) { return (vtStructInstance3d *) at(i)->GetInstance(); }
 
 	/// Indicate the heightfield which will be used for the structures in this array
 	void SetTerrain(vtTerrain *pTerr) { m_pTerrain = pTerr; }

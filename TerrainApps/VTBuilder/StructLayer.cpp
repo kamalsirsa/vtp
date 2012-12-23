@@ -92,7 +92,7 @@ void vtStructureLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
-	uint structs = GetSize();
+	uint structs = size();
 	pDC->SetBrush(*wxTRANSPARENT_BRUSH);
 	pDC->SetPen(orangePen);
 	DrawStructures(pDC, pView, false);	// unselected
@@ -108,11 +108,11 @@ void vtStructureLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 
 void vtStructureLayer::DrawStructures(wxDC *pDC, vtScaledView *pView, bool bOnlySelected)
 {
-	uint structs = GetSize();
+	uint structs = size();
 	for (unsigned i = 0; i < structs; i++)
 	{
 		// draw each building
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		if (bOnlySelected && !str->IsSelected())
 			continue;
 
@@ -248,10 +248,10 @@ bool vtStructureLayer::OnLoad()
 
 void vtStructureLayer::ResolveInstancesOfItems()
 {
-	uint structs = GetSize();
+	uint structs = size();
 	for (uint i = 0; i < structs; i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		vtStructInstance *inst = str->GetInstance();
 		if (!inst)
 			continue;
@@ -263,9 +263,9 @@ void vtStructureLayer::CleanFootprints(double epsilon, int &degenerate, int &ove
 {
 	degenerate = 0;
 	overlapping = 0;
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *pStructure = GetAt(i);
+		vtStructure *pStructure = at(i);
 		vtBuilding *bld = pStructure->GetBuilding();
 		if (!bld)
 			continue;
@@ -336,10 +336,10 @@ bool vtStructureLayer::TransformCoords(vtProjection &proj)
 
 	DPoint2 loc;
 	uint i, j;
-	uint count = GetSize();
+	uint count = size();
 	for (i = 0; i < count; i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (bld)
 			bld->TransformCoords(trans);
@@ -378,14 +378,14 @@ bool vtStructureLayer::AppendDataFrom(vtLayer *pL)
 
 	vtStructureLayer *pFrom = (vtStructureLayer *)pL;
 
-	int count = pFrom->GetSize();
+	int count = pFrom->size();
 	for (int i = 0; i < count; i++)
 	{
-		vtStructure *str = pFrom->GetAt(i);
-		Append(str);
+		vtStructure *str = pFrom->at(i);
+		push_back(str);
 	}
 	// tell the source layer that it has no structures (we have taken them)
-	pFrom->SetSize(0);
+	pFrom->clear();
 
 	return true;
 }
@@ -397,27 +397,25 @@ void vtStructureLayer::Offset(const DPoint2 &delta)
 
 void vtStructureLayer::GetPropertyText(wxString &strIn)
 {
-	int i, size = GetSize();
-
 	strIn += _("Filename: ");
 	strIn += GetLayerFilename();
 	strIn += _T("\n");
 
 	wxString str;
-	str.Printf(_("Number of structures: %d\n"), size);
+	str.Printf(_("Number of structures: %d\n"), size());
 	strIn += str;
 
 	int bld = 0, lin = 0, ins = 0;
-	for (i = 0; i < size; i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *sp = GetAt(i);
-		if (sp->GetBuilding()) bld++;
-		else if (sp->GetFence()) lin++;
-		else if (sp->GetInstance()) ins++;
+		const vtStructure *sp = at(i);
+		if (sp->GetType() == ST_BUILDING) bld++;
+		else if (sp->GetType() == ST_LINEAR) lin++;
+		else if (sp->GetType() ==ST_INSTANCE) ins++;
 	}
 	str.Printf(_("\t %d Buildings (procedural)\n"), bld);
 	strIn += str;
-	str.Printf(_("\t %d Linear (fences/walls)\n"), lin);
+	str.Printf(_("\t %d Linears (fences/walls)\n"), lin);
 	strIn += str;
 	str.Printf(_("\t %d Instances (external 3D models)\n"), ins);
 	strIn += str;
@@ -442,7 +440,7 @@ void vtStructureLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 		{
 			ui.m_pCurLinear = NewFence();
 			ui.m_pCurLinear->SetParams(g_bld->m_LSOptions);
-			Append(ui.m_pCurLinear);
+			push_back(ui.m_pCurLinear);
 			ui.m_bRubber = true;
 		}
 		ui.m_pCurLinear->AddPoint(ui.m_CurLocation);
@@ -553,13 +551,13 @@ void vtStructureLayer::OnLeftDownEditBuilding(BuilderView *pView, UIContext &ui)
 	if (found1)
 	{
 		// closest point is a building center
-		ui.m_pCurBuilding = GetAt(building1)->GetBuilding();
+		ui.m_pCurBuilding = at(building1)->GetBuilding();
 		ui.m_bDragCenter = true;
 	}
 	if (found2)
 	{
 		// closest point is a building corner
-		ui.m_pCurBuilding = GetAt(building2)->GetBuilding();
+		ui.m_pCurBuilding = at(building2)->GetBuilding();
 		ui.m_bDragCenter = false;
 		ui.m_iCurCorner = corner;
 		ui.m_bRotate = ui.m_bControl;
@@ -582,7 +580,7 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 	if (!FindClosestBuilding(ui.m_DownLocation, dEpsilon, iStructure, dClosest))
 		return;
 
-	vtBuilding *pBuilding = GetAt(iStructure)->GetBuilding();
+	vtBuilding *pBuilding = at(iStructure)->GetBuilding();
 
 	// Find extent of building and refresh that area of the window
 	DRECT Extent;
@@ -642,7 +640,7 @@ void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &
 	if (!FindClosestBuilding(ui.m_DownLocation, dEpsilon, iStructure, dClosest))
 		return;
 
-	vtBuilding *pBuilding = GetAt(iStructure)->GetBuilding();
+	vtBuilding *pBuilding = at(iStructure)->GetBuilding();
 
 	// Find extent of building before any point removal
 	DRECT Extent;
@@ -694,7 +692,7 @@ void vtStructureLayer::OnLeftDownEditLinear(BuilderView *pView, UIContext &ui)
 	if (found1)
 	{
 		// closest point is a building center
-		ui.m_pCurLinear = GetAt(structure)->GetFence();
+		ui.m_pCurLinear = at(structure)->GetFence();
 		ui.m_iCurCorner = corner;
 		ui.m_bRubber = true;
 
@@ -909,10 +907,10 @@ bool vtStructureLayer::EditBuildingProperties()
 	// Look for the first selected building, and count how many are selected
 	int count = 0;
 	vtBuilding *bld_selected=NULL;
-	int size = GetSize();
-	for (int i = 0; i < size; i++)
+
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (bld && str->IsSelected())
 		{
@@ -999,20 +997,18 @@ void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
 
 void vtStructureLayer::InvertSelection()
 {
-	int i, size = GetSize();
-	for (i = 0; i < size; i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		str->Select(!str->IsSelected());
 	}
 }
 
 void vtStructureLayer::DeselectAll()
 {
-	int i, size = GetSize();
-	for (i = 0; i < size; i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 		str->Select(false);
 	}
 }
@@ -1022,9 +1018,9 @@ int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 	int affected = 0;
 	bool bWas;
 
-	for (uint i = 0; i < GetSize(); i++)
+	for (uint i = 0; i < size(); i++)
 	{
-		vtStructure *str = GetAt(i);
+		vtStructure *str = at(i);
 
 		bWas = str->IsSelected();
 		if (st == ST_NORMAL)

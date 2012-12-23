@@ -1002,7 +1002,7 @@ vtStructureLayer *vtTerrain::LoadStructuresFromXML(const vtString &strFilename)
 
 void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 {
-	int num_structs = structures->GetSize();
+	int num_structs = structures->size();
 	VTLOG("CreateStructures, %d structs\n", num_structs);
 
 	bool bPaging = m_Params.GetValueBool(STR_STRUCTURE_PAGING);
@@ -1033,7 +1033,7 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 
 bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 {
-	vtStructure *str = structures->GetAt(index);
+	vtStructure *str = structures->at(index);
 	vtStructure3d *str3d = structures->GetStructure3d(index);
 
 	// Construct
@@ -1103,9 +1103,9 @@ int vtTerrain::DeleteSelectedStructures()
 	vtStructureArray3d *structures = GetStructureLayer();
 
 	// first remove them from the terrain
-	for (uint i = 0; i < structures->GetSize(); i++)
+	for (uint i = 0; i < structures->size(); i++)
 	{
-		vtStructure *str = structures->GetAt(i);
+		vtStructure *str = structures->at(i);
 		if (str->IsSelected())
 		{
 			// notify any structure-handling extension
@@ -2986,12 +2986,12 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 	if (slay)
 	{
 		// first remove each structure from the terrain
-		for (uint i = 0; i < slay->GetSize(); i++)
+		for (uint i = 0; i < slay->size(); i++)
 		{
 			if (progress_callback != NULL)
-				progress_callback(i * 99 / slay->GetSize());
+				progress_callback(i * 99 / slay->size());
 
-			vtStructure *str = slay->GetAt(i);
+			vtStructure *str = slay->at(i);
 			vtStructure3d *str3d = slay->GetStructure3d(i);
 
 			// notify any structure-handling extension
@@ -3421,9 +3421,9 @@ void vtTerrain::RedrapeCulture(const DRECT &area)
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(m_Layers[i].get());
 		if (slay)
 		{
-			for (uint j = 0; j < slay->GetSize(); j++)
+			for (uint j = 0; j < slay->size(); j++)
 			{
-				vtStructure *st = slay->GetAt(j);
+				vtStructure *st = slay->at(j);
 				vtStructure3d *s3 = slay->GetStructure3d(j);
 
 				// If we were given an area, omit structures outside it

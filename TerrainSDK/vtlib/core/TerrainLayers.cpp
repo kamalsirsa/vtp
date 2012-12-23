@@ -44,7 +44,7 @@ vtStructureLayer *LayerSet::FindStructureFromNode(osg::Node *pNode, int &iOffset
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer *>(at(i).get());
 		if (!slay)
 			continue;
-		int iNumStructures = slay->GetSize();
+		int iNumStructures = slay->size();
 		for (int j = 0; (j < iNumStructures) && !bFound; j++)
 		{
 			vtStructure3d *pStructure3d = slay->GetStructure3d(j);

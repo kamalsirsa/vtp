@@ -67,7 +67,7 @@ typedef enum
  * with the ReadXML and WriteXML methods.
  *
  */
-class vtStructureArray : public vtArray<vtStructure*>
+class vtStructureArray : public std::vector<vtStructure*>
 {
 public:
 	vtStructureArray();
@@ -122,7 +122,7 @@ public:
 	bool FindClosestBuilding(const DPoint2 &point, double epsilon,
 			int &structure, double &closest);
 
-	bool IsEmpty() { return (GetSize() == 0); }
+	bool IsEmpty() { return (size() == 0); }
 	void GetExtents(DRECT &ext) const;
 	void Offset(const DPoint2 &delta);
 

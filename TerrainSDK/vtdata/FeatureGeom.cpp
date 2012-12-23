@@ -135,15 +135,12 @@ int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon, doub
 	return found;
 }
 
-void vtFeatureSetPoint2D::FindAllPointsAtLocation(const DPoint2 &loc, vtArray<int> &found)
+void vtFeatureSetPoint2D::FindAllPointsAtLocation(const DPoint2 &loc, std::vector<int> &found)
 {
-	int entities = GetNumEntities();
-
-	int i;
-	for (i = 0; i < entities; i++)
+	for (int i = 0; i < GetNumEntities(); i++)
 	{
 		if (loc == m_Point2.GetAt(i))
-			found.Append(i);
+			found.push_back(i);
 
 	/*	if (m_eGeomType == wkbPoint25D)
 		{

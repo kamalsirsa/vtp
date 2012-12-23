@@ -291,7 +291,7 @@ void IslandTerrain::create_state_park()
 	// Here is an example of how to create a structure instance which
 	//	references a content item.  It is planted automatically at the
 	//	desired location on the terrain.
-	int index = m_pSA->GetSize();
+	int index = m_pSA->size();
 	vtStructInstance *inst = m_pSA->AddNewInstance();
 	inst->SetValueString("itemname", "Riesenbuehl", true);
 	inst->SetPoint(park_location);

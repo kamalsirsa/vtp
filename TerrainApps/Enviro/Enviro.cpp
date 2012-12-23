@@ -1783,7 +1783,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	if (click_struct)
 	{
 		VTLOG(" struct is closest.\n");
-		vtStructure *str = st_layer->GetAt(structure);
+		vtStructure *str = st_layer->at(structure);
 		vtStructure3d *str3d = st_layer->GetStructure3d(structure);
 		if (str->GetType() != ST_INSTANCE && str3d->GetGeom() == NULL)
 		{
@@ -2071,7 +2071,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 			{
 				for (int sel = st_layer->GetFirstSelected(); sel != -1; sel = st_layer->GetNextSelected())
 				{
-					vtStructInstance *inst = st_layer->GetAt(sel)->GetInstance();
+					vtStructInstance *inst = st_layer->at(sel)->GetInstance();
 					vtStructInstance3d *str3d = st_layer->GetInstance(sel);
 
 					inst->SetRotation(fNewRotation);
@@ -2397,9 +2397,9 @@ void Enviro::SetFenceOptions(const vtLinearParams &param, bool bProfileChanged)
 		return;
 
 	vtStructureArray3d *structures = pTerr->GetStructureLayer();
-	for (uint i = 0; i < structures->GetSize(); i++)
+	for (uint i = 0; i < structures->size(); i++)
 	{
-		vtStructure *str = structures->GetAt(i);
+		vtStructure *str = structures->at(i);
 		if (!str->IsSelected() || str->GetType() != ST_LINEAR)
 			continue;
 		vtFence3d *pFence = structures->GetFence(i);
@@ -2471,9 +2471,9 @@ void Enviro::FlipBuildingFooprints()
 
 	vtStructure *str;
 	vtBuilding3d *bld;
-	for (uint i = 0; i < structures->GetSize(); i++)
+	for (uint i = 0; i < structures->size(); i++)
 	{
-		str = structures->GetAt(i);
+		str = structures->at(i);
 		if (!str->IsSelected())
 			continue;
 
@@ -2499,12 +2499,12 @@ void Enviro::PasteBuildingStyle()
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structures = pTerr->GetStructureLayer();
 
-	int count = structures->GetSize();
+	int count = structures->size();
 	vtStructure *str;
 	vtBuilding3d *bld;
 	for (int i = 0; i < count; i++)
 	{
-		str = structures->GetAt(i);
+		str = structures->at(i);
 		if (str->IsSelected())
 		{
 			bld = structures->GetBuilding(i);
@@ -2663,7 +2663,8 @@ void Enviro::CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags)
 	//  extending it as desired.
 	ExtendStructure(inst);
 
-	const int index = structs->Append(inst);
+	structs->push_back(inst);
+	const int index = structs->size() - 1;
 	bool success = pTerr->CreateStructure(structs, index);
 	if (success)
 	{
@@ -3230,7 +3231,8 @@ bool Enviro::ImportModelFromKML(const char *kmlfile)
 	inst->SetValueString("filename", pa, true);
 	VTLOG("  at %.7g, %.7g: ", p.x, p.y);
 
-	int index = structs->Append(inst);
+	structs->push_back(inst);
+	const int index = structs->size() - 1;
 	bool success = pTerr->CreateStructure(structs, index);
 	if (success)
 	{

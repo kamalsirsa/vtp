@@ -1684,7 +1684,7 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 				building, distance);
 		if (found)
 		{
-			vtStructure *str = pSL->GetAt(building);
+			vtStructure *str = pSL->at(building);
 			str->Select(!str->IsSelected());
 		}
 		Refresh(false);

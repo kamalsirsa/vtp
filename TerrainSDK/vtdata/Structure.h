@@ -233,7 +233,7 @@ public:
 	void CopyFrom(const vtStructure &v);
 
 	void SetType(vtStructureType t) { m_type = t; }
-	vtStructureType GetType() { return m_type; }
+	vtStructureType GetType() const { return m_type; }
 
 	void SetElevationOffset(float fOffset) { m_fElevationOffset = fOffset; }
 	float GetElevationOffset() const { return m_fElevationOffset; }

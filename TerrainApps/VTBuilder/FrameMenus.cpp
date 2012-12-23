@@ -3244,15 +3244,15 @@ void MainFrame::OnStructureSelectUsingPolygons(wxCommandEvent &event)
 					{
 						uint iIndex2;
 						const DPolygon2 Polygon = pFeatureSetPolygon->GetPolygon(iIndex);
-						uint iNumStructures = pStructureLayer->GetSize();
+						uint iNumStructures = pStructureLayer->size();
 						for (iIndex2 = 0; iIndex2 < iNumStructures; iIndex2++)
 						{
 							DRECT Extents;
-							if (pStructureLayer->GetAt(iIndex2)->GetExtents(Extents))
+							if (pStructureLayer->at(iIndex2)->GetExtents(Extents))
 							{
 								DPoint2 Point((Extents.left + Extents.right)/2, (Extents.bottom + Extents.top)/2);
 								if (Polygon.ContainsPoint(Point))
-									pStructureLayer->GetAt(iIndex2)->Select(true);
+									pStructureLayer->at(iIndex2)->Select(true);
 							}
 						}
 					}
@@ -3297,9 +3297,9 @@ void MainFrame::OnStructureColourSelectedRoofs(wxCommandEvent& event)
 	if (Colour.Ok())
 	{
 		RGBi RoofColour(Colour.Red(), Colour.Green(), Colour.Blue());
-		for (uint i = 0; i < pLayer->GetSize(); i++)
+		for (uint i = 0; i < pLayer->size(); i++)
 		{
-			vtStructure *pStructure = pLayer->GetAt(i);
+			vtStructure *pStructure = pLayer->at(i);
 			if (!pStructure->IsSelected())
 				continue;
 
@@ -3348,7 +3348,7 @@ void MainFrame::OnStructureSelectIndex(wxCommandEvent& event)
 	vtStructureLayer *pLayer = GetActiveStructureLayer();
 	if (!pLayer)
 		return;
-	int num = pLayer->GetSize();
+	int num = pLayer->size();
 	if (num == 0)
 		return;
 	wxString msg;
@@ -3358,7 +3358,7 @@ void MainFrame::OnStructureSelectIndex(wxCommandEvent& event)
 		return;
 
 	pLayer->DeselectAll();
-	vtStructure *stru = pLayer->GetAt(idx);
+	vtStructure *stru = pLayer->at(idx);
 	if (stru)
 	{
 		stru->Select(true);

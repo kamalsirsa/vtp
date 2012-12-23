@@ -238,7 +238,7 @@ osg::Node *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 		return NULL;
 
 	vtStructure3d *str3d = data->m_slay->GetStructure3d(data->m_item);
-	vtStructure *str = data->m_slay->GetAt(data->m_item);
+	vtStructure *str = data->m_slay->at(data->m_item);
 	vtStructureType typ = str->GetType();
 
 	if (bContainer && typ != ST_LINEAR)
@@ -369,7 +369,7 @@ void LayerDlg::RefreshTreeTerrain()
 			wxTreeItemId hItem;
 			if (m_bShowAll)
 			{
-				for (j = 0; j < slay->GetSize(); j++)
+				for (j = 0; j < slay->size(); j++)
 				{
 					if (slay->GetBuilding(j))
 					{
@@ -407,7 +407,7 @@ void LayerDlg::RefreshTreeTerrain()
 			else
 			{
 				int bld = 0, fen = 0, inst = 0;
-				for (j = 0; j < slay->GetSize(); j++)
+				for (j = 0; j < slay->size(); j++)
 				{
 					if (slay->GetBuilding(j)) bld++;
 					if (slay->GetFence(j)) fen++;
@@ -874,7 +874,7 @@ void LayerDlg::OnShadowVisible( wxCommandEvent &event)
 			vtStructure3d *str3d = slay->GetStructure3d(data->m_item);
 			str3d->SetCastShadow(bShow);
 
-			vtStructure *str = slay->GetAt(data->m_item);
+			vtStructure *str = slay->at(data->m_item);
 			// remember state
 			if (!bShow)
 				str->SetValueBool("shadow", false);
@@ -934,7 +934,7 @@ void LayerDlg::OnUpdateShadow(wxUpdateUIEvent& event)
 	else
 	{
 		// whole layer is selected
-		int count = slay->GetSize();
+		int count = slay->size();
 		if (count)
 		{
 			// just use first item
@@ -1070,7 +1070,7 @@ void LayerDlg::OnShowAll( wxCommandEvent &event )
 		{
 			vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(layers[i].get());
 			if (slay)
-				total += slay->GetSize();
+				total += slay->size();
 		}
 		if (total > 5000)
 		{
