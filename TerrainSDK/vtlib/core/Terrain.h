@@ -236,6 +236,7 @@ public:
 	// structures
 	vtStructureLayer *GetStructureLayer();
 	vtStructureLayer *NewStructureLayer();
+	vtLayer *GetOrCreateLayerOfType(LayerType type);
 	vtStructureLayer *LoadStructuresFromXML(const vtString &strFilename);
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);

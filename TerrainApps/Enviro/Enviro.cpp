@@ -2779,6 +2779,34 @@ vtString Enviro::GetStatusString(int which)
 	return str;
 }
 
+void Enviro::ActivateAStructureLayer()
+{
+	vtTerrain *terr = GetCurrentTerrain();
+	if (!terr)
+		return;
+
+	vtLayer *active = terr->GetActiveLayer();
+	terr->SetActiveLayer(terr->GetOrCreateLayerOfType(LT_STRUCTURE));
+
+	// If it changed, refresh
+	if (terr->GetActiveLayer() != active)
+		RefreshLayerView();
+}
+
+void Enviro::ActivateAVegetationLayer()
+{
+	vtTerrain *terr = GetCurrentTerrain();
+	if (!terr)
+		return;
+
+	vtLayer *active = terr->GetActiveLayer();
+	terr->SetActiveLayer(terr->GetOrCreateLayerOfType(LT_VEG));
+
+	// If it changed, refresh
+	if (terr->GetActiveLayer() != active)
+		RefreshLayerView();
+}
+
 // Handle the map overview option
 void Enviro::ShowMapOverview(bool bShow)
 {

@@ -14,7 +14,7 @@
 #include "vtdata/Features.h"	// for vtFeatureSet
 #include "vtdata/vtLog.h"
 
-vtAbstractLayer::vtAbstractLayer(vtTerrain *pTerr)
+vtAbstractLayer::vtAbstractLayer(vtTerrain *pTerr) : vtLayer(LT_RAW)
 {
 	m_pTerr = pTerr;
 

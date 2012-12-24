@@ -1095,6 +1095,36 @@ vtStructureLayer *vtTerrain::NewStructureLayer()
 	return slay;
 }
 
+vtLayer *vtTerrain::GetOrCreateLayerOfType(LayerType type)
+{
+	vtLayer *layer = GetActiveLayer();
+	if (layer->GetType() == type)
+		return layer;		// We already have one active.
+
+	// Look for one
+	for (uint i = 0; i < m_Layers.size(); i++)
+	{
+		if (m_Layers[i]->GetType() == type)
+			return m_Layers[i];
+	}
+	// else, create one.
+	switch (type)
+	{
+	case LT_IMAGE:
+		// TODO maybe
+		break;
+	case LT_STRUCTURE:
+		layer = NewStructureLayer();
+		layer->SetLayerName("Untitled.vtst");
+		break;
+	case LT_VEG:
+		layer = NewVegLayer();
+		layer->SetLayerName("Untitled.vf");
+		break;
+	}
+	return layer;
+}
+
 /**
  * Delete all the selected structures in the terrain's active structure array.
  *
@@ -1144,8 +1174,8 @@ bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
 		return false;
 
 	double dist;
-	int i, index, layers = m_Layers.size();
-	for (i = 0; i < layers; i++)
+	int index;
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i].get());
 		if (!slay)

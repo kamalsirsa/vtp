@@ -112,6 +112,9 @@ public:
 	float GetSpeed();
 	vtString GetStatusString(int which);
 
+	void ActivateAStructureLayer();
+	void ActivateAVegetationLayer();
+
 	// go to space or a terrain
 	void FlyToSpace();
 	bool RequestTerrain(const char *name);

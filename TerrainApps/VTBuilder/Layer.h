@@ -10,20 +10,7 @@
 
 #include "vtdata/MathTypes.h"
 #include "vtdata/vtString.h"
-
-enum LayerType
-{
-	LT_UNKNOWN = -1,
-	LT_RAW,
-	LT_ELEVATION,
-	LT_IMAGE,
-	LT_ROAD,
-	LT_STRUCTURE,
-	LT_WATER,
-	LT_VEG,
-	LT_UTILITY,
-	LAYER_TYPES
-};
+#include "vtdata/LayerBase.h"
 
 class BuilderView;
 class vtScaledView;
@@ -36,21 +23,18 @@ struct UIContext;
  * vtLayer is an abstract base class for all the layer classes.
  * It defines a set of operations which each layer class may implement.
  */
-class vtLayer
+class vtLayer : public vtLayerBase
 {
 public:
 	vtLayer(LayerType type);
 	virtual ~vtLayer();
 
-	// attributes
-	LayerType GetType() { return m_type; }
-	bool SetVisible(bool bVisible);
-	bool GetVisible() { return m_bVisible; }
-	void SetModified(bool bModified);
-	bool GetModified() { return m_bModified; }
 	void SetSticky(bool bSticky) { m_bSticky = bSticky; }
 	bool GetSticky() { return m_bSticky; }
 	bool IsNative() { return m_bNative; }
+
+	// Implement LayerBase method
+	virtual void OnModifiedChange();
 
 	wxString GetImportedFrom() { return m_wsImportedFrom; }
 	void SetImportedFrom(const wxString &fname) { m_wsImportedFrom = fname; }
@@ -110,9 +94,6 @@ protected:
 	// remember what file this layer was imported from
 	wxString	m_wsImportedFrom;
 
-	LayerType	m_type;
-	bool		m_bVisible;
-	bool		m_bModified;
 	bool		m_bNative;
 	bool		m_bSticky;		// If sticky, don't page out the layer
 };

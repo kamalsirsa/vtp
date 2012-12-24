@@ -8,6 +8,7 @@
 #ifndef TERRAINLAYERSH
 #define TERRAINLAYERSH
 
+#include "vtdata/LayerBase.h"
 #include "Structure3d.h"	// for vtStructureArray3d
 #include "Plants3d.h"		// for vtPlantInstanceArray3d
 
@@ -17,20 +18,13 @@
 /**
  * Simple abstraction class to describe all vtlib terrain layers.
  */
-class vtLayer : public osg::Referenced
+class vtLayer : public osg::Referenced, public vtLayerBase
 {
 public:
-	vtLayer() { m_bModified = false; }
+	vtLayer(LayerType type) : vtLayerBase(type) {}
 
 	virtual void SetLayerName(const vtString &fname) = 0;
 	virtual vtString GetLayerName() = 0;
-	virtual void SetVisible(bool vis) = 0;
-	virtual bool GetVisible() = 0;
-	virtual void SetModified(bool bModified = true) { m_bModified = bModified; }
-	bool GetModified() const { return m_bModified; }
-
-protected:
-	bool m_bModified;
 };
 typedef osg::ref_ptr<vtLayer> vtLayerPtr;
 
@@ -40,15 +34,14 @@ typedef osg::ref_ptr<vtLayer> vtLayerPtr;
 class vtStructureLayer : public vtStructureArray3d, public vtLayer
 {
 public:
+	vtStructureLayer(): vtLayer(LT_STRUCTURE) {}
+
 	void SetLayerName(const vtString &fname) { SetFilename(fname); }
 	vtString GetLayerName() { return GetFilename(); }
 	void SetVisible(bool vis)
 	{
 		SetEnabled(vis);
-	}
-	bool GetVisible()
-	{
-		return GetEnabled();
+		vtLayerBase::SetVisible(vis);
 	}
 };
 
@@ -58,15 +51,14 @@ public:
 class vtVegLayer : public vtPlantInstanceArray3d, public vtLayer
 {
 public:
+	vtVegLayer(): vtLayer(LT_VEG) {}
+
 	void SetLayerName(const vtString &fname) { SetFilename(fname); }
 	vtString GetLayerName() { return GetFilename(); }
 	void SetVisible(bool vis)
 	{
 		SetEnabled(vis);
-	}
-	bool GetVisible()
-	{
-		return GetEnabled();
+		vtLayerBase::SetVisible(vis);
 	}
 };
 

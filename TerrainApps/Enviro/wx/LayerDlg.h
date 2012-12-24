@@ -16,21 +16,6 @@
 #include "vtlib/core/TerrainLayers.h"
 #include "vtlib/core/Globe.h"
 
-enum LayerType
-{
-	LT_UNKNOWN = -1,
-	LT_ABSTRACT,
-	LT_ROAD,
-	LT_STRUCTURE,
-	LT_VEG,
-	LT_IMAGE,
-//	LT_ELEVATION,	// these aren't layer types in enviro.. yet :)
-//	LT_WATER,
-//	LT_TRANSIT,
-//	LT_UTILITY,
-	LAYER_TYPES
-};
-
 // WDR: class declarations
 class LayerItemData : public wxTreeItemData
 {

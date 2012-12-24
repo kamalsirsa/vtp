@@ -8,7 +8,7 @@ add_library(vtdata
 		UtilityMap.cpp Vocab.cpp vtDIB.cpp vtLog.cpp vtString.cpp vtTime.cpp vtTin.cpp vtUnzip.cpp WFSClient.cpp
 
 		Array.h Building.h ByteOrder.h ChunkLOD.h ChunkUtil.h config_vtdata.h Content.h CubicSpline.h DataPath.h
-		DLG.h DxfParser.h ElevationGrid.h Features.h Fence.h FilePath.h GEOnet.h HeightField.h Icosa.h LevellerTag.h
+		DLG.h DxfParser.h ElevationGrid.h Features.h Fence.h FilePath.h GEOnet.h HeightField.h Icosa.h LayerBase.h LevellerTag.h
 		LocalConversion.h LULC.h Mainpage.h MathTypes.h Plants.h PolyChecker.h Projections.h QuikGrid.h RoadMap.h
 		Selectable.h SPA.h StatePlane.h StructArray.h Structure.h Triangulate.h TripDub.h Unarchive.h UtilityMap.h
 		Version.h Vocab.h vtDIB.h vtLog.h vtString.h vtTime.h vtTin.h vtUnzip.h WFSClient.h

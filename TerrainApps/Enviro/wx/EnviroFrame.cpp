@@ -980,11 +980,17 @@ void EnviroFrame::SetMode(MouseMode mode)
 		// Make sure the species file and appearances are available
 		g_App.LoadSpeciesList();
 		GetCurrentTerrain()->SetSpeciesList(g_App.GetSpeciesList());
+		g_App.ActivateAVegetationLayer();
 
 		m_pPlantDlg->SetSpeciesList(g_App.GetSpeciesList());
 		m_pPlantDlg->SetDlgPlantOptions(g_App.GetPlantOptions());
 	}
 	m_pPlantDlg->Show(mode == MM_PLANTS);
+
+	if (mode == MM_LINEARS || mode == MM_BUILDINGS)
+	{
+		g_App.ActivateAStructureLayer();
+	}
 }
 
 void EnviroFrame::OnChar(wxKeyEvent& event)

@@ -51,7 +51,7 @@ wxString GetLayerTypeName(const LayerType &ltype)
 
 //////////////////////////////////////////////////////////
 
-vtLayer::vtLayer(LayerType type)
+vtLayer::vtLayer(LayerType type) : vtLayerBase(type)
 {
 	m_type = type;
 	m_bVisible = true;
@@ -102,19 +102,9 @@ bool vtLayer::Load(const wxString &filename)
 	return success;
 }
 
-bool vtLayer::SetVisible(bool bVisible)
+void vtLayer::OnModifiedChange()
 {
-	bool prev = m_bVisible;
-	m_bVisible = bVisible;
-	return prev;
-}
-
-void vtLayer::SetModified(bool bModified)
-{
-	bool bNeedRefresh = (m_bModified != bModified);
-	m_bModified = bModified;
-	if (bNeedRefresh)
-		g_bld->RefreshTreeStatus();
+	g_bld->RefreshTreeStatus();
 }
 
 void vtLayer::SetLayerFilename(const wxString &fname)

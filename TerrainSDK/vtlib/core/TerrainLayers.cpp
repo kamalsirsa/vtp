@@ -60,7 +60,7 @@ vtStructureLayer *LayerSet::FindStructureFromNode(osg::Node *pNode, int &iOffset
 	return NULL;
 }
 
-vtImageLayer::vtImageLayer()
+vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 {
 	m_pImage = new vtImageGeo;
 	m_pMultiTexture = NULL;
