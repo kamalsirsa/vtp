@@ -29,6 +29,7 @@
 */
 
 #include "Vocab.h"
+#include "MaterialDescriptor.h"
 
 struct ColorEntry
 {

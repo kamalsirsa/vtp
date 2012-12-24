@@ -14,16 +14,19 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "LocalConversion.h"
+
 #include "shapelib/shapefil.h"
 #include "xmlhelper/easyxml.hpp"
-#include "StructArray.h"
+#include "zlib.h"
+
 #include "Building.h"
 #include "Fence.h"
-#include "zlib.h"
-#include "vtLog.h"
 #include "FilePath.h"
+#include "LocalConversion.h"
+#include "MaterialDescriptor.h"
 #include "PolyChecker.h"
+#include "StructArray.h"
+#include "vtLog.h"
 
 vtStructureArray g_DefaultStructures;
 

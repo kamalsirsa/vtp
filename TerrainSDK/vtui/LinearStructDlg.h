@@ -11,6 +11,7 @@
 #include "vtui_UI.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/Fence.h"
+#include "vtdata/MaterialDescriptor.h"
 #include "ProfileEditDlg.h"
 
 // WDR: class declarations

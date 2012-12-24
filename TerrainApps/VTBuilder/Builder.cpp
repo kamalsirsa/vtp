@@ -16,6 +16,7 @@
 
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
+#include "vtdata/MaterialDescriptor.h"
 #include <float.h>	// for FLT_MIN
 
 #include "Builder.h"

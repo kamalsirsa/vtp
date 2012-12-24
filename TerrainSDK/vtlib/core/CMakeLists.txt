@@ -18,6 +18,7 @@ set(VTLIB_CORE_SOURCE_FILES
 		../core/Location.cpp
 		../core/LodGrid.cpp
 		../core/MapOverviewEngine.cpp
+		../core/MaterialDescriptor3d.cpp
 		../core/NavEngines.cpp
 		../core/PagedLodGrid.cpp
 		../core/PickEngines.cpp
@@ -73,6 +74,7 @@ set(VTLIB_CORE_HEADER_FILES
 		../core/Location.h
 		../core/LodGrid.h
 		../core/MapOverviewEngine.h
+		../core/MaterialDescriptor3d.h
 		../core/NavEngines.h
 		../core/PagedLodGrid.h
 		../core/PickEngines.h

@@ -13,6 +13,7 @@
 #include "vtLog.h"
 #include "HeightField.h"
 #include "LocalConversion.h"
+#include "MaterialDescriptor.h"
 
 // Defaults
 #define STORY_HEIGHT	3.0f

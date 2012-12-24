@@ -7,11 +7,13 @@
 
 #include "shapelib/shapefil.h"
 #include "ogrsf_frmts.h"
-#include "Features.h"
-#include "StructArray.h"
+
 #include "Building.h"
+#include "Features.h"
 #include "Fence.h"
+#include "MaterialDescriptor.h"
 #include "PolyChecker.h"
+#include "StructArray.h"
 #include "vtLog.h"
 
 //

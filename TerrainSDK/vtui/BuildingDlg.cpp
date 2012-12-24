@@ -14,9 +14,11 @@
 
 #include <wx/colordlg.h>
 #include <wx/numdlg.h>
+
 #include "BuildingDlg.h"
 #include "vtui/Helper.h"
 #include "vtdata/DataPath.h"
+#include "vtdata/MaterialDescriptor.h"
 
 // WDR: class implementations
 
