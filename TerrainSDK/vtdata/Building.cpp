@@ -1510,18 +1510,15 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 			}
 			pFromLevel = pDefBld->GetLevel(from_level);
 		}
-		pLevel->SetEdgeColor(pFromLevel->GetEdge(0)->m_Color);
-		pLevel->SetEdgeMaterial(*pFromLevel->GetEdge(0)->m_pMaterial);
-		int slope = pFromLevel->GetEdge(0)->m_iSlope;
-		if (slope == 0)
-			pLevel->SetRoofType(ROOF_FLAT, slope);
-		else if (slope > 0 && slope < 90)
-			pLevel->SetRoofType(ROOF_HIP, slope);
-		else
+		int from_edges = pFromLevel->NumEdges();
+		int to_edges = pLevel->NumEdges();
+
+		for (int j = 0; j < to_edges; j++)
 		{
-			for (int j = 0; j < pLevel->NumEdges(); j++)
-				pLevel->GetEdge(j)->m_iSlope = pFromLevel->GetEdge(0)->m_iSlope;
+			pLevel->GetEdge(j)->m_Color = pFromLevel->GetEdge(j % from_edges)->m_Color;
+			pLevel->GetEdge(j)->m_pMaterial = pFromLevel->GetEdge(j % from_edges)->m_pMaterial;
 		}
 	}
+	SetRoofType(pDefBld->GetRoofType());
 }
 
