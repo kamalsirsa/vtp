@@ -12,7 +12,7 @@
 // Macro used to determine the index of a vertex (element of the height
 // field) given it's (x,y) location in the grid
 //
-#define offset(x, y)  ((y) * m_iColumns + (x))
+#define offset(a, b)  ((b) * m_iSize.x + (a))
 
 //
 // Macros used to generate vertex locations from a heightfield index
@@ -59,11 +59,11 @@ DTErr BruteTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	//
 	// (replace this with your own storage representation)
 	//
-	m_pData = new float[m_iColumns * m_iRows];
+	m_pData = new float[m_iSize.x * m_iSize.y];
 	int i, j;
-	for (i = 0; i < m_iColumns; i++)
+	for (i = 0; i < m_iSize.x; i++)
 	{
-		for (j = 0; j < m_iRows; j++)
+		for (j = 0; j < m_iSize.y; j++)
 			m_pData[offset(i,j)] = pGrid->GetFValue(i, j);
 	}
 
@@ -158,10 +158,10 @@ void BruteTerrain::RenderPass()
 	// triangle strips.  (Replace with your own algorithm.)
 	//
 	int i, j;
-	for (i = 0; i < m_iColumns-2; i++)
+	for (i = 0; i < m_iSize.x-2; i++)
 	{
 		glBegin(GL_TRIANGLE_STRIP);
-		for (j = 0; j < m_iRows; j++)
+		for (j = 0; j < m_iSize.y; j++)
 		{
 			glVertex3f(MAKE_XYZ2(i, j));
 			glVertex3f(MAKE_XYZ2(i+2, j));

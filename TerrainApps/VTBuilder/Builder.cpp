@@ -780,12 +780,11 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 
 	DRECT area;
 	pTarget->GetExtent(area);
-	DPoint2 step = pTarget->GetGrid()->GetSpacing();
+	const DPoint2 &step = pTarget->GetGrid()->GetSpacing();
 
-	int layers = m_Layers.size();
-	float fData=0, fBestData;
-	int iColumns, iRows;
-	pTarget->GetGrid()->GetDimensions(iColumns, iRows);
+	const int layers = m_Layers.size();
+	float fData = 0, fBestData;
+	const IPoint2 Size = pTarget->GetGrid()->GetDimensions();
 
 	// Create progress dialog for the slow part
 	OpenProgressDialog(_("Merging and Resampling Elevation Layers"), true);
@@ -809,19 +808,19 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	// iterate through the heixels of the new terrain
 	DPoint2 p;
 	wxString str;
-	for (int i = 0; i < iColumns; i++)
+	for (int i = 0; i < Size.x; i++)
 	{
-		if ((i % 5) == 0)
+		if ((i % 10) == 0)
 		{
-			str.Printf(_T("%d / %d"), i, iColumns);
-			if (UpdateProgressDialog(i*100/iColumns, str))
+			str.Printf(_T("%d / %d"), i, Size.x);
+			if (UpdateProgressDialog(i*100/Size.x, str))
 			{
 				CloseProgressDialog();
 				return false;
 			}
 		}
 		p.x = area.left + (i * step.x);
-		for (int j = 0; j < iRows; j++)
+		for (int j = 0; j < Size.y; j++)
 		{
 			p.y = area.bottom + (j * step.y);
 
@@ -989,11 +988,10 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 
 	DRECT area;
 	pTarget->GetExtent(area);
-	DPoint2 step = pTarget->GetSpacing();
+	const DPoint2 &step = pTarget->GetSpacing();
 
 	int i, j, l, layers = m_Layers.size();
-	int iColumns, iRows;
-	pTarget->GetDimensions(iColumns, iRows);
+	const IPoint2 Size = pTarget->GetDimensions();
 
 	// Create progress dialog for the slow part
 	OpenProgressDialog(_("Merging and Resampling Image Layers"), true);
@@ -1019,9 +1017,9 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 	DPoint2 p;
 	RGBi rgb, sampled;
 	int count;
-	for (j = 0; j < iRows; j++)
+	for (j = 0; j < Size.y; j++)
 	{
-		if (UpdateProgressDialog(j*100/iRows))
+		if (UpdateProgressDialog(j*100/Size.y))
 		{
 			// Cancel
 			CloseProgressDialog();
@@ -1031,7 +1029,7 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 		// Sample at the pixel centers, which are 1/2 pixel in from extents
 		p.y = area.bottom + (step.y/2) + (j * step.y);
 
-		for (i = 0; i < iColumns; i++)
+		for (i = 0; i < Size.x; i++)
 		{
 			p.x = area.left + (step.x/2) + (i * step.x);
 
@@ -1047,10 +1045,10 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 				}
 			}
 			if (count)
-				pTarget->SetRGB(i, iRows-1-j, rgb.r, rgb.g, rgb.b);
+				pTarget->SetRGB(i, Size.y-1-j, rgb.r, rgb.g, rgb.b);
 			else
 				// write NODATA (black, for now)
-				pTarget->SetRGB(i, iRows-1-j, 0, 0, 0);
+				pTarget->SetRGB(i, Size.y-1-j, 0, 0, 0);
 		}
 	}
 	CloseProgressDialog();

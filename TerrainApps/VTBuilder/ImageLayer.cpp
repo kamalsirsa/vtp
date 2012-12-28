@@ -125,10 +125,7 @@ void vtImageLayer::Offset(const DPoint2 &delta)
 	// Shifting an image is as easy as shifting its extents
 	DRECT rect;
 	m_pImage->GetExtent(rect);
-	rect.left += delta.x;
-	rect.right += delta.x;
-	rect.top += delta.y;
-	rect.bottom += delta.y;
+	rect.Offset(delta);
 	m_pImage->SetExtent(rect);
 }
 

@@ -67,10 +67,10 @@ public:
 	virtual void GetPropertyText(wxString &str) {}
 	virtual wxString GetFileExtension();
 	virtual bool CanBeSaved() { return true; }
-	virtual wxString GetLayerFilename() { return m_wsFilename; }
+	virtual wxString GetLayerFilename() const { return m_wsFilename; }
 	virtual void SetLayerFilename(const wxString &fname);
 	virtual bool AskForSaveFilename();
-	vtString GetExportFilename(const wxString &format_filter);
+	vtString GetExportFilename(const wxString &format_filter) const;
 	bool GetAreaExtent(DRECT &rect) { return GetExtent(rect); }
 
 	// UI event handlers which can be implemented if desired

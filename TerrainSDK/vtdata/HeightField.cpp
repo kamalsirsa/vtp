@@ -256,7 +256,7 @@ int vtHeightField3d::PointIsAboveTerrain(const FPoint3 &p) const
  * \return true if successful, false if there was no elevation at that point.
  */
 bool vtHeightField3d::ConvertEarthToSurfacePoint(const DPoint2 &epos,
-									FPoint3 &p3, int iCultureFlags, bool bTrue)
+	FPoint3 &p3, int iCultureFlags, bool bTrue) const
 {
 	// convert earth -> XZ
 	m_Conversion.ConvertFromEarth(epos, p3.x, p3.z);
@@ -328,10 +328,8 @@ void vtHeightField3d::UpdateWorldExtents()
 
 vtHeightFieldGrid3d::vtHeightFieldGrid3d()
 {
-	m_iColumns = 0;
-	m_iRows = 0;
-	m_fXStep = 0.0f;
-	m_fZStep = 0.0f;
+	m_iSize.Set(0, 0);
+	m_fStep.Set(0.0f, 0.0f);
 }
 
 void vtHeightFieldGrid3d::Initialize(const LinearUnits units,
@@ -341,14 +339,13 @@ void vtHeightFieldGrid3d::Initialize(const LinearUnits units,
 	// first initialize parent
 	vtHeightField3d::Initialize(units, earthextents, fMinHeight, fMaxHeight);
 
-	m_iColumns = cols;
-	m_iRows = rows;
+	m_iSize.Set(cols, rows);
 
-	m_fXStep = m_WorldExtents.Width() / (m_iColumns-1);
-	m_fZStep = -m_WorldExtents.Height() / (m_iRows-1);
+	m_fStep.x = m_WorldExtents.Width() / (m_iSize.x - 1);
+	m_fStep.y = -m_WorldExtents.Height() / (m_iSize.y - 1);
 
-	m_dXStep = m_EarthExtents.Width() / (m_iColumns-1);
-	m_dYStep = m_EarthExtents.Height() / (m_iRows-1);
+	m_dStep.x = m_EarthExtents.Width() / (m_iSize.x - 1);
+	m_dStep.y = m_EarthExtents.Height() / (m_iSize.y - 1);
 }
 
 void vtHeightFieldGrid3d::SetEarthExtents(const DRECT &ext)
@@ -356,20 +353,8 @@ void vtHeightFieldGrid3d::SetEarthExtents(const DRECT &ext)
 	vtHeightField3d::SetEarthExtents(ext);
 
 	// update step values
-	m_dXStep = m_EarthExtents.Width() / (m_iColumns-1);
-	m_dYStep = m_EarthExtents.Height() / (m_iRows-1);
-}
-
-/** Get the grid spacing, the width of each column and row.
- */
-DPoint2 vtHeightFieldGrid3d::GetSpacing() const
-{
-	return DPoint2(m_dXStep, m_dYStep);
-}
-
-FPoint2 vtHeightFieldGrid3d::GetWorldSpacing() const
-{
-	return FPoint2(m_fXStep, m_fZStep);
+	m_dStep.x = m_EarthExtents.Width() / (m_iSize.x - 1);
+	m_dStep.y = m_EarthExtents.Height() / (m_iSize.y - 1);
 }
 
 /** Get the grid size of the grid.
@@ -379,8 +364,8 @@ FPoint2 vtHeightFieldGrid3d::GetWorldSpacing() const
  */
 void vtHeightFieldGrid3d::GetDimensions(int &nColumns, int &nRows) const
 {
-	nColumns = m_iColumns;
-	nRows = m_iRows;
+	nColumns = m_iSize.x;
+	nRows = m_iSize.y;
 }
 
 /** Convert a point from earth coordinates to the integer coordinates
@@ -388,8 +373,8 @@ void vtHeightFieldGrid3d::GetDimensions(int &nColumns, int &nRows) const
  */
 void vtHeightFieldGrid3d::EarthToGrid(const DPoint2 &epos, IPoint2 &ipos)
 {
-	ipos.x = (int) ((epos.x - m_EarthExtents.left) / m_dXStep);
-	ipos.y = (int) ((epos.y - m_EarthExtents.bottom) / m_dYStep);
+	ipos.x = (int) ((epos.x - m_EarthExtents.left) / m_dStep.x);
+	ipos.y = (int) ((epos.y - m_EarthExtents.bottom) / m_dStep.y);
 }
 
 /** Convert a point from world coordinates to the integer coordinates
@@ -397,8 +382,8 @@ void vtHeightFieldGrid3d::EarthToGrid(const DPoint2 &epos, IPoint2 &ipos)
  */
 void vtHeightFieldGrid3d::WorldToGrid(const FPoint3 &pos, IPoint2 &ipos)
 {
-	ipos.x = (int) ((pos.x - m_WorldExtents.left) / m_fXStep);
-	ipos.y = (int) ((m_WorldExtents.bottom - pos.z) / m_fZStep);
+	ipos.x = (int) ((pos.x - m_WorldExtents.left) / m_fStep.x);
+	ipos.y = (int) ((m_WorldExtents.bottom - pos.z) / m_fStep.y);
 }
 
 /**
@@ -412,9 +397,9 @@ void vtHeightFieldGrid3d::WorldToGrid(const FPoint3 &pos, IPoint2 &ipos)
 float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double findex_y) const
 {
 	// Require the point to be inside the grid
-	if (findex_x < 0 || findex_x > m_iColumns-1)
+	if (findex_x < 0 || findex_x > m_iSize.x-1)
 		return INVALID_ELEVATION;
-	if (findex_y < 0 || findex_y > m_iRows-1)
+	if (findex_y < 0 || findex_y > m_iSize.y-1)
 		return INVALID_ELEVATION;
 
 	int index_x = (int) findex_x;
@@ -423,23 +408,23 @@ float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double find
 	float diff_x = (float) (findex_x - index_x);
 	float diff_y = (float) (findex_y - index_y);
 
-	if (index_x == m_iColumns-1)
+	if (index_x == m_iSize.x-1)
 	{
 		// On right edge
 		index_x --;
 		diff_x = 1.0f;
 	}
-	if (index_y == m_iRows-1)
+	if (index_y == m_iSize.y-1)
 	{
 		// On top edge
 		index_y --;
 		diff_y = 1.0f;
 	}
 
-	float fDataBL = GetElevation(index_x, index_y);
-	float fDataBR = GetElevation(index_x+1, index_y);
-	float fDataTL = GetElevation(index_x, index_y+1);
-	float fDataTR = GetElevation(index_x+1, index_y+1);
+	const float fDataBL = GetElevation(index_x, index_y);
+	const float fDataBR = GetElevation(index_x+1, index_y);
+	const float fDataTL = GetElevation(index_x, index_y+1);
+	const float fDataTR = GetElevation(index_x+1, index_y+1);
 
 	int valid = 0;
 	if (fDataBL != INVALID_ELEVATION)
@@ -515,8 +500,8 @@ float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double find
 int vtHeightFieldGrid3d::FindNumUnknown()
 {
 	int count = 0;
-	for (int i = 0; i < m_iColumns; i++)
-		for (int j = 0; j < m_iRows; j++)
+	for (int i = 0; i < m_iSize.x; i++)
+		for (int j = 0; j < m_iSize.y; j++)
 			if (GetElevation(i, j) == INVALID_ELEVATION)
 				count++;
 	return count;
@@ -561,9 +546,9 @@ bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
 		return false;	// already firmly underground
 
 	// adjust magnitude of dir until 2D component has a good magnitude
-	float smallest = std::min(m_fXStep, m_fZStep);
-	float adjust = smallest / mag2;
-	FPoint3 dir2 = dir * adjust;
+	const float smallest = std::min(m_fStep.x, m_fStep.y);
+	const float adjust = smallest / mag2;
+	const FPoint3 dir2 = dir * adjust;
 
 	bool found_above = false;
 	FPoint3 p = point, lastp = point;
@@ -631,12 +616,12 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
 
 	// special case: straight up or down
 	FPoint3 dir = point2 - point1;
-	float mag2 = sqrt(dir.x*dir.x+dir.z*dir.z);
+	const float mag2 = sqrt(dir.x*dir.x+dir.z*dir.z);
 	if (fabs(mag2) < .000001)
 		return true;
 
 	// adjust magnitude of dir until 2D component has a good magnitude
-	float smallest = std::min(m_fXStep, m_fZStep);
+	const float smallest = std::min(m_fStep.x, m_fStep.y);
 	int steps = (int) (mag2 / smallest) + 1;
 	if (steps < 2)
 		steps = 2;
@@ -721,19 +706,17 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
 	int depth = pBM->GetDepth();
-	int gw, gh;
-	GetDimensions(gw, gh);
 
-	VTLOG(" dib size %d x %d, grid %d x %d.. ", w, h, gw, gh);
+	VTLOG(" dib size %d x %d, grid %d x %d.. ", w, h, m_iSize.x, m_iSize.y);
 
-	bool bExact = (w == gw && h == gh);
-	double ratiox = (double)(gw-1)/(w-1), ratioy = (double)(gh-1)/(h-1);
+	const bool bExact = (w == m_iSize.x && h == m_iSize.y);
+	double ratiox = (double)(m_iSize.x - 1)/(w - 1),
+		   ratioy = (double)(m_iSize.y - 1)/(h - 1);
 
-	float fRange = fMax - fMin;
-	uint iGranularity = table.size()-1;
+	const float fRange = fMax - fMin;
+	const uint iGranularity = table.size() - 1;
 	bool has_invalid = false;
-	RGBi nodata_24bit(nodata.r, nodata.g, nodata.b);
-	double x, y;
+	const RGBi nodata_24bit(nodata.r, nodata.g, nodata.b);
 	float elev;
 
 	// now iterate over the texels
@@ -742,11 +725,11 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 		if (progress_callback != NULL && (i&40) == 0)
 			progress_callback(i * 100 / w);
 
-		x = i * ratiox;		// find corresponding location in height grid
+		const double x = i * ratiox;		// find corresponding location in height grid
 
 		for (int j = 0; j < h; j++)
 		{
-			y = j * ratioy;
+			const double y = j * ratioy;
 
 			if (bExact)
 				elev = GetElevation(i, j);
@@ -795,9 +778,9 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
-	int gw = m_iColumns, gh = m_iRows;
 
-	double ratiox = (double)(gw-1)/(w-1), ratioy = (double)(gh-1)/(h-1);
+	double ratiox = (double)(m_iSize.x - 1) / (w - 1),
+		   ratioy = (double)(m_iSize.y - 1) / (h - 1);
 
 	// For purposes of shading, we need to look at adjacent heixels which are
 	//  at least one grid cell away:
@@ -806,8 +789,7 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 	if (xOffset < 1) xOffset = 1;
 	if (yOffset < 1) yOffset = 1;
 
-	int depth = pBM->GetDepth();
-	int x, y;
+	const int depth = pBM->GetDepth();
 
 	// Center, Left, Right, Top, Bottom
 	FPoint3 c, l, r, t, b, v3;
@@ -819,10 +801,10 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 			progress_callback(j * 100 / h);
 
 		// find corresponding location in terrain
-		y = (int) (j * ratioy);
+		const int y = (int) (j * ratioy);
 		for (int i = 0; i < w; i++)
 		{
-			x = (int) (i * ratiox);
+			const int x = (int) (i * ratiox);
 
 			GetWorldLocation(x, y, c, bTrue);
 			if (c.y == INVALID_ELEVATION)
@@ -911,27 +893,24 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 									 bool bTrue, bool progress_callback(int))
 {
-	int w = pBM->GetWidth();
-	int h = pBM->GetHeight();
-	int depth = pBM->GetDepth();
+	const int w = pBM->GetWidth();
+	const int h = pBM->GetHeight();
+	const int depth = pBM->GetDepth();
 
-	int stepx = m_iColumns / w;
-	int stepy = m_iRows / h;
-
-	int i, j;	// indices into bitmap
-	int x, y;	// indices into elevation
+	const int stepx = m_iSize.x / w;
+	const int stepy = m_iSize.y / h;
 
 	RGBi rgb;
 	RGBAi rgba;
 
-	for (j = 0; j < h; j++)
+	for (int j = 0; j < h; j++)
 	{
 		if (progress_callback != NULL && (j%40) == 0)
 				progress_callback(j * 100 / h);
 
 		// find corresponding location in heightfield
-		y = m_iRows-1 - (j * stepy);
-		for (i = 0; i < w; i++)
+		const int y = m_iSize.y-1 - (j * stepy);
+		for (int i = 0; i < w; i++)
 		{
 			if (depth == 32)
 				pBM->GetPixel32(i, j, rgba);
@@ -942,7 +921,8 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 			if (i == w-1)
 				x_offset = -1;
 
-			x = i * stepx;
+			// index into elevation
+			const int x = i * stepx;
 			float value = GetElevation(x + x_offset, y, bTrue);
 			if (value == INVALID_ELEVATION)
 			{
@@ -953,7 +933,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 			float value2 = GetElevation(x+1 + x_offset, y, bTrue);
 			if (value2 == INVALID_ELEVATION)
 				value2 = value;
-			short diff = (short) ((value2 - value) / m_fXStep * fLightFactor);
+			short diff = (short) ((value2 - value) / m_fStep.x * fLightFactor);
 
 			// clip to keep values under control
 			if (diff > 128)
@@ -1003,18 +983,17 @@ public:
 		m_w = w;
 		m_h = h;
 		m_data = new uchar*[m_w];
-		int rows, cols;
-		for (cols = 0; cols < m_w; cols++)
-			m_data[cols] = new uchar[m_h];
-		for (cols = 0; cols < m_w; cols++)
-			for (rows = 0; rows < m_h ; rows++)
-				m_data[cols][rows] = 0;
+		for (int x = 0; x < m_w; x++)
+			m_data[x] = new uchar[m_h];
+		for (int x = 0; x < m_w; x++)
+			for (int y = 0; y < m_h ; y++)
+				m_data[x][y] = 0;
 	}
 	~LightMap()
 	{
 		// Dispose with the temporary arrays
-		for (int cols = 0 ; cols < m_w ; ++cols)
-			delete [] m_data[cols];
+		for (int x = 0 ; x < m_w ; ++x)
+			delete [] m_data[x];
 		delete [] m_data;
 	}
 	void Set(int x, int y, uchar val) { m_data[x][y] = val; }
@@ -1056,33 +1035,29 @@ inline DPoint2 GridPos(const DPoint2 &base, const DPoint2 &spacing, int i, int j
 void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_dir,
 	float fLightFactor, float fAmbient, bool progress_callback(int))
 {
-	int w = pBM->GetWidth();
-	int h = pBM->GetHeight();
-
-	int gw, gh;
-	GetDimensions(gw, gh);
+	const int w = pBM->GetWidth();
+	const int h = pBM->GetHeight();
 
 	// Compute area that we will sample for shading, bounded by the texel
 	//  centers, which are 1/2 texel in from the grid extents.
-	DPoint2 texel_size(m_EarthExtents.Width() / w, m_EarthExtents.Height() / h);
+	const DPoint2 texel_size(m_EarthExtents.Width() / w, m_EarthExtents.Height() / h);
 	DRECT texel_area = m_EarthExtents;
 	texel_area.Grow(-texel_size.x/2, -texel_size.y/2);
-	DPoint2 texel_base(texel_area.left, texel_area.bottom);
+	const DPoint2 texel_base(texel_area.left, texel_area.bottom);
 
-	bool b8bit = (pBM->GetDepth() == 8);
-	int i, j;
+	const bool b8bit = (pBM->GetDepth() == 8);
 
 	// These values are hardcoded here but could be exposed in the GUI
-	float sun =  0.7f;
+	const float sun =  0.7f;
 
 	// If we have light that's pointing UP, rather than down at the terrain,
 	//  then it's only going to take a really long time to produce a
 	//  completely dark terrain.  We can catch this case up front.
 	if (light_dir.y > 0)
 	{
-		for (i = 0; i < w; i++)
+		for (int i = 0; i < w; i++)
 		{
-			for (j = 0; j < h; j++)
+			for (int j = 0; j < h; j++)
 			{
 				if (b8bit)
 					pBM->ScalePixel8(i, j, fAmbient);
@@ -1119,12 +1094,12 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	float f, HScale;
 	if ( fabs(grid_light_dir.x) > fabs(grid_light_dir.z) )
 	{
-		HScale = m_fXStep;
+		HScale = m_fStep.x;
 		f = fabs(light_dir.x);
 	}
 	else
 	{
-		HScale = m_fZStep;
+		HScale = m_fStep.y;
 		f = fabs(light_dir.z);
 	}
 	grid_light_dir /= f;
@@ -1164,12 +1139,12 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	int x, z;
 	float shade;
 
-	for (j = j_init; j != j_final; j += j_incr)
+	for (int j = j_init; j != j_final; j += j_incr)
 	{
 		if (progress_callback != NULL && (j%20) == 0)
 			progress_callback(abs(j-j_init) * 100 / h);
 
-		for (i = i_init; i != i_final; i += i_incr)
+		for (int i = i_init; i != i_final; i += i_incr)
 		{
 			pos = GridPos(texel_base, texel_size, i, j);
 			FindAltitudeOnEarth(pos, shadowheight, true);
@@ -1227,16 +1202,16 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 					if (darkest_shadow > shade)
 						darkest_shadow = shade;
 
-					//Rather than doing the shading at this point we may want to
-					//simply save the value into the LightMap array. Then apply
-					//some anti-aliasing or edge softening algorithm to the LightMap.
-					//Once that's done, apply the whole LightMap to the DIB.
+					// Rather than doing the shading at this point we may want to
+					// simply save the value into the LightMap array. Then apply
+					// some anti-aliasing or edge softening algorithm to the LightMap.
+					// Once that's done, apply the whole LightMap to the DIB.
 					if (b8bit)
 						pBM->ScalePixel8(x, h-1-z, shade);
 					else
 						pBM->ScalePixel24(x, h-1-z, shade);
 
-					//set a flag to show that this texel has been shaded.
+					// set a flag to show that this texel has been shaded.
 					// (or set to value of the shading - see comment above)
 					lightmap.Set(x, z, lightmap.Get(x, z)+1);
 				}
@@ -1246,16 +1221,16 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 	// For dot-product lighting, we use the normal 3D vector, only inverted
 	//  so that we can compare it to the upward-pointing ground normals.
-	FPoint3 inv_light_dir = -light_dir;
+	const FPoint3 inv_light_dir = -light_dir;
 
 	// Second pass.  Now we are going to loop through the LightMap and apply
 	//  the full lighting formula to each texel that has not been shaded yet.
-	for (j = 0; j < h; j++)
+	for (int j = 0; j < h; j++)
 	{
 		if (progress_callback != NULL && (j%20) == 0)
 			progress_callback(j * 100 / h);
 
-		for (i = 0; i < w; i++)
+		for (int i = 0; i < w; i++)
 		{
 			if (lightmap.Get(i, j) > 0)
 				continue;

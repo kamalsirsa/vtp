@@ -719,15 +719,15 @@ void vtElevLayer::DetermineMeterSpacing()
 	vtProjection &proj = m_pGrid->GetProjection();
 	if (proj.IsGeographic())
 	{
-		DRECT area = m_pGrid->GetEarthExtents();
+		const DRECT &area = m_pGrid->GetEarthExtents();
 
-		double fToMeters = EstimateDegreesToMeters((area.bottom + area.top)/2);
+		const double fToMeters = EstimateDegreesToMeters((area.bottom + area.top)/2);
 		m_fSpacing = (float) (area.Width()) * fToMeters / (m_pGrid->NumColumns() - 1);
 	}
 	else
 	{
 		// Linear units-based projections are much simpler
-		DPoint2 spacing = m_pGrid->GetSpacing();
+		const DPoint2 &spacing = m_pGrid->GetSpacing();
 		m_fSpacing = spacing.x * GetMetersPerUnit(proj.GetUnits());
 	}
 }
@@ -735,13 +735,10 @@ void vtElevLayer::DetermineMeterSpacing()
 void vtElevLayer::Offset(const DPoint2 &p)
 {
 	if (m_pGrid)
-	{
 		m_pGrid->Offset(p);
-	}
+
 	if (m_pTin)
-	{
 		m_pTin->Offset(p);
-	}
 }
 
 vtHeightField *vtElevLayer::GetHeightField()
@@ -1164,20 +1161,15 @@ int vtElevLayer::RemoveElevRange(float zmin, float zmax, const DRECT *area)
 	if (!m_pGrid)
 		return 0;
 
-	DRECT ext;
-	GetExtent(ext);
-	DPoint2 step = m_pGrid->GetSpacing();
+	const DRECT &ext = m_pGrid->GetEarthExtents();
+	const DPoint2 &step = m_pGrid->GetSpacing();
+	const IPoint2 &Size = m_pGrid->GetDimensions();
 
-	int iColumns, iRows;
-	m_pGrid->GetDimensions(iColumns, iRows);
-	float val;
 	DPoint2 p;
-	int i, j;
-
 	int count = 0;
-	for (i = 0; i < iColumns; i++)
+	for (int i = 0; i < Size.x; i++)
 	{
-		for (j = 0; j < iRows; j++)
+		for (int j = 0; j < Size.y; j++)
 		{
 			if (area)
 			{
@@ -1187,7 +1179,7 @@ int vtElevLayer::RemoveElevRange(float zmin, float zmax, const DRECT *area)
 					continue;
 			}
 
-			val = m_pGrid->GetFValue(i, j);
+			const float val = m_pGrid->GetFValue(i, j);
 			if (val >= zmin && val <= zmax)
 			{
 				m_pGrid->SetFValue(i, j, INVALID_ELEVATION);
@@ -1203,19 +1195,19 @@ int vtElevLayer::SetUnknown(float fValue, const DRECT *area)
 	if (!m_pGrid)
 		return 0;
 
-	int iColumns, iRows;
-	m_pGrid->GetDimensions(iColumns, iRows);
-	DRECT ext;
-	GetExtent(ext);
-	DPoint2 p, step = m_pGrid->GetSpacing();
+	const IPoint2 &Size = m_pGrid->GetDimensions();
+	const DRECT &ext = m_pGrid->GetEarthExtents();
+	const DPoint2 &step = m_pGrid->GetSpacing();
+
 	int count = 0;
+	DPoint2 p;
 
 	bool bUseArea = (area && !area->IsEmpty());
 
-	for (int i = 0; i < iColumns; i++)
+	for (int i = 0; i < Size.x; i++)
 	{
 		p.x = ext.left + (i * step.x);
-		for (int j = 0; j < iRows; j++)
+		for (int j = 0; j < Size.y; j++)
 		{
 			p.y = ext.bottom + (j * step.y);
 			// If an area was passed, restrict ourselves to use it
@@ -1302,7 +1294,7 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 
 		bool bGeo = (m_pGrid->GetProjection().IsGeographic() != 0);
 		result += _("Grid spacing: ");
-		DPoint2 spacing = m_pGrid->GetSpacing();
+		const DPoint2 &spacing = m_pGrid->GetSpacing();
 		result += wxString(FormatCoord(bGeo, spacing.x), wxConvUTF8);
 		result += _T(" x ");
 		result += wxString(FormatCoord(bGeo, spacing.y), wxConvUTF8);

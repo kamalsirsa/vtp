@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.cpp
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project.
+// Copyright (c) 2001-2012 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -100,12 +100,9 @@ bool vtElevationGrid::CopyHeaderFrom(const vtElevationGrid &rhs)
 	m_fDiagonalLength = rhs.m_fDiagonalLength;
 
 	// Copy each vtHeightFieldGrid3d member
-	m_iColumns   = rhs.m_iColumns;
-	m_iRows		 = rhs.m_iRows;
-	m_fXStep	 = rhs.m_fXStep;
-	m_fZStep	 = rhs.m_fZStep;
-	m_dXStep	 = rhs.m_dXStep;
-	m_dYStep	 = rhs.m_dYStep;
+	m_iSize = rhs.m_iSize;
+	m_fStep = rhs.m_fStep;
+	m_dStep = rhs.m_dStep;
 
 	// Copy each vtElevationGrid member
 	m_bFloatMode		= rhs.m_bFloatMode;
@@ -125,20 +122,21 @@ bool vtElevationGrid::CopyDataFrom(const vtElevationGrid &rhs)
 {
 	int rx, ry;
 	rhs.GetDimensions(rx, ry);
-	if (m_iColumns != rx || m_iRows != ry)
+	if (m_iSize.x != rx || m_iSize.y != ry)
 		return false;
 
 	if (m_bFloatMode && rhs.m_pFData)
 	{
-		size_t Size = m_iColumns * m_iRows * sizeof(float);
+		size_t Size = m_iSize.x * m_iSize.y * sizeof(float);
 		memcpy(m_pFData, rhs.m_pFData, Size );
 	}
 	else if (!m_bFloatMode && rhs.m_pData)
 	{
-		size_t Size = m_iColumns * m_iRows * sizeof(short);
+		size_t Size = m_iSize.x * m_iSize.y * sizeof(short);
 		memcpy(m_pData, rhs.m_pData, Size );
 	}
-	else return false;
+	else
+		return false;
 
 	return true;
 }
@@ -199,18 +197,17 @@ void vtElevationGrid::FreeData()
  */
 void vtElevationGrid::Clear()
 {
-	int i, j;
 	if (m_bFloatMode)
 	{
-		for (i = 0; i < m_iColumns; i++)
-			for (j = 0; j < m_iRows; j++)
-				m_pFData[i*m_iRows+j] = 0.0f;
+		for (int i = 0; i < m_iSize.x; i++)
+			for (int j = 0; j < m_iSize.y; j++)
+				m_pFData[i*m_iSize.y+j] = 0.0f;
 	}
 	else
 	{
-		for (i = 0; i < m_iColumns; i++)
-			for (j = 0; j < m_iRows; j++)
-				m_pData[i*m_iRows+j] = 0;
+		for (int i = 0; i < m_iSize.x; i++)
+			for (int j = 0; j < m_iSize.y; j++)
+				m_pData[i*m_iSize.y+j] = 0;
 	}
 }
 
@@ -219,18 +216,17 @@ void vtElevationGrid::Clear()
  */
 void vtElevationGrid::Invalidate()
 {
-	int i, j;
 	if (m_bFloatMode)
 	{
-		for (i = 0; i < m_iColumns; i++)
-			for (j = 0; j < m_iRows; j++)
-				m_pFData[i*m_iRows+j] = INVALID_ELEVATION;
+		for (int i = 0; i < m_iSize.x; i++)
+			for (int j = 0; j < m_iSize.y; j++)
+				m_pFData[i*m_iSize.y+j] = INVALID_ELEVATION;
 	}
 	else
 	{
-		for (i = 0; i < m_iColumns; i++)
-			for (j = 0; j < m_iRows; j++)
-				m_pData[i*m_iRows+j] = INVALID_ELEVATION;
+		for (int i = 0; i < m_iSize.x; i++)
+			for (int j = 0; j < m_iSize.y; j++)
+				m_pData[i*m_iSize.y+j] = INVALID_ELEVATION;
 	}
 }
 
@@ -281,8 +277,8 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 
 		// Convert a number of segments along each edge, to be certain the
 		//  new extents cover the entire area.
-		DPoint2 p1 = pOld->m_Corners[i];
-		DPoint2 p2 = pOld->m_Corners[(i+1)%4], diff = p2 - p1;
+		const DPoint2 p1 = pOld->m_Corners[i];
+		const DPoint2 p2 = pOld->m_Corners[(i+1)%4], diff = p2 - p1;
 		for (int j = 0; j < 50; j++)
 		{
 			DPoint2 p = p1 + (diff / 50 * j);
@@ -327,11 +323,10 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	const double fRows = m_EarthExtents.Height() / new_step.y;
 
 	// round up to the nearest integer
-	m_iColumns = (int)(fColumns + 0.999);
-	m_iRows = (int)(fRows + 0.999);
+	m_iSize.Set((int)(fColumns + 0.999), (int)(fRows + 0.999));
 
 	// do safety checks
-	if (m_iColumns < 1 || m_iRows < 1 || m_iColumns > 40000 || m_iRows > 40000)
+	if (m_iSize.x < 1 || m_iSize.y < 1 || m_iSize.x > 40000 || m_iSize.y > 40000)
 	{
 		m_strError = "Grid is too small or too large.";
 		return false;
@@ -349,7 +344,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 
 	// Others are on the parent class:
 	vtHeightFieldGrid3d::Initialize(NewProj.GetUnits(), m_EarthExtents, INVALID_ELEVATION,
-		INVALID_ELEVATION, m_iColumns, m_iRows);
+		INVALID_ELEVATION, m_iSize.x, m_iSize.y);
 	if (!_AllocateArray())
 		return false;
 
@@ -364,11 +359,11 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	}
 	const DPoint2 step = GetSpacing();
 	DPoint2 p;
-	for (int i = 0; i < m_iColumns; i++)
+	for (int i = 0; i < m_iSize.x; i++)
 	{
-		if (progress_callback != NULL) progress_callback(i*100/m_iColumns);
+		if (progress_callback != NULL) progress_callback(i*100/m_iSize.x);
 
-		for (int j = 0; j < m_iRows; j++)
+		for (int j = 0; j < m_iSize.y; j++)
 		{
 			p.x = m_EarthExtents.left + i * step.x;
 			p.y = m_EarthExtents.bottom + j * step.y;
@@ -447,9 +442,9 @@ void vtElevationGrid::Scale(float fScale, bool bDirect, bool bRecomputeExtents)
 		m_fVMeters *= fScale;
 	else
 	{
-		for (int i = 0; i < m_iColumns; i++)
+		for (int i = 0; i < m_iSize.x; i++)
 		{
-			for (int j = 0; j < m_iRows; j++)
+			for (int j = 0; j < m_iSize.y; j++)
 			{
 				const float f = GetFValue(i, j);
 				if (f != INVALID_ELEVATION)
@@ -468,9 +463,9 @@ void vtElevationGrid::Scale(float fScale, bool bDirect, bool bRecomputeExtents)
  */
 void vtElevationGrid::VertOffset(float fAmount)
 {
-	for (int i = 0; i < m_iColumns; i++)
+	for (int i = 0; i < m_iSize.x; i++)
 	{
-		for (int j = 0; j < m_iRows; j++)
+		for (int j = 0; j < m_iSize.y; j++)
 		{
 			const float f = GetFValue(i, j);
 			if (f != INVALID_ELEVATION)
@@ -495,9 +490,9 @@ void vtElevationGrid::ComputeHeightExtents()
 	if (!HasData())
 		return;
 
-	for (int i=0; i<m_iColumns; i++)
+	for (int i = 0; i < m_iSize.x; i++)
 	{
-		for (int j=0; j<m_iRows; j++)
+		for (int j = 0; j < m_iSize.y; j++)
 		{
 			const float value = GetFValue(i, j);
 			if (value == INVALID_ELEVATION)
@@ -515,10 +510,7 @@ void vtElevationGrid::ComputeHeightExtents()
 void vtElevationGrid::Offset(const DPoint2 &delta)
 {
 	// Shifting an elevation is as easy as shifting its extents
-	m_EarthExtents.left += delta.x;
-	m_EarthExtents.right += delta.x;
-	m_EarthExtents.top += delta.y;
-	m_EarthExtents.bottom += delta.y;
+	m_EarthExtents.Offset(delta);
 
 	// Also the corners, which are mantained in parallel
 	for (int i = 0; i < 4; i++)
@@ -536,10 +528,9 @@ void vtElevationGrid::Offset(const DPoint2 &delta)
 int vtElevationGrid::ReplaceValue(float value1, float value2)
 {
 	int replaced = 0;
-	int i, j;
-	for (i=0; i<m_iColumns; i++)
+	for (int i = 0; i < m_iSize.x; i++)
 	{
-		for (j=0; j<m_iRows; j++)
+		for (int j = 0; j < m_iSize.y; j++)
 		{
 			if (GetFValue(i, j) == value1)
 				SetFValue(i, j, value2);
@@ -568,35 +559,35 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 	int gaps = 1;
 	float value, value2, sum;
 
-	int xmin = 0, xmax = m_iColumns, ymin = 0, ymax = m_iRows;
+	int xmin = 0, xmax = m_iSize.x, ymin = 0, ymax = m_iSize.y;
 	if (area)
 	{
 		// Restrict the operation to a given area.
 		DPoint2 spacing = GetSpacing();
 		xmin = (int) ((area->left - m_EarthExtents.left)/spacing.x);
 		if (xmin < 0) xmin = 0;
-		if (xmin > m_iColumns) return true;
+		if (xmin > m_iSize.x) return true;
 
 		ymin = (int) ((area->bottom - m_EarthExtents.bottom)/spacing.y);
 		if (ymin < 0) ymin = 0;
-		if (ymin > m_iRows) return true;
+		if (ymin > m_iSize.y) return true;
 
 		xmax = (int) ((area->right - m_EarthExtents.left)/spacing.x);
 		if (xmax < 0) return true;
-		if (xmax > m_iColumns) xmax = m_iColumns;
+		if (xmax > m_iSize.x) xmax = m_iSize.x;
 
 		ymax = (int) ((area->top - m_EarthExtents.bottom)/spacing.y);
 		if (ymax < 0) return true;
-		if (ymax > m_iRows) ymax = m_iRows;
+		if (ymax > m_iSize.y) ymax = m_iSize.y;
 	}
 
-	std::vector<float> patch_column(m_iRows);
-	std::vector<float> patch_row(m_iColumns);
+	std::vector<float> patch_column(m_iSize.y);
+	std::vector<float> patch_row(m_iSize.x);
 
 	// For speed, remember which lines already have no gaps, so we don't have
 	// to visit them again.
-	std::vector<bool> line_gap_columns(m_iColumns, true);
-	std::vector<bool> line_gap_rows(m_iRows, true);
+	std::vector<bool> line_gap_columns(m_iSize.x, true);
+	std::vector<bool> line_gap_rows(m_iSize.y, true);
 
 	int iPass = 0;
 	int iTotalGaps;
@@ -760,36 +751,36 @@ bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
 	int gaps = 1;
 	float value, value2, sum, surrounding;
 
-	int xmin = 0, xmax = m_iColumns, ymin = 0, ymax = m_iRows;
+	int xmin = 0, xmax = m_iSize.x, ymin = 0, ymax = m_iSize.y;
 	if (area)
 	{
 		// Restrict the operation to a given area.
 		DPoint2 spacing = GetSpacing();
 		xmin = (int) ((area->left - m_EarthExtents.left)/spacing.x);
 		if (xmin < 0) xmin = 0;
-		if (xmin > m_iColumns) return true;
+		if (xmin > m_iSize.x) return true;
 
 		ymin = (int) ((area->bottom - m_EarthExtents.bottom)/spacing.y);
 		if (ymin < 0) ymin = 0;
-		if (ymin > m_iRows) return true;
+		if (ymin > m_iSize.y) return true;
 
 		xmax = (int) ((area->right - m_EarthExtents.left)/spacing.x);
 		if (xmax < 0) return true;
-		if (xmax > m_iColumns) xmax = m_iColumns;
+		if (xmax > m_iSize.x) xmax = m_iSize.x;
 
 		ymax = (int) ((area->top - m_EarthExtents.bottom)/spacing.y);
 		if (ymax < 0) return true;
-		if (ymax > m_iRows) ymax = m_iRows;
+		if (ymax > m_iSize.y) ymax = m_iSize.y;
 	}
 
-	vtElevationGrid delta(GetAreaExtents(), m_iColumns, m_iRows, true, GetProjection());
+	vtElevationGrid delta(GetAreaExtents(), m_iSize.x, m_iSize.y, true, GetProjection());
 
 	// For speed, remember which lines already have no gaps, so we don't have
 	// to visit them again.
 	std::vector<bool> line_gap, has_delta;
-	line_gap.resize(m_iColumns);
-	has_delta.resize(m_iColumns);
-	for (i = 0; i < m_iColumns; i++)
+	line_gap.resize(m_iSize.x);
+	has_delta.resize(m_iSize.x);
+	for (i = 0; i < m_iSize.x; i++)
 	{
 		line_gap[i] = true;
 		has_delta[i] = false;
@@ -952,9 +943,9 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 		return -1;
 
 	// allocate counting buffer
-	if (!cnt.Create(m_EarthExtents, m_iColumns, m_iRows, false, m_proj))
+	if (!cnt.Create(m_EarthExtents, m_iSize.x, m_iSize.y, false, m_proj))
 		return -1;
-	if (!tmp.Create(m_EarthExtents, m_iColumns, m_iRows, false, m_proj))
+	if (!tmp.Create(m_EarthExtents, m_iSize.x, m_iSize.y, false, m_proj))
 		return -1;
 
 	// calculate foot print size
@@ -967,12 +958,12 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 		done = true;
 
 		// calculate foot print size in x/y/z-direction
-		if (m_iColumns<2)
+		if (m_iSize.x<2)
 		{
 			sizex=1;
 			sizey=1;
 		}
-		else if (m_iRows<2)
+		else if (m_iSize.y<2)
 		{
 			sizex=size;
 			sizey=1;
@@ -990,22 +981,22 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 		cnt.FillWithSingleValue(0);
 
 		// search for no-data values
-		for (i=0; i<(int)m_iColumns; i++)
-			for (j=0; j<(int)m_iRows; j++)
+		for (i=0; i<(int)m_iSize.x; i++)
+			for (j=0; j<(int)m_iSize.y; j++)
 				if (GetFValue(i,j)!=INVALID_ELEVATION)
 					cnt.SetValue(i, j, 1);
 
 		// accumulate no-data values in x-direction
-		if (m_iColumns>1)
+		if (m_iSize.x>1)
 		{
-			for (j=0; j<(int)m_iRows; j++)
+			for (j=0; j<(int)m_iSize.y; j++)
 			{
 				int cells=0;
-				for (i=-sizex/2; i<(int)m_iColumns; i++)
+				for (i=-sizex/2; i<(int)m_iSize.x; i++)
 				{
 					if (i-sizex/2-1 >= 0)
 						cells -= cnt.GetShortValue(i-sizex/2-1, j);
-					if (i+sizex/2 < m_iColumns)
+					if (i+sizex/2 < m_iSize.x)
 						cells += cnt.GetShortValue(i+sizex/2, j);
 					if (i>=0)
 						tmp.SetValue(i, j, cells);
@@ -1017,15 +1008,15 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 		cnt.CopyDataFrom(tmp);
 
 		// accumulate no-data values in y-direction
-		if (m_iRows>1)
-			for (i=0; i<(int)m_iColumns; i++)
+		if (m_iSize.y>1)
+			for (i=0; i<(int)m_iSize.x; i++)
 			{
 				int cells=0;
-				for (j=-sizey/2; j<(int)m_iRows; j++)
+				for (j=-sizey/2; j<(int)m_iSize.y; j++)
 				{
 					if (j-sizey/2-1 >= 0)
 						cells -= cnt.GetShortValue(i, j-sizey/2-1);
-					if (j+sizey/2 < m_iRows)
+					if (j+sizey/2 < m_iSize.y)
 						cells += cnt.GetShortValue(i, j+sizey/2);
 					if (j>=0)
 						tmp.SetValue(i,j,cells);
@@ -1036,9 +1027,9 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 		cnt.CopyDataFrom(tmp);
 
 		// search for no-data values
-		for (i = 0; i < m_iColumns; i++)
+		for (i = 0; i < m_iSize.x; i++)
 		{
-			for (j = 0; j < m_iRows; j++)
+			for (j = 0; j < m_iSize.y; j++)
 			{
 				if (GetFValue(i,j) != INVALID_ELEVATION)
 					continue;
@@ -1055,8 +1046,8 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 				{
 					for (n=-sizey/2; n<=sizey/2; n++)
 					{
-						if (i+m>=0 && i+m < m_iColumns &&
-							j+n>=0 && j+n < m_iRows)
+						if (i+m>=0 && i+m < m_iSize.x &&
+							j+n>=0 && j+n < m_iSize.y)
 						{
 							v1=GetFValue(i+m,j+n);
 
@@ -1096,8 +1087,8 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
 				{
 					for (n=-sizey/2; n<=sizey/2; n++)
 					{
-						if (i+m>=0 && i+m < m_iColumns &&
-							j+n>=0 && j+n < m_iRows)
+						if (i+m>=0 && i+m < m_iSize.x &&
+							j+n>=0 && j+n < m_iSize.y)
 						{
 							v1=GetFValue(i+m,j+n);
 
@@ -1162,21 +1153,21 @@ int vtElevationGrid::FillGapsByRegionGrowing(int radius, bool progress_callback(
  */
 void vtElevationGrid::SetValue(int i, int j, short value)
 {
-	assert(i >= 0 && i < m_iColumns);
-	assert(j >= 0 && j < m_iRows);
+	assert(i >= 0 && i < m_iSize.x);
+	assert(j >= 0 && j < m_iSize.y);
 	if (m_bFloatMode)
 	{
 		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
-			m_pFData[i*m_iRows+j] = (float)value;
+			m_pFData[i*m_iSize.y+j] = (float)value;
 		else
-			m_pFData[i*m_iRows+j] = (float)value / m_fVMeters;
+			m_pFData[i*m_iSize.y+j] = (float)value / m_fVMeters;
 	}
 	else
 	{
 		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
-			m_pData[i*m_iRows+j] = value;
+			m_pData[i*m_iSize.y+j] = value;
 		else
-			m_pData[i*m_iRows+j] = (short) ((float)value / m_fVMeters);
+			m_pData[i*m_iSize.y+j] = (short) ((float)value / m_fVMeters);
 	}
 }
 
@@ -1186,21 +1177,21 @@ void vtElevationGrid::SetValue(int i, int j, short value)
  */
 void vtElevationGrid::SetFValue(int i, int j, float value)
 {
-	assert(i >= 0 && i < m_iColumns);
-	assert(j >= 0 && j < m_iRows);
+	assert(i >= 0 && i < m_iSize.x);
+	assert(j >= 0 && j < m_iSize.y);
 	if (m_bFloatMode)
 	{
 		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
-			m_pFData[i*m_iRows+j] = value;
+			m_pFData[i*m_iSize.y+j] = value;
 		else
-			m_pFData[i*m_iRows+j] = value / m_fVMeters;
+			m_pFData[i*m_iSize.y+j] = value / m_fVMeters;
 	}
 	else
 	{
 		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
-			m_pData[i*m_iRows+j] = (short) value;
+			m_pData[i*m_iSize.y+j] = (short) value;
 		else
-			m_pData[i*m_iRows+j] = (short) (value / m_fVMeters);
+			m_pData[i*m_iSize.y+j] = (short) (value / m_fVMeters);
 	}
 }
 
@@ -1211,7 +1202,7 @@ void vtElevationGrid::SetFValue(int i, int j, float value)
  */
 short vtElevationGrid::GetShortValue(int i, int j) const
 {
-	return m_pData[i*m_iRows+j];
+	return m_pData[i*m_iSize.y+j];
 }
 
 /** Get an elevation value from the grid.
@@ -1222,13 +1213,13 @@ float vtElevationGrid::GetFValue(int i, int j) const
 {
 	if (m_bFloatMode)
 	{
-		float value = m_pFData[i*m_iRows+j];
+		float value = m_pFData[i*m_iSize.y+j];
 		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
 			return value;
 		else
 			return value * m_fVMeters;
 	}
-	short svalue = m_pData[i*m_iRows+j];
+	short svalue = m_pData[i*m_iSize.y+j];
 	if (m_fVMeters == 1.0f || svalue == INVALID_ELEVATION)
 		return (float) svalue;
 	else
@@ -1273,23 +1264,23 @@ bool vtElevationGrid::_AllocateArray()
 	if (m_bFloatMode)
 	{
 		m_pData = NULL;
-		m_pFData = (float *)malloc(m_iColumns * m_iRows * sizeof(float));
+		m_pFData = (float *)malloc(m_iSize.x * m_iSize.y * sizeof(float));
 		if (!m_pFData)
 		{
 			m_strError.Format("Could not allocate a floating-point elevation grid of size %d x %d (%d MB)\n",
-				m_iColumns, m_iRows, (m_iColumns * m_iRows * 4) / (1024 * 1024));
+				m_iSize.x, m_iSize.y, (m_iSize.x * m_iSize.y * 4) / (1024 * 1024));
 			VTLOG(m_strError);
 			return false;
 		}
 	}
 	else
 	{
-		m_pData = (short *)malloc(m_iColumns * m_iRows * sizeof(short));
+		m_pData = (short *)malloc(m_iSize.x * m_iSize.y * sizeof(short));
 		m_pFData = NULL;
 		if (!m_pData)
 		{
 			m_strError.Format("Could not allocate a short-integer elevation grid of size %d x %d (%d MB)\n",
-				m_iColumns, m_iRows, (m_iColumns * m_iRows * 2) / (1024 * 1024));
+				m_iSize.x, m_iSize.y, (m_iSize.x * m_iSize.y * 2) / (1024 * 1024));
 			VTLOG(m_strError);
 			return false;
 		}
@@ -1304,14 +1295,14 @@ void vtElevationGrid::FillWithSingleValue(float fValue)
 	int i, j;
 	if (m_bFloatMode)
 	{
-		for (i = 0; i < m_iColumns; i++)
-			for (j = 0; j < m_iRows; j++)
+		for (i = 0; i < m_iSize.x; i++)
+			for (j = 0; j < m_iSize.y; j++)
 				SetFValue(i, j, fValue);
 	}
 	else
 	{
-		for (i = 0; i < m_iColumns; i++)
-			for (j = 0; j < m_iRows; j++)
+		for (i = 0; i < m_iSize.x; i++)
+			for (j = 0; j < m_iSize.y; j++)
 				SetValue(i, j, (short) fValue);
 	}
 	m_fMinHeight = fValue;
@@ -1320,14 +1311,14 @@ void vtElevationGrid::FillWithSingleValue(float fValue)
 
 void vtElevationGrid::GetEarthPoint(int i, int j, DPoint2 &p) const
 {
-	p.Set(m_EarthExtents.left + i * m_dXStep,
-		m_EarthExtents.bottom + j * m_dYStep);
+	p.Set(m_EarthExtents.left + i * m_dStep.x,
+		m_EarthExtents.bottom + j * m_dStep.y);
 }
 
 void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
 {
-	loc.Set(m_EarthExtents.left + i * m_dXStep,
-		m_EarthExtents.bottom + j * m_dYStep,
+	loc.Set(m_EarthExtents.left + i * m_dStep.x,
+		m_EarthExtents.bottom + j * m_dStep.y,
 		GetFValue(i, j));
 }
 
@@ -1340,9 +1331,9 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
  */
 float vtElevationGrid::GetClosestValue(const DPoint2 &p) const
 {
-	int ix = (int)((p.x - m_EarthExtents.left) / m_EarthExtents.Width() * (m_iColumns-1) + 0.5);
-	int iy = (int)((p.y - m_EarthExtents.bottom) / m_EarthExtents.Height() * (m_iRows-1) + 0.5);
-	if (ix >= 0 && ix < m_iColumns && iy >= 0 && iy < m_iRows)
+	int ix = (int)((p.x - m_EarthExtents.left) / m_EarthExtents.Width() * (m_iSize.x-1) + 0.5);
+	int iy = (int)((p.y - m_EarthExtents.bottom) / m_EarthExtents.Height() * (m_iSize.y-1) + 0.5);
+	if (ix >= 0 && ix < m_iSize.x && iy >= 0 && iy < m_iSize.y)
 		return GetFValue(ix, iy);
 	else
 		return INVALID_ELEVATION;
@@ -1361,20 +1352,20 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 	double local_x = (p.x - m_EarthExtents.left) / m_EarthExtents.Width();
 	double local_y = (p.y - m_EarthExtents.bottom) / m_EarthExtents.Height();
 
-	double findex_x = local_x * (m_iColumns-1);
-	double findex_y = local_y * (m_iRows-1);
+	double findex_x = local_x * (m_iSize.x-1);
+	double findex_y = local_y * (m_iSize.y-1);
 
-	if (findex_x < -0.5 || findex_x > m_iColumns - 0.5 ||
-		findex_y < -0.5 || findex_y > m_iRows -0.5)
+	if (findex_x < -0.5 || findex_x > m_iSize.x - 0.5 ||
+		findex_y < -0.5 || findex_y > m_iSize.y -0.5)
 		return INVALID_ELEVATION;
 
 	// clamp the near edges
 	if (findex_x < 0.0) findex_x = 0.0;
-	if (findex_x > m_iColumns-1) findex_x = m_iColumns-1;
+	if (findex_x > m_iSize.x-1) findex_x = m_iSize.x-1;
 
 	// clamp the far edges
 	if (findex_y < 0.0) findex_y = 0.0;
-	if (findex_y > m_iRows-1) findex_y = m_iRows-1;
+	if (findex_y > m_iSize.y-1) findex_y = m_iSize.y-1;
 
 	return GetInterpolatedElevation(findex_x, findex_y);
 }
@@ -1388,15 +1379,15 @@ float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
  */
 DRECT vtElevationGrid::GetAreaExtents() const
 {
-	return DRECT(m_EarthExtents.left - (m_dXStep / 2.0f),
-		m_EarthExtents.top + (m_dYStep / 2.0f),
-		m_EarthExtents.right + (m_dXStep / 2.0f),
-		m_EarthExtents.bottom - (m_dYStep / 2.0f));
+	return DRECT(m_EarthExtents.left - (m_dStep.x / 2.0f),
+		m_EarthExtents.top + (m_dStep.y / 2.0f),
+		m_EarthExtents.right + (m_dStep.x / 2.0f),
+		m_EarthExtents.bottom - (m_dStep.y / 2.0f));
 }
 
 float vtElevationGrid::GetFValueSafe(int i, int j) const
 {
-	if (i < 0 || i > m_iColumns-1 || j < 0 || j > m_iRows-1)
+	if (i < 0 || i > m_iSize.x-1 || j < 0 || j > m_iSize.y-1)
 		return INVALID_ELEVATION;
 	return GetFValue(i, j);
 }
@@ -1409,7 +1400,7 @@ void vtElevationGrid::SetProjection(const vtProjection &proj)
 		// change of units requires change in local coordinate system
 		// units change; all else remains same
 		vtHeightFieldGrid3d::Initialize(newunits, m_EarthExtents,
-			m_fMinHeight, m_fMaxHeight, m_iColumns, m_iRows);
+			m_fMinHeight, m_fMaxHeight, m_iSize.x, m_iSize.y);
 	}
 	m_proj = proj;
 }
@@ -1482,7 +1473,7 @@ void vtElevationGrid::SetupConversion(float fVerticalExag)
 
 	// initialize parent class
 	Initialize(m_proj.GetUnits(), m_EarthExtents, m_fMinHeight, m_fMaxHeight,
-		m_iColumns, m_iRows);
+		m_iSize.x, m_iSize.y);
 
 	m_fVerticalScale = fVerticalExag;
 }
@@ -1497,17 +1488,18 @@ void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue) c
 {
 	if (bTrue)
 	{
-		loc.Set(m_WorldExtents.left + i * m_fXStep,
+		loc.Set(m_WorldExtents.left + i * m_fStep.x,
 			GetFValueSafe(i,j),
-			m_WorldExtents.bottom - j * m_fZStep);
+			m_WorldExtents.bottom - j * m_fStep.y);
 	}
 	else
 	{
 		float value = GetFValueSafe(i,j);
-		if (value != INVALID_ELEVATION) value *= m_fVerticalScale;
-		loc.Set(m_WorldExtents.left + i * m_fXStep,
+		if (value != INVALID_ELEVATION)
+			value *= m_fVerticalScale;
+		loc.Set(m_WorldExtents.left + i * m_fStep.x,
 			value,
-			m_WorldExtents.bottom - j * m_fZStep);
+			m_WorldExtents.bottom - j * m_fStep.y);
 	}
 }
 
@@ -1545,11 +1537,11 @@ float vtElevationGrid::GetWorldValue(int i, int j, bool bTrue) const
 bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	bool bTrue, int iCultureFlags, FPoint3 *vNormal) const
 {
-	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
-	int iZ = (int)((p.z - m_WorldExtents.bottom) / -m_fZStep);
+	const int iX = (int)((p.x - m_WorldExtents.left) / m_fStep.x);
+	const int iZ = (int)((p.z - m_WorldExtents.bottom) / -m_fStep.y);
 
 	// safety check
-	if (iX < 0 || iX >= m_iColumns-1 || iZ < 0 || iZ >= m_iRows-1)
+	if (iX < 0 || iX >= m_iSize.x-1 || iZ < 0 || iZ >= m_iSize.y-1)
 	{
 		if (p.x == m_WorldExtents.right || p.z == m_WorldExtents.top)
 		{
@@ -1578,8 +1570,8 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 		GetWorldLocation(iX, iZ+1, p3, bTrue);
 
 		// find fractional amount (0..1 across quad)
-		float fX = (p.x - p0.x) / m_fXStep;
-		float fZ = (p.z - p0.z) / -m_fZStep;
+		const float fX = (p.x - p0.x) / m_fStep.x;
+		const float fZ = (p.z - p0.z) / -m_fStep.y;
 
 		// which of the two triangles in the quad is it?
 		if (fX + fZ < 1)
@@ -1607,14 +1599,14 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	{
 		// It's faster to simpler to operate only the elevations, if we don't
 		//  need to compute a normal vector.
-		float alt0 = GetFValue(iX, iZ);
-		float alt1 = GetFValue(iX+1, iZ);
-		float alt2 = GetFValue(iX+1, iZ+1);
-		float alt3 = GetFValue(iX, iZ+1);
+		const float alt0 = GetFValue(iX, iZ);
+		const float alt1 = GetFValue(iX+1, iZ);
+		const float alt2 = GetFValue(iX+1, iZ+1);
+		const float alt3 = GetFValue(iX, iZ+1);
 
 		// find fractional amount (0..1 across quad)
-		float fX = (p.x - (m_WorldExtents.left + iX * m_fXStep)) / m_fXStep;
-		float fY = (p.z - (m_WorldExtents.bottom - iZ * m_fZStep)) / -m_fZStep;
+		const float fX = (p.x - (m_WorldExtents.left + iX * m_fStep.x)) / m_fStep.x;
+		const float fY = (p.z - (m_WorldExtents.bottom - iZ * m_fStep.y)) / -m_fStep.y;
 
 		// which of the two triangles in the quad is it?
 		if (fX + fY < 1)
@@ -1642,25 +1634,25 @@ bool vtElevationGrid::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 										  bool bTrue) const
 {
 	// we ignore bTrue because this class always stores true elevation
-	DPoint2 spacing = GetSpacing();
-	int iX = (int)((p.x - m_EarthExtents.left) / spacing.x);
-	int iY = (int)((p.y - m_EarthExtents.bottom) / spacing.y);
+	const DPoint2 &spacing = GetSpacing();
+	const int iX = (int)((p.x - m_EarthExtents.left) / spacing.x);
+	const int iY = (int)((p.y - m_EarthExtents.bottom) / spacing.y);
 
 	// safety check
-	if (iX < 0 || iX >= m_iColumns-1 || iY < 0 || iY >= m_iRows-1)
+	if (iX < 0 || iX >= m_iSize.x-1 || iY < 0 || iY >= m_iSize.y-1)
 	{
 		fAltitude = 0.0f;
 		return false;
 	}
 
-	float alt0 = GetFValue(iX, iY);
-	float alt1 = GetFValue(iX+1, iY);
-	float alt2 = GetFValue(iX+1, iY+1);
-	float alt3 = GetFValue(iX, iY+1);
+	const float alt0 = GetFValue(iX, iY);
+	const float alt1 = GetFValue(iX+1, iY);
+	const float alt2 = GetFValue(iX+1, iY+1);
+	const float alt3 = GetFValue(iX, iY+1);
 
 	// find fractional amount (0..1 across quad)
-	double fX = (p.x - (m_EarthExtents.left + iX * spacing.x)) / spacing.x;
-	double fY = (p.y - (m_EarthExtents.bottom + iY * spacing.y)) / spacing.y;
+	const double fX = (p.x - (m_EarthExtents.left + iX * spacing.x)) / spacing.x;
+	const double fY = (p.y - (m_EarthExtents.bottom + iY * spacing.y)) / spacing.y;
 
 	// which of the two triangles in the quad is it?
 	if (fX + fY < 1)

@@ -338,7 +338,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	IConvert(fp, 6, iProfiles);
 	VTLOG("DEM profiles: %d\n", iProfiles);
 
-	m_iColumns = iProfiles;
+	m_iSize.x = iProfiles;
 
 	// values we'll need while scanning the elevation profiles
 	int		iProfileRows, iProfileCols;
@@ -424,17 +424,17 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	{
 		// degrees
 		fRows = m_EarthExtents.Height() / dydelta * 3600.0f;
-		m_iRows = (int)fRows + 1;	// 1 more than quad spacing
+		m_iSize.y = (int)fRows + 1;	// 1 more than quad spacing
 	}
 	else
 	{
 		// some linear coordinate system
 		fRows = m_EarthExtents.Height() / dydelta;
-		m_iRows = (int)(fRows + 0.5) + 1;	// round to the nearest integer
+		m_iSize.y = (int)(fRows + 0.5) + 1;	// round to the nearest integer
 	}
 
 	// safety check
-	if (m_iRows > 10000)
+	if (m_iSize.y > 10000)
 		return false;
 
 	if (!_AllocateArray())
@@ -468,7 +468,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 		for (j = ygap; j < (ygap + iProfileRows); j++)
 		{
-			//assert(j >=0 && j < m_iRows);	// useful safety check
+			//assert(j >=0 && j < m_iSize.y);	// useful safety check
 
 			// We cannot use IConvert here, because there *might* be a spurious LF
 			// after the number - seen in some rare files.

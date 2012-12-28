@@ -52,8 +52,8 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevError *err)
 	VTLOG("BT header: version %d.%d", iMajor, iMinor);
 
 	// NOTE:  BT format is little-endian
-	GZFRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
-	GZFRead(&m_iRows,	 DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+	GZFRead(&m_iSize.y, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+	GZFRead(&m_iSize.x,	 DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 
 	// Default to internal projection
 	short external = 0;
@@ -212,10 +212,10 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 	// slow way
 	int value;
 	float fvalue;
-	for (i = 0; i < m_iColumns; i++)
+	for (i = 0; i < m_iSize.y; i++)
 	{
-		if (progress_callback != NULL) progress_callback(i * 100 / m_iColumns);
-		for (j = 0; j < m_iRows; j++)
+		if (progress_callback != NULL) progress_callback(i * 100 / m_iSize.y);
+		for (j = 0; j < m_iSize.x; j++)
 		{
 			if (m_bFloatMode)
 			{
@@ -233,11 +233,11 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 	// fast way
 	if (m_bFloatMode)
 	{
-		for (i = 0; i < m_iColumns; i++)
+		for (i = 0; i < m_iSize.y; i++)
 		{
 			if (progress_callback != NULL && ((i%40) == 0))
 			{
-				if (progress_callback(i * 100 / m_iColumns))
+				if (progress_callback(i * 100 / m_iSize.y))
 				{
 					// Cancel
 					if (err) *err = EGE_CANCELLED;
@@ -245,9 +245,9 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 					return false;
 				}
 			}
-			int nitems = GZFRead(m_pFData + (i*m_iRows), DT_FLOAT, m_iRows,
+			int nitems = GZFRead(m_pFData + (i*m_iSize.x), DT_FLOAT, m_iSize.x,
 				fp, BO_LITTLE_ENDIAN);
-			if (nitems != m_iRows)
+			if (nitems != m_iSize.x)
 			{
 				if (err) *err = EGE_READ_DATA;
 				gzclose(fp);
@@ -257,11 +257,11 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 	}
 	else
 	{
-		for (i = 0; i < m_iColumns; i++)
+		for (i = 0; i < m_iSize.y; i++)
 		{
 			if (progress_callback != NULL && ((i%40) == 0))
 			{
-				if (progress_callback(i * 100 / m_iColumns))
+				if (progress_callback(i * 100 / m_iSize.y))
 				{
 					// Cancel
 					if (err) *err = EGE_CANCELLED;
@@ -269,9 +269,9 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 					return false;
 				}
 			}
-			int nitems = GZFRead(m_pData + (i*m_iRows), DT_SHORT, m_iRows,
+			int nitems = GZFRead(m_pData + (i*m_iSize.x), DT_SHORT, m_iSize.x,
 				fp, BO_LITTLE_ENDIAN);
-			if (nitems != m_iRows)
+			if (nitems != m_iSize.x)
 			{
 				if (err) *err = EGE_READ_DATA;
 				gzclose(fp);
@@ -302,8 +302,8 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 bool vtElevationGrid::SaveToBT(const char *szFileName,
 							   bool progress_callback(int), bool bGZip)
 {
-	int w = m_iColumns;
-	int h = m_iRows;
+	int w = m_iSize.y;
+	int h = m_iSize.x;
 	short zone = (short) m_proj.GetUTMZone();
 	short datum = (short) m_proj.GetDatum();
 	short isfloat = (short) IsFloatMode();
@@ -371,7 +371,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 					if (progress_callback(i * 100 / w))
 					{ fclose(fp); return false; }
 				}
-				FWrite(m_pFData + (i * m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
+				FWrite(m_pFData + (i * m_iSize.x), DT_FLOAT, m_iSize.x, fp, BO_LITTLE_ENDIAN);
 			}
 		}
 		else
@@ -383,7 +383,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 					if (progress_callback(i * 100 / w))
 					{ fclose(fp); return false; }
 				}
-				FWrite(m_pData + (i * m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
+				FWrite(m_pData + (i * m_iSize.x), DT_SHORT, m_iSize.x, fp, BO_LITTLE_ENDIAN);
 			}
 		}
 #endif
@@ -427,7 +427,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 					if (progress_callback(i * 100 / w))
 					{ gzclose(fp); return false; }
 				}
-				GZFWrite(m_pFData + (i * m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
+				GZFWrite(m_pFData + (i * m_iSize.x), DT_FLOAT, m_iSize.x, fp, BO_LITTLE_ENDIAN);
 			}
 		}
 		else
@@ -439,7 +439,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 					if (progress_callback(i * 100 / w))
 					{ gzclose(fp); return false; }
 				}
-				GZFWrite(m_pData + (i * m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
+				GZFWrite(m_pData + (i * m_iSize.x), DT_SHORT, m_iSize.x, fp, BO_LITTLE_ENDIAN);
 			}
 		}
 		gzclose(fp);

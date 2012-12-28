@@ -868,6 +868,13 @@ public:
 		else
 			return true;
 	}
+	void Offset(const DPoint2 &delta)
+	{
+		left += delta.x;
+		right += delta.x;
+		top += delta.y;
+		bottom += delta.y;
+	}
 	void Grow(double x, double y)
 	{
 		left -= x;

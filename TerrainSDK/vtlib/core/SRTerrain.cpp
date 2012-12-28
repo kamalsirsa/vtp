@@ -102,21 +102,21 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	if (err != DTErr_OK)
 		return err;
 
-	if (m_iColumns != m_iRows)
+	if (m_iSize.x != m_iSize.y)
 		return DTErr_NOTSQUARE;
 
 	// compute n (log2 of grid size)
 	// ensure that the grid is size (1 << n) + 1
-	int n = vt_log2(m_iColumns - 1);
-	int required_size = (1<<n) + 1;
-	if (m_iColumns != required_size || m_iRows != required_size)
+	const int n = vt_log2(m_iSize.x - 1);
+	const int required_size = (1<<n) + 1;
+	if (m_iSize.x != required_size || m_iSize.y != required_size)
 		return DTErr_NOTPOWER2;
 
-	int size = m_iColumns;
-	float dim = m_fXStep;
-	float cellaspect = m_fZStep / m_fXStep;
+	int size = m_iSize.x;
+	float dim = m_fStep.x;
+	const float cellaspect = m_fStep.y / m_fStep.x;
 
-	s_iRows = m_iRows;
+	s_iRows = m_iSize.y;
 
 	// This maximum scale is a reasonable tradeoff between the exaggeration
 	//  that the user is likely to need, and numerical precision issues.
@@ -151,16 +151,16 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	m_pMini->setrelscale(m_fDrawScale);
 
 	m_iDrawnTriangles = -1;
-	m_iBlockSize = m_iColumns / 4;
+	m_iBlockSize = m_iSize.x / 4;
 
 	return DTErr_OK;
 }
 
 DTErr SRTerrain::ReInit(const vtElevationGrid *pGrid)
 {
-	int size = m_iColumns;
-	float dim = m_fXStep;
-	float cellaspect = m_fZStep / m_fXStep;
+	int size = m_iSize.x;
+	float dim = m_fStep.x;
+	const float cellaspect = m_fStep.y / m_fStep.x;
 
 	delete m_pMini;
 	void *objref = (void *) pGrid;
@@ -298,22 +298,22 @@ void SRTerrain::RenderPass()
 	float ey = m_eyepos_ogl.y;
 	float ez = m_eyepos_ogl.z;
 
-	float fov = m_fFOVY;
+	const float fov = m_fFOVY;
 
-	float ux = eye_up.x;
-	float uy = eye_up.y;
-	float uz = eye_up.z;
+	const float ux = eye_up.x;
+	const float uy = eye_up.y;
+	const float uz = eye_up.z;
 
-	float dx = eye_forward.x;
-	float dy = eye_forward.y;
-	float dz = eye_forward.z;
+	const float dx = eye_forward.x;
+	const float dy = eye_forward.y;
+	const float dz = eye_forward.z;
 
 	myfancnt = 0;
 	m_iDrawnTriangles = 0;
 
 	// Convert the eye location to the unusual coordinate scheme of libMini.
-	ex -= (m_iColumns/2)*m_fXStep;
-	ez += (m_iRows/2)*m_fZStep;
+	ex -= (m_iSize.x/2)*m_fStep.x;
+	ez += (m_iSize.y/2)*m_fStep.y;
 
 	m_pMini->draw(m_fResolution,
 				ex, ey, ez,
@@ -373,10 +373,10 @@ void SRTerrain::RenderPass()
 //
 float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
-	if (iX<0 || iX>m_iColumns-1 || iZ<0 || iZ>m_iRows-1)
+	if (iX<0 || iX>m_iSize.x-1 || iZ<0 || iZ>m_iSize.y-1)
 		return 0.0f;
 
-	float height = m_pMini->getheight(iX, iZ);
+	const float height = m_pMini->getheight(iX, iZ);
 
 	if (bTrue)
 		// convert stored value to true value
@@ -388,7 +388,7 @@ float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 
 void SRTerrain::SetElevation(int iX, int iZ, float fValue, bool bTrue)
 {
-	if (iX<0 || iX>m_iColumns-1 || iZ<0 || iZ>m_iRows-1)
+	if (iX<0 || iX>m_iSize.x-1 || iZ<0 || iZ>m_iSize.y-1)
 		return;
 
 	if (bTrue)
@@ -399,7 +399,7 @@ void SRTerrain::SetElevation(int iX, int iZ, float fValue, bool bTrue)
 
 void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 {
-	if (i<0 || i>m_iColumns-1 || j<0 || j>m_iRows-1)
+	if (i<0 || i>m_iSize.x-1 || j<0 || j>m_iSize.y-1)
 	{
 		p.Set(0, INVALID_ELEVATION, 0);
 		return;
@@ -411,9 +411,7 @@ void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 		// convert stored value to true value
 		height = height / m_fDrawScale / m_fMaximumScale;
 
-	p.Set(m_fXLookup[i],
-		  height,
-		  m_fZLookup[j]);
+	p.Set(m_fXLookup[i], height, m_fZLookup[j]);
 }
 
 void SRTerrain::SetPolygonTarget(int iPolygonCount)

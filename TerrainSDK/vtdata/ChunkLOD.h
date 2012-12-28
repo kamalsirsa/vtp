@@ -30,7 +30,7 @@ struct chunkstats {
 class HeightfieldChunker
 {
 public:
-	bool ProcessGrid(vtElevationGrid *grid, FILE* out,
+	bool ProcessGrid(const vtElevationGrid *grid, FILE* out,
 		int tree_depth,	float base_max_error,
 		float vertical_scale, float input_vertical_scale,
 		bool progress_callback(int) = NULL);

@@ -163,7 +163,7 @@ bool vtLayer::AskForSaveFilename()
 	return true;
 }
 
-vtString vtLayer::GetExportFilename(const wxString &format_filter)
+vtString vtLayer::GetExportFilename(const wxString &format_filter) const
 {
 	wxString filter = _("All Files|*.*");
 	AddType(filter, format_filter);

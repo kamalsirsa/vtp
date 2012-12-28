@@ -45,7 +45,7 @@ struct heightfield {
 	float	sample_spacing;
 	float	vertical_scale;	// scales the units stored in heightfield_elem's.  meters == stored_short * vertical_scale
 	float	input_vertical_scale;	// scale factor to apply to input data.
-	vtElevationGrid *m_bt;
+	const vtElevationGrid *m_bt;
 	mmap_array<uchar>*	m_level;
 
 	heightfield(float initial_vertical_scale, float input_scale) {
@@ -172,7 +172,7 @@ struct heightfield {
 	// Use the specified .BT format heightfield data file as our height input.
 	//
 	// Return true on success, false on failure.
-	bool	init_bt(vtElevationGrid *grid)
+	bool init_bt(const vtElevationGrid *grid)
 	{
 		clear();
 
@@ -237,10 +237,9 @@ const char*	spinner = "-\\|/";
  * Spacing determines the horizontal sample spacing for bitmap
  * heightfields only.
  */
-bool HeightfieldChunker::ProcessGrid(vtElevationGrid *grid, FILE *out,
-									int tree_depth, float base_max_error,
-									float vertical_scale, float input_vertical_scale,
-									bool progress_callback(int))
+bool HeightfieldChunker::ProcessGrid(const vtElevationGrid *grid, FILE *out,
+	int tree_depth, float base_max_error, float vertical_scale,
+	float input_vertical_scale, bool progress_callback(int))
 {
 	heightfield	hf(vertical_scale, input_vertical_scale);
 

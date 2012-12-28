@@ -49,9 +49,9 @@
 void Builder::ExportASC()
 {
 	// check spacing
-	vtElevationGrid *grid = GetActiveElevLayer()->GetGrid();
-	DPoint2 spacing = grid->GetSpacing();
-	double ratio = spacing.x / spacing.y;
+	const vtElevationGrid *grid = GetActiveElevLayer()->GetGrid();
+	const DPoint2 &spacing = grid->GetSpacing();
+	const double ratio = spacing.x / spacing.y;
 	if (ratio < 0.999 || ratio > 1.001)
 	{
 		wxString str, str2;
@@ -64,10 +64,10 @@ void Builder::ExportASC()
 			return;
 	}
 
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_ASC);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_ASC);
 	if (fname == "")
 		return;
-	bool success = grid->SaveToASC(fname);
+	const bool success = grid->SaveToASC(fname);
 	if (success)
 		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
@@ -76,7 +76,7 @@ void Builder::ExportASC()
 
 void Builder::ExportTerragen()
 {
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TER);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TER);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->GetGrid()->SaveToTerragen(fname);
@@ -88,7 +88,7 @@ void Builder::ExportTerragen()
 
 void Builder::ExportGeoTIFF()
 {
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TIF);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TIF);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->GetGrid()->SaveToGeoTIFF(fname);
@@ -100,7 +100,7 @@ void Builder::ExportGeoTIFF()
 
 void Builder::ExportBMP()
 {
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_BMP);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_BMP);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->GetGrid()->SaveToBMP(fname);
@@ -112,7 +112,7 @@ void Builder::ExportBMP()
 
 void Builder::ExportSTM()
 {
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_STM);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_STM);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->GetGrid()->SaveToSTM(fname);
@@ -124,7 +124,7 @@ void Builder::ExportSTM()
 
 void Builder::ExportTIN()
 {
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TIN);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TIN);
 	if (fname == "")
 		return;
 	vtTin2d *tin = new vtTin2d(GetActiveElevLayer()->GetGrid());
@@ -163,7 +163,7 @@ void Builder::ExportPlanet()
 
 void Builder::ExportVRML()
 {
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_WRL);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_WRL);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->GetGrid()->SaveToVRML(fname);
@@ -175,7 +175,7 @@ void Builder::ExportVRML()
 
 void Builder::ExportXYZ()
 {
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TXT);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_TXT);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->GetGrid()->SaveToXYZ(fname);
@@ -187,7 +187,7 @@ void Builder::ExportXYZ()
 
 void Builder::ExportRAWINF()
 {
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_RAW);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_RAW);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->GetGrid()->SaveToRAWINF(fname);
@@ -200,22 +200,21 @@ void Builder::ExportRAWINF()
 void Builder::ExportChunkLOD()
 {
 	// Check dimensions; must be 2^n+1 for .chu
-	vtElevationGrid *grid = GetActiveElevLayer()->GetGrid();
-	int x, y;
-	grid->GetDimensions(x, y);
+	const vtElevationGrid *grid = GetActiveElevLayer()->GetGrid();
+	const IPoint2 &Size = grid->GetDimensions();
 	bool good = false;
 	for (int i = 3; i < 20; i++)
-		if (x == ((1<<i)+1) && y == ((1<<i)+1))
+		if (Size.x == ((1<<i)+1) && Size.y == ((1<<i)+1))
 			good = true;
 	if (!good)
 	{
 		DisplayAndLog("The elevation grid has dimensions %d x %d.  They must be\n"
-					  "a power of 2 plus 1 for .chu, e.g. 1025x1025.", x, y);
+					  "a power of 2 plus 1 for .chu, e.g. 1025x1025.", Size.x, Size.y);
 		return;
 	}
 
 	// Ask for filename
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_CHU);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_CHU);
 	if (fname == "")
 		return;
 
@@ -232,8 +231,8 @@ void Builder::ExportChunkLOD()
 	}
 
 	const int CHUNKLOD_MAX_HEIGHT = 10000;
-	float vertical_scale = CHUNKLOD_MAX_HEIGHT / 32767.0f;
-	float input_vertical_scale = 1.0f;
+	const float vertical_scale = CHUNKLOD_MAX_HEIGHT / 32767.0f;
+	const float input_vertical_scale = 1.0f;
 
 	OpenProgressDialog(_T("Writing ChunkLOD"), false, m_pParentWindow);
 
@@ -293,7 +292,7 @@ void Builder::ExportChunkLOD()
 
 void Builder::ExportPNG16()
 {
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_PNG);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_PNG);
 	if (fname == "")
 		return;
 	bool success = GetActiveElevLayer()->GetGrid()->SaveToPNG16(fname);
@@ -305,15 +304,14 @@ void Builder::ExportPNG16()
 
 void Builder::Export3TX()
 {
-	vtElevationGrid *grid = GetActiveElevLayer()->GetGrid();
-	int col, row;
-	grid->GetDimensions(col, row);
-	if (col != 1201 || row != 1201)
+	const vtElevationGrid *grid = GetActiveElevLayer()->GetGrid();
+	const IPoint2 &Size = grid->GetDimensions();
+	if (Size.x != 1201 || Size.y != 1201)
 	{
 		DisplayAndLog("3TX expects grid dimensions of 1201 x 1201");
 		return;
 	}
-	vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_3TX);
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_3TX);
 	if (fname == "")
 		return;
 	bool success = grid->SaveTo3TX(fname);
@@ -327,9 +325,10 @@ void Builder::ElevExportTiles(BuilderView *pView)
 {
 	vtElevLayer *pEL = GetActiveElevLayer();
 	vtElevationGrid *grid = pEL->GetGrid();
-	bool floatmode = (grid->IsFloatMode() || grid->GetScale() != 1.0f);
-	DPoint2 spacing = grid->GetSpacing();
-	DRECT area = grid->GetEarthExtents();
+
+	const bool floatmode = (grid->IsFloatMode() || grid->GetScale() != 1.0f);
+	const DPoint2 &spacing = grid->GetSpacing();
+	const DRECT &area = grid->GetEarthExtents();
 
 	TilingOptions tileopts;
 	tileopts.cols = 4;
@@ -414,15 +413,10 @@ void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 	}
 
 	// Get attributes of existing layer
-	DRECT area;
 	vtProjection proj;
-	pEL->GetExtent(area);
 	pEL->GetProjection(proj);
-
-	// Elevation is pixel-is-point, but Imagery is pixel-is-area, so expand
-	//  the area slightly: Imagery is a half-cell larger in each direction.
-	DPoint2 spacing = pEL->GetGrid()->GetSpacing();
-	area.Grow(spacing.x/2, spacing.y/2);
+	DRECT area;
+	pEL->GetAreaExtent(area);
 
 	vtImageLayer *pOutputLayer = NULL;
 	vtBitmapBase *pBitmap = NULL;
@@ -453,7 +447,7 @@ void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 		else
 		{
 			// Quick and simple sunlight vector
-			FPoint3 light_dir = LightDirection(vtElevLayer::m_draw.m_iCastAngle,
+			const FPoint3 light_dir = LightDirection(vtElevLayer::m_draw.m_iCastAngle,
 				vtElevLayer::m_draw.m_iCastDirection);
 
 			if (vtElevLayer::m_draw.m_bCastShadows)
@@ -535,9 +529,9 @@ void Builder::ImageExportTiles(BuilderView *pView)
 
 void Builder::ImageExportPPM()
 {
-	vtImageLayer *pIL = GetActiveImageLayer();
+	const vtImageLayer *pIL = GetActiveImageLayer();
 
-	vtString fname = pIL->GetExportFilename(FSTRING_PPM);
+	const vtString fname = pIL->GetExportFilename(FSTRING_PPM);
 	if (fname == "")
 		return;
 	bool success = pIL->GetImage()->WritePPM(fname);
@@ -705,7 +699,7 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
 
 	// Size of each rectangular tile area
-	DPoint2 tile_dim(m_area.Width()/opts.cols, m_area.Height()/opts.rows);
+	const DPoint2 tile_dim(m_area.Width()/opts.cols, m_area.Height()/opts.rows);
 
 	// Try to create directory to hold the tiles
 	vtString dirname = opts.fname;
@@ -785,12 +779,11 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 	// Time the operation
 	clock_t tm1 = clock();
 
-	int i, j;
 	int total = opts.rows * opts.cols, done = 0;
 	bool bCancelled = false;
-	for (j = 0; j < opts.rows && !bCancelled; j++)
+	for (int j = 0; j < opts.rows && !bCancelled; j++)
 	{
-		for (i = 0; i < opts.cols && !bCancelled; i++)
+		for (int i = 0; i < opts.cols && !bCancelled; i++)
 		{
 			// We might want to skip certain rows
 			if (opts.iMinRow != -1 &&
@@ -1114,7 +1107,8 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 	return true;
 }
 
-bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opts, bool bShowGridMarks)
+bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opts,
+	bool bShowGridMarks)
 {
 	VTLOG1("SampleImageryToTilePyramids\n");
 
@@ -1122,12 +1116,12 @@ bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opt
 	CheckCompressionMethod(opts);
 	bool bJPEG = (opts.bUseTextureCompression && opts.eCompressionType == TC_JPEG);
 
-	// Gather array of existing image layers we will sample from
-	uint l, layers = m_Layers.size(), num_image = 0;
+	// Gather an array of the existing image layers we will sample from
+	uint num_image = 0;
 	vtImageLayer **images = new vtImageLayer *[LayersOfType(LT_IMAGE)];
-	for (l = 0; l < layers; l++)
+	for (uint lay = 0; lay < m_Layers.size(); lay++)
 	{
-		vtLayer *lp = m_Layers[l];
+		vtLayer *lp = m_Layers[lay];
 		if (lp->GetType() == LT_IMAGE)
 			images[num_image++] = (vtImageLayer *)lp;
 	}

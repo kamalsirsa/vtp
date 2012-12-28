@@ -78,10 +78,7 @@ bool vtStructureLayer::GetExtent(DRECT &rect)
 		offset.x /= fMetersPerUnit;
 		offset.y /= fMetersPerUnit;
 	}
-	rect.left -= offset.x;
-	rect.right += offset.x;
-	rect.bottom -= offset.y;
-	rect.top += offset.y;
+	rect.Grow(offset.x, offset.y);
 
 	return true;
 }

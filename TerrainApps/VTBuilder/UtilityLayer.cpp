@@ -41,10 +41,7 @@ bool vtUtilityLayer::GetExtent(DRECT &rect)
 	GetPoleExtents(rect);
 
 	// expand by 2 meters
-	rect.left -= 2.0f;
-	rect.right += 2.0f;
-	rect.bottom -= 2.0f;
-	rect.top += 2.0f;
+	rect.Grow(2.0, 2.0);
 
 	return true;
 }

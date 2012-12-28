@@ -1417,7 +1417,7 @@ void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 	if (!pEL || !pEL->GetGrid())
 		return;
 
-	DPoint2 spacing = pEL->GetGrid()->GetSpacing();
+	const DPoint2 &spacing = pEL->GetGrid()->GetSpacing();
 	SetScale(1.0f / spacing.x);
 
 	DPoint2 center;
@@ -1428,12 +1428,13 @@ void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 
 	Refresh();
 }
+
 void BuilderView::MatchZoomToImage(vtImageLayer *pIL)
 {
 	if (!pIL)
 		return;
 
-	DPoint2 spacing = pIL->GetSpacing();
+	const DPoint2 &spacing = pIL->GetSpacing();
 	SetScale(1.0f / spacing.x);
 
 	DPoint2 center;

@@ -1,7 +1,7 @@
 //
 // vtHeightField.h
 //
-// Copyright (c) 2002-2008 Virtual Terrain Project
+// Copyright (c) 2002-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -136,7 +136,7 @@ public:
 	int PointIsAboveTerrain(const FPoint3 &p) const;
 
 	bool ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3,
-		int iCultureFlags = 0, bool bTrue = false);
+		int iCultureFlags = 0, bool bTrue = false) const;
 
 	bool ContainsWorldPoint(float x, float z) const;
 	void GetCenter(FPoint3 &center) const;
@@ -173,11 +173,14 @@ public:
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;
 	bool LineOfSight(const FPoint3 &point1, const FPoint3 &point2) const;
-	DPoint2 GetSpacing() const;
-	FPoint2 GetWorldSpacing() const;
+
+	/** Get the grid spacing, the width of each column and row. */
+	const DPoint2 &GetSpacing() const { return m_dStep; }
+	const FPoint2 &GetWorldSpacing() const { return m_fStep; }
 	void GetDimensions(int &nColumns, int &nRows) const;
-	int NumColumns() { return m_iColumns; }
-	int NumRows() { return m_iRows; }
+	const IPoint2 &GetDimensions() const { return m_iSize; }
+	int NumColumns() const { return m_iSize.x; }
+	int NumRows() const { return m_iSize.y; }
 	void EarthToGrid(const DPoint2 &epos, IPoint2 &ipos);
 	void WorldToGrid(const FPoint3 &pos, IPoint2 &ipos);
 
@@ -202,9 +205,9 @@ public:
 		float fLightFactor, float fAmbient, bool progress_callback(int) = NULL);
 
 protected:
-	int		m_iColumns, m_iRows;
-	float	m_fXStep, m_fZStep;	// step size between the World grid points
-	double	m_dXStep, m_dYStep;	// step size between the Earth grid points
+	IPoint2	m_iSize;
+	FPoint2	m_fStep;			// step size (x, z) between the World grid points
+	DPoint2	m_dStep;			// step size (z, y) between the Earth grid points
 };
 
 #endif	// HEIGHTFIELDH

@@ -37,7 +37,7 @@ public:
 	bool SetExtent(const DRECT &rect);
 	void GetPropertyText(wxString &str);
 
-	vtImage *GetImage() { return m_pImage; }
+	vtImage *GetImage() const { return m_pImage; }
 	DPoint2 GetSpacing() const;
 	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
 	bool ImportFromDB(const char *szFileName, bool progress_callback(int) = NULL);

@@ -2161,9 +2161,8 @@ bool vtTerrain::CreateStep2()
 		// set global projection based on this terrain
 		m_proj = m_pElevGrid->GetProjection();
 
-		int col, row;
-		m_pElevGrid->GetDimensions(col, row);
-		VTLOG("\t\tSize: %d x %d.\n", col, row);
+		const IPoint2 &gridsize = m_pElevGrid->GetDimensions();
+		VTLOG("\t\tSize: %d x %d.\n", gridsize.x, gridsize.y);
 		DRECT rect = m_pElevGrid->GetEarthExtents();
 		VTLOG("\t\tEarth Extents LRTB: %lg %lg %lg %lg\n",
 			rect.left, rect.right, rect.top, rect.bottom);

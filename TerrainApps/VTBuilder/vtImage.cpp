@@ -1308,12 +1308,10 @@ bool vtImage::LoadFromGDAL(const char *fname)
 				throw "Couldn't open that file.";
 		}
 
-		int iXSize = m_pDataset->GetRasterXSize();
-		int iYSize = m_pDataset->GetRasterYSize();
+		const IPoint2 Size(m_pDataset->GetRasterXSize(),
+					 m_pDataset->GetRasterYSize());
 
-		IPoint2 OriginalSize;
-		OriginalSize.x = iXSize;
-		OriginalSize.y = iYSize;
+		IPoint2 OriginalSize = Size;
 
 		vtProjection temp;
 		bool bHaveProj = false;
@@ -1349,9 +1347,9 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		if (m_pDataset->GetGeoTransform(affineTransform) == CE_None)
 		{
 			m_Extents.left = affineTransform[0];
-			m_Extents.right = m_Extents.left + affineTransform[1] * iXSize;
+			m_Extents.right = m_Extents.left + affineTransform[1] * Size.x;
 			m_Extents.top = affineTransform[3];
-			m_Extents.bottom = m_Extents.top + affineTransform[5] * iYSize;
+			m_Extents.bottom = m_Extents.top + affineTransform[5] * Size.y;
 		}
 		else
 		{
@@ -1381,9 +1379,9 @@ bool vtImage::LoadFromGDAL(const char *fname)
 				throw "Import Cancelled.";
 		}
 
-		SetupBitmapInfo(iXSize, iYSize);
+		SetupBitmapInfo(Size.x, Size.y);
 
-		if (iXSize * iYSize > 512*512)
+		if (Size.x * Size.y > 512*512)
 			OpenProgressDialog(_("Reading file"), false);
 
 		m_linebuf.Setup(m_pDataset);
@@ -1393,7 +1391,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		int iBigImage = g_Options.GetValueInt(TAG_MAX_MEGAPIXELS) * 1024 * 1024;
 		// don't try to load giant image?
 		wxString msg;
-		if (iXSize * iYSize > iBigImage)
+		if (Size.x * Size.y > iBigImage)
 		{
 			if (g_Options.GetValueBool(TAG_LOAD_IMAGES_ALWAYS))
 				bDefer = false;
@@ -1402,7 +1400,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 			else
 			{
 				// Ask
-				msg.Printf(_("Image is very large (%d x %d).\n"), iXSize, iYSize);
+				msg.Printf(_("Image is very large (%d x %d).\n"), Size.x, Size.y);
 				msg += _("Would you like to create the layer using out-of-memory access to the image?"),
 				VTLOG(msg.mb_str(wxConvUTF8));
 				int result = wxMessageBox(msg, _("Question"), wxYES_NO);
@@ -1414,11 +1412,11 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		if (!bDefer)
 		{
 			vtBitmap *pBitmap = new vtBitmap;
-			if (!pBitmap->Allocate(iXSize, iYSize))
+			if (!pBitmap->Allocate(Size.x, Size.y))
 			{
 				delete pBitmap;
 				msg.Printf(_("Couldn't allocate bitmap of size %d x %d.\n"),
-					iXSize, iYSize);
+					Size.x, Size.y);
 				msg += _("Would you like to create the layer using out-of-memory access to the image?"),
 				VTLOG(msg.mb_str(wxConvUTF8));
 				int result = wxMessageBox(msg, _("Question"), wxYES_NO);
@@ -1431,16 +1429,16 @@ bool vtImage::LoadFromGDAL(const char *fname)
 			if (!bDefer)
 			{
 				// Read the data
-				VTLOG("Reading the image data (%d x %d pixels)\n", iXSize, iYSize);
+				VTLOG("Reading the image data (%d x %d pixels)\n", Size.x, Size.y);
 				RGBi rgb;
-				for (int iY = 0; iY < iYSize; iY++ )
+				for (int iY = 0; iY < Size.y; iY++ )
 				{
-					if (UpdateProgressDialog(iY * 99 / iYSize))
+					if (UpdateProgressDialog(iY * 99 / Size.y))
 					{
 						// cancel
 						throw "Cancelled";
 					}
-					for (int iX = 0; iX < iXSize; iX++ )
+					for (int iX = 0; iX < Size.x; iX++ )
 					{
 						RGBi *data = m_linebuf.GetScanlineFromBuffer(iY, 0);
 						rgb = data[iX];

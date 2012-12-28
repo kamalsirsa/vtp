@@ -162,18 +162,18 @@ DTErr SMTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	if (err != DTErr_OK)
 		return err;
 
-	if (m_iColumns != m_iRows)
+	if (m_iSize.x != m_iSize.y)
 		return DTErr_NOTSQUARE;
 
 	// get size of array
-	m_iDim = m_iColumns;
+	m_iDim = m_iSize.x;
 
 	// compute n (log2 of grid size)
 	m_n = vt_log2(m_iDim - 1);
 
 	// ensure that the grid is size (1 << n) + 1
 	int required_size = (1<<m_n) + 1;
-	if (m_iColumns != required_size || m_iRows != required_size)
+	if (m_iSize.x != required_size || m_iSize.y != required_size)
 		return DTErr_NOTPOWER2;
 
 	// the triangle bintree will have (2n + 2) levels
@@ -214,7 +214,7 @@ DTErr SMTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 #endif
 
 	// allocate arrays
-	m_pData = new HeightType[m_iColumns * m_iRows];
+	m_pData = new HeightType[m_iSize.x * m_iSize.y];
 
 	// this is potentially a big chunk of memory, so it may fail
 	if (!m_pData)
@@ -222,9 +222,9 @@ DTErr SMTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 
 	// copy data from supplied elevation grid
 	float elev;
-	for (i = 0; i < m_iColumns; i++)
+	for (i = 0; i < m_iSize.x; i++)
 	{
-		for (j = 0; j < m_iRows; j++)
+		for (j = 0; j < m_iSize.y; j++)
 		{
 			elev = pGrid->GetFValue(i, j);
 			m_pData[offset(i,j)] = (HeightType)(PACK_SCALE * elev);
@@ -234,9 +234,9 @@ DTErr SMTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 
 	// find indices of corner vertices
 	m_sw = offset(0, 0);
-	m_nw = offset(0, m_iRows-1);
-	m_ne = offset(m_iColumns-1, m_iRows-1);
-	m_se = offset(m_iColumns-1, 0);
+	m_nw = offset(0, m_iSize.y-1);
+	m_ne = offset(m_iSize.x-1, m_iSize.y-1);
+	m_se = offset(m_iSize.x-1, 0);
 
 	m_iPolygonTarget = DEFAULT_POLYGON_TARGET;
 	m_fQualityConstant= 0.1f;		// safe initial value
