@@ -179,14 +179,14 @@ protected:
 	void OnUpdateRoadFlatten(wxUpdateUIEvent& event);
 
 	void OnElevSelect(wxCommandEvent& event);
-	void OnRemoveElevRange(wxCommandEvent& event);
+	void OnElevRemoveRange(wxCommandEvent& event);
 	void OnElevComputeDiff(wxCommandEvent& event);
 	void OnElevSetUnknown(wxCommandEvent& event);
 	void OnFillFast(wxCommandEvent& event);
 	void OnFillSlow(wxCommandEvent& event);
 	void OnFillRegions(wxCommandEvent& event);
-	void OnScaleElevation(wxCommandEvent& event);
-	void OnVertOffsetElevation(wxCommandEvent& event);
+	void OnElevScale(wxCommandEvent& event);
+	void OnElevVertOffset(wxCommandEvent& event);
 	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
 	void OnElevToTin(wxCommandEvent& event);

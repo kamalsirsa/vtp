@@ -250,8 +250,6 @@ void vtElevationGrid::Invalidate()
 bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	const vtProjection &NewProj, float bUpgradeToFloat, bool progress_callback(int))
 {
-	int i, j;
-
 	// Create conversion object
 	const vtProjection *pSource, *pDest;
 	pSource = &pOld->GetProjection();
@@ -268,7 +266,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	// find where the extent corners are going to be in the new terrain
 	int success;
 	m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
-	for (i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		DPoint2 point = pOld->m_Corners[i];
 		success = trans->Transform(1, &point.x, &point.y);
@@ -285,7 +283,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 		//  new extents cover the entire area.
 		DPoint2 p1 = pOld->m_Corners[i];
 		DPoint2 p2 = pOld->m_Corners[(i+1)%4], diff = p2 - p1;
-		for (j = 0; j < 50; j++)
+		for (int j = 0; j < 50; j++)
 		{
 			DPoint2 p = p1 + (diff / 50 * j);
 			trans->Transform(1, &p.x, &p.y);
@@ -300,7 +298,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	bool bOldGeo = (pSource->IsGeographic() != 0);
 	bool bNewGeo = (pDest->IsGeographic() != 0);
 
-	DPoint2 old_step = pOld->GetSpacing();
+	const DPoint2 old_step = pOld->GetSpacing();
 	DPoint2 new_step;
 	double meters_per_longitude;
 
@@ -325,8 +323,8 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 		double units_new = pDest->GetLinearUnits(NULL);
 		new_step = old_step * (units_old / units_new);
 	}
-	double fColumns = m_EarthExtents.Width() / new_step.x;
-	double fRows = m_EarthExtents.Height() / new_step.y;
+	const double fColumns = m_EarthExtents.Width() / new_step.x;
+	const double fRows = m_EarthExtents.Height() / new_step.y;
 
 	// round up to the nearest integer
 	m_iColumns = (int)(fColumns + 0.999);
@@ -364,13 +362,13 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 		m_strError = "Couldn't convert between coordinate systems.";
 		return false;
 	}
-	DPoint2 p, step = GetSpacing();
-	float value;
-	for (i = 0; i < m_iColumns; i++)
+	const DPoint2 step = GetSpacing();
+	DPoint2 p;
+	for (int i = 0; i < m_iColumns; i++)
 	{
 		if (progress_callback != NULL) progress_callback(i*100/m_iColumns);
 
-		for (j = 0; j < m_iRows; j++)
+		for (int j = 0; j < m_iRows; j++)
 		{
 			p.x = m_EarthExtents.left + i * step.x;
 			p.y = m_EarthExtents.bottom + j * step.y;
@@ -379,8 +377,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 			// that the points will also transform without errors.
 			trans->Transform(1, &p.x, &p.y);
 
-			value = pOld->GetFilteredValue(p);
-			SetFValue(i, j, value);
+			SetFValue(i, j, pOld->GetFilteredValue(p));
 		}
 	}
 	delete trans;
@@ -415,11 +412,10 @@ bool vtElevationGrid::ReprojectExtents(const vtProjection &proj_new)
 		// inconvertible projections
 		return false;
 	}
-	int i, success;
-	for (i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		DPoint2 point = m_Corners[i];
-		success = trans->Transform(1, &point.x, &point.y);
+		int success = trans->Transform(1, &point.x, &point.y);
 		if (success == 0)
 		{
 			// inconvertible projections
@@ -448,18 +444,14 @@ bool vtElevationGrid::ReprojectExtents(const vtProjection &proj_new)
 void vtElevationGrid::Scale(float fScale, bool bDirect, bool bRecomputeExtents)
 {
 	if (!bDirect)
-	{
 		m_fVMeters *= fScale;
-	}
 	else
 	{
-		int i, j;
-		float f;
-		for (i = 0; i < m_iColumns; i++)
+		for (int i = 0; i < m_iColumns; i++)
 		{
-			for (j = 0; j < m_iRows; j++)
+			for (int j = 0; j < m_iRows; j++)
 			{
-				f = GetFValue(i, j);
+				const float f = GetFValue(i, j);
 				if (f != INVALID_ELEVATION)
 					SetFValue(i, j, f * fScale);
 			}
@@ -476,16 +468,19 @@ void vtElevationGrid::Scale(float fScale, bool bDirect, bool bRecomputeExtents)
  */
 void vtElevationGrid::VertOffset(float fAmount)
 {
-	float f;
 	for (int i = 0; i < m_iColumns; i++)
 	{
 		for (int j = 0; j < m_iRows; j++)
 		{
-			f = GetFValue(i, j);
+			const float f = GetFValue(i, j);
 			if (f != INVALID_ELEVATION)
 				SetFValue(i, j, f + fAmount);
 		}
 	}
+	// The height extents don't need to be manually recomputed, they can simply
+	// be offset.
+	m_fMinHeight += fAmount;
+	m_fMaxHeight += fAmount;
 }
 
 /**
@@ -500,12 +495,11 @@ void vtElevationGrid::ComputeHeightExtents()
 	if (!HasData())
 		return;
 
-	int i, j;
-	for (i=0; i<m_iColumns; i++)
+	for (int i=0; i<m_iColumns; i++)
 	{
-		for (j=0; j<m_iRows; j++)
+		for (int j=0; j<m_iRows; j++)
 		{
-			float value = GetFValue(i, j);
+			const float value = GetFValue(i, j);
 			if (value == INVALID_ELEVATION)
 				continue;
 			if (value > m_fMaxHeight) m_fMaxHeight = value;

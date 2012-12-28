@@ -182,14 +182,14 @@ EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateRoadShowNodes)
 EVT_UPDATE_UI(ID_ROAD_FLATTEN,		MainFrame::OnUpdateRoadFlatten)
 
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
-EVT_MENU(ID_ELEV_REMOVERANGE,		MainFrame::OnRemoveElevRange)
+EVT_MENU(ID_ELEV_REMOVERANGE,		MainFrame::OnElevRemoveRange)
 EVT_MENU(ID_ELEV_COMPUTE_DIFF,		MainFrame::OnElevComputeDiff)
 EVT_MENU(ID_ELEV_SETUNKNOWN,		MainFrame::OnElevSetUnknown)
 EVT_MENU(ID_ELEV_FILL_FAST,			MainFrame::OnFillFast)
 EVT_MENU(ID_ELEV_FILL_SLOW,			MainFrame::OnFillSlow)
 EVT_MENU(ID_ELEV_FILL_REGIONS,		MainFrame::OnFillRegions)
-EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
-EVT_MENU(ID_ELEV_VERT_OFFSET,		MainFrame::OnVertOffsetElevation)
+EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnElevScale)
+EVT_MENU(ID_ELEV_VERT_OFFSET,		MainFrame::OnElevVertOffset)
 EVT_MENU(ID_ELEV_EXPORT,			MainFrame::OnElevExport)
 EVT_MENU(ID_ELEV_EXPORT_TILES,		MainFrame::OnElevExportTiles)
 EVT_MENU(ID_ELEV_COPY,				MainFrame::OnElevCopy)
@@ -1987,7 +1987,7 @@ void MainFrame::OnUpdateElevSelect(wxUpdateUIEvent& event)
 	event.Check(m_pView->GetMode() == LB_TSelect);
 }
 
-void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
+void MainFrame::OnElevRemoveRange(wxCommandEvent &event)
 {
 	vtElevLayer *t = GetActiveElevLayer();
 	if (!t && !t->GetGrid())
@@ -2087,7 +2087,7 @@ void MainFrame::OnFillRegions(wxCommandEvent &event)
 	OnFillIn(3);
 }
 
-void MainFrame::OnScaleElevation(wxCommandEvent &event)
+void MainFrame::OnElevScale(wxCommandEvent &event)
 {
 	vtElevLayer *el = GetActiveElevLayer();
 	if (!el)
@@ -2123,7 +2123,7 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	m_pView->Refresh();
 }
 
-void MainFrame::OnVertOffsetElevation(wxCommandEvent &event)
+void MainFrame::OnElevVertOffset(wxCommandEvent &event)
 {
 	vtElevLayer *el = GetActiveElevLayer();
 	if (!el)

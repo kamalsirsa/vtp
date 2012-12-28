@@ -1835,6 +1835,8 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 
 	// Check data type - it's either integer or float
 	GDALDataType rtype = poBand->GetRasterDataType();
+	VTLOG("vtElevationGrid::LoadWithGDAL: Raster size %d x %d, type '%s'\n",
+		m_iColumns, m_iRows, GDALGetDataTypeName(rtype));
 	if (rtype == GDT_Int16 || rtype == GDT_Byte)
 		m_bFloatMode = false;
 	else

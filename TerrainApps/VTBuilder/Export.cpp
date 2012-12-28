@@ -887,7 +887,8 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 				p.y = m_area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
 
 				// Inform user
-				progress_callback_minor((base_tilesize-1-y)*99/base_tilesize);
+				if ((y % 24) == 0)
+					progress_callback_minor((base_tilesize-1-y)*99/base_tilesize);
 
 				for (x = 0; x <= base_tilesize; x++)
 				{
