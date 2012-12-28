@@ -10,32 +10,10 @@
 
 #include <limits.h>			// for SHRT_MIN
 #include "LocalConversion.h"
+#include "ColorMap.h"
 
 class vtBitmapBase;
 #define INVALID_ELEVATION	SHRT_MIN
-
-/**
- * This small class describes how to map elevation (as from a heightfield)
- * onto a set of colors.
- */
-class ColorMap
-{
-public:
-	ColorMap();
-	bool Save(const char *fname) const;
-	bool Load(const char *fname);
-	void Add(float elev, const RGBi &color);
-	void RemoveAt(int num);
-	void Clear();
-	int Num() const;
-	void GenerateColors(std::vector<RGBi> &table, int iTableSize, float fMin, float fMax) const;
-
-	bool m_bBlend;
-	bool m_bRelative;
-	std::vector<float> m_elev;
-	std::vector<RGBi> m_color;
-};
-
 
 /**
  * A heightfield is any collection of surfaces such that, given a horizontal

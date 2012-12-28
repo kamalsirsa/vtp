@@ -1,6 +1,7 @@
 # Add a library target called vtdata
 add_library(vtdata
-		Building.cpp ByteOrder.cpp ChunkLOD.cpp ChunkUtil.cpp Content.cpp CubicSpline.cpp DataPath.cpp DLG.cpp
+		Building.cpp ByteOrder.cpp ChunkLOD.cpp ChunkUtil.cpp ColorMap.cpp Content.cpp
+		CubicSpline.cpp DataPath.cpp DLG.cpp
 		DxfParser.cpp ElevationGrid.cpp ElevationGridBT.cpp ElevationGridDEM.cpp ElevationGridIO.cpp FeatureGeom.cpp
 		Features.cpp Fence.cpp FilePath.cpp Geodesic.cpp GEOnet.cpp HeightField.cpp Icosa.cpp LevellerTag.cpp
 		LocalConversion.cpp LULC.cpp MaterialDescriptor.cpp MathTypes.cpp Matrix.cpp Plants.cpp
@@ -8,8 +9,9 @@ add_library(vtdata
 		StructImport.cpp Structure.cpp Triangulate.cpp TripDub.cpp Unarchive.cpp UtilityMap.cpp
 		Vocab.cpp vtDIB.cpp vtLog.cpp vtString.cpp vtTime.cpp vtTin.cpp vtUnzip.cpp WFSClient.cpp
 
-		Array.h Building.h ByteOrder.h ChunkLOD.h ChunkUtil.h config_vtdata.h Content.h CubicSpline.h DataPath.h
-		DLG.h DxfParser.h ElevationGrid.h Features.h Fence.h FilePath.h GEOnet.h HeightField.h Icosa.h LayerBase.h LevellerTag.h
+		Array.h Building.h ByteOrder.h ChunkLOD.h ChunkUtil.h ColorMap.h
+		config_vtdata.h Content.h CubicSpline.h DataPath.h DLG.h DxfParser.h ElevationGrid.h
+		Features.h Fence.h FilePath.h GEOnet.h HeightField.h Icosa.h LayerBase.h LevellerTag.h
 		LocalConversion.h LULC.h Mainpage.h MaterialDescriptor.h MathTypes.h Plants.h PolyChecker.h
 		Projections.h QuikGrid.h RoadMap.h Selectable.h SPA.h StatePlane.h StructArray.h Structure.h
 		Triangulate.h TripDub.h Unarchive.h UtilityMap.h Version.h Vocab.h vtDIB.h vtLog.h vtString.h
