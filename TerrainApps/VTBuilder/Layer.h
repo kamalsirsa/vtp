@@ -108,10 +108,19 @@ typedef vtLayer *vtLayerPtr;
 class LayerArray : public std::vector<vtLayerPtr>
 {
 public:
+	LayerArray() : m_bOwnLayers(true) {}
 	~LayerArray();
+
 	void Remove(vtLayer *lay);
 	void DeleteLayers();
 	vtLayer *FindByFilename(const wxString &name);
+
+	/** If true, this array owns the layers it contains, so it will delete them
+	    when the array is deleted. Default is true. */
+	void SetOwnership(bool bOwn) { m_bOwnLayers = bOwn; }
+
+private:
+	bool	m_bOwnLayers;
 };
 
 class DrawStyle

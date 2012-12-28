@@ -155,6 +155,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	{
 		// simple case
 		LayerArray layers;
+		layers.SetOwnership(false);
 		bool got = ImportLayersFromFile(fname, layers, bRefresh, true);
 		if (!got)
 			return 0;	// no layers created
@@ -224,6 +225,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		{
 			// Otherwise, try importing
 			LayerArray layers;
+			layers.SetOwnership(false);
 			if (ImportLayersFromFile(fname, layers, bRefresh, true))
 			{
 				int num_imported = 0;

@@ -244,7 +244,8 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 
 LayerArray::~LayerArray()
 {
-	DeleteLayers();
+	if (m_bOwnLayers)
+		DeleteLayers();
 }
 
 void LayerArray::Remove(vtLayer *lay)
