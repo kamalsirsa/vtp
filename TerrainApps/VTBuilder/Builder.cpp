@@ -1247,7 +1247,7 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 	else if (dlg.m_bToTiles)
 	{
 		OpenProgressDialog2(_("Writing tiles"), true);
-		bool success = pOutput->WriteGridOfElevTilePyramids(dlg.m_tileopts, pView);
+		bool success = pOutput->WriteElevationTileset(dlg.m_tileopts, pView);
 		if (pView)
 			pView->HideGridMarks();
 		delete pOutput;
@@ -1337,7 +1337,7 @@ void Builder::MergeResampleImages(BuilderView *pView)
 	else if (dlg.m_bToTiles)
 	{
 		OpenProgressDialog(_("Writing tiles"), true);
-		bool success = pOutput->WriteGridOfTilePyramids(dlg.m_tileopts, pView);
+		bool success = pOutput->WriteTileset(dlg.m_tileopts, pView);
 		if (pView)
 			pView->HideGridMarks();
 		delete pOutput;

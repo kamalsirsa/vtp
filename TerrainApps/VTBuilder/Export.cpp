@@ -380,7 +380,7 @@ void Builder::ElevExportTiles(BuilderView *pView)
 		tileopts.bCreateDerivedImages = false;
 
 	OpenProgressDialog2(_("Writing tiles"), true);
-	bool success = pEL->WriteGridOfElevTilePyramids(tileopts, pView);
+	bool success = pEL->WriteElevationTileset(tileopts, pView);
 	if (pView)
 		pView->HideGridMarks();
 	CloseProgressDialog2();
@@ -519,7 +519,7 @@ void Builder::ImageExportTiles(BuilderView *pView)
 	dlg.GetTilingOptions(m_tileopts);
 
 	OpenProgressDialog(_("Writing tiles"), true);
-	bool success = pIL->GetImage()->WriteGridOfTilePyramids(m_tileopts, pView);
+	bool success = pIL->GetImage()->WriteTileset(m_tileopts, pView);
 	CloseProgressDialog();
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
@@ -610,7 +610,7 @@ void Builder::ExportAreaOptimizedElevTileset(BuilderView *pView)
 	else
 		m_tileopts.bCreateDerivedImages = false;
 
-	bool success = DoSampleElevationToTilePyramids(pView, m_tileopts, bFloat);
+	bool success = DoSampleElevationToTileset(pView, m_tileopts, bFloat);
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
@@ -620,13 +620,12 @@ void Builder::ExportAreaOptimizedElevTileset(BuilderView *pView)
 		DisplayAndLog("Filled %d unknown heixels in output tiles.", m_tileopts.iNoDataFilled);
 }
 
-bool Builder::DoSampleElevationToTilePyramids(BuilderView *pView,
-											  TilingOptions &opts,
-											  bool bFloat, bool bShowGridMarks)
+bool Builder::DoSampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
+										 bool bFloat, bool bShowGridMarks)
 {
 	if (m_pParentWindow)
 		OpenProgressDialog2(_("Writing tiles"), true, m_pParentWindow);
-	bool success = SampleElevationToTilePyramids(pView, opts, bFloat, bShowGridMarks);
+	bool success = SampleElevationToTileset(pView, opts, bFloat, bShowGridMarks);
 	if (bShowGridMarks && pView)
 		pView->HideGridMarks();
 	if (m_pParentWindow)
@@ -666,30 +665,28 @@ void Builder::ExportAreaOptimizedImageTileset(BuilderView *pView)
 	dlg.GetTilingOptions(m_tileopts);
 	m_tileopts.bCreateDerivedImages = false;
 
-	bool success = DoSampleImageryToTilePyramids(pView, m_tileopts);
+	bool success = DoSampleImageryToTileset(pView, m_tileopts);
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
 		DisplayAndLog("Could not successfully write to '%s'", (const char *) m_tileopts.fname);
 }
 
-bool Builder::DoSampleImageryToTilePyramids(BuilderView *pView,
-											TilingOptions &opts,
-											bool bShowGridMarks)
+bool Builder::DoSampleImageryToTileset(BuilderView *pView, TilingOptions &opts,
+									   bool bShowGridMarks)
 {
 	OpenProgressDialog(_T("Writing tiles"), true);
-	bool success = SampleImageryToTilePyramids(pView, m_tileopts);
+	bool success = SampleImageryToTileset(pView, m_tileopts);
 	if (bShowGridMarks && pView)
 		pView->HideGridMarks();
 	CloseProgressDialog();
 	return success;
 }
 
-bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
-											TilingOptions &opts, bool bFloat,
-											bool bShowGridMarks)
+bool Builder::SampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
+									   bool bFloat, bool bShowGridMarks)
 {
-	VTLOG1("SampleElevationToTilePyramids\n");
+	VTLOG1("SampleElevationToTileset\n");
 
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -1107,10 +1104,10 @@ bool Builder::SampleElevationToTilePyramids(BuilderView *pView,
 	return true;
 }
 
-bool Builder::SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opts,
+bool Builder::SampleImageryToTileset(BuilderView *pView, TilingOptions &opts,
 	bool bShowGridMarks)
 {
-	VTLOG1("SampleImageryToTilePyramids\n");
+	VTLOG1("SampleImageryToTileset\n");
 
 	// Check that options are valid
 	CheckCompressionMethod(opts);

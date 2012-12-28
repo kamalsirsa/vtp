@@ -233,10 +233,10 @@ public:
 	// Sampling
 	void ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 &spacing);
 	void MergeResampleElevation(BuilderView *pView = NULL);
-	bool SampleElevationToTilePyramids(BuilderView *pView, TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
-	bool DoSampleElevationToTilePyramids(BuilderView *pView, TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
-	bool SampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opts, bool bShowGridMarks = true);
-	bool DoSampleImageryToTilePyramids(BuilderView *pView, TilingOptions &opts, bool bShowGridMarks = true);
+	bool SampleElevationToTileset(BuilderView *pView, TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
+	bool DoSampleElevationToTileset(BuilderView *pView, TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
+	bool SampleImageryToTileset(BuilderView *pView, TilingOptions &opts, bool bShowGridMarks = true);
+	bool DoSampleImageryToTileset(BuilderView *pView, TilingOptions &opts, bool bShowGridMarks = true);
 	void MergeResampleImages(BuilderView *pView = NULL);
 
 	// Application Data

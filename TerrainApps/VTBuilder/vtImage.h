@@ -133,7 +133,7 @@ public:
 
 	bool ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 		int iMetersPerPixel, int iUTMZone, const char *filename);
-	bool WriteGridOfTilePyramids(TilingOptions &opts, BuilderView *pView);
+	bool WriteTileset(TilingOptions &opts, BuilderView *pView);
 	bool WriteTile(const TilingOptions &opts, BuilderView *pView, vtString &dirname,
 		DRECT &tile_area, DPoint2 &tile_dim, int col, int row, int lod);
 

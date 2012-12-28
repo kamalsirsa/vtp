@@ -1449,8 +1449,7 @@ FPoint3 LightDirection(float angle, float direction)
 	return light_dir;
 }
 
-bool vtElevLayer::WriteGridOfElevTilePyramids(TilingOptions &opts,
-											  BuilderView *pView)
+bool vtElevLayer::WriteElevationTileset(TilingOptions &opts, BuilderView *pView)
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
