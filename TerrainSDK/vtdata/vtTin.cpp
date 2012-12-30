@@ -568,11 +568,9 @@ bool vtTin::ReadPLY(const char *fname, bool progress_callback(int))
 	VTLOG("ReadPLY '%s'\n", fname);
 
 	char buf[256];
-	vtString tin_name;
 	int material_id;
 	int num_points;
 	int num_faces;
-	int inu = 0, a, b, c;
 
 	// first line is file identifier
 	if (fgets(buf, 256, fp) == NULL)
@@ -581,11 +579,8 @@ bool vtTin::ReadPLY(const char *fname, bool progress_callback(int))
 	if (strncmp(buf, "ply", 3) != 0)
 		return false;
 
-	while (1)
+	while (fgets(buf, 256, fp) != NULL)
 	{
-		if (fgets(buf, 256, fp) == NULL)
-			break;
-
 		// trim trailing EOL characters
 		vtString vstr = buf;
 		vstr.Remove('\r');
@@ -615,7 +610,7 @@ bool vtTin::ReadPLY(const char *fname, bool progress_callback(int))
 		{
 			sscanf(buf, "element face %d\n", &num_faces);
 		}
-		else if (!strncmp(str, "end_header", 10))	// TIN name
+		else if (!strncmp(str, "end_header", 10))
 		{
 			DPoint2 p;
 			float z;
@@ -646,9 +641,10 @@ bool vtTin::ReadPLY(const char *fname, bool progress_callback(int))
 				}
 			}
 
-			// Leggo anche i triangoli
+			// Then read the triangles
 			VTLOG("ReadPLY num_faces %d\n", num_faces);
 
+			int inu, a, b, c;
 			for (int i = 0; i < num_faces; i++)
 			{
 				if (fgets(buf, 256, fp) == NULL)
