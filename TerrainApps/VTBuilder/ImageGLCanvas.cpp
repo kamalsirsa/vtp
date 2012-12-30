@@ -37,7 +37,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 		if (opts.eCompressionType == TC_OPENGL)
 		{
 #if USE_OPENGL
-			DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex, opts.bMaskUnknownAreas);
+			DoTextureCompress(rgb_bytes, output_buf, pCanvas->m_iTex, opts.bImageAlpha);
 
 			if (output_buf.savedata(fname) == 0)
 			{
@@ -74,7 +74,7 @@ void WriteMiniImage(const vtString &fname, const TilingOptions &opts,
 	else
 	{
 		// Uncompressed
-		if (opts.bMaskUnknownAreas)
+		if (opts.bImageAlpha)
 		{
 			// Output to a plain RGBA .db file
 			output_buf.type = databuf::DATABUF_TYPE_RGBA;

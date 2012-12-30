@@ -269,12 +269,12 @@ bool vtImageLayer::ImportFromDB(const char *szFileName, bool progress_callback(i
 			if (bAlpha)
 			{
 				dbuf.getrgba(i, j, 0, &rgba.r);
-				m_pImage->SetRGB(i, j, RGBf(rgba.r, rgba.g, rgba.b));
+				m_pImage->SetRGBA(i, j, RGBAf(rgba.r, rgba.g, rgba.b, 1.0f));
 			}
 			else
 			{
 				dbuf.getrgb(i, j, 0, &rgb.r);
-				m_pImage->SetRGB(i, j, RGBi((int) rgb.r, (int) rgb.g, (int) rgb.b));
+				m_pImage->SetRGBA(i, j, RGBi((int) rgb.r, (int) rgb.g, (int) rgb.b));
 			}
 		}
 	}

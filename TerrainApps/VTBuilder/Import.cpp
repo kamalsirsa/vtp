@@ -153,10 +153,9 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 
 	if (!bTGZip && !bZip)
 	{
-		// simple case
 		LayerArray layers;
 		layers.SetOwnership(false);
-		bool got = ImportLayersFromFile(fname, layers, bRefresh, true);
+		bool got = ImportLayersFromFile(ltype, fname, layers, bRefresh, true);
 		if (!got)
 			return 0;	// no layers created
 
@@ -226,7 +225,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 			// Otherwise, try importing
 			LayerArray layers;
 			layers.SetOwnership(false);
-			if (ImportLayersFromFile(fname, layers, bRefresh, true))
+			if (ImportLayersFromFile(ltype, fname, layers, bRefresh, true))
 			{
 				int num_imported = 0;
 				for (uint i = 0; i < layers.size(); i++)
@@ -371,7 +370,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
  *
  * \return	True if any layers were successfully imported.
  */
-bool Builder::ImportLayersFromFile(const wxString &strFileName,
+bool Builder::ImportLayersFromFile(LayerType ltype, const wxString &strFileName,
 	LayerArray &layers, bool bRefresh, bool bWarn)
 {
 	// check the file extension
@@ -392,7 +391,7 @@ bool Builder::ImportLayersFromFile(const wxString &strFileName,
 	else
 	{
 		// We only expect at most one layer.
-		vtLayer *layer = ImportLayerFromFile(LT_UNKNOWN, strFileName,
+		vtLayer *layer = ImportLayerFromFile(ltype, strFileName,
 			bRefresh, bWarn);
 		if (layer)
 			layers.push_back(layer);

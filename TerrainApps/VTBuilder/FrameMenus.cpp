@@ -322,10 +322,10 @@ EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
 EVT_MENU(ID_AREA_ZOOM_LAYER,		MainFrame::OnAreaZoomLayer)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
 EVT_MENU(ID_AREA_MATCH,				MainFrame::OnAreaMatch)
-EVT_MENU(ID_AREA_SAMPLE_ELEV,		MainFrame::OnAreaExportElev)
-EVT_MENU(ID_AREA_SAMPLE_IMAGE,		MainFrame::OnAreaExportImage)
-EVT_MENU(ID_AREA_SAMPLE_ELEV_OPT,	MainFrame::OnAreaOptimizedElevTileset)
-EVT_MENU(ID_AREA_SAMPLE_IMAGE_OPT,	MainFrame::OnAreaOptimizedImageTileset)
+EVT_MENU(ID_AREA_SAMPLE_ELEV,		MainFrame::OnAreaSampleElev)
+EVT_MENU(ID_AREA_SAMPLE_IMAGE,		MainFrame::OnAreaSampleImage)
+EVT_MENU(ID_AREA_SAMPLE_ELEV_OPT,	MainFrame::OnAreaSampleElevTileset)
+EVT_MENU(ID_AREA_SAMPLE_IMAGE_OPT,	MainFrame::OnAreaSampleImageTileset)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 EVT_MENU(ID_AREA_VEG_DENSITY,		MainFrame::OnAreaVegDensity)
 EVT_MENU(ID_AREA_REQUEST_WFS,		MainFrame::OnAreaRequestWFS)
@@ -641,9 +641,9 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _("Request Image from Terraserver"));
 #endif // SUPPORT_CURL
 	areaMenu->AppendSeparator();
-	areaMenu->Append(ID_AREA_SAMPLE_ELEV_OPT, _("Optimized Sample Elevation to Tileset"),
+	areaMenu->Append(ID_AREA_SAMPLE_ELEV_OPT, _("Sample Elevation to Tileset"),
 		_("Sample all elevation data within the Area Tool efficiently to produce an elevation tileset."));
-	areaMenu->Append(ID_AREA_SAMPLE_IMAGE_OPT, _("Optimized Sample Imagery to Tileset"),
+	areaMenu->Append(ID_AREA_SAMPLE_IMAGE_OPT, _("Sample Imagery to Tileset"),
 		_("Sample all image data within the Area Tool efficiently to produce an image tileset."));
 	m_pMenuBar->Append(areaMenu, _("&Area Tool"));
 	menu_num++;
@@ -1429,19 +1429,19 @@ void MainFrame::ShowLayerProperties(vtLayer *lp)
 	}
 }
 
-void MainFrame::OnAreaExportElev(wxCommandEvent &event)
+void MainFrame::OnAreaSampleElev(wxCommandEvent &event)
 {
-	MergeResampleElevation(m_pView);
+	AreaSampleElevation(m_pView);
 }
 
-void MainFrame::OnAreaOptimizedElevTileset(wxCommandEvent &event)
+void MainFrame::OnAreaSampleElevTileset(wxCommandEvent &event)
 {
-	ExportAreaOptimizedElevTileset(m_pView);
+	AreaSampleElevTileset(m_pView);
 }
 
-void MainFrame::OnAreaOptimizedImageTileset(wxCommandEvent &event)
+void MainFrame::OnAreaSampleImageTileset(wxCommandEvent &event)
 {
-	ExportAreaOptimizedImageTileset(m_pView);
+	AreaSampleImageTileset(m_pView);
 }
 
 void MainFrame::OnUpdateAreaExportElev(wxUpdateUIEvent& event)
@@ -1449,9 +1449,9 @@ void MainFrame::OnUpdateAreaExportElev(wxUpdateUIEvent& event)
 	event.Enable(LayersOfType(LT_ELEVATION) > 0 && !m_area.IsEmpty());
 }
 
-void MainFrame::OnAreaExportImage(wxCommandEvent &event)
+void MainFrame::OnAreaSampleImage(wxCommandEvent &event)
 {
-	MergeResampleImages(m_pView);
+	AreaSampleImages(m_pView);
 }
 
 void MainFrame::OnUpdateAreaExportImage(wxUpdateUIEvent& event)

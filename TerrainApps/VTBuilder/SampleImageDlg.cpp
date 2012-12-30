@@ -1,7 +1,7 @@
 //
 // Name: SampleImageDlg.cpp
 //
-// Copyright (c) 2003-2011 Virtual Terrain Project
+// Copyright (c) 2003-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,7 +15,6 @@
 #include "vtui/AutoDialog.h"
 
 #include "SampleImageDlg.h"
-#include "TileDlg.h"
 #include "FileFilters.h"
 #include "BuilderView.h"
 #include "vtui/Helper.h"
@@ -39,9 +38,7 @@ BEGIN_EVENT_TABLE(SampleImageDlg, SampleImageDlgBase)
 	EVT_TEXT( ID_SPACINGY, SampleImageDlg::OnSpacingXY )
 	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, SampleImageDlg::OnRadioOutput )
 	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, SampleImageDlg::OnRadioOutput )
-	EVT_RADIOBUTTON( ID_RADIO_TO_TILES, SampleImageDlg::OnRadioOutput )
 	EVT_BUTTON( ID_DOTDOTDOT, SampleImageDlg::OnDotDotDot )
-	EVT_BUTTON( ID_TILE_OPTIONS, SampleImageDlg::OnTileOptions )
 END_EVENT_TABLE()
 
 SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -54,22 +51,12 @@ SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString 
 
 	m_bNewLayer = true;
 	m_bToFile = false;
-	m_bToTiles = false;
-
-	m_tileopts.cols = 4;
-	m_tileopts.rows = 4;
-	m_tileopts.lod0size = 256;
-	m_tileopts.numlods = 3;
-
-	FormatTilingString();
 
 	// output options
 	AddValidator(this, ID_RADIO_CREATE_NEW, &m_bNewLayer);
 	AddValidator(this, ID_RADIO_TO_FILE, &m_bToFile);
-	AddValidator(this, ID_RADIO_TO_TILES, &m_bToTiles);
 
 	AddValidator(this, ID_TEXT_TO_FILE, &m_strToFile);
-	AddValidator(this, ID_TEXT_TILE_INFO, &m_strTileInfo);
 
 	// sampling
 	AddNumValidator(this, ID_SPACINGX, &m_fSpacingX);
@@ -112,24 +99,12 @@ void SampleImageDlg::OnInitDialog(wxInitDialogEvent& event)
 
 void SampleImageDlg::RecomputeSize()
 {
-	if (m_bToTiles)
-	{
-		m_iSizeX = m_tileopts.cols * m_tileopts.lod0size + 1;
-		m_iSizeY = m_tileopts.rows * m_tileopts.lod0size + 1;
-	}
-	else if (m_bConstraint)  // powers of 2 + 1
+	if (m_bConstraint)  // powers of 2 + 1
 		m_iSizeX = m_iSizeY = (1 << m_power);
 
 	m_fSpacingX = m_fAreaX / m_iSizeX;
 	m_fSpacingY = m_fAreaY / m_iSizeY;
 }
-
-void SampleImageDlg::FormatTilingString()
-{
-	m_strTileInfo.Printf(_T("%d x %d @ %d"), m_tileopts.cols,
-		m_tileopts.rows, m_tileopts.lod0size);
-}
-
 
 // WDR: handler implementations for SampleImageDlg
 
@@ -188,17 +163,14 @@ void SampleImageDlg::EnableBasedOnConstraint()
 	GetTextToFile()->Enable(m_bToFile);
 	GetDotDotDot()->Enable(m_bToFile);
 
-	GetTextTileInfo()->Enable(m_bToTiles);
-	GetTileOptions()->Enable(m_bToTiles);
+	GetConstrain()->Enable(true);
+	GetSmaller()->Enable(m_bConstraint);
+	GetBigger()->Enable(m_bConstraint);
 
-	GetConstrain()->Enable(!m_bToTiles);
-	GetSmaller()->Enable(m_bConstraint && !m_bToTiles);
-	GetBigger()->Enable(m_bConstraint && !m_bToTiles);
-
-	GetSizeX()->SetEditable(!m_bConstraint && !m_bToTiles);
-	GetSizeY()->SetEditable(!m_bConstraint && !m_bToTiles);
-	GetSpacingX()->SetEditable(!m_bConstraint && !m_bToTiles);
-	GetSpacingY()->SetEditable(!m_bConstraint && !m_bToTiles);
+	GetSizeX()->SetEditable(!m_bConstraint);
+	GetSizeY()->SetEditable(!m_bConstraint);
+	GetSpacingX()->SetEditable(!m_bConstraint);
+	GetSpacingY()->SetEditable(!m_bConstraint);
 }
 
 void SampleImageDlg::OnBigger( wxCommandEvent &event )
@@ -230,34 +202,6 @@ void SampleImageDlg::OnRadioOutput( wxCommandEvent &event )
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
-
-	if (m_pView)
-	{
-		if (m_bToTiles)
-			m_pView->ShowGridMarks(m_area, m_tileopts.cols, m_tileopts.rows, -1, -1);
-		else
-			m_pView->HideGridMarks();
-	}
-}
-
-void SampleImageDlg::OnTileOptions( wxCommandEvent &event )
-{
-	TileDlg dlg(this, -1, _("Tiling Options"));
-
-	dlg.m_fEstX = m_fEstX;
-	dlg.m_fEstY = m_fEstY;
-	dlg.SetElevation(false);
-	dlg.SetArea(m_area);
-	dlg.SetTilingOptions(m_tileopts);
-	dlg.SetView(m_pView);
-
-	if (dlg.ShowModal() == wxID_OK)
-	{
-		dlg.GetTilingOptions(m_tileopts);
-		FormatTilingString();
-		RecomputeSize();
-		TransferDataToWindow();
-	}
 }
 
 void SampleImageDlg::OnDotDotDot( wxCommandEvent &event )

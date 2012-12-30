@@ -1,7 +1,7 @@
 //
 // Name: SampleImageDlg.h
 //
-// Copyright (c) 2003-2011 Virtual Terrain Project
+// Copyright (c) 2003-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,6 @@
 
 #include "VTBuilder_UI.h"
 #include "vtdata/MathTypes.h"
-#include "TileDlg.h"
 
 class BuilderView;
 
@@ -31,9 +30,7 @@ public:
 
 	// WDR: method declarations for SampleImageDlg
 	wxButton* GetDotDotDot()  { return (wxButton*) FindWindow( ID_DOTDOTDOT ); }
-	wxButton* GetTileOptions()  { return (wxButton*) FindWindow( ID_TILE_OPTIONS ); }
 	wxTextCtrl* GetTextToFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_FILE ); }
-	wxTextCtrl* GetTextTileInfo()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TILE_INFO ); }
 	wxRadioButton* GetRadioToFile()  { return (wxRadioButton*) FindWindow( ID_RADIO_TO_FILE ); }
 	wxRadioButton* GetRadioCreateNew()  { return (wxRadioButton*) FindWindow( ID_RADIO_CREATE_NEW ); }
 	wxTextCtrl* GetSpacingY()  { return (wxTextCtrl*) FindWindow( ID_SPACINGY ); }
@@ -46,14 +43,11 @@ public:
 
 	void SetView(BuilderView *pView) { m_pView = pView; }
 	void RecomputeSize();
-	void FormatTilingString();
 	void EnableBasedOnConstraint();
 
 	bool m_bNewLayer;
 	bool m_bToFile;
-	bool m_bToTiles;
 	wxString m_strToFile;
-	wxString m_strTileInfo;
 
 	double  m_fSpacingX;
 	double  m_fSpacingY;
@@ -70,8 +64,6 @@ public:
 	int		m_power;
 	bool	m_bSetting;
 
-	TilingOptions	m_tileopts;
-
 private:
 	// WDR: member variable declarations for SampleImageDlg
 	BuilderView *m_pView;
@@ -79,7 +71,6 @@ private:
 private:
 	// WDR: handler declarations for SampleImageDlg
 	void OnRadioOutput( wxCommandEvent &event );
-	void OnTileOptions( wxCommandEvent &event );
 	void OnDotDotDot( wxCommandEvent &event );
 	void OnSpacingXY( wxCommandEvent &event );
 	void OnSizeXY( wxCommandEvent &event );

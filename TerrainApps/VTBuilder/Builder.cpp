@@ -72,6 +72,7 @@ Builder::Builder()
 	m_tileopts.lod0size = 512;
 	m_tileopts.bCreateDerivedImages = false;
 	m_tileopts.bMaskUnknownAreas = false;
+	m_tileopts.bImageAlpha = false;
 	m_tileopts.bUseTextureCompression = true;
 	m_tileopts.eCompressionType = TC_OPENGL;
 
@@ -1015,7 +1016,7 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 
 	// iterate through the pixels of the new image
 	DPoint2 p;
-	RGBi rgb, sampled;
+	RGBAi rgba, sampled;
 	int count;
 	for (j = 0; j < Size.y; j++)
 	{
@@ -1040,15 +1041,15 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 				// take image that's on top (last in list)
 				if (images[g]->GetMultiSample(p, offsets, sampled, dRes))
 				{
-					rgb = sampled;
+					rgba = sampled;
 					count++;
 				}
 			}
 			if (count)
-				pTarget->SetRGB(i, Size.y-1-j, rgb.r, rgb.g, rgb.b);
+				pTarget->SetRGBA(i, Size.y-1-j, rgba);
 			else
-				// write NODATA (black, for now)
-				pTarget->SetRGB(i, Size.y-1-j, 0, 0, 0);
+				// write NODATA (black, with no alpha, for now)
+				pTarget->SetRGBA(i, Size.y-1-j, 0, 0, 0, 0);
 		}
 	}
 	CloseProgressDialog();
@@ -1060,7 +1061,7 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 bool Builder::GetRGBUnderCursor(const DPoint2 &p, RGBi &rgb)
 {
 	bool success = false;
-	RGBi value;
+	RGBAi value;
 	for (uint i = 0; i < m_Layers.size(); i++)
 	{
 		vtLayer *lay = m_Layers[i];
@@ -1144,9 +1145,9 @@ void Builder::ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 
 	}
 }
 
-void Builder::MergeResampleElevation(BuilderView *pView)
+void Builder::AreaSampleElevation(BuilderView *pView)
 {
-	VTLOG1("MergeResampleElevation\n");
+	VTLOG1("AreaSampleElevation\n");
 
 	// If any of the input terrain are floats, then recommend to the user
 	// that the output should be float as well.
@@ -1185,10 +1186,7 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
 	dlg.m_bFloats = floatmode;
-	dlg.m_tileopts = m_tileopts;
-	dlg.m_tileopts.iNoDataFilled = 0;
 	dlg.SetView(pView);
-	dlg.FormatTilingString();
 
 	int ret = dlg.ShowModal();
 	if (pView)
@@ -1244,29 +1242,13 @@ void Builder::MergeResampleElevation(BuilderView *pView)
 		else
 			DisplayAndLog("Did not successfully write to '%s'", (const char *) fname_utf8);
 	}
-	else if (dlg.m_bToTiles)
-	{
-		OpenProgressDialog2(_("Writing tiles"), true);
-		bool success = pOutput->WriteElevationTileset(dlg.m_tileopts, pView);
-		if (pView)
-			pView->HideGridMarks();
-		delete pOutput;
-		CloseProgressDialog2();
-		if (success)
-			DisplayAndLog("Successfully wrote to '%s'", (const char *) dlg.m_tileopts.fname);
-		else
-			DisplayAndLog("Did not successfully write to '%s'", (const char *) dlg.m_tileopts.fname);
-
-		if (dlg.m_tileopts.iNoDataFilled != 0)
-			DisplayAndLog("Filled %d unknown heixels in output tiles.", dlg.m_tileopts.iNoDataFilled);
-	}
 }
 
 
 //////////////////////////////////////////////////////////
 // Image ops
 
-void Builder::MergeResampleImages(BuilderView *pView)
+void Builder::AreaSampleImages(BuilderView *pView)
 {
 	// sample spacing in meters/heixel or degrees/heixel
 	DPoint2 spacing(0, 0);
@@ -1291,8 +1273,6 @@ void Builder::MergeResampleImages(BuilderView *pView)
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
 	dlg.SetView(pView);
-	dlg.m_tileopts = m_tileopts;
-	dlg.FormatTilingString();
 
 	int ret = dlg.ShowModal();
 	if (pView)
@@ -1333,19 +1313,6 @@ void Builder::MergeResampleImages(BuilderView *pView)
 			DisplayAndLog("Successfully wrote to '%s'", (const char *) fname);
 		else
 			DisplayAndLog(("Did not successfully write to '%s'."), (const char *) fname);
-	}
-	else if (dlg.m_bToTiles)
-	{
-		OpenProgressDialog(_("Writing tiles"), true);
-		bool success = pOutput->WriteTileset(dlg.m_tileopts, pView);
-		if (pView)
-			pView->HideGridMarks();
-		delete pOutput;
-		CloseProgressDialog();
-		if (success)
-			DisplayAndLog("Successfully wrote to '%s'", (const char *) dlg.m_tileopts.fname);
-		else
-			DisplayAndLog("Did not successfully write to '%s'", (const char *) dlg.m_tileopts.fname);
 	}
 }
 

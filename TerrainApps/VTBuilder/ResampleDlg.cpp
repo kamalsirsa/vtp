@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.cpp
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,7 +27,7 @@
 
 // WDR: event table for ResampleDlg
 
-BEGIN_EVENT_TABLE(ResampleDlg, ResampleDlgBase)
+BEGIN_EVENT_TABLE(ResampleDlg, SampleElevationDlgBase)
 	EVT_INIT_DIALOG (ResampleDlg::OnInitDialog)
 	EVT_BUTTON( ID_SMALLER, ResampleDlg::OnSmaller )
 	EVT_BUTTON( ID_BIGGER, ResampleDlg::OnBigger )
@@ -42,43 +42,24 @@ BEGIN_EVENT_TABLE(ResampleDlg, ResampleDlgBase)
 	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, ResampleDlg::OnRadioOutput )
 	EVT_RADIOBUTTON( ID_RADIO_TO_TILES, ResampleDlg::OnRadioOutput )
 	EVT_BUTTON( ID_DOTDOTDOT, ResampleDlg::OnDotDotDot )
-	EVT_BUTTON( ID_TILE_OPTIONS, ResampleDlg::OnTileOptions )
-	EVT_CHECKBOX( ID_DERIVED_IMAGES, ResampleDlg::OnCheckDerivedImages )
-	EVT_BUTTON( ID_RENDERING_OPTIONS, ResampleDlg::OnRenderingOptions )
-	EVT_TEXT( ID_TEXT_TO_IMAGE_FILE, ResampleDlg::OnTextToImageFile )
-	EVT_BUTTON( ID_DOTDOTDOT2, ResampleDlg::OnDotDotDot2 )
 END_EVENT_TABLE()
 
 ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	ResampleDlgBase( parent, id, title, position, size, style )
+	SampleElevationDlgBase( parent, id, title, position, size, style )
 {
 	m_bSetting = false;
 
 	m_bNewLayer = true;
 	m_bToFile = false;
-	m_bToTiles = false;
 	m_bFillGaps = true;
-
-	m_tileopts.cols = 4;
-	m_tileopts.rows = 4;
-	m_tileopts.lod0size = 256;
-	m_tileopts.numlods = 3;
-	m_tileopts.bCreateDerivedImages = false;
-	m_tileopts.fname_images = "";
-
-	FormatTilingString();
 
 	// output options
 	AddValidator(this, ID_RADIO_CREATE_NEW, &m_bNewLayer);
 	AddValidator(this, ID_RADIO_TO_FILE, &m_bToFile);
-	AddValidator(this, ID_RADIO_TO_TILES, &m_bToTiles);
 
 	AddValidator(this, ID_TEXT_TO_FILE, &m_strToFile);
 	AddValidator(this, ID_TEXT_TILE_INFO, &m_strTileInfo);
-
-	AddValidator(this, ID_DERIVED_IMAGES, &m_tileopts.bCreateDerivedImages);
-	AddValidator(this, ID_TEXT_TO_IMAGE_FILE, &m_strToFileImages);
 
 	// sampling
 	spacing1 = AddNumValidator(this, ID_SPACINGX, &m_fSpacingX);
@@ -131,80 +112,14 @@ void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
 
 void ResampleDlg::RecomputeSize()
 {
-	if (m_bToTiles)
-	{
-		m_iSizeX = m_tileopts.cols * m_tileopts.lod0size + 1;
-		m_iSizeY = m_tileopts.rows * m_tileopts.lod0size + 1;
-	}
-	else if (m_bConstraint)  // powers of 2 + 1
+	if (m_bConstraint)  // powers of 2 + 1
 		m_iSizeX = m_iSizeY = (1 << m_power) + 1;
 
 	m_fSpacingX = m_fAreaX / (m_iSizeX - 1);
 	m_fSpacingY = m_fAreaY / (m_iSizeY - 1);
 }
 
-void ResampleDlg::FormatTilingString()
-{
-	m_strTileInfo.Printf(_T("%d x %d @ %d"), m_tileopts.cols,
-		m_tileopts.rows, m_tileopts.lod0size);
-}
-
 // WDR: handler implementations for ResampleDlg
-
-void ResampleDlg::OnDotDotDot2( wxCommandEvent &event )
-{
-	wxString filter;
-	filter += FSTRING_INI;
-	wxFileDialog saveFile(NULL, _T(".Ini file"), _T(""), _T(""), filter, wxFD_SAVE);
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	if (!bResult)
-		return;
-
-	// update controls
-	m_strToFileImages = saveFile.GetPath();
-	TransferDataToWindow();
-
-	m_tileopts.fname_images = m_strToFileImages.mb_str(wxConvUTF8);
-	EnableBasedOnConstraint();
-}
-
-void ResampleDlg::OnRenderingOptions( wxCommandEvent &event )
-{
-	RenderOptionsDlg dlg(this, -1, _("Rendering options"));
-	dlg.SetOptions(m_tileopts.draw);
-	if (dlg.ShowModal() != wxID_OK)
-		return;
-	m_tileopts.draw = dlg.m_opt;
-}
-
-void ResampleDlg::OnCheckDerivedImages( wxCommandEvent &event )
-{
-	TransferDataFromWindow();
-	EnableBasedOnConstraint();
-}
-
-void ResampleDlg::OnTileOptions( wxCommandEvent &event )
-{
-	TileDlg dlg(this, -1, _("Tiling Options"));
-
-	dlg.m_fEstX = m_fEstX;
-	dlg.m_fEstY = m_fEstY;
-	dlg.SetElevation(true);
-	dlg.SetArea(m_area);
-	dlg.SetTilingOptions(m_tileopts);
-	dlg.SetView(m_pView);
-
-	if (dlg.ShowModal() == wxID_OK)
-	{
-		dlg.GetTilingOptions(m_tileopts);
-		FormatTilingString();
-		RecomputeSize();
-
-		m_bSetting = true;
-		TransferDataToWindow();
-		m_bSetting = false;
-	}
-}
 
 void ResampleDlg::OnDotDotDot( wxCommandEvent &event )
 {
@@ -251,16 +166,6 @@ void ResampleDlg::OnRadioOutput( wxCommandEvent &event )
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
-}
-
-void ResampleDlg::OnTextToImageFile( wxCommandEvent &event )
-{
-	if (m_bSetting)
-		return;
-
-	TransferDataFromWindow();
-	m_tileopts.fname_images = m_strToFileImages.mb_str(wxConvUTF8);
-	EnableBasedOnConstraint();
 }
 
 void ResampleDlg::OnShorts( wxCommandEvent &event )
@@ -339,34 +244,16 @@ void ResampleDlg::EnableBasedOnConstraint()
 	GetTextToFile()->Enable(m_bToFile);
 	GetDotDotDot()->Enable(m_bToFile);
 
-	GetTextTileInfo()->Enable(m_bToTiles);
-	GetTileOptions()->Enable(m_bToTiles);
-	GetDerivedImages()->Enable(m_bToTiles);
+	GetConstrain()->Enable(true);
+	GetSmaller()->Enable(m_bConstraint);
+	GetBigger()->Enable(m_bConstraint);
 
-	GetRenderingOptions()->Enable(m_bToTiles && m_tileopts.bCreateDerivedImages);
-	GetTextToImageFile()->Enable(m_bToTiles && m_tileopts.bCreateDerivedImages);
-	GetDotdotdot2()->Enable(m_bToTiles && m_tileopts.bCreateDerivedImages);
-
-	GetConstrain()->Enable(!m_bToTiles);
-	GetSmaller()->Enable(m_bConstraint && !m_bToTiles);
-	GetBigger()->Enable(m_bConstraint && !m_bToTiles);
-
-	GetSizeX()->SetEditable(!m_bConstraint && !m_bToTiles);
-	GetSizeY()->SetEditable(!m_bConstraint && !m_bToTiles);
-	GetSpacingX()->SetEditable(!m_bConstraint && !m_bToTiles);
-	GetSpacingY()->SetEditable(!m_bConstraint && !m_bToTiles);
+	GetSizeX()->SetEditable(!m_bConstraint);
+	GetSizeY()->SetEditable(!m_bConstraint);
+	GetSpacingX()->SetEditable(!m_bConstraint);
+	GetSpacingY()->SetEditable(!m_bConstraint);
 
 	GetVUnits()->Enable(!m_bFloats);
-
-	// If they've selected derived images, they must have an output file
-	//  in order to proceed
-	bool bOk = true;
-	if (m_bToTiles)
-	{
-		if (m_tileopts.bCreateDerivedImages && m_tileopts.fname_images == "")
-			bOk = false;
-	}
-	FindWindow(wxID_OK)->Enable(bOk);
 }
 
 void ResampleDlg::OnBigger( wxCommandEvent &event )

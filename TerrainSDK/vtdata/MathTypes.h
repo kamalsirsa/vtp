@@ -1246,6 +1246,7 @@ public:
 	RGBi() {}
 	RGBi(short _r, short _g, short _b) { r = _r; g = _g; b = _b; }
 	RGBi(const class RGBf &v) { *this = v; }
+	RGBi(const class RGBAi &v) { *this = v; }
 
 	void Set(short _r, short _g, short _b) { r = _r; g = _g; b = _b; }
 	RGBi operator +(const RGBi &v) const { return RGBi(r+v.r, g+v.g, b+v.b); }
@@ -1264,6 +1265,7 @@ public:
 	// assignment
 	RGBi &operator=(const RGBi &v) { r = v.r; g = v.g; b = v.b; return *this; }
 	RGBi &operator=(const class RGBf &v);
+	RGBi &operator=(const class RGBAi &v);
 
 	bool operator==(const RGBi &v) const { return (r == v.r && g == v.g && b == v.b); }
 	bool operator!=(const RGBi &v) const { return (r != v.r || g != v.g || b != v.b); }
@@ -1282,6 +1284,7 @@ public:
 	RGBAi() {}
 	RGBAi(short _r, short _g, short _b, short _a = 255) { r = _r; g = _g; b = _b; a = _a; }
 	RGBAi(const class RGBi &v) { *this = v; }
+	RGBAi(const class RGBAf &v) { *this = v; }
 
 	void Set(short _r, short _g, short _b, short _a = 255) { r = _r; g = _g; b = _b; a = _a; }
 	RGBAi operator +(const RGBAi &v) const { return RGBAi(r+v.r, g+v.g, b+v.b, a+v.a); }
@@ -1291,19 +1294,28 @@ public:
 	void operator *=(float s) { r=(short)(r*s); g=(short)(g*s); b=(short)(b*s); a=(short)(a*s); }
 	void operator /=(float s) { r=(short)(r/s); g=(short)(g/s); b=(short)(b/s); a=(short)(a/s); }
 
+	void operator +=(const RGBAi &v) { r=r+v.r; g=g+v.g; b=b+v.b; a=a+v.a; }
+
 	// generally it's useful to operate on the RGB alone and leave A unmodified
 	void MultRGB(float s) { r=(short)(r*s); g=(short)(g*s); b=(short)(b*s); }
 
 	void Crop();
 
 	// assignment
+	RGBAi &operator=(const RGBAi &v) { r = v.r; g = v.g; b = v.b; a = v.a; return *this; }
 	RGBAi &operator=(const RGBi &v) { r = v.r; g = v.g; b = v.b; a = 255; return *this; }
+	RGBAi &operator=(const RGBf &v);
+	RGBAi &operator=(const RGBAf &v);
+
+	bool operator==(const RGBAi &v) const { return (r == v.r && g == v.g && b == v.b && a == v.a); }
+	bool operator!=(const RGBAi &v) const { return (r != v.r || g != v.g || b != v.b || a != v.a); }
 
 	short r, g, b, a;
 };
 
 inline void RGBi::operator +=(const class RGBAi &v) { r=r+v.r; g=g+v.g; b=b+v.b; }
 inline RGBi RGBi::operator +(const class RGBAi &v) const { return RGBi(r+v.r, g+v.g, b+v.b); }
+inline RGBi& RGBi::operator=(const class RGBAi &v) { r = v.r; g = v.g; b = v.b; return *this; }
 
 /**
  * An RGB class for handling color operations.
@@ -1354,6 +1366,15 @@ inline RGBi &RGBi::operator=(const class RGBf &v)
 	return *this;
 }
 
+inline RGBAi &RGBAi::operator=(const RGBf &v)
+{
+	r = (short) (v.r * 255.999f);
+	g = (short) (v.g * 255.999f);
+	b = (short) (v.b * 255.999f);
+	a = 255;
+	return *this;
+}
+
 inline RGBf &RGBf::operator=(const class RGBi &v)
 {
 	r = v.r / 255.0f;
@@ -1400,6 +1421,15 @@ inline RGBf &RGBf::operator=(const class RGBAf &v)
 	r = v.r;
 	g = v.g;
 	b = v.b;
+	return *this;
+}
+
+inline RGBAi &RGBAi::operator=(const RGBAf &v)
+{
+	r = (short) (v.r * 255.999f);
+	g = (short) (v.g * 255.999f);
+	b = (short) (v.b * 255.999f);
+	a = (short) (v.a * 255.999f);
 	return *this;
 }
 

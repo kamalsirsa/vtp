@@ -541,7 +541,7 @@ void Builder::ImageExportPPM()
 		DisplayAndLog("Error writing file.");
 }
 
-void Builder::ExportAreaOptimizedElevTileset(BuilderView *pView)
+void Builder::AreaSampleElevTileset(BuilderView *pView)
 {
 	m_tileopts.numlods = 3;
 
@@ -556,7 +556,7 @@ void Builder::ExportAreaOptimizedElevTileset(BuilderView *pView)
 		return;
 	}
 
-	TileDlg dlg(m_pParentWindow, -1, _("Export Optimized Elevation Tileset"));
+	TileDlg dlg(m_pParentWindow, -1, _("Sample Elevation to Tileset"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(true);
@@ -633,7 +633,7 @@ bool Builder::DoSampleElevationToTileset(BuilderView *pView, TilingOptions &opts
 	return success;
 }
 
-void Builder::ExportAreaOptimizedImageTileset(BuilderView *pView)
+void Builder::AreaSampleImageTileset(BuilderView *pView)
 {
 	m_tileopts.numlods = 3;
 
@@ -648,7 +648,7 @@ void Builder::ExportAreaOptimizedImageTileset(BuilderView *pView)
 		}
 	}
 
-	TileDlg dlg(m_pParentWindow, -1, _("Export Optimized Image Tileset"));
+	TileDlg dlg(m_pParentWindow, -1, _("Sample Imagery to Tileset"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.SetElevation(false);
@@ -916,13 +916,6 @@ bool Builder::SampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
 			// Now we know this tile will be included, so note the LODs present
 			lod_existence_map.set(col, row, base_tile_exponent, base_tile_exponent-(total_lods-1));
 
-			vtDIB dib;
-			if (opts.bCreateDerivedImages && opts.bMaskUnknownAreas)
-			{
-				dib.Create(base_tilesize, base_tilesize, 32);
-				base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBAi(0,0,0,0));
-			}
-
 			if (iNumInvalid > 0)
 			{
 				// We don't want any gaps at all in the output tiles, because
@@ -949,14 +942,22 @@ bool Builder::SampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
 				opts.iNoDataFilled += iNumInvalid;
 			}
 
-			// Create a matching derived texture tileset
-			if (opts.bCreateDerivedImages && !opts.bMaskUnknownAreas)
-			{
-				dib.Create(base_tilesize, base_tilesize, 24);
-				base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBi(255,0,0));
-			}
 			if (opts.bCreateDerivedImages)
 			{
+				// Create a matching derived texture tileset
+				vtDIB dib;
+
+				if (opts.bImageAlpha)
+				{
+					dib.Create(base_tilesize, base_tilesize, 32);
+					base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBAi(0,0,0,0));
+				}
+				else
+				{
+					dib.Create(base_tilesize, base_tilesize, 24);
+					base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBi(255,0,0));
+				}
+
 				if (opts.draw.m_bShadingQuick)
 					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);
 				else if (opts.draw.m_bShadingDot)
@@ -989,7 +990,7 @@ bool Builder::SampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
 					uchar *rgb_bytes = (uchar *) malloc(iUncompressedSize);
 
 					uchar *dst = rgb_bytes;
-					if (opts.bMaskUnknownAreas)
+					if (opts.bImageAlpha)
 					{
 						RGBAi rgba;
 						for (int ro = 0; ro < base_tilesize; ro += (1<<k))
@@ -1243,33 +1244,12 @@ bool Builder::SampleImageryToTileset(BuilderView *pView, TilingOptions &opts,
 				image_area.Grow(texel.x/2, texel.y/2);
 
 				// Sample the images we found to the exact LOD we need
-				vtBitmap Target;
-				Target.Allocate(tilesize, tilesize);
-
 				// Get ready to multisample
 				DPoint2 step = tile_dim / (tilesize-1);
 				DLine2 offsets;
 				int iNSampling = g_Options.GetValueInt(TAG_SAMPLING_N);
 				MakeSampleOffsets(step, iNSampling, offsets);
 				double dRes = (step.x+step.y)/2;
-
-				DPoint2 p;
-				RGBi pixel, rgb;
-				for (int y = tilesize-1; y >= 0; y--)
-				{
-					p.y = tile_area.bottom + (y * step.y);
-					for (int x = 0; x < tilesize; x++)
-					{
-						p.x = tile_area.left + (x * step.x);
-
-						// find some data for this point
-						rgb.Set(0,0,0);
-						for (uint im = 0; im < overlapping_images.size(); im++)
-							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel, dRes)) rgb = pixel;
-
-						Target.SetPixel24(x, y, rgb);
-					}
-				}
 
 				vtString fname = MakeFilenameDB(dirname, col, row, k);
 
@@ -1281,21 +1261,36 @@ bool Builder::SampleImageryToTileset(BuilderView *pView, TilingOptions &opts,
 				if (bCancel)
 					return false;
 
-				uchar *rgb_bytes = (uchar *) malloc(tilesize * tilesize * 3);
-				int cb = 0;	// count bytes
+				int depth = opts.bImageAlpha ? 4 : 3;
+				int iUncompressedSize = tilesize * tilesize * depth;
+				uchar *rgb_bytes = (uchar *) malloc(iUncompressedSize);
+				uchar *dst = rgb_bytes;
 
-				// Copy whole image directly from Target to rgb_bytes
+				DPoint2 p;
+				RGBAi pixel, rgba;
 				for (int y = tilesize-1; y >= 0; y--)
 				{
+					p.y = tile_area.bottom + (y * step.y);
 					for (int x = 0; x < tilesize; x++)
 					{
-						Target.GetPixel24(x, y, rgb);
-						rgb_bytes[cb++] = rgb.r;
-						rgb_bytes[cb++] = rgb.g;
-						rgb_bytes[cb++] = rgb.b;
+						p.x = tile_area.left + (x * step.x);
+
+						// find some data for this point
+						rgba.Set(0,0,0,0);
+						for (uint im = 0; im < overlapping_images.size(); im++)
+						{
+							if (overlapping_images[im]->GetMultiSample(p, offsets, pixel, dRes))
+							{
+								rgba = pixel;
+							}
+						}
+						*dst++ = rgba.r;
+						*dst++ = rgba.g;
+						*dst++ = rgba.b;
+						if (opts.bImageAlpha)
+							*dst++ = rgba.a;
 					}
 				}
-				int iUncompressedSize = cb;
 
 				vtMiniDatabuf output_buf;
 

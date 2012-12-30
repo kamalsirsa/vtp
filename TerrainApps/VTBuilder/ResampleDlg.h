@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,7 +22,7 @@ class BuilderView;
 // ResampleDlg
 //----------------------------------------------------------------------------
 
-class ResampleDlg: public ResampleDlgBase
+class ResampleDlg: public SampleElevationDlgBase
 {
 public:
 	// constructors and destructors
@@ -32,12 +32,7 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	// WDR: method declarations for ResampleDlg
-	wxButton* GetDotdotdot2()  { return (wxButton*) FindWindow( ID_DOTDOTDOT2 ); }
-	wxTextCtrl* GetTextToImageFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_IMAGE_FILE ); }
-	wxButton* GetRenderingOptions()  { return (wxButton*) FindWindow( ID_RENDERING_OPTIONS ); }
-	wxCheckBox* GetDerivedImages()  { return (wxCheckBox*) FindWindow( ID_DERIVED_IMAGES ); }
 	wxButton* GetDotDotDot()  { return (wxButton*) FindWindow( ID_DOTDOTDOT ); }
-	wxButton* GetTileOptions()  { return (wxButton*) FindWindow( ID_TILE_OPTIONS ); }
 	wxTextCtrl* GetTextToFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_FILE ); }
 	wxTextCtrl* GetTextTileInfo()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TILE_INFO ); }
 	wxRadioButton* GetRadioToFile()  { return (wxRadioButton*) FindWindow( ID_RADIO_TO_FILE ); }
@@ -54,12 +49,10 @@ public:
 
 	void SetView(BuilderView *pView) { m_pView = pView; }
 	void RecomputeSize();
-	void FormatTilingString();
 	void EnableBasedOnConstraint();
 
 	bool m_bNewLayer;
 	bool m_bToFile;
-	bool m_bToTiles;
 	wxString m_strToFile;
 	wxString m_strTileInfo;
 
@@ -80,11 +73,6 @@ public:
 	DRECT   m_area;
 	bool	m_bFillGaps;
 
-	// Where to write the derived image tiles, if we will create them.
-	wxString	m_strToFileImages;
-
-	TilingOptions   m_tileopts;
-
 private:
 	// WDR: member variable declarations for ResampleDlg
 	wxNumericValidator *spacing1, *spacing2;
@@ -94,10 +82,6 @@ private:
 
 private:
 	// WDR: handler declarations for ResampleDlg
-	void OnDotDotDot2( wxCommandEvent &event );
-	void OnRenderingOptions( wxCommandEvent &event );
-	void OnCheckDerivedImages( wxCommandEvent &event );
-	void OnTileOptions( wxCommandEvent &event );
 	void OnDotDotDot( wxCommandEvent &event );
 	void OnRadioOutput( wxCommandEvent &event );
 	void OnShorts( wxCommandEvent &event );
@@ -107,7 +91,6 @@ private:
 	void OnConstrain( wxCommandEvent &event );
 	void OnBigger( wxCommandEvent &event );
 	void OnSmaller( wxCommandEvent &event );
-	void OnTextToImageFile( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
 private:

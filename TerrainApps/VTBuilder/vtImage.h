@@ -24,7 +24,7 @@ class ImageGLCanvas;
 //  files out of memory (direct from disk).
 struct Scanline
 {
-	RGBi *m_data;
+	RGBAi *m_data;
 	int m_y;
 	int m_overview;	// 0 is the base image, 1 2 3.. are the overviews
 };
@@ -40,7 +40,7 @@ public:
 	void Cleanup();
 
 	void ReadScanline(int y, int bufrow, int overview);
-	RGBi *GetScanlineFromBuffer(int y, int overview);
+	RGBAi *GetScanlineFromBuffer(int y, int overview);
 	void FindMaxBlockSize(GDALDataset *pDataset);
 
 	int		m_iXSize;
@@ -48,13 +48,9 @@ public:
 
 	int m_iRasterCount;
 	uchar *m_pBlock;
-	uchar *m_pRedBlock;
-	uchar *m_pGreenBlock;
-	uchar *m_pBlueBlock;
+	uchar *m_pRedBlock, *m_pGreenBlock, *m_pBlueBlock, *m_pAlphaBlock;
 	GDALRasterBand *m_pBand;
-	GDALRasterBand *m_pRed;
-	GDALRasterBand *m_pGreen;
-	GDALRasterBand *m_pBlue;
+	GDALRasterBand *m_pRed, *m_pGreen, *m_pBlue, *m_pAlpha;
 	GDALColorTable *m_pTable;
 	int m_MaxBlockSize;
 
@@ -68,6 +64,8 @@ public:
 	// Statistics
 	int m_linereads;
 	int m_blockreads;
+
+	vtString m_error_message;
 };
 
 class BitmapInfo
@@ -115,11 +113,11 @@ public:
 	{
 		return m_Bitmaps[0].m_Size;
 	}
-	bool GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes = 0.0);
-	bool GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb, double dRes = 0.0);
-	void GetRGB(int x, int y, RGBi &rgb, double dRes = 0.0);
-	void SetRGB(int x, int y, uchar r, uchar g, uchar b);
-	void SetRGB(int x, int y, const RGBi &rgb);
+	bool GetColorSolid(const DPoint2 &p, RGBAi &rgb, double dRes = 0.0);
+	bool GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBAi &rgb, double dRes = 0.0);
+	void GetRGBA(int x, int y, RGBAi &rgb, double dRes = 0.0);
+	void SetRGBA(int x, int y, uchar r, uchar g, uchar b, uchar a = 255);
+	void SetRGBA(int x, int y, const RGBAi &rgb);
 	void ReplaceColor(const RGBi &rgb1, const RGBi &rgb2);
 	void SetupBitmapInfo(int iXSize, int iYSize);
 

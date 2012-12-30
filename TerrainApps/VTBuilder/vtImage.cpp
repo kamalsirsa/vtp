@@ -40,6 +40,7 @@ LineBufferGDAL::LineBufferGDAL()
 	m_pRedBlock = NULL;
 	m_pGreenBlock = NULL;
 	m_pBlueBlock = NULL;
+	m_pAlphaBlock = NULL;
 	m_pBand = NULL;
 	m_pRed = NULL;
 	m_pGreen = NULL;
@@ -58,7 +59,7 @@ void LineBufferGDAL::Setup(GDALDataset *pDataset)
 	// Prepare scanline buffers
 	for (int i = 0; i < BUF_SCANLINES; i++)
 	{
-		m_row[i].m_data = new RGBi[m_iXSize];
+		m_row[i].m_data = new RGBAi[m_iXSize];
 		m_row[i].m_y = -1;
 	}
 	m_use_next = 0;
@@ -69,12 +70,10 @@ void LineBufferGDAL::Setup(GDALDataset *pDataset)
 	// Raster count should be 3 for colour images (assume RGB)
 	m_iRasterCount = pDataset->GetRasterCount();
 
-	vtString message;
-
-	if (m_iRasterCount != 1 && m_iRasterCount != 3)
+	if (m_iRasterCount != 1 && m_iRasterCount != 3 && m_iRasterCount != 4)
 	{
-		message.Format("Image has %d bands (not 1 or 3).", m_iRasterCount);
-		throw (const char *)message;
+		m_error_message.Format("Image has %d bands (not 1, 3, or 4).", m_iRasterCount);
+		throw (const char *) m_error_message;
 	}
 
 	FindMaxBlockSize(pDataset);
@@ -104,10 +103,12 @@ void LineBufferGDAL::Setup(GDALDataset *pDataset)
 			throw "Couldnt allocate scan line.";
 	}
 
-	if (m_iRasterCount == 3)
+	if (m_iRasterCount == 3 || m_iRasterCount == 4)
 	{
+		bool bAlpha = (m_iRasterCount == 4);
+
 		int num_undefined = 0;
-		for (int i = 1; i <= 3; i++)
+		for (int i = 1; i <= m_iRasterCount; i++)
 		{
 			GDALRasterBand *pBand = pDataset->GetRasterBand(i);
 			// Check data type - it's either integer or float
@@ -126,20 +127,27 @@ void LineBufferGDAL::Setup(GDALDataset *pDataset)
 			case GCI_BlueBand:
 				m_pBlue = pBand;
 				break;
+			case GCI_AlphaBand:
+				m_pAlpha = pBand;
+				break;
 			case GCI_Undefined:
 				num_undefined++;
 				break;
 			}
 		}
-		if (num_undefined == 3)
+		if (num_undefined == m_iRasterCount)
 		{
-			// All three are undefined, assume they are R,G,B
+			// All three are undefined, assume they are R,G,B (,A)
 			m_pRed = pDataset->GetRasterBand(1);
 			m_pGreen = pDataset->GetRasterBand(2);
 			m_pBlue = pDataset->GetRasterBand(3);
+			if (bAlpha)
+				m_pAlpha = pDataset->GetRasterBand(4);
 		}
 		if ((NULL == m_pRed) || (NULL == m_pGreen) || (NULL == m_pBlue))
 			throw "Couldn't find bands for Red, Green, Blue.";
+		if (bAlpha && (NULL == m_pAlpha))
+			throw "Couldn't find band for Alpha.";
 
 		// Get overview count from Red band; assumes others match
 		m_iViewCount = m_pRed->GetOverviewCount()+1;
@@ -151,6 +159,8 @@ void LineBufferGDAL::Setup(GDALDataset *pDataset)
 		m_pRedBlock = new uchar[m_MaxBlockSize];
 		m_pGreenBlock = new uchar[m_MaxBlockSize];
 		m_pBlueBlock = new uchar[m_MaxBlockSize];
+		if (bAlpha)
+			m_pAlphaBlock = new uchar[m_MaxBlockSize];
 	}
 }
 
@@ -187,11 +197,14 @@ void LineBufferGDAL::Cleanup()
 		delete m_pGreenBlock;
 	if (NULL != m_pBlueBlock)
 		delete m_pBlueBlock;
+	if (NULL != m_pAlphaBlock)
+		delete m_pAlphaBlock;
 
 	m_pBlock = NULL;
 	m_pRedBlock = NULL;
 	m_pGreenBlock = NULL;
 	m_pBlueBlock = NULL;
+	m_pAlphaBlock = NULL;
 	m_pBand = NULL;
 	m_pRed = NULL;
 	m_pGreen = NULL;
@@ -255,20 +268,26 @@ void LineBufferGDAL::ReadScanline(int iYRequest, int bufrow, int overview)
 			}
 		}
 	}
-	else if (m_iRasterCount == 3)
+	else if (m_iRasterCount == 3 || m_iRasterCount == 4)
 	{
-		GDALRasterBand *band1, *band2, *band3;
+		bool bAlpha = (m_iRasterCount == 4);
+
+		GDALRasterBand *band1, *band2, *band3, *band4;
 		if (m_iViewCount > 0 && overview > 0)
 		{
 			band1 = m_pRed->GetOverview(overview-1);
 			band2 = m_pGreen->GetOverview(overview-1);
 			band3 = m_pBlue->GetOverview(overview-1);
+			if (bAlpha)
+				band4 = m_pAlpha->GetOverview(overview-1);
 		}
 		else
 		{
 			band1 = m_pRed;
 			band2 = m_pGreen;
 			band3 = m_pBlue;
+			if (bAlpha)
+				band4 = m_pAlpha;
 		}
 
 		int xBlockSize, yBlockSize;
@@ -279,7 +298,7 @@ void LineBufferGDAL::ReadScanline(int iYRequest, int bufrow, int overview)
 		int iyBlock = iYRequest / yBlockSize;
 		int iY = iYRequest - (iyBlock * yBlockSize);
 
-		RGBi rgb;
+		RGBAi rgba;
 		for(int ixBlock = 0; ixBlock < nxBlocks; ixBlock++)
 		{
 			try {
@@ -292,6 +311,12 @@ void LineBufferGDAL::ReadScanline(int iYRequest, int bufrow, int overview)
 				Err = band3->ReadBlock(ixBlock, iyBlock, m_pBlueBlock);
 				if (Err != CE_None)
 					throw "Readblock (blue) failed";
+				if (bAlpha)
+				{
+					Err = band4->ReadBlock(ixBlock, iyBlock, m_pAlphaBlock);
+					if (Err != CE_None)
+						throw "Readblock (alpha) failed";
+				}
 			}
 			catch (const char *msg)
 			{
@@ -315,16 +340,22 @@ void LineBufferGDAL::ReadScanline(int iYRequest, int bufrow, int overview)
 
 			for( int iX = 0; iX < nxValid; iX++ )
 			{
-				rgb.Set(m_pRedBlock[iY * xBlockSize + iX],
-					m_pGreenBlock[iY * xBlockSize + iX],
-					m_pBlueBlock[iY * xBlockSize + iX]);
-				m_row[bufrow].m_data[ixBlock*xBlockSize + iX] = rgb;
+				int alpha;
+				if (bAlpha)
+					alpha = m_pAlphaBlock[iY * xBlockSize + iX];
+				else
+					alpha = 255;
+				rgba.Set(m_pRedBlock[iY * xBlockSize + iX],
+						 m_pGreenBlock[iY * xBlockSize + iX],
+						 m_pBlueBlock[iY * xBlockSize + iX],
+						 alpha);
+				m_row[bufrow].m_data[ixBlock*xBlockSize + iX] = rgba;
 			}
 		}
 	}
 }
 
-RGBi *LineBufferGDAL::GetScanlineFromBuffer(int y, int overview)
+RGBAi *LineBufferGDAL::GetScanlineFromBuffer(int y, int overview)
 {
 	// first check if the row is already in memory
 	int i;
@@ -342,7 +373,7 @@ RGBi *LineBufferGDAL::GetScanlineFromBuffer(int y, int overview)
 	m_row[m_use_next].m_y = y;
 	m_row[m_use_next].m_overview = overview;
 	m_row[m_use_next].m_data;
-	RGBi *data = m_row[m_use_next].m_data;
+	RGBAi *data = m_row[m_use_next].m_data;
 
 	// increment which buffer row we'll use next
 	m_use_next++;
@@ -633,7 +664,7 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	MakeSampleOffsets(step, iSampleN, offsets);
 
 	DPoint2 p, mp;
-	RGBi value, sum;
+	RGBAi value, sum;
 	int count;
 	for (i = 0; i < iXSize; i++)
 	{
@@ -663,9 +694,9 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 				}
 			}
 			if (count > 0)
-				SetRGB(i, iYSize-1-j, sum / count);
+				SetRGBA(i, iYSize-1-j, sum / count);
 			else
-				SetRGB(i, iYSize-1-j, RGBi(0,0,0));	// nodata
+				SetRGBA(i, iYSize-1-j, RGBAi(0,0,0,0));	// nodata
 		}
 	}
 	delete trans;
@@ -733,7 +764,7 @@ bool vtImage::ReprojectExtents(const vtProjection &proj_new)
  * \return true if a value was found, false if the point is outside the
  *		extent or (if the option is enabled) the value was 'nodata'.
  */
-bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes)
+bool vtImage::GetColorSolid(const DPoint2 &p, RGBAi &rgba, double dRes)
 {
 	// could speed this up by keeping these values around
 	const DPoint2 &spacing = m_Bitmaps[0].m_Spacing;
@@ -751,8 +782,8 @@ bool vtImage::GetColorSolid(const DPoint2 &p, RGBi &rgb, double dRes)
 	if (v > size.y-0.5) v = size.y-0.5; // adjust bottom edge
 	int iy = (int) v; // round to closest pixel
 
-	GetRGB(ix, iy, rgb, dRes);
-	if (bTreatBlackAsTransparent && rgb == RGBi(0,0,0))
+	GetRGBA(ix, iy, rgba, dRes);
+	if (bTreatBlackAsTransparent && rgba == RGBAi(0,0,0,255))
 		return false;
 
 	return true;
@@ -772,22 +803,22 @@ void MakeSampleOffsets(const DPoint2 cellsize, uint N, DLine2 &offsets)
  * The area to test is given by center and offsets, use MakeSampleOffsets()
  * to make a set of N x N offsets.
  */
-bool vtImage::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBi &rgb, double dRes)
+bool vtImage::GetMultiSample(const DPoint2 &p, const DLine2 &offsets, RGBAi &rgba, double dRes)
 {
-	RGBi color;
-	rgb.Set(0,0,0);
+	RGBAi color;
+	rgba.Set(0,0,0,0);
 	int count = 0;
 	for (uint i = 0; i < offsets.GetSize(); i++)
 	{
 		if (GetColorSolid(p+offsets[i], color, dRes))
 		{
-			rgb += color;
+			rgba += color;
 			count++;
 		}
 	}
 	if (count)
 	{
-		rgb /= count;
+		rgba /= count;
 		return true;
 	}
 	return false;
@@ -811,7 +842,7 @@ int vtImage::NumBitmapsOnDisk()
 	return count;
 }
 
-void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
+void vtImage::GetRGBA(int x, int y, RGBAi &rgba, double dRes)
 {
 	int closest_bitmap = -1;
 	double diff = 1E9;
@@ -851,7 +882,7 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 	if (closest_bitmap < 0)
 	{
 		// safety measure for missing overviews
-		rgb=RGBi(255,0,0);
+		rgba = RGBAi(255,0,0,0);
 		return;
 	}
 
@@ -866,26 +897,30 @@ void vtImage::GetRGB(int x, int y, RGBi &rgb, double dRes)
 	if (bm.m_pBitmap)
 	{
 		// get pixel from bitmap in memory
+		RGBi rgb;
 		bm.m_pBitmap->GetPixel24(x, y, rgb);
+		rgba = rgb;
 	}
 	else if (bm.m_bOnDisk)
 	{
 		// support for out-of-memory image
-		RGBi *data = m_linebuf.GetScanlineFromBuffer(y, closest_bitmap);
-		rgb = data[x];
+		RGBAi *data = m_linebuf.GetScanlineFromBuffer(y, closest_bitmap);
+		rgba = data[x];
 	}
 }
 
-void vtImage::SetRGB(int x, int y, uchar r, uchar g, uchar b)
+void vtImage::SetRGBA(int x, int y, uchar r, uchar g, uchar b, uchar a)
 {
 	// this method clearly only works for in-memory images
 	if (m_Bitmaps[0].m_pBitmap)
 		m_Bitmaps[0].m_pBitmap->SetPixel24(x, y, r, g, b);
 }
 
-void vtImage::SetRGB(int x, int y, const RGBi &rgb)
+void vtImage::SetRGBA(int x, int y, const RGBAi &rgba)
 {
 	// this method clearly only works for in-memory images
+	RGBi rgb;
+	rgb = rgba;
 	if (m_Bitmaps[0].m_pBitmap)
 		m_Bitmaps[0].m_pBitmap->SetPixel24(x, y, rgb);
 }
@@ -1440,7 +1475,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 					}
 					for (int iX = 0; iX < Size.x; iX++ )
 					{
-						RGBi *data = m_linebuf.GetScanlineFromBuffer(iY, 0);
+						RGBAi *data = m_linebuf.GetScanlineFromBuffer(iY, 0);
 						rgb = data[iX];
 						pBitmap->SetPixel24(iX, iY, rgb);
 					}
@@ -1932,7 +1967,7 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 
 	DPoint2 p;
 	int x, y;
-	RGBi rgb;
+	RGBAi rgba;
 
 	// Get ready to multisample
 	DLine2 offsets;
@@ -1947,7 +1982,7 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 		{
 			p.x = tile_area.left + x * spacing.x;
 
-			GetMultiSample(p, offsets, rgb, dRes);
+			GetMultiSample(p, offsets, rgba, dRes);
 #if 0 // LOD Stripes
 			// For testing, add stripes to indicate LOD
 			if (lod == 3 && x == y) rgb.Set(255,0,0);
@@ -1961,9 +1996,9 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 
 			if (lod == 0 && (y%8)==0) rgb.Set(90,0,90);
 #endif
-			rgb_bytes[cb++] = rgb.r;
-			rgb_bytes[cb++] = rgb.g;
-			rgb_bytes[cb++] = rgb.b;
+			rgb_bytes[cb++] = rgba.r;
+			rgb_bytes[cb++] = rgba.g;
+			rgb_bytes[cb++] = rgba.b;
 		}
 	}
 	int iUncompressedSize = cb;

@@ -171,7 +171,7 @@ public:
 	void ImportData(LayerType ltype);
 	int ImportDataFromArchive(LayerType ltype, const wxString &fname_org, bool bRefresh);
 
-	bool ImportLayersFromFile(const wxString &strFileName,
+	bool ImportLayersFromFile(LayerType ltype, const wxString &strFileName,
 		LayerArray &layers, bool bRefresh = false, bool bWarn = false);
 
 	vtLayer *ImportLayerFromFile(LayerType ltype, const wxString &strFileName,
@@ -222,8 +222,8 @@ public:
 	void ElevExportTiles(BuilderView *pView = NULL);
 	void ImageExportTiles(BuilderView *pView = NULL);
 	void ImageExportPPM();
-	void ExportAreaOptimizedElevTileset(BuilderView *pView = NULL);
-	void ExportAreaOptimizedImageTileset(BuilderView *pView = NULL);
+	void AreaSampleElevTileset(BuilderView *pView = NULL);
+	void AreaSampleImageTileset(BuilderView *pView = NULL);
 
 	// Area tool
 	void SetArea(const DRECT &r) { m_area = r; }
@@ -232,12 +232,12 @@ public:
 
 	// Sampling
 	void ScanElevationLayers(int &count, int &floating, int &tins, DPoint2 &spacing);
-	void MergeResampleElevation(BuilderView *pView = NULL);
+	void AreaSampleElevation(BuilderView *pView = NULL);
 	bool SampleElevationToTileset(BuilderView *pView, TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
 	bool DoSampleElevationToTileset(BuilderView *pView, TilingOptions &opts, bool bFloat, bool bShowGridMarks = true);
 	bool SampleImageryToTileset(BuilderView *pView, TilingOptions &opts, bool bShowGridMarks = true);
 	bool DoSampleImageryToTileset(BuilderView *pView, TilingOptions &opts, bool bShowGridMarks = true);
-	void MergeResampleImages(BuilderView *pView = NULL);
+	void AreaSampleImages(BuilderView *pView = NULL);
 
 	// Application Data
 	wxFrame *m_pParentWindow;

@@ -1,7 +1,7 @@
 //
 // Name: TileDlg.cpp
 //
-// Copyright (c) 2005-2011 Virtual Terrain Project
+// Copyright (c) 2005-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -74,6 +74,7 @@ TileDlg::TileDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	AddValidator(this, ID_OMIT_FLAT, &m_bOmitFlatTiles);
 	AddValidator(this, ID_MASK_UNKNOWN, &m_bMaskUnknown);
+	AddValidator(this, ID_TEXTURE_ALPHA, &m_bImageAlpha);
 
 	AddValidator(this, ID_TC_NONE, &m_bCompressNone);
 	AddValidator(this, ID_TC_OGL, &m_bCompressOGL);
@@ -127,6 +128,7 @@ void TileDlg::SetTilingOptions(TilingOptions &opt)
 	m_iNumLODs = opt.numlods;
 	m_bOmitFlatTiles = opt.bOmitFlatTiles;
 	m_bMaskUnknown = opt.bMaskUnknownAreas;
+	m_bImageAlpha = opt.bImageAlpha;
 
 	m_bCompressNone = !opt.bUseTextureCompression;
 	if (opt.bUseTextureCompression)
@@ -151,6 +153,7 @@ void TileDlg::GetTilingOptions(TilingOptions &opt) const
 	opt.fname = m_strToFile.mb_str(wxConvUTF8);
 	opt.bOmitFlatTiles = m_bOmitFlatTiles;
 	opt.bMaskUnknownAreas = m_bMaskUnknown;
+	opt.bImageAlpha = m_bImageAlpha;
 
 	opt.bUseTextureCompression = !m_bCompressNone;
 	if (m_bCompressOGL) opt.eCompressionType = TC_OPENGL;

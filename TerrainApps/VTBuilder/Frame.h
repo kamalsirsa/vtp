@@ -291,10 +291,10 @@ protected:
 	void OnAreaZoomLayer(wxCommandEvent& event);
 	void OnAreaTypeIn(wxCommandEvent& event);
 	void OnAreaMatch(wxCommandEvent& event);
-	void OnAreaExportElev(wxCommandEvent& event);
-	void OnAreaOptimizedElevTileset(wxCommandEvent& event);
-	void OnAreaOptimizedImageTileset(wxCommandEvent& event);
-	void OnAreaExportImage(wxCommandEvent& event);
+	void OnAreaSampleElev(wxCommandEvent& event);
+	void OnAreaSampleElevTileset(wxCommandEvent& event);
+	void OnAreaSampleImage(wxCommandEvent& event);
+	void OnAreaSampleImageTileset(wxCommandEvent& event);
 	void OnAreaGenerateVeg(wxCommandEvent& event);
 	void OnAreaVegDensity(wxCommandEvent& event);
 	void OnAreaRequestWFS(wxCommandEvent& event);

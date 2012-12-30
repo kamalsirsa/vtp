@@ -1,7 +1,7 @@
 //
 // Name: TileDlg.h
 //
-// Copyright (c) 2005-2011 Virtual Terrain Project
+// Copyright (c) 2005-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -62,6 +62,7 @@ public:
 
 	bool m_bOmitFlatTiles;
 	bool m_bMaskUnknown;
+	bool m_bImageAlpha;
 	bool m_bCompressNone;
 	bool m_bCompressOGL;
 	bool m_bCompressSquishFast;

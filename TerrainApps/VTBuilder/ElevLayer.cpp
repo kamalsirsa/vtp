@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1622,10 +1622,20 @@ bool vtElevLayer::WriteElevationTileset(TilingOptions &opts, BuilderView *pView)
 			// Create a matching derived texture tileset
 			if (opts.bCreateDerivedImages)
 			{
+				// Create a matching derived texture tileset
 				vtDIB dib;
-				dib.Create(base_tilesize, base_tilesize, 24);
 				base_lod.ComputeHeightExtents();
-				base_lod.ColorDibFromElevation(&dib, &cmap, 4000, RGBi(255,0,0));
+
+				if (opts.bImageAlpha)
+				{
+					dib.Create(base_tilesize, base_tilesize, 32);
+					base_lod.ColorDibFromElevation(&dib, &cmap, 4000, RGBAi(0,0,0,0));
+				}
+				else
+				{
+					dib.Create(base_tilesize, base_tilesize, 24);
+					base_lod.ColorDibFromElevation(&dib, &cmap, 4000, RGBi(255,0,0));
+				}
 
 				if (opts.draw.m_bShadingQuick)
 					base_lod.ShadeQuick(&dib, SHADING_BIAS, true);
@@ -1653,19 +1663,36 @@ bool vtElevLayer::WriteElevationTileset(TilingOptions &opts, BuilderView *pView)
 					output_buf.tsteps = 1;
 					output_buf.SetBounds(proj, tile_area);
 
-					int iUncompressedSize = tilesize * tilesize * 3;
+					int depth = dib.GetDepth() / 8;
+					int iUncompressedSize = tilesize * tilesize * depth;
 					uchar *rgb_bytes = (uchar *) malloc(iUncompressedSize);
 
 					uchar *dst = rgb_bytes;
-					RGBi rgb;
-					for (int ro = 0; ro < base_tilesize; ro += (1<<k))
-						for (int co = 0; co < base_tilesize; co += (1<<k))
-						{
-							dib.GetPixel24(co, ro, rgb);
-							*dst++ = rgb.r;
-							*dst++ = rgb.g;
-							*dst++ = rgb.b;
-						}
+					if (opts.bImageAlpha)
+					{
+						RGBAi rgba;
+						for (int ro = 0; ro < base_tilesize; ro += (1<<k))
+							for (int co = 0; co < base_tilesize; co += (1<<k))
+							{
+								dib.GetPixel32(co, ro, rgba);
+								*dst++ = rgba.r;
+								*dst++ = rgba.g;
+								*dst++ = rgba.b;
+								*dst++ = rgba.a;
+							}
+					}
+					else
+					{
+						RGBi rgb;
+						for (int ro = 0; ro < base_tilesize; ro += (1<<k))
+							for (int co = 0; co < base_tilesize; co += (1<<k))
+							{
+								dib.GetPixel24(co, ro, rgb);
+								*dst++ = rgb.r;
+								*dst++ = rgb.g;
+								*dst++ = rgb.b;
+							}
+					}
 
 					// Write and optionally compress the image
 					WriteMiniImage(fname, opts, rgb_bytes, output_buf,
