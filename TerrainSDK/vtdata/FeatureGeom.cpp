@@ -466,6 +466,33 @@ int vtFeatureSetLineString::NumTotalVertices() const
 	return total;
 }
 
+/**
+ For a given 2D point, find the linear feature closest to it,
+ and the closest point on that feature. Return true if a feature was found.
+ */
+bool vtFeatureSetLineString::FindClosest(const DPoint2 &p, int &close_feature, DPoint2 &close_point)
+{
+	close_feature = -1;
+	close_point.Set(0,0);
+
+	double dist, closest_dist = 1E9;
+	int point_index;
+	DPoint2 intersection;
+	for (uint i = 0; i < m_Line.size(); i++)
+	{
+		if (m_Line[i].NearestSegment(p, point_index, dist, intersection))
+		{
+			if (dist < closest_dist)
+			{
+				closest_dist = dist;
+				close_feature = i;
+				close_point = intersection;
+			}
+		}
+	}
+	return (close_feature != -1);
+}
+
 bool vtFeatureSetLineString::IsInsideRect(int iElem, const DRECT &rect)
 {
 	return rect.ContainsLine(m_Line[iElem]);

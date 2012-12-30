@@ -103,7 +103,7 @@ public:
 	void ReleaseFeatureGeometry(vtFeature *f);
 
 	// When the underlying feature changes, we need to rebuild the visual
-	void Rebuild();
+	void RebuildVisual();
 	void RebuildFeature(uint iIndex);
 	void UpdateVisualSelection();
 	void Reload();

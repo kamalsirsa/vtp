@@ -902,19 +902,31 @@ void MainFrame::OnSelectionChanged()
 	}
 }
 
-void MainFrame::UpdateFeatureDialog(vtRawLayer *raw,
-									vtFeatureSetPoint2D *pSetP2, int iEntity)
+void MainFrame::UpdateFeatureDialog(vtRawLayer *raw, vtFeatureSet *pSet, int iEntity)
 {
-	DPoint2 &p2 = pSetP2->GetPoint(iEntity);
-	std::vector<int> found;
-	pSetP2->FindAllPointsAtLocation(p2, found);
-
 	FeatInfoDlg	*fdlg = ShowFeatInfoDlg();
 	fdlg->SetLayer(raw);
-	fdlg->SetFeatureSet(pSetP2);
-	pSetP2->DePickAll();
-	for (uint i = 0; i < found.size(); i++)
-		pSetP2->Pick(found[i]);
+	fdlg->SetFeatureSet(pSet);
+	pSet->DePickAll();
+
+	// Handle point features specially: there might be more than one feature
+	// under the cursor at that point.
+	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D *>(pSet);
+	if (pSetP2)
+	{
+		DPoint2 &p2 = pSetP2->GetPoint(iEntity);
+		std::vector<int> found;
+		pSetP2->FindAllPointsAtLocation(p2, found);
+
+		for (uint i = 0; i < found.size(); i++)
+			pSetP2->Pick(found[i]);
+	}
+	else
+	{
+		// Otherwise just pick the single feature.
+		pSet->Pick(iEntity);
+	}
+
 	fdlg->ShowPicked();
 }
 

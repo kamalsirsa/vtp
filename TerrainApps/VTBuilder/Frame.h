@@ -361,7 +361,7 @@ public:
 	void RefreshTreeView();
 	void RefreshStatusBar();
 	BuilderView *GetView() { return m_pView; }
-	virtual void UpdateFeatureDialog(vtRawLayer *raw, vtFeatureSetPoint2D *set, int iEntity);
+	virtual void UpdateFeatureDialog(vtRawLayer *raw, vtFeatureSet *set, int iEntity);
 	virtual void OnSetMode(LBMode m);
 	virtual void OnSelectionChanged();
 

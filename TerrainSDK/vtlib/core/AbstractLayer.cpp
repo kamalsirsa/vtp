@@ -784,7 +784,7 @@ void vtAbstractLayer::DeleteFeature(vtFeature *f)
 }
 
 // When the underlying feature changes (in memory), we need to rebuild the visual
-void vtAbstractLayer::Rebuild()
+void vtAbstractLayer::RebuildVisual()
 {
 	ReleaseGeometry();
 	CreateStyledFeatures();
@@ -861,7 +861,7 @@ void vtAbstractLayer::EditEnd()
 	if (m_bNeedRebuild)
 	{
 		m_bNeedRebuild = false;
-		Rebuild();
+		RebuildVisual();
 	}
 }
 

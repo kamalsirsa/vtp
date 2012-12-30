@@ -364,8 +364,8 @@ void FeatureTableDlg::OnDeleteHighlighted( wxCommandEvent &event )
 		OnEditEnd();
 
 		OnModified();
-
 		RefreshItems();
+		RefreshViz();
 	}
 }
 

@@ -115,7 +115,7 @@ public:
 	// UI
 	virtual void RefreshTreeStatus() {}
 	virtual void RefreshStatusBar() {}
-	virtual void UpdateFeatureDialog(vtRawLayer *raw, vtFeatureSetPoint2D *set, int iEntity) {}
+	virtual void UpdateFeatureDialog(vtRawLayer *raw, vtFeatureSet *set, int iEntity) {}
 	virtual void OnSetMode(LBMode m) {}
 	virtual void OnSelectionChanged() {}
 	virtual void UpdateDistance(const DPoint2 &p1, const DPoint2 &p2) {}

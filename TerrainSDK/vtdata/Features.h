@@ -323,6 +323,7 @@ public:
 	const DLine2 &GetPolyLine(uint num) const { return m_Line[num]; }
 	DLine2 &GetPolyLine(uint num) { return m_Line[num]; }
 	int NumTotalVertices() const;
+	bool FindClosest(const DPoint2 &p, int &close_feature, DPoint2 &close_point);
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
