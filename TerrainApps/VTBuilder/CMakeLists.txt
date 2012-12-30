@@ -4,8 +4,8 @@ set(BUILDERLIB_SOURCE_FILES
 	ExtentDlg.cpp ImageGLCanvas.cpp ImageLayer.cpp Import.cpp ImportPointDlg.cpp
 	ImportOSM.cpp ImportStructDlg.cpp ImportStructDlgOGR.cpp ImportVegDlg.cpp
 	Layer.cpp NodeDlg.cpp RawDlg.cpp RawLayer.cpp RenderOptionsDlg.cpp
-	ResampleDlg.cpp RoadDlg.cpp RoadLayer.cpp RoadMapEdit.cpp RoadMapIO.cpp
-	SampleImageDlg.cpp ScaledView.cpp StructLayer.cpp TileDlg.cpp Tin2d.cpp
+	RoadDlg.cpp RoadLayer.cpp RoadMapEdit.cpp RoadMapIO.cpp
+	SampleElevationDlg.cpp SampleImageDlg.cpp ScaledView.cpp StructLayer.cpp TileDlg.cpp Tin2d.cpp
 	UtilityLayer.cpp VegFieldsDlg.cpp VegLayer.cpp vtBitmap.cpp VTBuilder_UI.cpp
 	vtImage.cpp WaterLayer.cpp)
 
@@ -16,8 +16,8 @@ set(BUILDERLIB_HEADER_FILES
 	Builder.h BuilderView.h ChunkDlg.h ElevDrawOptions.h ElevLayer.h ExtentDlg.h
 	ImageGLCanvas.h ImageLayer.h ImportPointDlg.h ImportStructDlg.h
 	ImportStructDlgOGR.h ImportVegDlg.h Layer.h NodeDlg.h Options.h RawDlg.h
-	RawLayer.h RenderOptionsDlg.h ResampleDlg.h RoadDlg.h RoadLayer.h
-	RoadMapEdit.h SampleImageDlg.h ScaledView.h StructLayer.h TileDlg.h Tin2d.h
+	RawLayer.h RenderOptionsDlg.h RoadDlg.h RoadLayer.h
+	RoadMapEdit.h SampleElevationDlg.h SampleImageDlg.h ScaledView.h StructLayer.h TileDlg.h Tin2d.h
 	UtilityLayer.h VegFieldsDlg.h VegLayer.h vtBitmap.h VTBuilder_UI.h vtImage.h
 	WaterLayer.h)
 

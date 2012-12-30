@@ -47,8 +47,6 @@
 #include "DistanceDlg2d.h"
 #include "FeatInfoDlg.h"
 #include "OptionsDlg.h"
-#include "ResampleDlg.h"
-#include "SampleImageDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/LinearStructDlg.h"
 #include "vtui/ProjectionDlg.h"

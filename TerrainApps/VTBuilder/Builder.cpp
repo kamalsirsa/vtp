@@ -38,7 +38,7 @@
 
 // Dialogs
 #include "OptionsDlg.h"
-#include "ResampleDlg.h"
+#include "SampleElevationDlg.h"
 #include "SampleImageDlg.h"
 #include "vtui/ProjectionDlg.h"
 
@@ -1181,7 +1181,7 @@ void Builder::AreaSampleElevation(BuilderView *pView)
 	}
 
 	// Open the Resample dialog
-	ResampleDlg dlg(m_pParentWindow, -1, _("Sample Elevation"));
+	SampleElevationDlg dlg(m_pParentWindow, -1, _("Sample Elevation"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;

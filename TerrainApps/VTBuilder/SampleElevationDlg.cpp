@@ -1,5 +1,5 @@
 //
-// Name: ResampleDlg.cpp
+// Name: SampleElevationDlg.cpp
 //
 // Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -14,7 +14,7 @@
 
 #include "vtui/AutoDialog.h"
 
-#include "ResampleDlg.h"
+#include "SampleElevationDlg.h"
 #include "TileDlg.h"
 #include "FileFilters.h"
 #include "RenderOptionsDlg.h"
@@ -22,29 +22,29 @@
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
-// ResampleDlg
+// SampleElevationDlg
 //----------------------------------------------------------------------------
 
-// WDR: event table for ResampleDlg
+// WDR: event table for SampleElevationDlg
 
-BEGIN_EVENT_TABLE(ResampleDlg, SampleElevationDlgBase)
-	EVT_INIT_DIALOG (ResampleDlg::OnInitDialog)
-	EVT_BUTTON( ID_SMALLER, ResampleDlg::OnSmaller )
-	EVT_BUTTON( ID_BIGGER, ResampleDlg::OnBigger )
-	EVT_CHECKBOX( ID_CONSTRAIN, ResampleDlg::OnConstrain )
-	EVT_TEXT( ID_SIZEX, ResampleDlg::OnSizeXY )
-	EVT_TEXT( ID_SIZEY, ResampleDlg::OnSizeXY )
-	EVT_TEXT( ID_SPACINGX, ResampleDlg::OnSpacingXY )
-	EVT_TEXT( ID_SPACINGY, ResampleDlg::OnSpacingXY )
-	EVT_RADIOBUTTON( ID_FLOATS, ResampleDlg::OnFloats )
-	EVT_RADIOBUTTON( ID_SHORTS, ResampleDlg::OnShorts )
-	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, ResampleDlg::OnRadioOutput )
-	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, ResampleDlg::OnRadioOutput )
-	EVT_RADIOBUTTON( ID_RADIO_TO_TILES, ResampleDlg::OnRadioOutput )
-	EVT_BUTTON( ID_DOTDOTDOT, ResampleDlg::OnDotDotDot )
+BEGIN_EVENT_TABLE(SampleElevationDlg, SampleElevationDlgBase)
+	EVT_INIT_DIALOG (SampleElevationDlg::OnInitDialog)
+	EVT_BUTTON( ID_SMALLER, SampleElevationDlg::OnSmaller )
+	EVT_BUTTON( ID_BIGGER, SampleElevationDlg::OnBigger )
+	EVT_CHECKBOX( ID_CONSTRAIN, SampleElevationDlg::OnConstrain )
+	EVT_TEXT( ID_SIZEX, SampleElevationDlg::OnSizeXY )
+	EVT_TEXT( ID_SIZEY, SampleElevationDlg::OnSizeXY )
+	EVT_TEXT( ID_SPACINGX, SampleElevationDlg::OnSpacingXY )
+	EVT_TEXT( ID_SPACINGY, SampleElevationDlg::OnSpacingXY )
+	EVT_RADIOBUTTON( ID_FLOATS, SampleElevationDlg::OnFloats )
+	EVT_RADIOBUTTON( ID_SHORTS, SampleElevationDlg::OnShorts )
+	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, SampleElevationDlg::OnRadioOutput )
+	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, SampleElevationDlg::OnRadioOutput )
+	EVT_RADIOBUTTON( ID_RADIO_TO_TILES, SampleElevationDlg::OnRadioOutput )
+	EVT_BUTTON( ID_DOTDOTDOT, SampleElevationDlg::OnDotDotDot )
 END_EVENT_TABLE()
 
-ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+SampleElevationDlg::SampleElevationDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	SampleElevationDlgBase( parent, id, title, position, size, style )
 {
@@ -83,7 +83,7 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	GetSizer()->SetSizeHints(this);
 }
 
-void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
+void SampleElevationDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	m_bNewLayer = true;
 	m_bToFile = false;
@@ -110,7 +110,7 @@ void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetShorts()->SetValue(!m_bFloats);
 }
 
-void ResampleDlg::RecomputeSize()
+void SampleElevationDlg::RecomputeSize()
 {
 	if (m_bConstraint)  // powers of 2 + 1
 		m_iSizeX = m_iSizeY = (1 << m_power) + 1;
@@ -119,9 +119,9 @@ void ResampleDlg::RecomputeSize()
 	m_fSpacingY = m_fAreaY / (m_iSizeY - 1);
 }
 
-// WDR: handler implementations for ResampleDlg
+// WDR: handler implementations for SampleElevationDlg
 
-void ResampleDlg::OnDotDotDot( wxCommandEvent &event )
+void SampleElevationDlg::OnDotDotDot( wxCommandEvent &event )
 {
 	wxString filter;
 	filter += FSTRING_BT;
@@ -158,7 +158,7 @@ void ResampleDlg::OnDotDotDot( wxCommandEvent &event )
 	m_bSetting = false;
 }
 
-void ResampleDlg::OnRadioOutput( wxCommandEvent &event )
+void SampleElevationDlg::OnRadioOutput( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	EnableBasedOnConstraint();
@@ -168,12 +168,12 @@ void ResampleDlg::OnRadioOutput( wxCommandEvent &event )
 	m_bSetting = false;
 }
 
-void ResampleDlg::OnShorts( wxCommandEvent &event )
+void SampleElevationDlg::OnShorts( wxCommandEvent &event )
 {
 	GetVUnits()->Enable(true);
 }
 
-void ResampleDlg::OnFloats( wxCommandEvent &event )
+void SampleElevationDlg::OnFloats( wxCommandEvent &event )
 {
 	if (m_bSetting)
 		return;
@@ -186,7 +186,7 @@ void ResampleDlg::OnFloats( wxCommandEvent &event )
 	EnableBasedOnConstraint();
 }
 
-void ResampleDlg::OnSpacingXY( wxCommandEvent &event )
+void SampleElevationDlg::OnSpacingXY( wxCommandEvent &event )
 {
 	if (m_bSetting)
 		return;
@@ -204,7 +204,7 @@ void ResampleDlg::OnSpacingXY( wxCommandEvent &event )
 	m_bSetting = false;
 }
 
-void ResampleDlg::OnSizeXY( wxCommandEvent &event )
+void SampleElevationDlg::OnSizeXY( wxCommandEvent &event )
 {
 	if (m_bSetting)
 		return;
@@ -217,7 +217,7 @@ void ResampleDlg::OnSizeXY( wxCommandEvent &event )
 	m_bSetting = false;
 }
 
-void ResampleDlg::OnConstrain( wxCommandEvent &event )
+void SampleElevationDlg::OnConstrain( wxCommandEvent &event )
 {
 	if (m_bSetting)
 		return;
@@ -239,7 +239,7 @@ void ResampleDlg::OnConstrain( wxCommandEvent &event )
 	m_bSetting = false;
 }
 
-void ResampleDlg::EnableBasedOnConstraint()
+void SampleElevationDlg::EnableBasedOnConstraint()
 {
 	GetTextToFile()->Enable(m_bToFile);
 	GetDotDotDot()->Enable(m_bToFile);
@@ -256,7 +256,7 @@ void ResampleDlg::EnableBasedOnConstraint()
 	GetVUnits()->Enable(!m_bFloats);
 }
 
-void ResampleDlg::OnBigger( wxCommandEvent &event )
+void SampleElevationDlg::OnBigger( wxCommandEvent &event )
 {
 	m_power++;
 	RecomputeSize();
@@ -266,7 +266,7 @@ void ResampleDlg::OnBigger( wxCommandEvent &event )
 	m_bSetting = false;
 }
 
-void ResampleDlg::OnSmaller( wxCommandEvent &event )
+void SampleElevationDlg::OnSmaller( wxCommandEvent &event )
 {
 	m_power--;
 	RecomputeSize();

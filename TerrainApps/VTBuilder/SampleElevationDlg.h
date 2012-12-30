@@ -1,12 +1,12 @@
 //
-// Name: ResampleDlg.h
+// Name: SampleElevationDlg.h
 //
 // Copyright (c) 2001-2012 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
-#ifndef __ResampleDlg_H__
-#define __ResampleDlg_H__
+#ifndef __SampleElevationDlg_H__
+#define __SampleElevationDlg_H__
 
 #include "VTBuilder_UI.h"
 #include "vtdata/MathTypes.h"
@@ -19,19 +19,19 @@ class BuilderView;
 // WDR: class declarations
 
 //----------------------------------------------------------------------------
-// ResampleDlg
+// SampleElevationDlg
 //----------------------------------------------------------------------------
 
-class ResampleDlg: public SampleElevationDlgBase
+class SampleElevationDlg: public SampleElevationDlgBase
 {
 public:
 	// constructors and destructors
-	ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+	SampleElevationDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	// WDR: method declarations for ResampleDlg
+	// WDR: method declarations for SampleElevationDlg
 	wxButton* GetDotDotDot()  { return (wxButton*) FindWindow( ID_DOTDOTDOT ); }
 	wxTextCtrl* GetTextToFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_FILE ); }
 	wxTextCtrl* GetTextTileInfo()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TILE_INFO ); }
@@ -74,14 +74,14 @@ public:
 	bool	m_bFillGaps;
 
 private:
-	// WDR: member variable declarations for ResampleDlg
+	// WDR: member variable declarations for SampleElevationDlg
 	wxNumericValidator *spacing1, *spacing2;
 	BuilderView *m_pView;
 	int		m_power;
 	bool	m_bSetting;
 
 private:
-	// WDR: handler declarations for ResampleDlg
+	// WDR: handler declarations for SampleElevationDlg
 	void OnDotDotDot( wxCommandEvent &event );
 	void OnRadioOutput( wxCommandEvent &event );
 	void OnShorts( wxCommandEvent &event );
@@ -97,5 +97,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif  // __ResampleDlg_H__
+#endif  // __SampleElevationDlg_H__
 
