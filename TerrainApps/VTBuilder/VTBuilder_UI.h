@@ -237,49 +237,46 @@ class NodeDlgView;
 #define ID_AREAY 1192
 #define ID_ESTX 1193
 #define ID_ESTY 1194
-#define ID_RADIO_TO_TILES 1195
-#define ID_TEXT_TILE_INFO 1196
-#define ID_TILE_OPTIONS 1197
-#define ID_SPLITTER1 1198
-#define ID_LISTCTRL_SPECIES 1199
-#define ID_LISTCTRL_APPEARANCES 1200
-#define ID_TEXT_TO_FOLDER 1201
-#define ID_COLUMNS 1202
-#define ID_ROWS 1203
-#define ID_CHOICE_LOD0_SIZE 1204
-#define ID_SPIN_NUM_LODS 1205
-#define ID_TOTALX 1206
-#define ID_TOTALY 1207
-#define ID_CURX 1208
-#define ID_CURY 1209
-#define ID_OMIT_FLAT 1210
-#define ID_MASK_UNKNOWN 1211
-#define ID_TEXTURE_ALPHA 1212
-#define ID_TC_NONE 1213
-#define ID_TC_OGL 1214
-#define ID_TC_SQUISH_FAST 1215
-#define ID_TC_SQUISH_SLOW 1216
-#define ID_TC_JPEG 1217
-#define ID_TOWER_XY 1218
-#define ID_TOWER_TYPE 1219
-#define ID_TOWER_MATERIAL 1220
-#define ID_TOWER_ELEV 1221
-#define ID_THEME 1222
-#define ID_MPP 1223
-#define ID_USE_SPECIES 1224
-#define ID_SPECIES_CHOICE 1225
-#define ID_SPECIES_USE_FIELD 1226
-#define ID_SPECIES_FIELD 1227
-#define ID_SPECIES_ID 1228
-#define ID_SPECIES_NAME 1229
-#define ID_COMMON_NAME 1230
-#define ID_BIOTYPE_INT 1231
-#define ID_BIOTYPE_STRING 1232
-#define ID_HEIGHT_RANDOM 1233
-#define ID_HEIGHT_FIXED 1234
-#define ID_HEIGHT_FIXED_VALUE 1235
-#define ID_HEIGHT_USE_FIELD 1236
-#define ID_HEIGHT_FIELD 1237
+#define ID_SPLITTER1 1195
+#define ID_LISTCTRL_SPECIES 1196
+#define ID_LISTCTRL_APPEARANCES 1197
+#define ID_TEXT_TO_FOLDER 1198
+#define ID_COLUMNS 1199
+#define ID_ROWS 1200
+#define ID_CHOICE_LOD0_SIZE 1201
+#define ID_SPIN_NUM_LODS 1202
+#define ID_TOTALX 1203
+#define ID_TOTALY 1204
+#define ID_CURX 1205
+#define ID_CURY 1206
+#define ID_OMIT_FLAT 1207
+#define ID_MASK_UNKNOWN 1208
+#define ID_TEXTURE_ALPHA 1209
+#define ID_TC_NONE 1210
+#define ID_TC_OGL 1211
+#define ID_TC_SQUISH_FAST 1212
+#define ID_TC_SQUISH_SLOW 1213
+#define ID_TC_JPEG 1214
+#define ID_TOWER_XY 1215
+#define ID_TOWER_TYPE 1216
+#define ID_TOWER_MATERIAL 1217
+#define ID_TOWER_ELEV 1218
+#define ID_THEME 1219
+#define ID_MPP 1220
+#define ID_USE_SPECIES 1221
+#define ID_SPECIES_CHOICE 1222
+#define ID_SPECIES_USE_FIELD 1223
+#define ID_SPECIES_FIELD 1224
+#define ID_SPECIES_ID 1225
+#define ID_SPECIES_NAME 1226
+#define ID_COMMON_NAME 1227
+#define ID_BIOTYPE_INT 1228
+#define ID_BIOTYPE_STRING 1229
+#define ID_HEIGHT_RANDOM 1230
+#define ID_HEIGHT_FIXED 1231
+#define ID_HEIGHT_FIXED_VALUE 1232
+#define ID_HEIGHT_USE_FIELD 1233
+#define ID_HEIGHT_FIELD 1234
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ChunkDlgBase
@@ -1053,9 +1050,6 @@ class SampleImageDlgBase : public wxDialog
 		wxRadioButton* m_radio_to_file;
 		wxTextCtrl* m_text_to_file;
 		wxButton* m_dotdotdot;
-		wxRadioButton* m_radio_to_tiles;
-		wxTextCtrl* m_text_tile_info;
-		wxButton* m_tile_options;
 		wxStaticText* m_text9;
 		wxTextCtrl* m_sizex;
 		wxTextCtrl* m_sizey;

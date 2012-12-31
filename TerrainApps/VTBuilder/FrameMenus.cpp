@@ -290,6 +290,7 @@ EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 EVT_MENU(ID_RAW_ADDFEATURE_WKT,		MainFrame::OnRawAddFeatureWKT)
 EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
 EVT_MENU(ID_RAW_CONVERT_TOTIN,		MainFrame::OnRawConvertToTIN)
+EVT_MENU(ID_RAW_CONVERT_TOPOLYS,	MainFrame::OnRawConvertToPolygons)
 EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
 EVT_MENU(ID_RAW_EXPORT_KML,			MainFrame::OnRawExportKML)
 EVT_MENU(ID_RAW_GENERATE_ELEVATION,	MainFrame::OnRawGenElevation)
@@ -307,6 +308,7 @@ EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
 EVT_UPDATE_UI(ID_RAW_ADDFEATURE_WKT,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_CONVERT_TOTIN,		MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_CONVERT_TOPOLYS,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_KML,		MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_GENERATE_ELEVATION,MainFrame::OnUpdateRawGenElevation)
@@ -611,6 +613,7 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_EXPORT_KML, _("Export as KML"));
 	rawMenu->Append(ID_RAW_GENERATE_ELEVATION, _("Generate Grid from 3D Points"));
 	rawMenu->Append(ID_RAW_CONVERT_TOTIN, _("Generate TIN"));
+	rawMenu->Append(ID_RAW_CONVERT_TOPOLYS, _("Generate Polygons from Polylines"));
 	m_pMenuBar->Append(rawMenu, _("Ra&w"));
 	m_iLayerMenu[LT_RAW] = menu_num;
 	menu_num++;
@@ -3615,17 +3618,34 @@ void MainFrame::OnRawConvertToTIN(wxCommandEvent& event)
 		tin = new vtTin2d(setpo3);
 	else if (setpg)
 	{
-		wxArrayString choices;
-		uint i, n = setpg->GetNumFields();
-		for (i = 0; i < n; i++)
-			choices.Add(wxString(setpg->GetField(i)->m_name, wxConvUTF8));
+		uint n = setpg->GetNumFields();
 
-		// We need to know which field contains height
-		int res = wxGetSingleChoiceIndex(_("Height Field"), _("Species"),
-			choices, this);
-		if (res == -1)
-			return;
-		tin = new vtTin2d(setpg, res);
+		int field_num = -1;
+		float height = 0.0f;
+		if (n > 0)
+		{
+			wxArrayString choices;
+			for (uint i = 0; i < n; i++)
+				choices.Add(wxString(setpg->GetField(i)->m_name, wxConvUTF8));
+
+			// We need to know which field contains height
+			field_num = wxGetSingleChoiceIndex(_("Height Field"), _("Generate TIN"),
+				choices, this);
+			if (field_num == -1)
+				return;
+		}
+		else
+		{
+			wxString str;
+			str.Printf(_T("%g"), height);
+			str = wxGetTextFromUser(_("What height to use for the TIN surface?"),
+				_("Generate TIN"), str, this);
+			if (str == _T(""))
+				return;
+
+			height = atof(str.mb_str(wxConvUTF8));
+		}
+		tin = new vtTin2d(setpg, field_num, height);
 	}
 	else
 	{
@@ -3643,6 +3663,67 @@ void MainFrame::OnRawConvertToTIN(wxCommandEvent& event)
 
 	AddLayer(pEL);
 	SetActiveLayer(pEL);
+
+	m_pView->Refresh();
+	RefreshTreeView();
+}
+
+void MainFrame::OnRawConvertToPolygons(wxCommandEvent& event)
+{
+	vtRawLayer *pRaw = GetActiveRawLayer();
+	vtFeatureSet *pSet = pRaw->GetFeatureSet();
+
+	vtFeatureSetLineString *setls2 = dynamic_cast<vtFeatureSetLineString *>(pSet);
+	vtFeatureSetLineString3D *setls3 = dynamic_cast<vtFeatureSetLineString3D *>(pSet);
+	vtFeatureSet *newset = NULL;
+
+	if (setls2)
+	{
+		vtFeatureSetPolygon *polys = new vtFeatureSetPolygon;
+
+		for (uint i = 0; i < setls2->GetNumEntities(); i++)
+		{
+			const DLine2 &polyline = setls2->GetPolyLine(i);
+			int npoints = polyline.GetSize();
+			if (polyline[0] == polyline[npoints-1])
+			{
+				DPolygon2 dpoly;
+				dpoly.push_back(polyline);
+
+				// Omit the first/last point (duplicate)
+				dpoly[0].RemoveAt(npoints-1);
+
+				polys->AddPolygon(dpoly);
+			}
+		}
+		if (polys->GetNumEntities() == 0)
+		{
+			DisplayAndLog("Didn't find any closed polylines");
+			delete polys;
+			return;
+		}
+		newset = polys;
+	}
+	else if (setls3)
+	{
+		// TODO; we don't actually do 3D polygons yet.
+	}
+	else
+	{
+		DisplayAndLog("Must be polylines (linestrings), either 2D or 3D");
+		return;
+	}
+
+	vtRawLayer *pNewRaw = new vtRawLayer;
+	pNewRaw->SetFeatureSet(newset);
+
+	// inherit name
+	wxString fname = pRaw->GetLayerFilename();
+	RemoveFileExtensions(fname);
+	pNewRaw->SetLayerFilename(fname + wxString("-poly.shp", wxConvUTF8));
+
+	AddLayer(pNewRaw);
+	SetActiveLayer(pNewRaw);
 
 	m_pView->Refresh();
 	RefreshTreeView();

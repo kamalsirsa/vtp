@@ -788,7 +788,7 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	const IPoint2 Size = pTarget->GetGrid()->GetDimensions();
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_("Merging and Resampling Elevation Layers"), true);
+	OpenProgressDialog(_("Sampling Elevation Layers"), true);
 
 	// Determine which source elevation layers overlap our desired area
 	std::vector<vtElevLayer*> elevs;
@@ -995,7 +995,7 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 	const IPoint2 Size = pTarget->GetDimensions();
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_("Merging and Resampling Image Layers"), true);
+	OpenProgressDialog(_("Sampling Image Layers"), true);
 
 	vtImage **images = new vtImage *[LayersOfType(LT_IMAGE)];
 	int g, num_image = 0;

@@ -154,7 +154,17 @@ vtTin2d::vtTin2d(vtFeatureSetPoint3D *set)
 	m_proj = set->GetAtProjection();
 }
 
-vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum)
+/**
+ Construct a TIN from polygons.  The polygons features are triangulated and
+ assigned a height, either from the feature fields, or a fixed height.
+
+ \param set			The polygons featureset to use.
+ \param iFieldNum	The number of the field to use; for example, if the fields
+	are "Area", "Distance", "Height", and "Height" contains the value you want,
+	then pass 2.  To use an fixed height instead for all triangles, pass -1.
+ \param fHeight		The absolute height to use, if iFieldNum is -1.
+ */
+vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum, float fHeight)
 {
 	m_fEdgeLen = NULL;
 	m_bConstrain = false;
@@ -164,8 +174,12 @@ vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum)
 	{
 		DPolygon2 &dpoly = set->GetPolygon(i);
 
-		// Get z value from field 0
-		float z = set->GetFloatValue(i, iFieldNum);
+		// Get z value
+		float z;
+		if (iFieldNum == -1)
+			z = fHeight;
+		else
+			z = set->GetFloatValue(i, iFieldNum);
 
 		DLine2 result;
 		CallTriangle(dpoly, result);

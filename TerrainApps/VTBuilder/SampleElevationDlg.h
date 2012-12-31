@@ -11,7 +11,6 @@
 #include "VTBuilder_UI.h"
 #include "vtdata/MathTypes.h"
 #include "vtui/AutoDialog.h"
-#include "TileDlg.h"
 #include "ElevDrawOptions.h"
 
 class BuilderView;
@@ -34,7 +33,6 @@ public:
 	// WDR: method declarations for SampleElevationDlg
 	wxButton* GetDotDotDot()  { return (wxButton*) FindWindow( ID_DOTDOTDOT ); }
 	wxTextCtrl* GetTextToFile()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TO_FILE ); }
-	wxTextCtrl* GetTextTileInfo()  { return (wxTextCtrl*) FindWindow( ID_TEXT_TILE_INFO ); }
 	wxRadioButton* GetRadioToFile()  { return (wxRadioButton*) FindWindow( ID_RADIO_TO_FILE ); }
 	wxRadioButton* GetRadioCreateNew()  { return (wxRadioButton*) FindWindow( ID_RADIO_CREATE_NEW ); }
 	wxRadioButton* GetShorts()  { return (wxRadioButton*) FindWindow( ID_SHORTS ); }
@@ -54,7 +52,6 @@ public:
 	bool m_bNewLayer;
 	bool m_bToFile;
 	wxString m_strToFile;
-	wxString m_strTileInfo;
 
 	double  m_fSpacingX;
 	double  m_fSpacingY;

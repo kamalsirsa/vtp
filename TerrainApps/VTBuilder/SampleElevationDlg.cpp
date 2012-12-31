@@ -15,7 +15,6 @@
 #include "vtui/AutoDialog.h"
 
 #include "SampleElevationDlg.h"
-#include "TileDlg.h"
 #include "FileFilters.h"
 #include "RenderOptionsDlg.h"
 
@@ -40,7 +39,6 @@ BEGIN_EVENT_TABLE(SampleElevationDlg, SampleElevationDlgBase)
 	EVT_RADIOBUTTON( ID_SHORTS, SampleElevationDlg::OnShorts )
 	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, SampleElevationDlg::OnRadioOutput )
 	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, SampleElevationDlg::OnRadioOutput )
-	EVT_RADIOBUTTON( ID_RADIO_TO_TILES, SampleElevationDlg::OnRadioOutput )
 	EVT_BUTTON( ID_DOTDOTDOT, SampleElevationDlg::OnDotDotDot )
 END_EVENT_TABLE()
 
@@ -59,7 +57,6 @@ SampleElevationDlg::SampleElevationDlg( wxWindow *parent, wxWindowID id, const w
 	AddValidator(this, ID_RADIO_TO_FILE, &m_bToFile);
 
 	AddValidator(this, ID_TEXT_TO_FILE, &m_strToFile);
-	AddValidator(this, ID_TEXT_TILE_INFO, &m_strTileInfo);
 
 	// sampling
 	spacing1 = AddNumValidator(this, ID_SPACINGX, &m_fSpacingX);

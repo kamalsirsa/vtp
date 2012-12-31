@@ -2741,22 +2741,6 @@ SampleImageDlgBase::SampleImageDlgBase( wxWindow* parent, wxWindowID id, const w
 	
 	sbSizer20->Add( bSizer94, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	wxBoxSizer* bSizer95;
-	bSizer95 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_radio_to_tiles = new wxRadioButton( this, ID_RADIO_TO_TILES, _("To folder of Tiles"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_radio_to_tiles->SetValue( true ); 
-	bSizer95->Add( m_radio_to_tiles, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-	
-	m_text_tile_info = new wxTextCtrl( this, ID_TEXT_TILE_INFO, wxEmptyString, wxDefaultPosition, wxSize( 100,-1 ), wxTE_READONLY );
-	bSizer95->Add( m_text_tile_info, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-	
-	m_tile_options = new wxButton( this, ID_TILE_OPTIONS, _("Tile Options"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_tile_options->SetDefault(); 
-	bSizer95->Add( m_tile_options, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-	
-	sbSizer20->Add( bSizer95, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
-	
 	bSizer93->Add( sbSizer20, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxStaticBoxSizer* sbSizer21;

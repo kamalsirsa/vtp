@@ -267,6 +267,7 @@ protected:
 	void OnRawAddFeatureWKT(wxCommandEvent& event);
 	void OnRawSelectCondition(wxCommandEvent& event);
 	void OnRawConvertToTIN(wxCommandEvent& event);
+	void OnRawConvertToPolygons(wxCommandEvent& event);
 	void OnRawExportImageMap(wxCommandEvent& event);
 	void OnRawExportKML(wxCommandEvent& event);
 	void OnRawGenElevation(wxCommandEvent& event);
