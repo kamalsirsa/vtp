@@ -493,6 +493,24 @@ bool vtFeatureSetLineString::FindClosest(const DPoint2 &p, int &close_feature, D
 	return (close_feature != -1);
 }
 
+/*
+ Fix polyline geometry: Remove redundant (coincident) points, remove colinear
+ points.
+ */
+int vtFeatureSetLineString::FixGeometry(double dEpsilon)
+{
+	int removed = 0;
+	for (uint i = 0; i < m_Line.size(); i++)
+	{
+		// Remove bad points: degenerate (coincident)
+		removed += m_Line[i].RemoveDegeneratePoints(dEpsilon, false);
+
+		// and colinear. The epsilon here is far more sensitive.
+		removed += m_Line[i].RemoveColinearPoints(dEpsilon / 10.0, false);
+	}
+	return removed;
+}
+
 bool vtFeatureSetLineString::IsInsideRect(int iElem, const DRECT &rect)
 {
 	return rect.ContainsLine(m_Line[iElem]);
@@ -1037,8 +1055,8 @@ int vtFeatureSetPolygon::FindPolygon(const DPoint2 &p) const
 }
 
 /*
- Fix geometry: Remove redundant (coincident) points, remove colinear points,
-  fix the winding direction of polygonal rings.
+ Fix polygon geometry: Remove redundant (coincident) points, remove colinear
+ points, fix the winding direction of polygonal rings.
  */
 int vtFeatureSetPolygon::FixGeometry(double dEpsilon)
 {
@@ -1051,9 +1069,11 @@ int vtFeatureSetPolygon::FixGeometry(double dEpsilon)
 	{
 		DPolygon2 &dpoly = m_Poly[i];
 
-		// Remove bad points: degenerate (coincident) and colinear
+		// Remove bad points: degenerate (coincident)
 		removed += dpoly.RemoveDegeneratePoints(dEpsilon);
-		removed += dpoly.RemoveColinearPoints(dEpsilon);
+
+		// and colinear. The epsilon here is far more sensitive.
+		removed += dpoly.RemoveColinearPoints(dEpsilon / 10);
 
 		DLine2 &outer = dpoly[0];
 		if (PolyChecker.IsClockwisePolygon(outer) == false)
@@ -1176,12 +1196,13 @@ void vtFeatureSetPolygon::CopyGeometry(uint from, uint to)
 
 void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
-	uint i, j, size = m_Poly.size();
-	int part;
-	for (i = 0; i < size; i++)		// for each polyline
+	uint num_polys = m_Poly.size();
+	VTLOG("vtFeatureSetPolygon::SaveGeomToSHP, %d polygons\n", num_polys);
+
+	for (uint i = 0; i < num_polys; i++)		// for each polygon
 	{
 		if (progress_callback && ((i%16)==0))
-			progress_callback(i*100/size);
+			progress_callback(i * 100 / num_polys);
 
 		const DPolygon2 &poly = m_Poly[i];
 
@@ -1192,16 +1213,21 @@ void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(i
 		// Beware: it is possible for the shape to not actually have vertices
 		if (parts == 1 && poly[0].GetSize() == 0)
 		{
-			obj = SHPCreateObject(SHPT_POLYGON, -1, parts, NULL,
+			int *panPartStart = new int[1];
+			panPartStart[0] = 0;
+
+			obj = SHPCreateObject(SHPT_POLYGON, -1, parts, panPartStart,
 				NULL, 0, NULL, NULL, NULL, NULL );
 			SHPWriteObject(hSHP, -1, obj);
 			SHPDestroyObject(obj);
+
+			delete [] panPartStart;
 		}
 		else
 		{
 			// count total vertices in all parts
 			int total = 0;
-			for (part = 0; part < parts; part++)
+			for (int part = 0; part < parts; part++)
 			{
 				total += poly[part].GetSize();
 				total++;	// duplicate first vertex
@@ -1212,12 +1238,12 @@ void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(i
 			int *panPartStart = new int[parts];
 
 			int vert = 0;
-			for (part = 0; part < parts; part++)
+			for (int part = 0; part < parts; part++)
 			{
 				panPartStart[part] = vert;
 
 				const DLine2 &dl = poly[part];
-				for (j=0; j < dl.GetSize(); j++) //for each vertex
+				for (uint j = 0; j < dl.GetSize(); j++) //for each vertex
 				{
 					DPoint2 pt = dl[j];
 					dX[vert] = pt.x;

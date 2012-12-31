@@ -101,14 +101,23 @@ void DLine2::ReverseOrder()
  *  line is a triangle not a rectangle.  Remove the identical points to
  *  produce A B D.  Points are identical if they are within dEpsilon
  *  of each other.
+ *
+ * \param bClosed If true, treat this as a closed polyline (a simple
+ *  polygon) by wrapping around from the last to the first point.
  */
-int DLine2::RemoveDegeneratePoints(double dEpsilon)
+int DLine2::RemoveDegeneratePoints(double dEpsilon, bool bClosed)
 {
 	int removed = 0;
-	for (int i = 0; i < (int) GetSize(); i++)
+
+	// If closed, the wrap around when looking for adjacent points.
+	// Otherwise, never consider removing the first or last point.
+	int preserve_endpoints = bClosed ? 0 : 1;
+
+	for (int i = preserve_endpoints; i < (int) GetSize() - preserve_endpoints; i++)
 	{
-		DPoint2 diff = GetSafePoint(i+1) - GetAt(i);
-		if (fabs(diff.x) < dEpsilon && fabs(diff.y) < dEpsilon)
+		// Compare each point to the previous
+		const double dist = (GetAt(i) - GetSafePoint(i-1)).Length();
+		if (dist < dEpsilon)
 		{
 			RemoveAt(i);
 			removed++;
@@ -124,18 +133,26 @@ int DLine2::RemoveDegeneratePoints(double dEpsilon)
 
  We could use another measure of linearity, the angle between (B-A)
  and (C-A), but didn't do that.
+ 
+ \param bClosed If true, treat this as a closed polyline (a simple
+   polygon) by wrapping around from the last to the first point.
  */
-int DLine2::RemoveColinearPoints(double dEpsilon)
+int DLine2::RemoveColinearPoints(double dEpsilon, bool bClosed)
 {
 	int removed = 0;
-	for (int i = 0; i < (int) GetSize(); i++)
+
+	// If closed, the wrap around when looking for adjacent points.
+	// Otherwise, never consider removing the first or last point.
+	int preserve_endpoints = bClosed ? 0 : 1;
+
+	for (int i = preserve_endpoints; i < (int) GetSize() - preserve_endpoints; i++)
 	{
-		DPoint2 &prev = GetSafePoint(i-1);
-		DPoint2 &next = GetSafePoint(i+1);
+		const DPoint2 &prev = GetSafePoint(i-1);
+		const DPoint2 &next = GetSafePoint(i+1);
 
 		DPoint2 ray = next - prev;
 		ray.Normalize();
-		double dist = ray.Cross(GetAt(i) - prev);
+		const double dist = ray.Cross(GetAt(i) - prev);
 		if (fabs(dist) < dEpsilon)
 		{
 			RemoveAt(i);
@@ -921,7 +938,7 @@ int DPolygon2::RemoveDegeneratePoints(double dEpsilon)
 	for (uint ring = 0; ring < size(); ring++)
 	{
 		DLine2 &dline = at(ring);
-		removed += dline.RemoveDegeneratePoints(dEpsilon);
+		removed += dline.RemoveDegeneratePoints(dEpsilon, true);
 		if (dline.GetSize() < 3)
 		{
 			int bad = 1;
@@ -941,7 +958,7 @@ int DPolygon2::RemoveColinearPoints(double dEpsilon)
 	for (uint ring = 0; ring < size(); ring++)
 	{
 		DLine2 &dline = at(ring);
-		removed += dline.RemoveColinearPoints(dEpsilon);
+		removed += dline.RemoveColinearPoints(dEpsilon, true);
 		if (dline.GetSize() < 3)
 		{
 			int bad = 1;

@@ -325,6 +325,9 @@ public:
 	int NumTotalVertices() const;
 	bool FindClosest(const DPoint2 &p, int &close_feature, DPoint2 &close_point);
 
+	// Try to address some kinds of degenerate geometry that can occur in polylines
+	int FixGeometry(double dEpsilon);
+
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
 	virtual void CopyGeometry(uint from, uint to);

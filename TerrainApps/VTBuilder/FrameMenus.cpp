@@ -2329,6 +2329,10 @@ void MainFrame::OnElevContours(wxCommandEvent& event)
 	vtElevLayer *pEL = GetActiveElevLayer();
 	vtElevationGrid *grid = pEL->GetGrid();
 
+	const IPoint2 size = grid->GetDimensions();
+	VTLOG("OnElevContours: using grid of size %d x %d, spacing %lf * %lf\n",
+		size.x, size.y, grid->GetSpacing().x, grid->GetSpacing().y);
+
 #if SUPPORT_QUIKGRID
 	ContourDlg dlg(this, -1, _("Add Contours"));
 
@@ -2378,15 +2382,25 @@ void MainFrame::OnElevContours(wxCommandEvent& event)
 
 	vtFeatureSetLineString *fsls = (vtFeatureSetLineString *) raw->GetFeatureSet();
 
+	VTLOG1(" Setting up ContourConverter\n");
 	ContourConverter cc;
 	if (!cc.Setup(grid, fsls))
 		return;
 
+	VTLOG1(" GenerateContour\n");
 	if (dlg.m_bSingle)
 		cc.GenerateContour(dlg.m_fElevSingle);
 	else
 		cc.GenerateContours(dlg.m_fElevEvery);
 	cc.Finish();
+
+	// The contour generator tends to make a lot of extra points. Clean them up.
+	// Use an epsilon based on the grid's spacing; anything smaller than that is
+	// too small to matter.
+	double dEpsilon = grid->GetSpacing().Length() / 4.0;
+	VTLOG1(" Cleaning up resulting polylines\n");
+	int removed = fsls->FixGeometry(dEpsilon);
+	VTLOG(" Removed %d points, done\n", removed);
 
 	m_pView->Refresh();
 #endif // SUPPORT_QUIKGRID
@@ -3976,8 +3990,15 @@ void MainFrame::OnRawOffsetV(wxCommandEvent& event)
 
 void MainFrame::OnRawClean(wxCommandEvent& event)
 {
+	VTLOG1("OnRawClean\n");
+
+	// Get the featureset we're going to clean.
 	vtRawLayer *pRL = GetActiveRawLayer();
-	vtFeatureSetPolygon *fsp = (vtFeatureSetPolygon*) pRL->GetFeatureSet();
+	vtFeatureSet *fset = pRL->GetFeatureSet();
+	vtFeatureSetPolygon *fspoly = dynamic_cast<vtFeatureSetPolygon*>(fset);
+	vtFeatureSetLineString *fsline = dynamic_cast<vtFeatureSetLineString*>(fset);
+	if (!fspoly && !fsline)
+		return;
 
 	wxString str = _T("0.10");
 	str = wxGetTextFromUser(_("Distance threshhold for proximity and co-linearity?"),
@@ -3986,10 +4007,14 @@ void MainFrame::OnRawClean(wxCommandEvent& event)
 		return;
 
 	double value = atof(str.mb_str(wxConvUTF8));
-	int removed = fsp->FixGeometry(value);
+	int removed;
+	if (fspoly)
+		removed = fspoly->FixGeometry(value);
+	if (fsline)
+		removed = fsline->FixGeometry(value);
 
 	str.Printf(_("Removed %d degenerate points"), removed);
-	wxMessageBox(str);
+	DisplayAndLog(str);
 
 	if (removed != 0)
 		pRL->SetModified(true);

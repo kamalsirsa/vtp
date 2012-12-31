@@ -37,6 +37,8 @@ vtFeatureSet::~vtFeatureSet()
  */
 bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) const
 {
+	VTLOG1("vtFeatureSet::SaveToSHP:\n");
+
 	// Must use "C" locale in case we write any floating-point fields
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
@@ -45,20 +47,20 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(filename);
 
+	VTLOG1(" SaveToSHP: writing SHP\n");
 	SHPHandle hSHP = SHPCreate(fname_local, nSHPType);
 	if (!hSHP)
 	{
 		VTLOG1("SHPCreate failed.\n");
 		return false;
 	}
-
-	uint i, j;
-
 	SaveGeomToSHP(hSHP, progress_callback);
 	SHPClose(hSHP);
 
 	if (m_fields.GetSize() > 0)
 	{
+		VTLOG1(" SaveToSHP: writing DBF\n");
+
 		// Save DBF File also
 		vtString dbfname = fname_local;
 		dbfname = dbfname.Left(dbfname.GetLength() - 4);
@@ -71,7 +73,7 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 		}
 
 		Field *field;
-		for (i = 0; i < m_fields.GetSize(); i++)
+		for (uint i = 0; i < m_fields.GetSize(); i++)
 		{
 			field = m_fields[i];
 
@@ -82,12 +84,12 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 
 		// Write DBF Attributes, one record per entity
 		uint entities = GetNumEntities();
-		for (i = 0; i < entities; i++)
+		for (uint i = 0; i < entities; i++)
 		{
 			if (progress_callback && ((i%16)==0))
 				progress_callback(i * 100 / entities);
 
-			for (j = 0; j < m_fields.GetSize(); j++)
+			for (uint j = 0; j < m_fields.GetSize(); j++)
 			{
 				field = m_fields[j];
 				switch (field->m_type)
@@ -118,11 +120,13 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 	}
 
 	// Try saving projection to PRJ
+	VTLOG1(" SaveToSHP: writing PRJ\n");
 	vtString prjname = filename;
 	prjname = prjname.Left(prjname.GetLength() - 4);
 	prjname += ".prj";
 	m_proj.WriteProjFile(prjname);
 
+	VTLOG1(" SaveToSHP: Done\n");
 	return true;
 }
 
