@@ -477,8 +477,14 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			if (iElev == -32767 || iElev == -32768)
 				SetValue(i, j, INVALID_ELEVATION);
 			else
-//				SetValue(i, j, (short) (dProfileMin+iElev));
-				SetValue(i, j, (short) iElev);
+			{
+				// The DEM spec says:
+				// "A value in this array would be multiplied by the "z" spatial
+				// resolution (data element 15, record type A) and added to the
+				// "Elevation of local datum for the profile" (data element 4, record
+				// type B) to obtain the elevation for the point."
+				SetValue(i, j, (short) iElev + (short) dLocalDatumElev);
+			}
 		}
 	}
 	fclose(fp);
