@@ -1016,17 +1016,26 @@ void LaunchAppDocumentation(const vtString &appname,
 	VTLOG("LaunchAppDocumentation: cwd is '%s'\n", (const char *) cwd);
 	vtString cwd_up = PathLevelUp(cwd);
 
+#if VTDEBUG && WIN32
+	// During development, we are in a folder like /vtp/vc10/TerrainApps/App,
+	// so need to go over to the source branch to find the Docs folder.
+	cwd_up = PathLevelUp(cwd_up);
+	cwd_up = PathLevelUp(cwd_up);
+	cwd_up += "/TerrainApps/";
+	cwd_up += appname;
+#endif
+
 	vtStringArray paths;
 
 	// If the app is using a language other than English, look for docs
 	//  in that language first.
 	if (local_lang_code != "en")
-		paths.push_back(cwd_up + "/Docs/" + appname + "/" + local_lang_code + "/");
+		paths.push_back(cwd_up + "/Docs/" + local_lang_code + "/");
 	if (local_lang_code != "en")
 		paths.push_back(cwd + "/Docs/" + local_lang_code + "/");
 
 	// Always fall back on English if the other language isn't found
-	paths.push_back(cwd_up + "/Docs/" + appname + "/en/");
+	paths.push_back(cwd_up + "/Docs/en/");
 	paths.push_back(cwd + "/Docs/en/");
 
 	VTLOG1("Looking for index.html on paths:\n");
