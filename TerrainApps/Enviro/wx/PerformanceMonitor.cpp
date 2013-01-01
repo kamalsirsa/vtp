@@ -61,9 +61,9 @@ CPerformanceMonitorDialog::CPerformanceMonitorDialog( wxWindow *parent, wxWindow
 
     wxListCtrl *pList = GetPmListctrl();
 
-    pList->InsertColumn(0, _("Value"));
-    pList->InsertColumn(1, _("Status"));
-    pList->InsertColumn(2, _("Description"));
+    pList->InsertColumn(0, _T("Value"));
+    pList->InsertColumn(1, _T("Status"));
+    pList->InsertColumn(2, _T("Description"));
     pList->SetColumnWidth(2, wxLIST_AUTOSIZE);
 
     if (m_NVPMInitialised)
@@ -100,7 +100,7 @@ CPerformanceMonitorDialog::CPerformanceMonitorDialog( wxWindow *parent, wxWindow
                             pList->InsertItem(ListItem);
                             pList->SetItemPtrData(ListItem.GetId(), (wxUIntPtr)pInfo);
                             ListItem.SetColumn(1);
-                            ListItem.SetText(wxString(_("Off")));
+                            ListItem.SetText(wxString(_T("Off")));
                             pList->SetItem(ListItem);
                         }
                     }
@@ -195,10 +195,10 @@ void CPerformanceMonitorDialog::UpdateCounters()
                             switch(pInfo->CounterDisplayHint)
                             {
                                 case NVPM_CDH_PERCENT:
-                                    Value << Values[Index].ulValue << _("%");
+                                    Value << Values[Index].ulValue << _T("%");
                                     break;
                                 case NVPM_CDH_RAW:
-                                    Value << Values[Index].ulValue << _("%");
+                                    Value << Values[Index].ulValue << _T("%");
                                     break;
                             }
                             break;
@@ -208,7 +208,7 @@ void CPerformanceMonitorDialog::UpdateCounters()
                                 case NVPM_CDH_PERCENT:
                                     if (0 == Values[Index].ulCycles)
                                         Values[Index].ulCycles = 1;
-                                    Value << Values[Index].ulValue * 100 / Values[Index].ulCycles << _("%");
+                                    Value << Values[Index].ulValue * 100 / Values[Index].ulCycles << _T("%");
                                     break;
                                 case NVPM_CDH_RAW:
                                     Value << Values[Index].ulValue;
@@ -251,19 +251,19 @@ void CPerformanceMonitorDialog::OnListItemRightClick( wxListEvent &event )
         ListItem.SetColumn(1);
         ListItem.SetMask(wxLIST_MASK_TEXT);
         pList->GetItem(ListItem);
-        if (ListItem.GetText().IsSameAs(_("On")))
+        if (ListItem.GetText().IsSameAs(_T("On")))
         {
-            ListItem.SetText(_("Off"));
+            ListItem.SetText(_T("Off"));
             pList->SetItem(ListItem);
             ListItem.SetColumn(0);
-            ListItem.SetText(_(""));
+            ListItem.SetText(_T(""));
             pList->SetItem(ListItem);
             Result = NVPMRemoveCounter(CounterIndex);
         }
         else
         {
 
-            ListItem.SetText(_("On"));
+            ListItem.SetText(_T("On"));
             pList->SetItem(ListItem);
             Result = NVPMAddCounter(CounterIndex);
         }

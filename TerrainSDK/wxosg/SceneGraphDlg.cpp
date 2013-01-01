@@ -490,7 +490,7 @@ void SceneGraphDlg::OnLog( wxCommandEvent &event )
 	wxArrayString choices;
 	choices.Add(_("The standard log file (debug.txt)"));
 	choices.Add(_("A dot file (scene.dot)"));
-	int index = wxGetSingleChoiceIndex(_("Log the scene graph to:"), _(""), choices, this);
+	int index = wxGetSingleChoiceIndex(_("Log the scene graph to:"), _T(""), choices, this);
 	if (index == 0)
 	{
 		vtLogGraph(m_pSelectedNode);

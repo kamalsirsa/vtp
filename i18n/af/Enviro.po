@@ -1,0 +1,1988 @@
+# Enviro Afrikaans.
+# Copyright (C) 2004 Virtual Terrain Project
+# This file is distributed under the same license as the VTP package.
+# Ben Discoe <ben@vterrain.org>, 2004.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-09-20 20:14-1000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Riaan Van den Dool <riaanvdd@sun.ac.za>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: wx/EnviroApp.cpp:255
+msgid " Startup"
+msgstr " Opstelling"
+
+#: wx/EnviroApp.cpp:420
+msgid "No terrains found (datapath/Terrains/*.xml)"
+msgstr "Geen terrein data (datapad/Terrains/*.xml)"
+
+#: wx/EnviroApp.cpp:424
+msgid "Please choose a terrain"
+msgstr "Kies 'n terrein"
+
+#: wx/EnviroApp.cpp:425
+msgid "Select Terrain"
+msgstr "Kies Terrein"
+
+#: wx/EnviroApp.cpp:453
+msgid "Terrain Creation Parameters"
+msgstr "Terrein skeppings parameters"
+
+#: wx/EnviroApp.cpp:459
+msgid "Couldn't load from that file."
+msgstr "Daar was 'n fout met die leer."
+
+#: wx/EnviroApp.cpp:472
+msgid "Upgrading the .ini to a .xml file.\n"
+msgstr "Die .ini leer word na .xml omskep.\n"
+
+#: wx/EnviroApp.cpp:473
+msgid "Deleting old file: "
+msgstr "Ou leer word uitgevee:"
+
+#: wx/EnviroApp.cpp:486 wx/ScenarioSelectDialog.cpp:290
+#: wx/ScenarioSelectDialog.cpp:313
+#, c-format
+msgid "Couldn't save to file %hs.\n"
+msgstr "Die leer %hs kon nie gestoor word nie.\n"
+
+#: wx/EnviroApp.cpp:487 wx/ScenarioSelectDialog.cpp:291
+#: wx/ScenarioSelectDialog.cpp:314
+msgid "Please make sure the file is not read-only."
+msgstr "Maak asseblief seker die leer is nie lees-alleen nie."
+
+#: wx/EnviroFrame.cpp:272 wx/EnviroFrame.cpp:365 wx/EnviroFrame.cpp:514
+msgid "Scene Graph"
+msgstr "Scene grafiek"
+
+#: wx/EnviroFrame.cpp:276 wx/EnviroFrame.cpp:333 wx/enviro_wdr.cpp:938
+msgid "Plants"
+msgstr "Plante"
+
+#: wx/EnviroFrame.cpp:279
+msgid "Linear Structures"
+msgstr "Linere Strukture"
+
+#: wx/EnviroFrame.cpp:280 wx/EnviroFrame.cpp:332
+msgid "Routes"
+msgstr "Roetes"
+
+#: wx/EnviroFrame.cpp:281
+msgid "Camera-View"
+msgstr "Kamera-Uitsig"
+
+#: wx/EnviroFrame.cpp:282 wx/EnviroFrame.cpp:488
+msgid "Locations"
+msgstr "Plekke"
+
+#: wx/EnviroFrame.cpp:284
+msgid "Building Properties"
+msgstr "Gebou eienskappe"
+
+#: wx/EnviroFrame.cpp:285 wx/EnviroFrame.cpp:324 wx/LayerDlg.cpp:150
+#: wx/LayerDlg.cpp:260
+msgid "Layers"
+msgstr "Vlakke"
+
+#: wx/EnviroFrame.cpp:288 wx/EnviroFrame.cpp:334
+msgid "Instances"
+msgstr "Instansies"
+
+#: wx/EnviroFrame.cpp:290 wx/enviro_wdr.cpp:912
+msgid "Distance"
+msgstr "Afstand"
+
+#: wx/EnviroFrame.cpp:291 wx/EnviroFrame.cpp:507 wx/enviro_wdr.cpp:1224
+msgid "Time"
+msgstr "Tyd"
+
+#: wx/EnviroFrame.cpp:292 wx/EnviroFrame.cpp:394 wx/enviro_wdr.cpp:192
+msgid "Scenarios"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:326
+msgid "E&xit (Esc)"
+msgstr "Gaan &Uit (Esc)"
+
+#: wx/EnviroFrame.cpp:326
+msgid "Exit"
+msgstr "Gaan uit"
+
+#: wx/EnviroFrame.cpp:327
+msgid "&File"
+msgstr "&Leer"
+
+#: wx/EnviroFrame.cpp:330 wx/EnviroFrame.cpp:475
+msgid "Select"
+msgstr "Selekteer"
+
+#: wx/EnviroFrame.cpp:331
+msgid "Fences"
+msgstr "Heinings"
+
+#: wx/EnviroFrame.cpp:336 wx/EnviroFrame.cpp:481
+msgid "Navigate"
+msgstr "Navigeer"
+
+#: wx/EnviroFrame.cpp:337
+msgid "Measure Distances\tCtrl+D"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:338
+msgid "&Tools"
+msgstr "&Gereedskap"
+
+#: wx/EnviroFrame.cpp:367
+msgid "Go to Terrain...\tCtrl+G"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:368 wx/EnviroFrame.cpp:497
+msgid "Go to Space"
+msgstr "Gaan na die ruimte"
+
+#: wx/EnviroFrame.cpp:371
+msgid "Save scene graph to .osg"
+msgstr "Stoor .osg leer"
+
+#: wx/EnviroFrame.cpp:374
+msgid "Time...\tCtrl+I"
+msgstr "Tyd...\tCtrl+I"
+
+#: wx/EnviroFrame.cpp:375 wx/EnviroFrame.cpp:509
+msgid "Time Stop"
+msgstr "Tyd Stop"
+
+#: wx/EnviroFrame.cpp:376 wx/EnviroFrame.cpp:508
+msgid "Time Faster"
+msgstr "Tyd Vinniger"
+
+#: wx/EnviroFrame.cpp:377
+msgid "&Scene"
+msgstr "&Scene"
+
+#: wx/EnviroFrame.cpp:381
+msgid "Wireframe\tCtrl+W"
+msgstr "Draadraam\tCtrl+W"
+
+#: wx/EnviroFrame.cpp:382
+msgid "Fullscreen\tCtrl+F"
+msgstr "Volskerm\tCtrl+F"
+
+#: wx/EnviroFrame.cpp:383
+msgid "Top-Down Camera\tCtrl+T"
+msgstr "Regaf kamera\tCtrl+T"
+
+#: wx/EnviroFrame.cpp:384
+msgid "Framerate Chart\tCtrl+Z"
+msgstr "Raamtempo Grafiek\tCtrl+Z"
+
+#: wx/EnviroFrame.cpp:385
+msgid "Elevation Legend"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:387
+msgid "Camera - View Settings\tCtrl+S"
+msgstr "Kamera - Verstellings\tCtrl+S"
+
+#: wx/EnviroFrame.cpp:388
+msgid "Store/Recall Locations\tCtrl+L"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:390
+msgid "Save Window Snapshot"
+msgstr "Stoor Skerm Beeld"
+
+#: wx/EnviroFrame.cpp:391
+msgid "Save Numbered Snapshot\tCtrl+N"
+msgstr "Stoor Genommerde Skerm Beeld\tCtrl+N"
+
+#: wx/EnviroFrame.cpp:393
+msgid "&Status Bar"
+msgstr "&Status Griffel"
+
+#: wx/EnviroFrame.cpp:395
+msgid "&View"
+msgstr "&Vertoon"
+
+#: wx/EnviroFrame.cpp:398
+msgid "Fly Slower (S)"
+msgstr "Vlieg stadiger (S)"
+
+#: wx/EnviroFrame.cpp:399
+msgid "Fly Faster (F)"
+msgstr "Vlieg Vinniger (F)"
+
+#: wx/EnviroFrame.cpp:400
+msgid "Maintain height above ground (A)"
+msgstr "Konstante hoogte bo grond (A)"
+
+#: wx/EnviroFrame.cpp:401
+msgid "&Navigate"
+msgstr "&Navigeer"
+
+#: wx/EnviroFrame.cpp:405 wx/TParamsDlg.cpp:777
+msgid "Normal Terrain Flyer"
+msgstr "Normale Terrein Vlieenier"
+
+#: wx/EnviroFrame.cpp:406
+msgid "Flyer with Velocity"
+msgstr "Vlieenier met Snelheid"
+
+#: wx/EnviroFrame.cpp:407 wx/TParamsDlg.cpp:779
+msgid "Grab-Pivot"
+msgstr "Gryp-Draai"
+
+#: wx/EnviroFrame.cpp:409 wx/TParamsDlg.cpp:781
+msgid "Panoramic Flyer"
+msgstr "Panoramiese Vlieenier"
+
+#: wx/EnviroFrame.cpp:410
+msgid "Navigation Style"
+msgstr "Navigasie styl"
+
+#: wx/EnviroFrame.cpp:413
+msgid "LOD Terrain Surface\tF3"
+msgstr "LOD Terrein Oppervlak\tF3"
+
+#: wx/EnviroFrame.cpp:414
+msgid "Cull every frame\tCtrl+C"
+msgstr "Cull elke raam\tCtrl+C"
+
+#: wx/EnviroFrame.cpp:415
+msgid "Cull once\tCtrl+K"
+msgstr "Cull een keer\tCtrl+K"
+
+#: wx/EnviroFrame.cpp:417
+msgid "Show Sky\tF4"
+msgstr "Wys Lug\tF4"
+
+#: wx/EnviroFrame.cpp:418
+msgid "Show Ocean\tF5"
+msgstr "Wys Oseaan\tF5"
+
+#: wx/EnviroFrame.cpp:419
+msgid "Show Plants\tF6"
+msgstr "Wys Plante\tF6"
+
+#: wx/EnviroFrame.cpp:420
+msgid "Show Structures\tF7"
+msgstr "Wys Strukture\tF7"
+
+#: wx/EnviroFrame.cpp:421
+msgid "Show Roads\tF8"
+msgstr "Wys Paaie\tF8"
+
+#: wx/EnviroFrame.cpp:422
+msgid "Show Fog\tF9"
+msgstr "Wys Mis\tF9"
+
+#: wx/EnviroFrame.cpp:424
+msgid "Increase Detail (+)"
+msgstr "Meer Detail (+)"
+
+#: wx/EnviroFrame.cpp:425
+msgid "Decrease Detail (-)"
+msgstr "Minder Detail (-)"
+
+#: wx/EnviroFrame.cpp:427
+msgid "Save Vegetation As..."
+msgstr "Stoor Vegetasie As..."
+
+#: wx/EnviroFrame.cpp:428
+msgid "Save Built Structures As..."
+msgstr "Stoor Geboude Strukture As..."
+
+#: wx/EnviroFrame.cpp:430
+msgid "Toggle Artificial Foundations"
+msgstr "Verwissel Kunsmatige Fondasies"
+
+#: wx/EnviroFrame.cpp:431
+msgid "&Recalculate Shading\tCtrl+R"
+msgstr "&Herbedink Skadu\tCtrl+R"
+
+#: wx/EnviroFrame.cpp:432
+msgid "Te&rrain"
+msgstr "Te&rein"
+
+#: wx/EnviroFrame.cpp:437
+msgid "&Show Shading"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:438
+msgid "Show &Axes\tCtrl+A"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:439
+msgid "Seasonal &Tilt"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:440
+msgid "&Flatten\tCtrl+E"
+msgstr "&Maak platter\tCtrl+E"
+
+#: wx/EnviroFrame.cpp:441
+msgid "&Unfold\tCtrl+U"
+msgstr "&Ontvou\tCtrl+U"
+
+#: wx/EnviroFrame.cpp:442
+msgid "&Load Point Data...\tCtrl+P"
+msgstr "&Laai Punt Data\tCtrl+P"
+
+#: wx/EnviroFrame.cpp:443
+msgid "&Earth"
+msgstr "&Aarde"
+
+#: wx/EnviroFrame.cpp:447
+msgid "About"
+msgstr "Omtrend"
+
+#: wx/EnviroFrame.cpp:452
+msgid "&Help"
+msgstr "&Help"
+
+#: wx/EnviroFrame.cpp:476
+msgid "Create Fences"
+msgstr "Skep Heinings"
+
+#: wx/EnviroFrame.cpp:477
+msgid "Create Routes"
+msgstr "Skep Roetes"
+
+#: wx/EnviroFrame.cpp:478
+msgid "Create Plants"
+msgstr "Skep Plante"
+
+#: wx/EnviroFrame.cpp:480
+msgid "Create Instances"
+msgstr "Skep Instansies"
+
+#: wx/EnviroFrame.cpp:482
+msgid "Measure Distance"
+msgstr "Meet Afstand"
+
+#: wx/EnviroFrame.cpp:484
+msgid "Maintain Height"
+msgstr "Handhaaf Hoogte"
+
+#: wx/EnviroFrame.cpp:485
+msgid "Fly Faster"
+msgstr "Vlieg Vinniger"
+
+#: wx/EnviroFrame.cpp:486
+msgid "Fly Slower"
+msgstr "Vlieg Stadiger"
+
+#: wx/EnviroFrame.cpp:487
+msgid "Camera Dialog"
+msgstr "Kamera Dialoog"
+
+#: wx/EnviroFrame.cpp:489
+msgid "Snapshot"
+msgstr "Skermbeeld"
+
+#: wx/EnviroFrame.cpp:490
+msgid "Numbered Snapshot"
+msgstr "Genommerde Skermbeeld"
+
+#: wx/EnviroFrame.cpp:492
+msgid "Show Layer Dialog"
+msgstr "Vertoon Vlak Dialoog"
+
+#: wx/EnviroFrame.cpp:498
+msgid "Go to Terrain"
+msgstr "Gaan na Terrein"
+
+#: wx/EnviroFrame.cpp:500
+msgid "Show Sunlight"
+msgstr "Wys Sonlig"
+
+#: wx/EnviroFrame.cpp:501
+msgid "Axes"
+msgstr "Asse"
+
+#: wx/EnviroFrame.cpp:502
+msgid "Tilt"
+msgstr "Kantel"
+
+#: wx/EnviroFrame.cpp:503
+msgid "Add Point Data"
+msgstr "Voeg Punt Data by"
+
+#: wx/EnviroFrame.cpp:504
+msgid "Unfold"
+msgstr "Ontvou"
+
+#: wx/EnviroFrame.cpp:989
+msgid "Save View Snapshot"
+msgstr "Stoor Uitkyk Skermbeeld"
+
+#: wx/EnviroFrame.cpp:1502
+msgid "Load Point Data"
+msgstr "Laai Punt Data"
+
+#: wx/EnviroFrame.cpp:1503
+msgid "Point Data Sources (*.shp)|*.shp"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:1516
+msgid "Couldn't Open"
+msgstr "Kannie oopmaak"
+
+#: wx/EnviroFrame.cpp:1518
+msgid "That file isn't point data."
+msgstr "Daardie leer is nie punt data nie."
+
+#: wx/EnviroFrame.cpp:1608
+msgid "Properties"
+msgstr "Eienskappe"
+
+#: wx/EnviroFrame.cpp:1620
+msgid "Flip Footprint Direction"
+msgstr "Flip Voetspoor Rigting"
+
+#: wx/EnviroFrame.cpp:1622
+msgid "Reload from Disk"
+msgstr "Laai vanaf skyf"
+
+#: wx/EnviroFrame.cpp:1626 wx/TerrManDlg.cpp:341 wx/enviro_wdr.cpp:1295
+#: wx/enviro_wdr.cpp:1927 wx/enviro_wdr.cpp:2061
+msgid "Delete"
+msgstr "Wis"
+
+#: wx/EnviroGUI.cpp:115
+msgid "Save Vegetation Data"
+msgstr "Stoor Plant Data"
+
+#: wx/EnviroGUI.cpp:116
+msgid "Vegetation Files (*.vf)|*.vf"
+msgstr ""
+
+#: wx/EnviroGUI.cpp:137
+msgid "Save Built Structures Data"
+msgstr "Stoor Geboude Struktuur Data"
+
+#: wx/EnviroGUI.cpp:138
+msgid "Structure Files (*.vtst)|*.vtst"
+msgstr ""
+
+#: wx/CameraDlg.cpp:82
+msgid "Meters/sec"
+msgstr "Meter/sek"
+
+#: wx/CameraDlg.cpp:83
+msgid "Km/hour"
+msgstr "Km/h"
+
+#: wx/CameraDlg.cpp:84
+msgid "Miles/hour"
+msgstr "Myl/uur"
+
+#: wx/CameraDlg.cpp:196
+msgid "View Width (meters)"
+msgstr ""
+
+#: wx/CameraDlg.cpp:202 wx/enviro_wdr.cpp:510
+msgid "Horizontal FOV (degrees)"
+msgstr "Horisontale Sigsveld (grade)"
+
+#: wx/LayerDlg.cpp:173
+msgid "Building"
+msgstr "Gebou"
+
+#: wx/LayerDlg.cpp:175
+msgid "Fence"
+msgstr "Heining"
+
+#: wx/LayerDlg.cpp:206
+#, c-format
+msgid "Buildings: %d"
+msgstr "Geboue: %d"
+
+#: wx/LayerDlg.cpp:212
+#, c-format
+msgid "Fences: %d"
+msgstr "Heinings: %d"
+
+#: wx/LayerDlg.cpp:218
+#, c-format
+msgid "Instances: %d"
+msgstr "Instansies: %d"
+
+#: wx/LocationDlg.cpp:527
+msgid "Polyline Data Sources"
+msgstr ""
+
+#: wx/LocationDlg.cpp:529
+msgid "Load Animation Path"
+msgstr ""
+
+#: wx/LocationDlg.cpp:576
+msgid "Save AnimPath"
+msgstr ""
+
+#: wx/LocationDlg.cpp:577
+msgid "AnimPath Files (*.vtap)|*.vtap"
+msgstr ""
+
+#: wx/LocationDlg.cpp:602 wx/LocationDlg.cpp:676
+msgid ""
+"Couldn't recall point, probably a coordinate system transformation problem."
+msgstr "Kon nie die punt herroep nie, waarskynlik 'n koordinaat probleem."
+
+#: wx/LocationDlg.cpp:608
+msgid "Load Locations"
+msgstr "Laai Plekke"
+
+#: wx/LocationDlg.cpp:609 wx/LocationDlg.cpp:625
+msgid "Location Files (*.loc)|*.loc"
+msgstr ""
+
+#: wx/LocationDlg.cpp:624
+msgid "Save Locations"
+msgstr "Stoor Plekke"
+
+#: wx/LocationDlg.cpp:640
+#, c-format
+msgid "Location %d"
+msgstr "Plek %d"
+
+#: wx/LocationDlg.cpp:641
+msgid "Type a name for the new location:"
+msgstr "Gee 'n naam vir die nuwe plek:"
+
+#: wx/LocationDlg.cpp:642
+msgid "Location Name"
+msgstr "Plek naam"
+
+#: wx/LocationDlg.cpp:655 wx/LocationDlg.cpp:665
+msgid ""
+"Couldn't store point, probably a coordinate system transformation problem."
+msgstr ""
+"Die punt kon nie gestoor word nie. Dit is waarskynlik as gevolg van 'n "
+"transformasie probleem."
+
+#: wx/SceneGraphDlg.cpp:148
+msgid "Engines"
+msgstr "Meganismes"
+
+#: wx/SceneGraphDlg.cpp:170
+msgid "Light"
+msgstr "Lig"
+
+#: wx/SceneGraphDlg.cpp:175 wx/enviro_wdr.cpp:1770
+msgid "Geometry"
+msgstr "Geometrie"
+
+#: wx/SceneGraphDlg.cpp:191
+msgid "Group"
+msgstr "Groepeer"
+
+#: wx/SceneGraphDlg.cpp:197
+msgid "Other"
+msgstr "Ander"
+
+#: wx/SceneGraphDlg.cpp:244
+#, c-format
+msgid "Mesh %d, %hs, %d verts, %d prims"
+msgstr "Mesh %d, %hs, %d verts, %d prims"
+
+#: wx/SceneGraphDlg.cpp:248
+msgid "Text Mesh"
+msgstr "Skrif Net"
+
+#: wx/SceneGraphDlg.cpp:261
+#, c-format
+msgid "(%d children)"
+msgstr "(%d kinders)"
+
+#: wx/SceneGraphDlg.cpp:272
+msgid "(internal node)"
+msgstr "(interne node)"
+
+#: wx/SceneGraphDlg.cpp:307
+msgid "(non-node)"
+msgstr "(nie-node)"
+
+#: wx/SceneGraphDlg.cpp:312
+#, c-format
+msgid " (%d targets total)"
+msgstr " (%d teikens)"
+
+#: wx/StartupDlg.cpp:155
+#, c-format
+msgid "Maximum Texture Dimension: %d\n"
+msgstr "Maksimum Tekstuur Dimensie: %d\n"
+
+#: wx/StartupDlg.cpp:160 wx/enviro_wdr.cpp:89
+msgid "OpenGL Info"
+msgstr "OpenGL Info"
+
+#: wx/StartupDlg.cpp:300 wx/enviro_wdr.cpp:83
+msgid "Terrain Manager"
+msgstr "Terrein Bestuurder"
+
+#: wx/StartupDlg.cpp:368 wx/enviro_wdr.cpp:86
+msgid "Global Options"
+msgstr ""
+
+#: wx/StyleDlg.cpp:155
+msgid "(none)"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:588
+msgid "(default)"
+msgstr "(standaard)"
+
+#: wx/TParamsDlg.cpp:778
+msgid "Terrain Flyer with Velocity"
+msgstr "Terrein Vlieenier"
+
+#: wx/TParamsDlg.cpp:833 wx/TParamsDlg.cpp:834 wx/TParamsDlg.cpp:839
+msgid "(double-click to add files)"
+msgstr "(dubbel-kliek om leers by te voeg)"
+
+#: wx/TParamsDlg.cpp:924
+msgid "Couldn't locate file."
+msgstr ""
+
+#: wx/TParamsDlg.cpp:928
+msgid "ColorMap"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:978 wx/TParamsDlg.cpp:1003 wx/TParamsDlg.cpp:1024
+msgid "One of the following to add:"
+msgstr "Voeg een van die volgende by:"
+
+#: wx/TParamsDlg.cpp:978 wx/TParamsDlg.cpp:1003
+msgid "Choose a structure file"
+msgstr "Kies 'n struktuur leer"
+
+#: wx/TParamsDlg.cpp:1024
+msgid "Choose an animpath file"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1059
+msgid "Set Initial Time"
+msgstr "Stel die Begin tyd"
+
+#: wx/TParamsDlg.cpp:1079
+msgid "Feature Style"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1091
+msgid "Overlay Image File"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1092
+msgid "Image Files (*.png,*.jpg,*.bmp)|*.png;*.jpg;*.bmp"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1115 wx/ScenarioSelectDialog.cpp:251
+msgid "Enter Scenario Name"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1115 wx/ScenarioSelectDialog.cpp:251
+msgid "New Scenario"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1142 wx/ScenarioSelectDialog.cpp:213
+msgid "Scenario Parameters"
+msgstr ""
+
+#: wx/TerrManDlg.cpp:71
+msgid "Terrain Data Paths"
+msgstr "Terrein Data Paaie"
+
+#: wx/TerrManDlg.cpp:171
+msgid "Please enter the name for the terrain copy."
+msgstr "Voorsien asb 'n naam vir die terrein kopie"
+
+#: wx/TerrManDlg.cpp:172
+msgid "Add Copy of Terrain"
+msgstr "Voeg 'n Terrein Kopie by"
+
+#: wx/TerrManDlg.cpp:237
+msgid "Please enter the name for a new terrain .xml file."
+msgstr "Vul asb 'n naam in vir 'n nuwe terrein .xml leer."
+
+#: wx/TerrManDlg.cpp:238 wx/enviro_wdr.cpp:1286
+msgid "Add Terrain"
+msgstr "Voeg Terrein By"
+
+#: wx/TerrManDlg.cpp:271
+msgid "Specify Data Directory"
+msgstr "Spesifiseer Data Gids"
+
+#: wx/TerrManDlg.cpp:339 wx/enviro_wdr.cpp:355 wx/enviro_wdr.cpp:1493
+msgid "Remove"
+msgstr "Verwyder"
+
+#: wx/TimeDlg.cpp:83 wx/enviro_wdr.cpp:96 wx/enviro_wdr.cpp:198
+#: wx/enviro_wdr.cpp:655 wx/enviro_wdr.cpp:1306 wx/enviro_wdr.cpp:1733
+#: wx/enviro_wdr.cpp:1894 wx/enviro_wdr.cpp:2028 wx/enviro_wdr.cpp:2085
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:160
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:343
+msgid "OK"
+msgstr "OK"
+
+#: wx/TimeDlg.cpp:86 wx/enviro_wdr.cpp:100 wx/enviro_wdr.cpp:201
+#: wx/enviro_wdr.cpp:1737 wx/enviro_wdr.cpp:1897 wx/enviro_wdr.cpp:2031
+#: wx/enviro_wdr.cpp:2088
+msgid "Cancel"
+msgstr "Kanselleer"
+
+#: wx/enviro_wdr.cpp:44
+msgid "Launch with:"
+msgstr "Lanseer met:"
+
+#: wx/enviro_wdr.cpp:47
+msgid "Earth View"
+msgstr "Aard aansig"
+
+#: wx/enviro_wdr.cpp:54
+msgid "Image:  "
+msgstr "Beeld:  "
+
+#: wx/enviro_wdr.cpp:63 ../../TerrainSDK/vtui/vtui_wdr.cpp:790
+msgid "Terrain"
+msgstr "Terrein"
+
+#: wx/enviro_wdr.cpp:74
+msgid "Edit Properties"
+msgstr "Verstel Eienskappe"
+
+#: wx/enviro_wdr.cpp:124
+msgid "Enabled"
+msgstr "Aktief"
+
+#: wx/enviro_wdr.cpp:127 wx/enviro_wdr.cpp:1484
+msgid "Zoom To"
+msgstr "Zoom Na"
+
+#: wx/enviro_wdr.cpp:130
+msgid "Refresh"
+msgstr "Verfris"
+
+#: wx/enviro_wdr.cpp:151 wx/enviro_wdr.cpp:2005
+msgid "Name:"
+msgstr "Naam:"
+
+#: wx/enviro_wdr.cpp:168
+msgid "Elevation"
+msgstr "Hoogte"
+
+#: wx/enviro_wdr.cpp:172 wx/enviro_wdr.cpp:786
+msgid "Texture"
+msgstr "Tekstuur"
+
+#: wx/enviro_wdr.cpp:176
+msgid "Culture"
+msgstr "Kultuur"
+
+#: wx/enviro_wdr.cpp:180
+msgid "Sky && Ocean"
+msgstr "Lug && Oseaan"
+
+#: wx/enviro_wdr.cpp:184 wx/enviro_wdr.cpp:1418
+msgid "Abstract Layers"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:188
+msgid "Miscellaneous"
+msgstr "Bykomend"
+
+#: wx/enviro_wdr.cpp:222
+msgid " Species:"
+msgstr " Spesie:"
+
+#: wx/enviro_wdr.cpp:233
+msgid "Common names"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:236
+msgid "Language:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:247
+msgid "    Height:"
+msgstr "    Hoogte:"
+
+#: wx/enviro_wdr.cpp:253 wx/enviro_wdr.cpp:303 wx/enviro_wdr.cpp:999
+#: wx/enviro_wdr.cpp:1155 wx/enviro_wdr.cpp:1210 wx/enviro_wdr.cpp:1687
+#: wx/enviro_wdr.cpp:1700 wx/enviro_wdr.cpp:1798 wx/enviro_wdr.cpp:1868
+#: wx/enviro_wdr.cpp:1883 ../../TerrainSDK/vtui/vtui_wdr.cpp:108
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:252
+msgid "meters"
+msgstr "meter"
+
+#: wx/enviro_wdr.cpp:261
+msgid "Planting Options"
+msgstr "Plant opsies"
+
+#: wx/enviro_wdr.cpp:266
+msgid "Individual instances"
+msgstr "Individueele instansies"
+
+#: wx/enviro_wdr.cpp:269
+msgid "Straight line"
+msgstr "Reguit lyn"
+
+#: wx/enviro_wdr.cpp:273
+msgid "Continuously"
+msgstr "Kontinue"
+
+#: wx/enviro_wdr.cpp:281
+msgid "Height variance:"
+msgstr "Hoogte variasie:"
+
+#: wx/enviro_wdr.cpp:287
+msgid "%"
+msgstr "%"
+
+#: wx/enviro_wdr.cpp:297
+msgid "Minimum spacing:"
+msgstr "Minimum spasieering"
+
+#: wx/enviro_wdr.cpp:334 wx/enviro_wdr.cpp:377 wx/enviro_wdr.cpp:1487
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:704
+msgid "Save"
+msgstr "Stoor"
+
+#: wx/enviro_wdr.cpp:337 wx/enviro_wdr.cpp:380
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:710
+msgid "Load"
+msgstr "Laai"
+
+#: wx/enviro_wdr.cpp:346
+msgid "Recall ->"
+msgstr "Herroep ->"
+
+#: wx/enviro_wdr.cpp:349
+msgid "<- Store"
+msgstr "<- Stoor"
+
+#: wx/enviro_wdr.cpp:352
+msgid "Store As.."
+msgstr "Stoor as..."
+
+#: wx/enviro_wdr.cpp:374 wx/enviro_wdr.cpp:1924 wx/enviro_wdr.cpp:2058
+msgid "New"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:408
+msgid "Active"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:413
+msgid "Playback"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:418 wx/enviro_wdr.cpp:1576
+msgid "Speed:"
+msgstr "Spoed:"
+
+#: wx/enviro_wdr.cpp:427
+msgid "m/s"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:434
+msgid "Loop"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:437
+msgid "Continuous"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:440
+msgid "Smooth"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:443
+msgid "Position Only"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:450
+msgid "Recording"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:453
+msgid "Use linear distance"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:458
+msgid "Time interval"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:464
+msgid "seconds"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:487
+msgid "Position:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:500
+msgid "Elevation:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:523
+msgid "Near Clipping Plane (meters):"
+msgstr "Naby Stopvlak (meter):"
+
+#: wx/enviro_wdr.cpp:536
+msgid "Far Clipping Plane (meters):"
+msgstr "Ver Stopvlak (meter)"
+
+#: wx/enviro_wdr.cpp:549
+msgid "Stereo Eye Separation:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:565
+msgid "Navigation Speed:"
+msgstr "Navigasie Spoed:"
+
+#: wx/enviro_wdr.cpp:578
+msgid "Units"
+msgstr "Eenhede"
+
+#: wx/enviro_wdr.cpp:591 wx/enviro_wdr.cpp:1175
+msgid "Accelerate by height above ground"
+msgstr "Versnel teen hoogte bo grond"
+
+#: wx/enviro_wdr.cpp:601
+msgid "LOD distance for Vegetation"
+msgstr "LOD afstand vir Vegetasie"
+
+#: wx/enviro_wdr.cpp:614
+msgid "LOD distance for Structures"
+msgstr "LOD afstand vir Strukture"
+
+#: wx/enviro_wdr.cpp:627
+msgid "LOD distance for Roads"
+msgstr "LOD afstand vir Paaie"
+
+#: wx/enviro_wdr.cpp:674
+msgid "Structure Type:"
+msgstr "Struktuur Tipe:"
+
+#: wx/enviro_wdr.cpp:697
+msgid "Elevation Grid"
+msgstr "Hoogte Net"
+
+#: wx/enviro_wdr.cpp:702
+msgid "Grid Filename: "
+msgstr "Net Leernaam: "
+
+#: wx/enviro_wdr.cpp:713
+msgid "Terrain LOD Method:"
+msgstr "Terrein LOD Metode:"
+
+#: wx/enviro_wdr.cpp:724
+msgid "Triangle Count: "
+msgstr "Driehoek Telling:"
+
+#: wx/enviro_wdr.cpp:730
+msgid "Pixel Error Bound: "
+msgstr "Spikkel Foutgrens: "
+
+#: wx/enviro_wdr.cpp:738
+msgid "Use strips/fans"
+msgstr "Gebruik strepe/waaiers"
+
+#: wx/enviro_wdr.cpp:743
+msgid "Elevation TIN"
+msgstr "Hoogte TIN"
+
+#: wx/enviro_wdr.cpp:748
+msgid "TIN Filename:"
+msgstr "TIN Leernaam:"
+
+#: wx/enviro_wdr.cpp:761
+msgid "Vertical Exaggeration:"
+msgstr "Vertikale Skaal:"
+
+#: wx/enviro_wdr.cpp:767 wx/enviro_wdr.cpp:1255
+msgid "x"
+msgstr "x"
+
+#: wx/enviro_wdr.cpp:789
+msgid "No texture"
+msgstr "Geen tekstuur"
+
+#: wx/enviro_wdr.cpp:794
+msgid "Single texture "
+msgstr "Enkele tekstuur"
+
+#: wx/enviro_wdr.cpp:803
+msgid "Derive texture from elevation"
+msgstr "Basseer tekstuur op elevasie"
+
+#: wx/enviro_wdr.cpp:814
+msgid "Edit Colors..."
+msgstr ""
+
+#: wx/enviro_wdr.cpp:819
+msgid "4x4 Tiled texture"
+msgstr "4x4 Teel tekstuur"
+
+#: wx/enviro_wdr.cpp:825
+msgid "Tile size: "
+msgstr "Teel grootte"
+
+#: wx/enviro_wdr.cpp:831
+msgid "Filename base: "
+msgstr "Leernaam basis: "
+
+#: wx/enviro_wdr.cpp:837
+msgid "File Format:"
+msgstr "Leer Formaat:"
+
+#: wx/enviro_wdr.cpp:840
+msgid "JPEG"
+msgstr "JPEG"
+
+#: wx/enviro_wdr.cpp:843
+msgid "Filename: "
+msgstr "Leernaam: "
+
+#: wx/enviro_wdr.cpp:855
+msgid "Mipmapping"
+msgstr "Mipkartering"
+
+#: wx/enviro_wdr.cpp:858
+msgid "Request 16-bit"
+msgstr "Versoek 16-bis"
+
+#: wx/enviro_wdr.cpp:865
+msgid "Precompute lighting"
+msgstr "Preverwerk beligting"
+
+#: wx/enviro_wdr.cpp:870
+msgid "Lighting factor: "
+msgstr "Beligtings faktor: "
+
+#: wx/enviro_wdr.cpp:878
+msgid "Cast shadows"
+msgstr "Gooi skadus"
+
+#: wx/enviro_wdr.cpp:887
+msgid "Detail Texture"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:890
+msgid "Show detail texture"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:899
+msgid "Scale"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:907
+msgid "(meter size of detail texture)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:946 wx/enviro_wdr.cpp:978
+msgid "Source file: "
+msgstr "Bron leer: "
+
+#: wx/enviro_wdr.cpp:957 wx/enviro_wdr.cpp:1065
+msgid " Visibility distance: "
+msgstr " Sigsafstand: "
+
+#: wx/enviro_wdr.cpp:963 wx/enviro_wdr.cpp:1071
+msgid "m"
+msgstr "m"
+
+#: wx/enviro_wdr.cpp:970
+msgid "Roads"
+msgstr "Paaie"
+
+#: wx/enviro_wdr.cpp:993
+msgid "Ground offset: "
+msgstr "Grond afset: "
+
+#: wx/enviro_wdr.cpp:1002
+msgid "Visibility distance:"
+msgstr "Sigbaarheids afstand:"
+
+#: wx/enviro_wdr.cpp:1008
+msgid "km"
+msgstr "km"
+
+#: wx/enviro_wdr.cpp:1013
+msgid "Texture-map roads"
+msgstr "Tekstuur-kaart paaie"
+
+#: wx/enviro_wdr.cpp:1016
+msgid "Road culture (stoplights, etc.)"
+msgstr "Pad kultuur (stopligte ens)"
+
+#: wx/enviro_wdr.cpp:1025
+msgid "Include:"
+msgstr "Ingesluit:"
+
+#: wx/enviro_wdr.cpp:1028
+msgid "Highways"
+msgstr "Hoofwee"
+
+#: wx/enviro_wdr.cpp:1031
+msgid "Paved"
+msgstr "Geteer"
+
+#: wx/enviro_wdr.cpp:1034
+msgid "Dirt"
+msgstr "Grondpad"
+
+#: wx/enviro_wdr.cpp:1047
+msgid "Terrain-specific content:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1056
+msgid "Structure Files"
+msgstr "Struktuur Leers"
+
+#: wx/enviro_wdr.cpp:1078
+msgid "Structure shadows (preliminary!)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1085
+msgid "Resolution:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1098
+msgid "Darkness:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1112
+msgid "Enable Vehicles"
+msgstr "Aktiveer Voertuie"
+
+#: wx/enviro_wdr.cpp:1133
+msgid "Navigation"
+msgstr "Navigasie"
+
+#: wx/enviro_wdr.cpp:1138
+msgid "Style:"
+msgstr "Styl:"
+
+#: wx/enviro_wdr.cpp:1149
+msgid "Minimum height above ground: "
+msgstr "Minimum hoogte bo die grond: "
+
+#: wx/enviro_wdr.cpp:1162
+msgid "Navigation speed:"
+msgstr "Navigasie spoed:"
+
+#: wx/enviro_wdr.cpp:1168
+msgid "meters/frame"
+msgstr "meter/raam"
+
+#: wx/enviro_wdr.cpp:1182
+msgid "Default Locations File:"
+msgstr "Standaard Plek Leer:"
+
+#: wx/enviro_wdr.cpp:1193
+msgid "Initial Camera Location"
+msgstr "Begin Kamera Posisie"
+
+#: wx/enviro_wdr.cpp:1204
+msgid "Near clipping (\"Hither\") distance"
+msgstr "Naby stopvlak afstand"
+
+#: wx/enviro_wdr.cpp:1215
+msgid "Animation Paths:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1229
+msgid "Initial Time: "
+msgstr "Begin tyd: "
+
+#: wx/enviro_wdr.cpp:1235 wx/enviro_wdr.cpp:1397
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:121
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:134
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:147
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:278
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:301
+msgid "Set"
+msgstr "Stel"
+
+#: wx/enviro_wdr.cpp:1242
+msgid "Time Moves"
+msgstr "Tyd Skuif"
+
+#: wx/enviro_wdr.cpp:1249
+msgid "Faster than real: "
+msgstr "Vinniger as Werklik: "
+
+#: wx/enviro_wdr.cpp:1283
+msgid "Add Path"
+msgstr "Voeg Pad by"
+
+#: wx/enviro_wdr.cpp:1292
+msgid "Add Copy"
+msgstr "Voeg Kopie By"
+
+#: wx/enviro_wdr.cpp:1301
+msgid "Edit Parameters"
+msgstr "Stel Parameters"
+
+#: wx/enviro_wdr.cpp:1330
+msgid "Ocean plane"
+msgstr "Oseaan vlak"
+
+#: wx/enviro_wdr.cpp:1337 wx/enviro_wdr.cpp:1352
+msgid "Level (meters)"
+msgstr "Vlak (meter)"
+
+#: wx/enviro_wdr.cpp:1345
+msgid "Depress Ocean"
+msgstr "Hol Oseaan uit"
+
+#: wx/enviro_wdr.cpp:1360
+msgid "Sky dome"
+msgstr "Lug koepel"
+
+#: wx/enviro_wdr.cpp:1373
+msgid "Artificial Horizon"
+msgstr "Kunsmatige Horison"
+
+#: wx/enviro_wdr.cpp:1378
+msgid "Fog"
+msgstr "Vog"
+
+#: wx/enviro_wdr.cpp:1381
+msgid "Distance (km)"
+msgstr "Afstand (km)"
+
+#: wx/enviro_wdr.cpp:1391
+msgid "Scene background color:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1425
+msgid "Style..."
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1430
+msgid "Overlay"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1433
+msgid "Image file:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1441 ../../TerrainSDK/vtui/vtui_wdr.cpp:554
+msgid "..."
+msgstr "..."
+
+#: wx/enviro_wdr.cpp:1448
+msgid "Placement:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1459
+msgid "(pixels from the lower-left corner)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1490
+msgid "Create"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1499
+msgid "Visible"
+msgstr "Sigbaar"
+
+#: wx/enviro_wdr.cpp:1502
+msgid "Shadow"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1508
+msgid "Show All"
+msgstr "Wys Alles"
+
+#: wx/enviro_wdr.cpp:1532
+msgid "Year:"
+msgstr "Jaar:"
+
+#: wx/enviro_wdr.cpp:1538
+msgid "Month"
+msgstr "Maand"
+
+#: wx/enviro_wdr.cpp:1544
+msgid "Day"
+msgstr "Dag"
+
+#: wx/enviro_wdr.cpp:1554
+msgid "Hour:"
+msgstr "Uur"
+
+#: wx/enviro_wdr.cpp:1560
+msgid "Minute"
+msgstr "Minuut"
+
+#: wx/enviro_wdr.cpp:1566
+msgid "Second"
+msgstr "Sekonde"
+
+#: wx/enviro_wdr.cpp:1585
+msgid "Stop"
+msgstr "Stop"
+
+#: wx/enviro_wdr.cpp:1606
+msgid "Display"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1609
+msgid "Start in full screen"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1612
+msgid "Stereo"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1619
+msgid "Anaglyphic (red-blue)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1624
+msgid "Quad buffer (shutter glasses)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1631
+msgid "Window size"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1636
+msgid "Window X"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1642
+msgid "Window Y"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1648
+msgid "Width"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1654
+msgid "Height"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1662
+msgid "Size is inside (3D view area, not frame)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1667
+msgid "Texture compression"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1670
+msgid "Disable model mipmaps"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1673
+msgid "Selection"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1676
+msgid "Use direct picking of object under 2D cursor"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1681
+msgid "Selection cutoff distance:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1694
+msgid "Maximum radius for selecting models:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1709
+msgid "Size exaggeration for plants and fences: "
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1717
+msgid "Show only species with available appearances"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1722
+msgid "Global content file:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1760
+msgid "Feature type:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1780 wx/enviro_wdr.cpp:1824
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:128
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:295
+msgid "Color:"
+msgstr "Kleur:"
+
+#: wx/enviro_wdr.cpp:1792 wx/enviro_wdr.cpp:1862
+msgid "Height above ground"
+msgstr "Hoogte bo grond:"
+
+#: wx/enviro_wdr.cpp:1807
+msgid "Tessellate edges"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1814
+msgid "Text Labels"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1836
+msgid "Text field:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1849
+msgid "Color field:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1877
+msgid "Label Size (vertical)"
+msgstr "Naamplaat grootte (vertikaal)"
+
+#: wx/enviro_wdr.cpp:1930 wx/enviro_wdr.cpp:2064
+msgid "Edit"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1933 wx/enviro_wdr.cpp:2067
+msgid "Move Up"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1936 wx/enviro_wdr.cpp:2070
+msgid "Move Down"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1959 wx/enviro_wdr.cpp:2022
+msgid "Visible Layers"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1970
+msgid "<<"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1973
+msgid ">>"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1978
+msgid "Available Layers"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2073
+msgid "Previous"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2076
+msgid "Next"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2091
+msgid "Apply"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:47
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:191
+msgid "Building Levels"
+msgstr "Gebou Vlakke"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:56
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:200
+msgid "Copy"
+msgstr "Kopieer"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:60
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:204
+msgid "Del"
+msgstr "Wis"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:64
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:208
+msgid "Up"
+msgstr "Op"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:67
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:211
+msgid "Down"
+msgstr "Af"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:77
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:221
+msgid "Baseline Editor"
+msgstr "Basisvlak Redigeerder"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:80
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:224
+msgid "Set Roof Type"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:87
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:231
+msgid "Level Properties"
+msgstr "Vlak Eienskappe"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:92
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:236
+msgid "Stories:"
+msgstr "Verdiepings:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:102
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:246
+msgid "Story Height:"
+msgstr "Verdieping hoogte:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:115
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:272
+msgid "Material:"
+msgstr "Materiaal:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:141
+msgid "Edge Slopes:"
+msgstr "Rand Heuwels:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:165
+msgid "Edges >>"
+msgstr "Rand >>"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:257
+msgid "Edges:"
+msgstr "Rand:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:266
+msgid "Edge Properties"
+msgstr "Rand Eienskappe"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:285
+msgid "Facade"
+msgstr "Fasade"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:308
+msgid "Slope:"
+msgstr "Heuwel:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:321
+msgid "Clear"
+msgstr "Skoon"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:324
+msgid "Wall"
+msgstr "Muur"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:327
+msgid "Window"
+msgstr "Venster"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:330
+msgid "Door"
+msgstr "Deur"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:348
+msgid "Edges <<"
+msgstr "Rand <<"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:369
+msgid "Defined Style:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:378
+msgid "Posts"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:383
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:438
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:522
+msgid "Type:"
+msgstr "Tipe:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:394
+msgid "Spacing:"
+msgstr "Spasiering:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:407
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:689
+msgid "Height:"
+msgstr "Hoogte:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:420
+msgid "Size:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:433
+msgid "Connection"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:449
+msgid "Top Height:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:462
+msgid "Bottom Height:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:475
+msgid "Width:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:502
+msgid "Instance from Content File"
+msgstr "Instansie vanaf Inhoud Leer"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:509
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:650
+msgid "File:"
+msgstr "Leer:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:535
+msgid "Item:"
+msgstr "Item:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:544
+msgid "Instance from 3D Model File"
+msgstr "Instansie vanaf 3D Model Leer"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:562
+msgid "Location:"
+msgstr "Plek:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:584
+msgid "Map Offset"
+msgstr "Kaart Afset"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:594
+msgid "Map Distance"
+msgstr "Kaart Afstand"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:604
+msgid "Geodesic Distance"
+msgstr "Geodiese Afstand"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:614
+msgid "Approximate Ground"
+msgstr "Geskatte Grond"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:624
+msgid "Vertical Difference"
+msgstr "Vertikale Verskil"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:660
+msgid "Scale relative to elevation range"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:663
+msgid "Blend colors smoothly"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:670
+msgid "Colors"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:678
+msgid "Change Color..."
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:681
+msgid "Delete Color"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:686
+msgid "New Color"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:695
+msgid "Add"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:707
+msgid "Save As..."
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:716
+msgid "Close"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:743
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:791
+msgid "Line of Sight"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:746
+msgid "Visibility"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:749
+msgid "Show Fresnel zones"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:752
+msgid "Use effective radius of earth"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:759
+msgid "Start height:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:765
+msgid "End height:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:771
+msgid "Radio Frequency:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:779
+msgid "MHz"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:784
+msgid "Apply curvature to:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:789
+msgid "None"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:152
+msgid "Choose facade texture"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:374
+msgid " (flat roof)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:376
+msgid " (shed roof)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:378
+msgid " (gable roof)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:380
+msgid " (hip roof)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:384
+#, c-format
+msgid " (stories : %d)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:532
+msgid "Flat (all edges 0°)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:533
+msgid "Shed"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:534
+msgid "Gable"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:535
+msgid "Hip"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:536
+msgid "Vertical (all edges 90°)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:542
+msgid "Please indicate edge slopes"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:556
+msgid "Sloped edges"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:556
+msgid "Degrees"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:557
+msgid "Slope"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:692
+msgid "Set Building Material for All Edges"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:83
+msgid "Wooden posts, wire"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:84
+msgid "Metal posts, wire"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:85
+msgid "Metal poles, chain-link"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:86
+msgid "Dry-stone wall"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:87
+msgid "Stone wall"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:88
+msgid "Privet hedge"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:89
+msgid "Railing (Pipe)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:90
+msgid "Railing (Wire)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:91
+msgid "Railing (EU)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:92
+msgid "(custom)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:94
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:98
+msgid "none"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:95
+msgid "wood"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:96
+msgid "steel"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:99
+msgid "wire"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:100
+msgid "chain-link"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:101
+msgid "drystone"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:102
+msgid "stone"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:103
+msgid "privet"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:104
+msgid "railing_wire"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:105
+msgid "railing_eu"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:106
+msgid "railing_pipe"
+msgstr ""
+
+#~ msgid "Utility"
+#~ msgstr "Utility"
+
+#~ msgid "Measure Distances"
+#~ msgstr "Meet afstande"
+
+#~ msgid "Go to Terrain..."
+#~ msgstr "Gaan na terrein..."
+
+#~ msgid "Store/Recall Locations"
+#~ msgstr "Stoor/Laai Plekke"
+
+#~ msgid "&Show Shading\tCtrl+I"
+#~ msgstr "&Wys Skadu\tCtrl+I"
+
+#~ msgid "&Show Axes\tCtrl+A"
+#~ msgstr "&Wys Asse\tCtrl+A"
+
+#~ msgid "Seasonal Tilt"
+#~ msgstr "Seisoenale Kantel"
+
+#~ msgid "Follow Route"
+#~ msgstr "Volg Roete"
+
+#~ msgid "Vegetation Files (*.vf)|*.vf|"
+#~ msgstr "Plant Leers (*.vf)|*.vf|"
+
+#~ msgid "Structure Files (*.vtst)|*.vtst|"
+#~ msgstr "Struktuur Leers (*.vtst)|*.vtst|"
+
+#~ msgid "Point Data Sources (*.shp)|*.shp|"
+#~ msgstr "Punt Bronne (*.shp)|*.shp|"
+
+#~ msgid "Location Files (*.loc)|*.loc|"
+#~ msgstr "Plek Leers (*.loc)|*.loc|"
+
+#~ msgid "Quake-Style Walk"
+#~ msgstr "Quake-Tipe Wandel"
+
+#~ msgid "Terrain Manager..."
+#~ msgstr "Terrein Bestuurder..."
+
+#~ msgid "Global options"
+#~ msgstr "Globale opsies"
+
+#~ msgid "Full Screen"
+#~ msgstr "Volskerm"
+
+#~ msgid "Floating Toolbar"
+#~ msgstr "Vlieende Gereedskap boks"
+
+#~ msgid "Texture Compression"
+#~ msgstr "Tekstuur Kompressie"
+
+#~ msgid "HTML Pane"
+#~ msgstr "HTML Venster"
+
+#~ msgid "Size Exaggeration for Plants and Fences: "
+#~ msgstr "Skaal aanpassing vir Plante en Heinings: "
+
+#~ msgid "Plant Shadows"
+#~ msgstr "Plant skadus"
+
+#~ msgid "OpenGL Info..."
+#~ msgstr "OpenGL Info..."
+
+#~ msgid "Features && Labels"
+#~ msgstr "Kenmerke && Opskrifte"
+
+#~ msgid "Item"
+#~ msgstr "Item"
+
+#~ msgid "Detail texture"
+#~ msgstr "Detail tekstuur"
+
+#~ msgid "Feature labels"
+#~ msgstr "Kenmerk naamplate"
+
+#~ msgid "Read features from file:"
+#~ msgstr "Lees kenmerke vanaf leer:"
+
+#~ msgid "Field to use:"
+#~ msgstr "Veld om te gebruik:"
+
+#~ msgid "Recalculate Heights"
+#~ msgstr "Hersien Hoogtes"
+
+#~ msgid "Baseline offset"
+#~ msgstr "Basisvlak afset"

@@ -344,7 +344,8 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 				return NULL;
 			}
 			msg += _T("\n");
-			msg += _("Do you want to load the default species file from:\n");
+			msg += _("Do you want to load the default species file from:");
+			msg += _T("\n");
 			msg += wxString(species_path);
 			int ret = wxMessageBox(msg, _("Plants"), wxYES_NO);
 			if (ret == wxYES)

@@ -816,7 +816,7 @@ void MainFrame::OnBatchConvert(wxCommandEvent &event)
 		return;
 
 	wxString dir1 = wxDirSelector(_("Choose directory that has the input files"),
-		_(""), 0, wxDefaultPosition, this);
+		_T(""), 0, wxDefaultPosition, this);
 	if (dir1 == _T(""))
 		return;
 
@@ -918,7 +918,7 @@ void MainFrame::OnBatchConvert(wxCommandEvent &event)
 		}
 	}
 	msg.Printf(_T("Successfully wrote %d files"), succeeded);
-	wxMessageBox(msg, _(""), 4|wxCENTRE, this);
+	wxMessageBox(msg, _T(""), 4|wxCENTRE, this);
 
 	CloseProgressDialog2();
 }

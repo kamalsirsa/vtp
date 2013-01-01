@@ -113,7 +113,7 @@ bool vtVegLayer::OnLoad()
 	vtSpeciesList *plants = g_bld->GetSpeciesList();
 	if (plants->NumSpecies() == 0)
 	{
-		DisplayAndLog(_("You must specify a species file (plant list) to use when working with vegetation files.\n"));
+		DisplayAndLog(_("You must specify a species file (plant list) to use when working with vegetation files."));
 		return false;
 	}
 

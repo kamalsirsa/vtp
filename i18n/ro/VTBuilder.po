@@ -1,0 +1,3958 @@
+# Romanian translation of VTBuilder text.
+# Copyright (C) 2006 VTP
+# This file is distributed under the same license as the VTP package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-12-06 15:39-1000\n"
+"PO-Revision-Date: 2007-01-08 18:21+0200\n"
+"Last-Translator: Vasile Craciunescu <vasile@geo.unibuc.ro>\n"
+"Language-Team: Romanian <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: App.cpp:92
+#: TreeView.cpp:175
+msgid "Raw"
+msgstr "Date brute"
+
+#: App.cpp:93
+#: TreeView.cpp:163
+#: VTBuilder_wdr.cpp:1029
+msgid "Elevation"
+msgstr "Elevaţii"
+
+#: App.cpp:94
+#: TSDlg.cpp:50
+msgid "Image"
+msgstr "Imagini"
+
+#: App.cpp:95
+msgid "Road"
+msgstr "Drumuri"
+
+#: App.cpp:96
+msgid "Structure"
+msgstr "Structuri"
+
+#: App.cpp:97
+#: TreeView.cpp:169
+msgid "Water"
+msgstr "Apă"
+
+#: App.cpp:98
+#: TreeView.cpp:168
+msgid "Vegetation"
+msgstr "Vegetaţie"
+
+#: App.cpp:99
+#: TreeView.cpp:171
+msgid "Transit"
+msgstr "Tranzit"
+
+#: App.cpp:100
+msgid "Utility"
+msgstr "Utilităţi"
+
+#: BuilderView.cpp:644
+msgid "Added"
+msgstr "Adăugate"
+
+#: BuilderView.cpp:649
+msgid "Subtracted"
+msgstr "Substras"
+
+#: BuilderView.cpp:654
+msgid "Toggled"
+msgstr "Comutate"
+
+#: BuilderView.cpp:659
+#: FeatInfoDlg.cpp:279
+msgid "Selected"
+msgstr "Selectate"
+
+#: BuilderView.cpp:677
+#, c-format
+msgid "1 entity, %d total selected"
+msgstr "1 entitate, %d total selectate"
+
+#: BuilderView.cpp:679
+#, c-format
+msgid "%d entities, %d total selected"
+msgstr "%d entităţi, %d total selectate"
+
+#: BuilderView.cpp:1369
+#, c-format
+msgid "Selected 1 Node (%d total)"
+msgstr "1 nod selectat (%d total)"
+
+#: BuilderView.cpp:1371
+#, c-format
+msgid "Selected 1 Road (%d total)"
+msgstr "1 drum selectat (%d total)"
+
+#: BuilderView.cpp:1377
+msgid "Deselected all"
+msgstr "Deselectare totală"
+
+#: BuilderView.cpp:1488
+msgid "Clear Distance Tool"
+msgstr "Ştergere amprentă măsurătoare"
+
+#: ElevLayer.cpp:174
+msgid "Loading Elevation Layer"
+msgstr "Încarcă elevaţia"
+
+#: ElevLayer.cpp:192
+msgid "CRS file"
+msgstr "Fişier SCR"
+
+#: ElevLayer.cpp:197
+msgid "is missing or unreadable.\n"
+msgstr "lipseşte sau nu poate fi citit.\n"
+
+#: ElevLayer.cpp:225
+msgid "Converting Elevation Projection"
+msgstr "Reproiectare elevaţie"
+
+#: ElevLayer.cpp:472
+#: FrameMenus.cpp:938
+#: FrameMenus.cpp:1305
+#: ImageLayer.cpp:109
+#: Import.cpp:497
+#: RawLayer.cpp:34
+#: RoadLayer.cpp:30
+#: StructLayer.cpp:39
+msgid "Untitled"
+msgstr "Fără nume"
+
+#: ElevLayer.cpp:499
+msgid "Couldn't create bitmap, probably too large."
+msgstr "Imaginea nu a putut fi creată, probabil este prea mare."
+
+#: ElevLayer.cpp:556
+msgid "Rendering Bitmap"
+msgstr "Afişare imagine"
+
+#: ElevLayer.cpp:563
+msgid "Generating colors from elevation..."
+msgstr "Generare rampă de culori din elevaţie..."
+
+#: ElevLayer.cpp:572
+msgid "Turn off displayed elevation for elevation layers?"
+msgstr "Sunteţi sigur ca doriţi să ascundeţi straturile de elevaţie?"
+
+#: ElevLayer.cpp:598
+msgid "Shading colors..."
+msgstr "Umbrire culori..."
+
+#: ElevLayer.cpp:614
+msgid "Hiding unknown areas..."
+msgstr "Ascundere zone fără valori"
+
+#: ElevLayer.cpp:652
+msgid "Filling Gaps"
+msgstr "Umplere goluri"
+
+#: ElevLayer.cpp:957
+msgid "Raw Elevation File"
+msgstr "Fişier brut elevaţii"
+
+#: ElevLayer.cpp:1011
+msgid ""
+"File lacks geographic location (extents). Would you like to specify extents?\n"
+" Yes - specify extents\n"
+" No - use some default values\n"
+msgstr ""
+"Fişierul nu conţine informaţii referitoare la localizarea geografică. Doriţi să specificaţi localizarea?\n"
+" Da - Specifică localizarea\n"
+" Nu - Folosire valori implicite\n"
+
+#: ElevLayer.cpp:1012
+msgid "Elevation Import"
+msgstr "Import elevaţii"
+
+#: ElevLayer.cpp:1017
+#: RawDlg.cpp:70
+msgid "Elevation Grid Extents"
+msgstr "Extindere elevaţii"
+
+#: ElevLayer.cpp:1063
+msgid "Merging shared vertices"
+msgstr "Îmbinare noduri comune"
+
+#: ElevLayer.cpp:1074
+#, c-format
+msgid "Reduced vertices from %d to %d"
+msgstr "Noduri eliminate de la %d la %d"
+
+#: ElevLayer.cpp:1076
+#, c-format
+msgid "There are %d vertices, unable to merge any."
+msgstr "Există %d noduri, imposibil de îmbinat."
+
+#: ElevLayer.cpp:1098
+#, c-format
+msgid "Grid size: %d x %d\n"
+msgstr "Dimensiune grid: %d x %d\n"
+
+#: ElevLayer.cpp:1102
+msgid "Grid spacing: "
+msgstr "Spaţiere grid:"
+
+#: ElevLayer.cpp:1110
+msgid "Floating point: Yes\n"
+msgstr "Virgulă mobilă: Da\n"
+
+#: ElevLayer.cpp:1112
+msgid "Floating point: No\n"
+msgstr "Virgulă mobilă: Nu\n"
+
+#: ElevLayer.cpp:1118
+#, c-format
+msgid "Minimum elevation: %.2f\n"
+msgstr "Altitudine minimă: %.2f\n"
+
+#: ElevLayer.cpp:1120
+#, c-format
+msgid "Maximum elevation: %.2f\n"
+msgstr "Altitudine maximă: %.2f\n"
+
+#: ElevLayer.cpp:1123
+#, c-format
+msgid "Height scale (meters per vertical unit): %f\n"
+msgstr "Scară verticală (metri pe unitatea de măsură verticală): %f\n"
+
+#: ElevLayer.cpp:1129
+#, c-format
+msgid "Original DEM name: \"%hs\"\n"
+msgstr "Numele original al DEM-ului: \"%hs\"\n"
+
+#: ElevLayer.cpp:1137
+#, c-format
+msgid ""
+"TIN\n"
+"Vertices: %d\n"
+"Triangles: %d\n"
+msgstr ""
+"TIN\n"
+"Noduri: %d\n"
+"Triunghiuri: %d\n"
+
+#: ElevLayer.cpp:1140
+msgid "Min/max elevation: "
+msgstr "Altitudinea min/max: "
+
+#: ElevLayer.cpp:1144
+#: VegLayer.cpp:59
+msgid "None\n"
+msgstr "Nici unul\n"
+
+#: ElevLayer.cpp:1177
+msgid "BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz"
+msgstr "Fişier BT (.bt)|*.bt|Fişier BT arhivat (.bt.gz)|*.bt.gz"
+
+#: ElevLayer.cpp:1179
+#: Frame.cpp:452
+#: FrameMenus.cpp:321
+#: Layer.cpp:147
+#: StructLayer.cpp:1149
+msgid "Save Layer"
+msgstr "Salvează stratul"
+
+#: ElevLayer.cpp:1355
+#: Frame.cpp:1899
+msgid "Filling gaps"
+msgstr "Umplere goluri"
+
+#: ElevLayer.cpp:1414
+#: ImageLayer.cpp:1519
+#, c-format
+msgid "Writing tile '%hs', size %dx%d"
+msgstr "Scriere subseturii '%hs', dimensiune %dx%d"
+
+#: Export.cpp:46
+msgid "The Arc ASCII format only supports evenly spaced elevation grids.\n"
+msgstr "Formatul Arc ASCII suportă doar griduri regulate.\n"
+
+#: Export.cpp:47
+#, c-format
+msgid "The spacing of this grid is %g x %g\n"
+msgstr "Rezoluţia spaţială a gridului este %g x %g\n"
+
+#: Export.cpp:49
+msgid "The result my be stretched.  Do you want to continue anyway?"
+msgstr "Rezultatul ar putea fi distorsionat. Doriţi să continuaţi?"
+
+#: Export.cpp:50
+#: FeatInfoDlg.cpp:130
+#: FeatInfoDlg.cpp:164
+#: Frame.cpp:326
+#: Frame.cpp:636
+#: Frame.cpp:2531
+msgid "Warning"
+msgstr "Avertisment"
+
+#: Export.cpp:118
+msgid "Export Planet Data to Directory"
+msgstr "Exportă datele Planet în director"
+
+#: Export.cpp:184
+msgid "Export ChunkLOD"
+msgstr ""
+
+#: Export.cpp:302
+#: Export.cpp:457
+#: Export.cpp:500
+#: Export.cpp:582
+#: ResampleDlg.cpp:187
+#: SampleImageDlg.cpp:247
+msgid "Tiling Options"
+msgstr "Obţiuni subseturi"
+
+#: Export.cpp:318
+#: Export.cpp:527
+msgid "Also write derived image tiles?"
+msgstr "Salvaţi şi subseturile rezultate? "
+
+#: Export.cpp:318
+#: Export.cpp:527
+msgid "Tiled output"
+msgstr "Ieşire subseturi"
+
+#: Export.cpp:334
+#: Export.cpp:543
+#: OptionsDlg.cpp:63
+#: ResampleDlg.cpp:171
+msgid "Rendering options"
+msgstr "Opţiuni afişare"
+
+#: Export.cpp:416
+#: ImageLayer.cpp:573
+msgid "Writing file"
+msgstr "Scriere în fişier"
+
+#: Export.cpp:520
+msgid "Sample floating-point elevation values?"
+msgstr "Valori zecimale pentru elevaţie?"
+
+#: Export.cpp:521
+#: FrameMenus.cpp:808
+#: ImageLayer.cpp:951
+#: ImageLayer.cpp:967
+msgid "Question"
+msgstr "Întrebare"
+
+#: Export.cpp:616
+msgid "Choose input file"
+msgstr "Alegeţi fişierul de intrare"
+
+#: Export.cpp:627
+msgid "Size of each output tile?"
+msgstr "Dimensiunea fiecărui subset?"
+
+#: Export.cpp:628
+#: Export.cpp:634
+msgid "Query"
+msgstr "Interogare"
+
+#: Export.cpp:634
+msgid "Prefix for output filenames?"
+msgstr "Prefix pentru numele fişierelor de ieşiere?"
+
+#: Export.cpp:641
+msgid "Processing"
+msgstr "Procesare"
+
+#: Export.cpp:641
+msgid "Loading source bitmap.."
+msgstr "Încărcare imagine sursă..."
+
+#: Export.cpp:669
+#, c-format
+msgid "Creating tile %d ..."
+msgstr "Creează subsetul %d ..."
+
+#: FeatInfoDlg.cpp:129
+#, c-format
+msgid ""
+"There are %d selected features.  Are you sure you\n"
+" want to display them all in the table view?"
+msgstr ""
+"Sunt %d elemente selectate.  Sunteţi sigur\n"
+" că doriţi să le afişaţi pe toate în tabel?"
+
+#: FeatInfoDlg.cpp:163
+#, c-format
+msgid ""
+"There are %d features in this layer.  Are you sure\n"
+" you want to display them all in the table view?"
+msgstr ""
+"Sunt %d elemente în stratul curent.  Sunteţi sigur\n"
+" că doriţi să le afişaţi pe toate în tabel?"
+
+#: FeatInfoDlg.cpp:255
+#, c-format
+msgid "Enter a new value for field '%hs'"
+msgstr "Introduceţi o valoare nouă pentru câmpul '%hs'"
+
+#: FeatInfoDlg.cpp:257
+msgid "Text entry"
+msgstr "Editare valori"
+
+#: FeatInfoDlg.cpp:280
+msgid "Picked"
+msgstr "Interogate"
+
+#: FeatInfoDlg.cpp:281
+msgid "All"
+msgstr "Toate"
+
+#: FeatInfoDlg.cpp:284
+msgid "Meter"
+msgstr "Metri"
+
+#: FeatInfoDlg.cpp:285
+msgid "Foot"
+msgstr "Picioare"
+
+#: FeatInfoDlg.cpp:286
+msgid "Foot (US)"
+msgstr "Picioare (SUA)"
+
+#: Frame.cpp:238
+msgid "Ready"
+msgstr "Pregătit"
+
+#: Frame.cpp:325
+#, c-format
+msgid ""
+"There are %d layers modified but unsaved.\n"
+" Are you sure you want to exit?"
+msgstr ""
+"Există %d modificate ce nu au fost salvate.\n"
+" Sunteţi sigur că doriţi să părăsiţi aplicaţia?"
+
+#: Frame.cpp:383
+#: Frame.cpp:409
+#: FrameMenus.cpp:438
+#: FrameMenus.cpp:461
+msgid "Select Features"
+msgstr "Elemente selectate"
+
+#: Frame.cpp:384
+#: FrameMenus.cpp:462
+msgid "Pick Features"
+msgstr "Elemente interogate"
+
+#: Frame.cpp:385
+msgid "Table"
+msgstr "Tabel"
+
+#: Frame.cpp:386
+#: FrameMenus.cpp:467
+msgid "Add Points with Mouse"
+msgstr "Adăugare puncte cu mouse-ul"
+
+#: Frame.cpp:390
+msgid "Select Elevation"
+msgstr "Selectare elevaţie"
+
+#: Frame.cpp:391
+#: Frame.cpp:395
+msgid "Zoom to Full Detail"
+msgstr "Vizualizare nivel maxim de detaliu"
+
+#: Frame.cpp:399
+msgid "Select Roads"
+msgstr "Selectare drumuri"
+
+#: Frame.cpp:400
+msgid "Select Nodes"
+msgstr "Selectare noduri"
+
+#: Frame.cpp:401
+#: FrameMenus.cpp:374
+msgid "Select Whole Roads"
+msgstr "Selectează toate drumurile"
+
+#: Frame.cpp:402
+#: FrameMenus.cpp:375
+msgid "Set Road Direction"
+msgstr "Setează direcţia drumului"
+
+#: Frame.cpp:403
+#: FrameMenus.cpp:376
+msgid "Edit Road Points"
+msgstr "Editeză nodurile drumului"
+
+#: Frame.cpp:404
+#: FrameMenus.cpp:378
+msgid "Show Nodes"
+msgstr "Afişează nodurile"
+
+#: Frame.cpp:405
+#: FrameMenus.cpp:310
+msgid "Crossing Selection"
+msgstr "Selecţie încrucişată"
+
+#: Frame.cpp:410
+#: FrameMenus.cpp:439
+msgid "Edit Buildings"
+msgstr "Editare clădiri"
+
+#: Frame.cpp:411
+#: FrameMenus.cpp:440
+msgid "Add points to building footprints"
+msgstr "Adăugare puncte la amprentele clădirilor"
+
+#: Frame.cpp:412
+#: FrameMenus.cpp:441
+msgid "Delete points from building footprints"
+msgstr "Ştergere puncte din amprentele clădirilor"
+
+#: Frame.cpp:413
+#: FrameMenus.cpp:442
+msgid "Add Linear Structures"
+msgstr "Adăugare structuri liniare"
+
+#: Frame.cpp:414
+#: FrameMenus.cpp:443
+msgid "Edit Linear Structures"
+msgstr "Editare structuri liniare"
+
+#: Frame.cpp:415
+msgid "Constrain Angles"
+msgstr "Constrângere unghiuri"
+
+#: Frame.cpp:416
+#: FrameMenus.cpp:444
+msgid "Add Instances"
+msgstr "Adăugare obiecte"
+
+#: Frame.cpp:424
+msgid "Add Tower"
+msgstr "Adăugare turnuri"
+
+#: Frame.cpp:426
+msgid "Select Towers"
+msgstr "Selectare turnuri"
+
+#: Frame.cpp:427
+msgid "Edit Towers"
+msgstr "Editare turnuri"
+
+#: Frame.cpp:445
+#: FrameMenus.cpp:285
+msgid "New Project"
+msgstr "Proiect nou"
+
+#: Frame.cpp:446
+#: FrameMenus.cpp:286
+msgid "Open Project"
+msgstr "Deschidere proiect"
+
+#: Frame.cpp:447
+#: FrameMenus.cpp:567
+msgid "Save Project"
+msgstr "Salvare proiect"
+
+#: Frame.cpp:448
+msgid "View Options"
+msgstr "Vizualizare opţiuni"
+
+#: Frame.cpp:450
+msgid "New Layer"
+msgstr "Strat nou"
+
+#: Frame.cpp:451
+#: FrameMenus.cpp:320
+#: FrameMenus.cpp:927
+msgid "Open Layer"
+msgstr "Deschidere strat"
+
+#: Frame.cpp:453
+#: FrameMenus.cpp:323
+#: Import.cpp:89
+msgid "Import Data"
+msgstr "Import date"
+
+#: Frame.cpp:455
+#: FrameMenus.cpp:305
+msgid "Delete"
+msgstr "Ştergere"
+
+#: Frame.cpp:456
+#: FrameMenus.cpp:334
+#: FrameMenus.cpp:856
+msgid "Offset"
+msgstr "Decalaj"
+
+#: Frame.cpp:457
+msgid "Layer Visibility"
+msgstr "Vizibilitate straturi"
+
+#: Frame.cpp:458
+msgid "Layer Up"
+msgstr "Urcă stratul o poziţie"
+
+#: Frame.cpp:460
+msgid "Zoom In"
+msgstr "Mărire"
+
+#: Frame.cpp:461
+msgid "Zoom Out"
+msgstr "Micşorare"
+
+#: Frame.cpp:462
+msgid "Zoom All"
+msgstr "Afişare completă"
+
+#: Frame.cpp:463
+msgid "Zoom To Layer"
+msgstr "Vizualizare extindere strat"
+
+#: Frame.cpp:465
+msgid "Magnifier"
+msgstr "Lupă"
+
+#: Frame.cpp:466
+msgid "Pan"
+msgstr "Panoramare"
+
+#: Frame.cpp:467
+msgid "Distance"
+msgstr "Distanţă"
+
+#: Frame.cpp:468
+msgid "Area Tool"
+msgstr "Selectare zonă de interes"
+
+#: Frame.cpp:469
+#: Frame.cpp:1132
+#: FrameMenus.cpp:363
+msgid "Elevation Profile"
+msgstr "Profil altitudinal"
+
+#: Frame.cpp:471
+msgid "Merge/Resample Elevation"
+msgstr "Îmbină/Re-eşantioneză elevaţia"
+
+#: Frame.cpp:472
+msgid "Merge/Resample Imagery"
+msgstr "Îmbină/Re-eşantioneză imaginile"
+
+#: Frame.cpp:619
+#, c-format
+msgid ""
+"The data already loaded is in:\n"
+"   %hs\n"
+" but the layer you are attempting to add:\n"
+"   %s\n"
+" is using:\n"
+"   %hs\n"
+" Would you like to attempt to convert it now to the existing projection?"
+msgstr ""
+"Datele deja încărcate sunt în:\n"
+"   %hs\n"
+" iar stratul pe care încercaţi sa-l încărcaţi:\n"
+"   %s\n"
+" este în:\n"
+"   %hs\n"
+" Doriţi sa-l reproiectaţi acum?"
+
+#: Frame.cpp:625
+msgid "Convert Coordinate System?"
+msgstr "Reproiecare sistem de coordonate?"
+
+#: Frame.cpp:635
+msgid ""
+"Couldn't convert projection.\n"
+" Proceed anyway?"
+msgstr ""
+"Imposibil de reproiectat.\n"
+" Doriţi să continuaţi?"
+
+#: Frame.cpp:909
+msgid "These are your choices"
+msgstr "Aceste sunt alegerile făcute"
+
+#: Frame.cpp:910
+msgid "Please indicate layer type"
+msgstr "Indicaţi tipul de strat"
+
+#: Frame.cpp:935
+msgid "Feature Info"
+msgstr "Informaţii element"
+
+#: Frame.cpp:949
+msgid "Distance Tool"
+msgstr "Măsusurare distanţe"
+
+#: Frame.cpp:1027
+msgid "Linear Structures"
+msgstr "Structuri liniare"
+
+#: Frame.cpp:1043
+msgid "Structure Instances"
+msgstr "Obiecte tip structură"
+
+#: Frame.cpp:1219
+msgid "Merging and Resampling Elevation Layers"
+msgstr "Îmbinare şi re-eşantionare straturi elevaţie"
+
+#: Frame.cpp:1272
+msgid "Merging and Resampling Image Layers"
+msgstr "Îmbinare şi re-eşantionare straturi imagine"
+
+#: Frame.cpp:1655
+msgid "Merge and Resample Elevation"
+msgstr "Îmbinare şi re-eşantionare elevaţie"
+
+#: Frame.cpp:1997
+#: Frame.cpp:2183
+#, c-format
+msgid "Tile '%hs', size %dx%d"
+msgstr "Subset '%hs', dimensiune %dx%d"
+
+#: Frame.cpp:2259
+msgid ""
+"Sorry, you must have some image layers to\n"
+" perform a sampling operation on them."
+msgstr ""
+"Imposibil de executat, este necesară încărcarea\n"
+" unor imagini pentru a aplica eşantionarea."
+
+#: Frame.cpp:2264
+msgid "Merge and Resample Imagery"
+msgstr "Îmbinare şi re-eşantionare imagine"
+
+#: Frame.cpp:2327
+msgid "Generating Vegetation"
+msgstr "Generare vegetaţie"
+
+#: Frame.cpp:2397
+#, c-format
+msgid "column %d/%d, plants: %d"
+msgstr "coloană %d/%d, plante: %d"
+
+#: Frame.cpp:2495
+msgid "Vegetation distribution results:\n"
+msgstr "Rezultatele distribuirii vegetaţiei:\n"
+
+#: Frame.cpp:2507
+#, c-format
+msgid "  BioType %d"
+msgstr " Bio-tip %d"
+
+#: Frame.cpp:2516
+#, c-format
+msgid "    Plant %d: %hs: %d generated.\n"
+msgstr "    Plante %d: %hs: %d generate.\n"
+
+#: Frame.cpp:2522
+msgid ": None.\n"
+msgstr ": Nici unul.\n"
+
+#: Frame.cpp:2671
+msgid ""
+"File lacks a projection.\n"
+" Would you like to specify one?\n"
+" Yes - specify projection\n"
+" No - use current projection\n"
+msgstr ""
+"Fşierul nu conţine informaţii despre proiecţie.\n"
+" Doriţi să o specificaţi manual?\n"
+" Da - specifică proiecţia\n"
+" Nu - foloseşte proiecţia curentă\n"
+
+#: Frame.cpp:2672
+msgid "Coordinate Reference System"
+msgstr "Sistem de coordonate de referinţă"
+
+#: Frame.cpp:2675
+#: Import.cpp:725
+#: Import.cpp:1237
+msgid "Please indicate projection"
+msgstr "Indicaţi proiecţia"
+
+#: FrameMenus.cpp:285
+msgid "&New\tCtrl+N"
+msgstr "&Proiect nou\tCtrl+N"
+
+#: FrameMenus.cpp:286
+msgid "Open Project\tCtrl+O"
+msgstr "Deschidere proiect\tCtrl+O"
+
+#: FrameMenus.cpp:287
+msgid "Save Project\tCtrl+S"
+msgstr "Salvare proiect\tCtrl+S"
+
+#: FrameMenus.cpp:287
+msgid "Save Project As"
+msgstr "Salvare proiect ca"
+
+#: FrameMenus.cpp:291
+msgid "Create Dymaxion Textures"
+msgstr "Creeare textură dymaxion"
+
+#: FrameMenus.cpp:292
+msgid "Process Billboard Texture"
+msgstr "Procesează textură billboard"
+
+#: FrameMenus.cpp:293
+#: Geocode.cpp:127
+msgid "Geocode"
+msgstr "Geocodare"
+
+#: FrameMenus.cpp:294
+msgid "Copy Elevation Layer to Clipboard"
+msgstr "Copiere strat elevaţie în clipboard"
+
+#: FrameMenus.cpp:295
+msgid "New Elevation Layer from Clipboard"
+msgstr "Strat nou de elevaţie din clipboard"
+
+#: FrameMenus.cpp:296
+msgid "Special"
+msgstr "Special"
+
+#: FrameMenus.cpp:299
+msgid "E&xit\tAlt-X"
+msgstr "I&şire\tAlt-X"
+
+#: FrameMenus.cpp:299
+msgid "Exit"
+msgstr "Ieşiere"
+
+#: FrameMenus.cpp:300
+msgid "&Project"
+msgstr "&Proiect"
+
+#: FrameMenus.cpp:305
+msgid "Delete\tDEL"
+msgstr "Ştergere\tDEL"
+
+#: FrameMenus.cpp:307
+msgid "Deselect All"
+msgstr "Deselectare completă"
+
+#: FrameMenus.cpp:307
+msgid "Clears selection"
+msgstr "Eliminare selecţie"
+
+#: FrameMenus.cpp:308
+msgid "Invert Selection"
+msgstr "Inversare selecţie"
+
+#: FrameMenus.cpp:312
+msgid "&Edit"
+msgstr "&Editare"
+
+#: FrameMenus.cpp:318
+msgid "&New Layer"
+msgstr "&Strat nou"
+
+#: FrameMenus.cpp:318
+msgid "Create New Layer"
+msgstr "Creează strat nou"
+
+#: FrameMenus.cpp:320
+msgid "Open Existing Layer"
+msgstr "Deschide un strat existent"
+
+#: FrameMenus.cpp:321
+msgid "Save Active Layer"
+msgstr "Salvează stratul activ"
+
+#: FrameMenus.cpp:322
+msgid "Save Layer As..."
+msgstr "Salvează stratul ca..."
+
+#: FrameMenus.cpp:322
+msgid "Save Active Layer As"
+msgstr "Salvează stratul activ ca"
+
+#: FrameMenus.cpp:323
+msgid "Import Data\tCtrl+I"
+msgstr "Import date\tCtrl+I"
+
+#: FrameMenus.cpp:325
+#: FrameMenus.cpp:326
+msgid "Import Data From TIGER"
+msgstr "Importă date TIGER"
+
+#: FrameMenus.cpp:326
+msgid "Import Data From NTF"
+msgstr "Importă date NTF"
+
+#: FrameMenus.cpp:327
+msgid "Import Utilites From SHP"
+msgstr "Importă utilităţi SHP"
+
+#: FrameMenus.cpp:328
+msgid "Import From MapSource File"
+msgstr "Importă fişiere MapSource"
+
+#: FrameMenus.cpp:329
+msgid "Import Point Data From Table"
+msgstr "Importă date punctuale din tabel"
+
+#: FrameMenus.cpp:330
+msgid "Import Point Data From XML"
+msgstr "Importă date punctuale XML"
+
+#: FrameMenus.cpp:333
+msgid "Layer Properties"
+msgstr "Proprietăţi strat"
+
+#: FrameMenus.cpp:334
+msgid "Offset Coordinates"
+msgstr "Decalaj coordonate"
+
+#: FrameMenus.cpp:336
+msgid "&Flatten Layers"
+msgstr "&Aplatizare straturi"
+
+#: FrameMenus.cpp:336
+msgid "Flatten"
+msgstr "Aplatizare"
+
+#: FrameMenus.cpp:338
+msgid "Convert Projection"
+msgstr "Reproiectare"
+
+#: FrameMenus.cpp:338
+msgid "Convert"
+msgstr "Conversie"
+
+#: FrameMenus.cpp:339
+msgid "Set Projection"
+msgstr "Stabilire proiecţie"
+
+#: FrameMenus.cpp:340
+msgid "&Layer"
+msgstr "&Strat"
+
+#: FrameMenus.cpp:345
+msgid "Current Layer &Visible"
+msgstr "Stratul curent &Vizibil"
+
+#: FrameMenus.cpp:346
+msgid "Toggle Visibility of the current Layer"
+msgstr "Comută vizibilitatea stratului curent"
+
+#: FrameMenus.cpp:347
+msgid "Move Layer &Up"
+msgstr "Urcă stratul &o poziţie"
+
+#: FrameMenus.cpp:349
+msgid "Zoom &In\tCtrl++"
+msgstr "Mărire\tCtrl++"
+
+#: FrameMenus.cpp:350
+msgid "Zoom Out\tCtrl+-"
+msgstr "Micşorare\tCtrl+-"
+
+#: FrameMenus.cpp:351
+msgid "Zoom &All"
+msgstr "Vizualizare extindere &completă"
+
+#: FrameMenus.cpp:352
+msgid "Zoom to Current &Layer"
+msgstr "Vizualizare extindere &strat curent"
+
+#: FrameMenus.cpp:353
+msgid "Zoom to &Full Res (1:1)"
+msgstr "Vizualizare &nivel maxim de detaliu (1:1)"
+
+#: FrameMenus.cpp:355
+msgid "&Magnifier\tZ"
+msgstr "&Lupă\tZ"
+
+#: FrameMenus.cpp:356
+msgid "&Pan\tSPACE"
+msgstr "&Panoramare\tSPACE"
+
+#: FrameMenus.cpp:357
+msgid "Obtain &Distance"
+msgstr "Măsurare &distanţă"
+
+#: FrameMenus.cpp:358
+msgid "Area &Tool"
+msgstr "Zona de interes"
+
+#: FrameMenus.cpp:360
+msgid "&World Map"
+msgstr "&Harta lumii"
+
+#: FrameMenus.cpp:360
+msgid "Show/Hide World Map"
+msgstr "Afişează/Ascunde harta lumii"
+
+#: FrameMenus.cpp:361
+msgid "Show &UTM Boundaries"
+msgstr "Afişează zonele &UTM"
+
+#: FrameMenus.cpp:365
+msgid "&Options"
+msgstr "&Opţiuni"
+
+#: FrameMenus.cpp:366
+msgid "&View"
+msgstr "&Vizualizare"
+
+#: FrameMenus.cpp:372
+msgid "Select/Modify Roads"
+msgstr "Selectare/Modificare drumuri"
+
+#: FrameMenus.cpp:373
+msgid "Select/Modify Nodes"
+msgstr "Selectare/Modificare noduri"
+
+#: FrameMenus.cpp:379
+msgid "Select by Highway Number"
+msgstr "Selectare autostradă după număr"
+
+#: FrameMenus.cpp:381
+msgid "Clean RoadMap"
+msgstr "Curăţă hartă drumuri"
+
+#: FrameMenus.cpp:381
+msgid "Clean"
+msgstr "Curăţă"
+
+#: FrameMenus.cpp:382
+msgid "Guess Intersection Types"
+msgstr "Anticipează tipul de intersecţie"
+
+#: FrameMenus.cpp:383
+msgid "Flatten Elevation Grid Under Roads"
+msgstr "Tasează celulele din gridul de elevaţie traversate de drumuri"
+
+#: FrameMenus.cpp:384
+msgid "&Roads"
+msgstr "&Drumuri"
+
+#: FrameMenus.cpp:390
+msgid "Add a Transmission Tower"
+msgstr "Adăugare turn de transmisie"
+
+#: FrameMenus.cpp:392
+msgid "Select Utility Layer"
+msgstr "Selectare strat utilităţi"
+
+#: FrameMenus.cpp:393
+msgid "Edit Transmission Towers"
+msgstr "Editare turn de transmisie"
+
+#: FrameMenus.cpp:394
+msgid "Util&ities"
+msgstr "Util&ităţi"
+
+#: FrameMenus.cpp:401
+msgid "Se&lect Elevation Layer"
+msgstr "Se&lectare strat elevaţii"
+
+#: FrameMenus.cpp:403
+msgid "Sc&ale Elevation"
+msgstr "Sc&alare elevaţie"
+
+#: FrameMenus.cpp:404
+msgid "&Remove Elevation Range..."
+msgstr "&Eliminare ecart de elevaţie..."
+
+#: FrameMenus.cpp:405
+msgid "&Fill In Unknown Areas"
+msgstr "&Umplere zone NODATA"
+
+#: FrameMenus.cpp:406
+msgid "&Set Unknown Areas"
+msgstr "&Setare NODATA"
+
+#: FrameMenus.cpp:408
+msgid "E&xport To..."
+msgstr "E&xportă ca..."
+
+#: FrameMenus.cpp:409
+#: FrameMenus.cpp:420
+msgid "Export to Tiles..."
+msgstr "Exportă ca subseturi"
+
+#: FrameMenus.cpp:410
+msgid "Re&nder to Bitmap..."
+msgstr "Ex&portă ca imagine..."
+
+#: FrameMenus.cpp:412
+msgid "&Merge shared TIN vertices"
+msgstr "&Îmbină nodurile comune din TIN"
+
+#: FrameMenus.cpp:413
+msgid "Elev&ation"
+msgstr "Elev&aţie"
+
+#: FrameMenus.cpp:421
+msgid "Imagery"
+msgstr "Imagini"
+
+#: FrameMenus.cpp:427
+msgid "Species List"
+msgstr "Listă specii"
+
+#: FrameMenus.cpp:427
+msgid "View/Edit list of available plant species"
+msgstr "Vizualizare/Editare listă specii de plante disponibile "
+
+#: FrameMenus.cpp:428
+#: VegDlg.cpp:170
+msgid "BioRegions"
+msgstr "Bio-regiuni"
+
+#: FrameMenus.cpp:428
+msgid "View/Edit list of species & density for each BioRegion"
+msgstr "Vizualizare/Editare listă specii & densităţi pentru fiecare bio-regiune"
+
+#: FrameMenus.cpp:430
+msgid "Remap Species"
+msgstr "Re-mapare specii"
+
+#: FrameMenus.cpp:431
+msgid "Export SHP"
+msgstr "Export SHP"
+
+#: FrameMenus.cpp:432
+msgid "Veg&etation"
+msgstr "Veg&etaţie"
+
+#: FrameMenus.cpp:446
+msgid "Add Foundation Levels to Buildings"
+msgstr "Adăugare fundaţie la clădiri"
+
+#: FrameMenus.cpp:447
+msgid "Select Using Polygons"
+msgstr "Selectare folosing polilgoane"
+
+#: FrameMenus.cpp:447
+msgid "Select buildings using selected raw layer polygons"
+msgstr "Selectare clădiri folosind stratul de date brute poligonale selectat"
+
+#: FrameMenus.cpp:448
+msgid "Colour Selected Roofs"
+msgstr "Colorează acoperişurile selectate"
+
+#: FrameMenus.cpp:448
+msgid "Set roof colour on selected buildings"
+msgstr "Aplică culoarea acoperişului la clădirile selectate"
+
+#: FrameMenus.cpp:450
+#: FrameMenus.cpp:3105
+msgid "Export footprints to SHP"
+msgstr "Exportă amprentele clădirilor în format SHP "
+
+#: FrameMenus.cpp:453
+msgid "Constrain angles on footprint edit"
+msgstr "Constrânge unghiurile la editarea amprentei clădirilor"
+
+#: FrameMenus.cpp:454
+msgid "&Structures"
+msgstr "&Structuri"
+
+#: FrameMenus.cpp:463
+msgid "Show Attribute Table"
+msgstr "Afişează tabelul de atribute"
+
+#: FrameMenus.cpp:466
+msgid "Set Entity Type"
+msgstr "Setează tipul de entitate"
+
+#: FrameMenus.cpp:468
+msgid "Add Point with Text\tCtrl+T"
+msgstr "Adaugă puncte cu text\tCtrl+T"
+
+#: FrameMenus.cpp:468
+msgid "Add point"
+msgstr "Adaugă puncte"
+
+#: FrameMenus.cpp:469
+msgid "Add Points with GPS"
+msgstr "Adaugă puncte GPS"
+
+#: FrameMenus.cpp:469
+msgid "Add points with GPS"
+msgstr "Adaugă puncte GPS"
+
+#: FrameMenus.cpp:470
+msgid "Style..."
+msgstr "Stil..."
+
+#: FrameMenus.cpp:471
+msgid "Scale"
+msgstr "Scară"
+
+#: FrameMenus.cpp:474
+msgid "Select Features by Condition"
+msgstr "Selectează pe baza atributelor"
+
+#: FrameMenus.cpp:475
+msgid "Export as HTML ImageMap"
+msgstr "Exportă ca hartă de imagine HTML"
+
+#: FrameMenus.cpp:476
+msgid "Ra&w"
+msgstr "Da&te brute"
+
+#: FrameMenus.cpp:482
+msgid "Set to Full Extents"
+msgstr "Extindere maximă"
+
+#: FrameMenus.cpp:483
+msgid "Set the Area Tool rectangle to the combined extent of all layers."
+msgstr "Dreptunghiul zonei de interes este creat la extinderea combinată a tuturor straturilor"
+
+#: FrameMenus.cpp:484
+msgid "Set to Layer Extents"
+msgstr "Extinderea stratului"
+
+#: FrameMenus.cpp:485
+msgid "Set the Area Tool rectangle to the extent of the active layer."
+msgstr "Dreptunghiul zonei de interes este creat la extinderea stratului curent."
+
+#: FrameMenus.cpp:486
+msgid "Numeric Values"
+msgstr "Valori numerice"
+
+#: FrameMenus.cpp:487
+msgid "Set the Area Tool rectangle by text entry of coordinates."
+msgstr "Extinderea dreptunghiul zonei de interes este definită prin introducerea coordonatelor."
+
+#: FrameMenus.cpp:489
+msgid "Merge && Resample &Elevation"
+msgstr "Îmbină && Re-eşantionează &Elevaţia"
+
+#: FrameMenus.cpp:490
+msgid "Sample all elevation data within the Area Tool to produce a single, new elevation."
+msgstr "Îmbinare date de elevaţie cuprinse în zona de interes pentru a produce un nou strat de elevaţie."
+
+#: FrameMenus.cpp:492
+msgid "Merge && Resample &Imagery"
+msgstr "Îmbină && Re-eşantionează &Imagini"
+
+#: FrameMenus.cpp:493
+msgid "Sample imagery within the Area Tool to produce a single, new image."
+msgstr "Îmbinare date imagine cuprinse în zona de interes pentru a produce un nou strat imagine."
+
+#: FrameMenus.cpp:494
+msgid "Generate Vegetation"
+msgstr "Generare vegetaţie"
+
+#: FrameMenus.cpp:495
+msgid "Generate Vegetation File (*.vf) containg plant distribution."
+msgstr "Generare fişier vegetaţie (*.vf) conţinând distribuţia plantelor."
+
+#: FrameMenus.cpp:497
+msgid "Request Layer from WFS"
+msgstr "Cerere strat prin WFS"
+
+#: FrameMenus.cpp:498
+msgid "Request Image from WMS"
+msgstr "Cerere strat prin WMS"
+
+#: FrameMenus.cpp:499
+msgid "Request Image from Terraserver"
+msgstr "Cerere strat imagine Terraserver"
+
+#: FrameMenus.cpp:503
+msgid "Optimized Resample Elevation to Tileset"
+msgstr "Salvare subseturi elevaţie optimizată şi re-eşantionată"
+
+#: FrameMenus.cpp:504
+msgid "Sample all elevation data within the Area Tool efficiently to produce an elevation tileset."
+msgstr "Îmbinare date de elevaţie cuprinse în zona de interes pentru a le exporta sub formă de subseturi."
+
+#: FrameMenus.cpp:505
+msgid "Optimized Resample Imagery to Tileset"
+msgstr "Salvare subseturi imagini re-eşantionate"
+
+#: FrameMenus.cpp:506
+msgid "Sample all image data within the Area Tool efficiently to produce an image tileset."
+msgstr "Îmbinare date imagine cuprinse în zona de interes pentru a  a le exporta sub formă de subseturi."
+
+#: FrameMenus.cpp:507
+msgid "&Area Tool"
+msgstr "&Zona de interes"
+
+#: FrameMenus.cpp:512
+#: FrameMenus.cpp:3426
+msgid "About "
+msgstr "Despre"
+
+#: FrameMenus.cpp:514
+msgid "&About"
+msgstr "&Despre"
+
+#: FrameMenus.cpp:515
+msgid "Documentation (local)"
+msgstr "Documentaţie (local)"
+
+#: FrameMenus.cpp:516
+msgid "Documentation (on the web)"
+msgstr "Documentaţie (online)"
+
+#: FrameMenus.cpp:517
+msgid "&Help"
+msgstr "&Ajutor"
+
+#: FrameMenus.cpp:551
+msgid "Project Files (*.vtb)|*.vtb"
+msgstr "Fişiere proiect (*.vtb)|*.vtb"
+
+#: FrameMenus.cpp:557
+msgid "Load Project"
+msgstr "Deschide proiect"
+
+#: FrameMenus.cpp:775
+#, c-format
+msgid "Deleting road selection: %d nodes and %d roads"
+msgstr "Ştergere drumuri selectate: %d noduri şi %d drumuri"
+
+#: FrameMenus.cpp:807
+msgid "Are you sure you want to delete the current layer?"
+msgstr "Sunteţi sigur că doriţi să ştergeţi stratul curent?"
+
+#: FrameMenus.cpp:857
+msgid "Please enter horizontal offset X, Y"
+msgstr "Introduceţi decalajul orizontal X, Y"
+
+#: FrameMenus.cpp:909
+msgid "Native Layer Formats|"
+msgstr "Formate native de straturi"
+
+#: FrameMenus.cpp:943
+msgid "Saving layer to file "
+msgstr "Salvare strat în fişier"
+
+#: FrameMenus.cpp:949
+msgid "Saved layer to file "
+msgstr "Fişier strat salvat"
+
+#: FrameMenus.cpp:951
+msgid "Save failed."
+msgstr "Imposibil de salvat"
+
+#: FrameMenus.cpp:970
+msgid "Saving layer to file as "
+msgstr "Salvează stratul ca"
+
+#: FrameMenus.cpp:980
+msgid "Saved layer to file as "
+msgstr "Stratul a fost salvat în fişierul"
+
+#: FrameMenus.cpp:984
+msgid "Failed to save layer to "
+msgstr "Imposibil de salvat stratul în"
+
+#: FrameMenus.cpp:985
+msgid "Problem"
+msgstr "Problemă."
+
+#: FrameMenus.cpp:1022
+msgid "Import TIGER Data From Directory"
+msgstr "Importă date TIGER din directorul"
+
+#: FrameMenus.cpp:1034
+msgid "Import Layers from NTF File"
+msgstr "Importă straturi din fişierul NTF"
+
+#: FrameMenus.cpp:1035
+msgid "NTF Files (*.ntf)|*.ntf"
+msgstr "Fişierul NTF (*.ntf)|*.ntf"
+
+#: FrameMenus.cpp:1047
+msgid "Import Utility Data from Directory of SHP Files"
+msgstr "Importă reţele utilităţi din director sau fişiere SHP"
+
+#: FrameMenus.cpp:1056
+msgid "Indicate Projection"
+msgstr "Indicaţi proiecţia"
+
+#: FrameMenus.cpp:1083
+msgid "Import MapSource File"
+msgstr "Importă fişiere MapSource"
+
+#: FrameMenus.cpp:1084
+msgid "MapSource Export Files (*.txt)|*.txt"
+msgstr "Fişiere exportate din MapSource (*.txt)|*.txt"
+
+#: FrameMenus.cpp:1095
+msgid "Import Point Data"
+msgstr "Importă date punctuale"
+
+#: FrameMenus.cpp:1096
+msgid "Tabular Data Files (*.dbf)|*.dbf"
+msgstr "Fişiere date tabulare (*.dbf)|*.dbf"
+
+#: FrameMenus.cpp:1107
+msgid "Import XML Data"
+msgstr "Importă date XML"
+
+#: FrameMenus.cpp:1108
+msgid "XML files (*.xml)|*.xml"
+msgstr "Fişiere XML (*.xml)|*.xml"
+
+#: FrameMenus.cpp:1140
+msgid " Layer Properties"
+msgstr "Proprietăţi strat"
+
+#: FrameMenus.cpp:1166
+msgid "Changed extents."
+msgstr "Extinderea a fost schimbată."
+
+#: FrameMenus.cpp:1170
+msgid "Could not change extents."
+msgstr "Extinderea nu a putut fi modificată."
+
+#: FrameMenus.cpp:1207
+msgid "Convert to what projection?"
+msgstr "Selectaţi noua proiecţie."
+
+#: FrameMenus.cpp:1248
+msgid "Set to what projection?"
+msgstr "Selectaţi proiecţia"
+
+#: FrameMenus.cpp:1500
+#: VTBuilder_wdr.cpp:1464
+msgid "Options"
+msgstr "Opţiuni"
+
+#: FrameMenus.cpp:1632
+msgid "Please enter highway number"
+msgstr "Introduceţi numărul autostrăzii"
+
+#: FrameMenus.cpp:1633
+msgid "Select Highway"
+msgstr "Selectare autostradă"
+
+#: FrameMenus.cpp:1655
+msgid "Cleaning RoadMap"
+msgstr "Validare drumuri"
+
+#: FrameMenus.cpp:1657
+msgid "Removing unused nodes"
+msgstr "Ştergere noduri nefolosite"
+
+#: FrameMenus.cpp:1665
+msgid "Merging redundant nodes"
+msgstr "Îmbinare noduri redundante"
+
+#: FrameMenus.cpp:1674
+msgid "Cleaning link points"
+msgstr "Curăţare noduri de legătură"
+
+#: FrameMenus.cpp:1753
+msgid ""
+"Sorry, but precise grid operations require a non-geographic coordinate\n"
+" system (meters as horizontal units, not degrees.)"
+msgstr ""
+"Operaţiile precise asupra unui grid pot fi efectuate doar într-un sistem de coordonate cartezian\n"
+" (metrii ca unităţi de măsură orizontală, nu grade.)"
+
+#: FrameMenus.cpp:1754
+#: FrameMenus.cpp:2793
+msgid "Info"
+msgstr "Informaţii"
+
+#: FrameMenus.cpp:1760
+#: FrameMenus.cpp:1872
+#, c-format
+msgid "%g"
+msgstr "%g"
+
+#: FrameMenus.cpp:1761
+msgid "How many meters for the margin at the edge of each road?"
+msgstr "Câţi metri pentru lăţimea marginilor laterale ale fiecărei şosele?"
+
+#: FrameMenus.cpp:1762
+msgid "Flatten elevation grid under roads"
+msgstr "Tasează celulele din gridul de elevaţie traversate de drumuri"
+
+#: FrameMenus.cpp:1813
+msgid ""
+"Please specify the elevation range\n"
+"(minimum and maximum in the form \"X Y\")\n"
+"All values within this range (and within the area\n"
+"tool, if it is defined) will be set to Unknown."
+msgstr ""
+"Specificaţi ecartul de elevaţie\n"
+"(minimum şi maximum în forma \"X Y\")\n"
+"Toate valorile cuprinse în acest ecart (şi din  interiorul\n"
+"zonei selectate, dacă este definită) vor fi setate ca Necunoscut."
+
+#: FrameMenus.cpp:1819
+msgid "Didn't get two numbers."
+msgstr "Nu au fost introduse două numere."
+
+#: FrameMenus.cpp:1856
+#, c-format
+msgid "Set %d heixels to unknown"
+msgstr "Setează %d heixels ca necunoscut"
+
+#: FrameMenus.cpp:1873
+msgid "Set unknown areas to what value?"
+msgstr "Introduceţi valoarea cu care vor fi setate zonele necunoscute"
+
+#: FrameMenus.cpp:1874
+msgid "Set Unknown Areas"
+msgstr "Setează zonele necunoscute"
+
+#: FrameMenus.cpp:1926
+msgid "Please enter a scale factor"
+msgstr "Introduceţi factorul de scară"
+
+#: FrameMenus.cpp:1927
+msgid "Scale Elevation"
+msgstr "Scară elevaţie"
+
+#: FrameMenus.cpp:1935
+msgid "Couldn't parse the number you typed."
+msgstr "Numărul introdus nu este valid."
+
+#: FrameMenus.cpp:1971
+msgid "Please choose"
+msgstr "Alegeţi formatul"
+
+#: FrameMenus.cpp:1972
+msgid "Export to file format:"
+msgstr "Export în fişier:"
+
+#: FrameMenus.cpp:2026
+#: FrameMenus.cpp:2274
+msgid "Can't register clipboard format"
+msgstr "Imposibil de înregistrat informaţia din clipboard"
+
+#: FrameMenus.cpp:2410
+msgid "Render Elevation to Bitmap"
+msgstr "Salvare elevaţie ca imagine"
+
+#: FrameMenus.cpp:2418
+msgid "Generating Bitmap"
+msgstr "Generare imagine"
+
+#: FrameMenus.cpp:2486
+msgid "Edit Area"
+msgstr "Zonă de editare"
+
+#: FrameMenus.cpp:2571
+msgid "Could not open file"
+msgstr "Imposibil de deschis fişierul"
+
+#: FrameMenus.cpp:2581
+msgid "Requesting data"
+msgstr "Cerere date"
+
+#: FrameMenus.cpp:2646
+msgid "Terraserver"
+msgstr "Terraserver"
+
+#: FrameMenus.cpp:2652
+msgid "Requesting data from Terraserver..."
+msgstr "Cerere date Terraserver..."
+
+#: FrameMenus.cpp:2661
+msgid "Successfully wrote file."
+msgstr "Fişierul a fost scris cu succes."
+
+#: FrameMenus.cpp:2664
+msgid "Unable to download."
+msgstr "Imposibil de descărcat."
+
+#: FrameMenus.cpp:2691
+msgid "Plant Species List Files (*.xml)|*.xml"
+msgstr "Fişiere specii de plante (*.xml)|*.xml"
+
+#: FrameMenus.cpp:2694
+msgid "Load Plant Info"
+msgstr "Încarcă informaţii plante"
+
+#: FrameMenus.cpp:2707
+msgid "Plants List"
+msgstr "Listă plante"
+
+#: FrameMenus.cpp:2721
+msgid "Bioregion Files (*.txt)|*.txt"
+msgstr "Fişiere bio-regiuni (*.txt)|*.txt"
+
+#: FrameMenus.cpp:2724
+msgid "Load BioRegion Info"
+msgstr "Încărcare informaţii bio-regiuni"
+
+#: FrameMenus.cpp:2738
+msgid "BioRegions List"
+msgstr "Listă bio-regiuni"
+
+#: FrameMenus.cpp:2762
+msgid "Remap FROM Species"
+msgstr "Re-mapare DIN specii"
+
+#: FrameMenus.cpp:2768
+msgid "Remap TO Species"
+msgstr "Re-mapare IN specii"
+
+#: FrameMenus.cpp:2792
+#, c-format
+msgid "Remap successful, %d plants remapped.\n"
+msgstr "Re-mapare finalizată, %d plante re-mapate.\n"
+
+#: FrameMenus.cpp:2804
+msgid "Export vegetation to SHP"
+msgstr "Exportare vegetaţie ca SHP"
+
+#: FrameMenus.cpp:2805
+msgid "Vegetation Files (*.shp)|*.shp"
+msgstr "Fişiere vegetaţie (*.shp)|*.shp"
+
+#: FrameMenus.cpp:2822
+msgid "Save Vegetation File"
+msgstr "Salvează fişierul de vegetaţie"
+
+#: FrameMenus.cpp:2823
+msgid "Vegetation Files (*.vf)|*.vf"
+msgstr "Fişiere vegetaţie (*.vf)|*.vf"
+
+#: FrameMenus.cpp:2829
+msgid "Vegetation Distribution Options"
+msgstr "Opţiuni distribuţie vegetaţie"
+
+#: FrameMenus.cpp:3106
+msgid "SHP Files (*.shp)|*.shp"
+msgstr "Fişiere SHP (*.shp)|*.shp"
+
+#: FrameMenus.cpp:3147
+msgid "Raw Layer Type"
+msgstr "Tip strat de date brute"
+
+#: FrameMenus.cpp:3148
+msgid "Please indicate entity type:"
+msgstr "Indicaţi tipul de entitate:"
+
+#: FrameMenus.cpp:3189
+msgid "(X, Y) in current projection"
+msgstr "(X, Y) în proiecţia curentă"
+
+#: FrameMenus.cpp:3190
+msgid "Enter coordinate"
+msgstr "Introduceţi coordonatele"
+
+#: FrameMenus.cpp:3232
+msgid "Select"
+msgstr "Selectare"
+
+#: FrameMenus.cpp:3242
+msgid "Unable to select"
+msgstr "Imposibil de selectat"
+
+#: FrameMenus.cpp:3244
+#, c-format
+msgid "Selected %d entit%hs"
+msgstr ""
+
+#: FrameMenus.cpp:3310
+msgid "Export Image Map"
+msgstr "Exportare hartă imagine"
+
+#: FrameMenus.cpp:3315
+#: FrameMenus.cpp:3325
+msgid "Save to Image File"
+msgstr "Salvează ca fişier imagine"
+
+#: FrameMenus.cpp:3397
+msgid "Scale factor?"
+msgstr "Factorul de scară?"
+
+#: FrameMenus.cpp:3397
+msgid "Scale Raw Layer"
+msgstr "Scalează stratul de date brute"
+
+#: FrameMenus.cpp:3419
+msgid ""
+"Virtual Terrain Builder\n"
+"Powerful, easy to use, free!\n"
+msgstr ""
+"Virtual Terrain Builder\n"
+"Puternic, uşor de folosit, gratuit!\n"
+
+#: FrameMenus.cpp:3421
+msgid "Please read the HTML documentation and license.\n"
+msgstr "Va rugăm să citiţi documentaţia HTML şi licenţa.\n"
+
+#: FrameMenus.cpp:3423
+msgid "Send feedback to: ben@vterrain.org\n"
+msgstr "Trimiteţi impresiile dumneavoastră la: ben@vterrain.org\n"
+
+#: FrameMenus.cpp:3424
+msgid "Build date: "
+msgstr "Data compilării:"
+
+#: FrameMenus.cpp:3446
+msgid "Couldn't find local documentation files"
+msgstr "Documentaţia locală nu a fost găsită"
+
+#: ImageLayer.cpp:277
+#, c-format
+msgid "Dimensions %d by %d pixels"
+msgstr "Dimensiunea %d în %d pixeli"
+
+#: ImageLayer.cpp:280
+msgid "Spacing: "
+msgstr "Rezoluţie spaţială:"
+
+#: ImageLayer.cpp:702
+msgid "Reading file"
+msgstr "Citire fişier"
+
+#: ImageLayer.cpp:733
+msgid "File lacks geographic location (extents).  "
+msgstr "Fişierul nu are definită poziţia geografică (extinderea).  "
+
+#: ImageLayer.cpp:734
+msgid "Would you like to specify extents?\n"
+msgstr "Doriţi să specificaţi extinderea?\n"
+
+#: ImageLayer.cpp:736
+msgid "Image Import"
+msgstr "Import imagine"
+
+#: ImageLayer.cpp:746
+#: VTBuilder_wdr.cpp:46
+#: VTBuilder_wdr.cpp:191
+#: VTBuilder_wdr.cpp:209
+#: VTBuilder_wdr.cpp:243
+msgid "Extents"
+msgstr "Extindere"
+
+#: ImageLayer.cpp:948
+#, c-format
+msgid "Image is very large (%d x %d).\n"
+msgstr "Imagine foarte mare (%d x %d).\n"
+
+#: ImageLayer.cpp:949
+#: ImageLayer.cpp:965
+msgid "Would you like to create the layer using out-of-memory access to the image?"
+msgstr "Doriţi să creaţi stratul folosind acces out-of-memory la imagine?"
+
+#: ImageLayer.cpp:963
+#, c-format
+msgid "Couldn't allocate bitmap of size %d x %d.\n"
+msgstr "Imposibil de alocat imaginea cu dimensiunea %d x %d.\n"
+
+#: ImageLayer.cpp:1310
+msgid "Couldn't create cache directory."
+msgstr "Imposibil de creat directorul pentru cache."
+
+#: ImageLayer.cpp:1474
+msgid "Cancelled."
+msgstr "Revocat."
+
+#: ImageLayer.cpp:1480
+#, c-format
+msgid "Wrote %d tiles (%d cells) in %.1f seconds (%.2f seconds per cell)"
+msgstr "Scriere %d subseturi (%d celule) în %.1f secunde (%.2f secunde pe celulă)"
+
+#: Import.cpp:161
+msgid "Expanding archive"
+msgstr "Dezarhivare"
+
+#: Import.cpp:324
+msgid "Importing Data from "
+msgstr "Importă date din"
+
+#: Import.cpp:491
+msgid "Did not import any data from that file."
+msgstr "Imposibil de importat din fişier."
+
+#: Import.cpp:693
+msgid ""
+"Couldn't read that Shape file.  Perhaps it is\n"
+"missing its corresponding .dbf and .shx files."
+msgstr ""
+"Imposibil de citit fişierul SHP.  Probabil lipsesc\n"
+"fişierele corespunzătoare .dbf şi .shx."
+
+#: Import.cpp:746
+msgid ""
+"The Shapefile must have either point features\n"
+"(for individual plants) or polygon features\n"
+" (for plant distribution areas)."
+msgstr ""
+"Fişierele shapefile trebuie să conţină fie entităţi punctuale\n"
+"(pentru plante individuale) fie entităţi poligonale\n"
+" (pentru zone de distribuţie a plantelor)."
+
+#: Import.cpp:753
+msgid "Import Vegetation Information"
+msgstr "Import informaţii vegetaţie"
+
+#: Import.cpp:764
+msgid "Map fields to attributes"
+msgstr ""
+
+#: Import.cpp:1008
+msgid "Which layers to import?"
+msgstr "Indicaţi straturile de importat?"
+
+#: Import.cpp:1009
+msgid "Import Tracks"
+msgstr "Importă rute"
+
+#: Import.cpp:1095
+msgid "Point Data Import"
+msgstr "Importă date punctuale"
+
+#: Import.cpp:1205
+#: StructLayer.cpp:1116
+msgid "Import Structures"
+msgstr "Importă structuri"
+
+#: Import.cpp:1338
+msgid "Importing from TIGER..."
+msgstr "Importă date TIGER"
+
+#: Import.cpp:1765
+msgid "Importing from SCC..."
+msgstr "Importă date SCC"
+
+#: ImportPointDlg.cpp:74
+#: RawDlg.cpp:78
+msgid "Please indicate CRS"
+msgstr "Indicaţi SCR-ul"
+
+#: ImportStructDlg.cpp:175
+#: ImportStructDlg.cpp:176
+#: ImportStructDlg.cpp:177
+#: ImportStructDlgOGR.cpp:168
+#: ImportStructDlgOGR.cpp:169
+#: ImportStructDlgOGR.cpp:170
+msgid "(none)"
+msgstr "(nici unul)"
+
+#: ImportVegDlg.cpp:58
+#: VegFieldsDlg.cpp:97
+msgid "Couldn't open shapefile."
+msgstr "Imposibil de deschis fişierul shapefile."
+
+#: ImportVegDlg.cpp:69
+msgid ""
+"Shapefile must have either point features (for individual\n"
+" plants) or polygon features (for plant distribution areas)."
+msgstr ""
+"Fişierele shapefile trebuie să conţină fie entităţi punctuale (pentru plante individuale) \n"
+" fie entităţi poligonale (pentru zone de distribuţie a plantelor)."
+
+#: ImportVegDlg.cpp:77
+#: VegFieldsDlg.cpp:108
+msgid "Couldn't open DBF file."
+msgstr "Imposibil de deschis fişierul DBF."
+
+#: ImportVegDlg.cpp:95
+msgid " (String)"
+msgstr " (Şir alfanumeric)"
+
+#: ImportVegDlg.cpp:97
+msgid " (Integer)"
+msgstr " (Întreg)"
+
+#: ImportVegDlg.cpp:99
+msgid " (Double)"
+msgstr " (Zecimal)"
+
+#: Layer.cpp:48
+#: NodeDlg.cpp:154
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:470
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:111
+msgid "Unknown"
+msgstr "Necunoscut"
+
+#: Layer.cpp:127
+msgid " Files"
+msgstr " Fişiere"
+
+#: Layer.cpp:134
+msgid "|All Files|*.*"
+msgstr "|Toate fişierele|*.*"
+
+#: Layer.cpp:171
+#: MapServerDlg.cpp:108
+#: SampleImageDlg.cpp:267
+msgid "All Files|*.*"
+msgstr "Toate fişierele|*.*"
+
+#: Layer.cpp:178
+msgid "Export Elevation"
+msgstr "Export elevaţie"
+
+#: MapServerDlg.cpp:117
+#: SampleImageDlg.cpp:272
+msgid "Save Imagery"
+msgstr "Salvare imagini"
+
+#: MapServerDlg.cpp:140
+msgid "Querying server..."
+msgstr "Interogare server..."
+
+#: MapServerDlg.cpp:252
+msgid "<none>"
+msgstr "<nici unul>"
+
+#: MapServerDlg.cpp:289
+msgid "Title: "
+msgstr "Titlu:"
+
+#: MapServerDlg.cpp:296
+msgid "Abstract: "
+msgstr "Abstract: "
+
+#: NodeDlg.cpp:155
+#: NodeDlg.cpp:162
+msgid "Uncontrolled"
+msgstr "Necontrolat"
+
+#: NodeDlg.cpp:156
+msgid "All Traffic Light(s)"
+msgstr "Toate semafoarele"
+
+#: NodeDlg.cpp:157
+msgid "All Stop Sign(s)"
+msgstr "Toate semnele de oprire"
+
+#: NodeDlg.cpp:158
+msgid "Traffic Light(s)"
+msgstr "Semafoare"
+
+#: NodeDlg.cpp:159
+msgid "Stop Sign(s)"
+msgstr "Semn(e) de oprire"
+
+#: NodeDlg.cpp:160
+#: RoadDlg.cpp:52
+#: RoadDlg.cpp:57
+#: RoadDlg.cpp:62
+#: RoadDlg.cpp:150
+#: RoadDlg.cpp:156
+#: RoadDlg.cpp:182
+#: RoadDlg.cpp:188
+#: RoadDlg.cpp:194
+#: RoadDlg.cpp:200
+#: RoadDlg.cpp:206
+msgid "(multiple)"
+msgstr "(multiple)"
+
+#: NodeDlg.cpp:163
+msgid "Traffic Light"
+msgstr "Semafor"
+
+#: NodeDlg.cpp:164
+msgid "Stop Sign"
+msgstr "Semn oprire"
+
+#: OptionsDlg.cpp:37
+#: VTBuilder_wdr.cpp:1225
+#: VTBuilder_wdr.cpp:1399
+#: VTBuilder_wdr.cpp:1418
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1037
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:45
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:51
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:57
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:63
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:322
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:199
+msgid "Meters"
+msgstr "Metri"
+
+#: OptionsDlg.cpp:38
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:202
+msgid "Feet (International)"
+msgstr "Picioare (Internaţional)"
+
+#: OptionsDlg.cpp:39
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:203
+msgid "Feet (U.S. Survey)"
+msgstr "Picioare (U.S. Survey)"
+
+#: RawLayer.cpp:369
+msgid "No Features\n"
+msgstr "Nici un element\n"
+
+#: RawLayer.cpp:375
+#, c-format
+msgid "Entity type: %hs\n"
+msgstr "Tip entitate: %hs\n"
+
+#: RawLayer.cpp:378
+#, c-format
+msgid "Entities: %d\n"
+msgstr "Entităţi: %d\n"
+
+#: RawLayer.cpp:387
+#: RawLayer.cpp:401
+#, c-format
+msgid "Minimum Height: %.2f\n"
+msgstr "Înălţime minimă: %.2f\n"
+
+#: RawLayer.cpp:390
+#: RawLayer.cpp:404
+#, c-format
+msgid "Maximum Height: %.2f\n"
+msgstr "Înălţime maximă: %.2f\n"
+
+#: RawLayer.cpp:412
+msgid "Fields:\n"
+msgstr "Câmpuri:\n"
+
+#: RawLayer.cpp:422
+msgid "Fields: None.\n"
+msgstr "Câmpuri: Nici unul.\n"
+
+#: RenderDlg.cpp:132
+#: RenderOptionsDlg.cpp:121
+msgid "ColorMap"
+msgstr "Rampă de culori"
+
+#: RenderDlg.cpp:142
+#: RenderOptionsDlg.cpp:131
+msgid "Couldn't locate file."
+msgstr "Fişierul nu a putut fi localizat."
+
+#: RenderDlg.cpp:162
+msgid "Specify image file"
+msgstr "Specificaţi fişierul imagine"
+
+#: ResampleDlg.cpp:213
+msgid "Save Elevation"
+msgstr "Scalare elevaţie"
+
+#: RoadDlg.cpp:39
+#: VTBuilder_wdr.cpp:2474
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:447
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:895
+msgid "None"
+msgstr "Nici unul"
+
+#: RoadDlg.cpp:40
+msgid "Gravel"
+msgstr "Pietriş"
+
+#: RoadDlg.cpp:41
+msgid "Trail"
+msgstr "Cărare"
+
+#: RoadDlg.cpp:42
+msgid "2 Track"
+msgstr ""
+
+#: RoadDlg.cpp:43
+msgid "Dirt"
+msgstr "Pământ"
+
+#: RoadDlg.cpp:44
+msgid "Paved"
+msgstr "Pavaj"
+
+#: RoadDlg.cpp:45
+msgid "Railroad"
+msgstr "Cale ferată"
+
+#: RoadDlg.cpp:46
+msgid "Stone"
+msgstr "Piatră"
+
+#: RoadDlg.cpp:47
+msgid "(multiple types)"
+msgstr "(tipuri multiple)"
+
+#: RoadDlg.cpp:50
+#: RoadDlg.cpp:55
+#: RoadDlg.cpp:60
+msgid "No"
+msgstr "Nu"
+
+#: RoadDlg.cpp:51
+#: RoadDlg.cpp:56
+#: RoadDlg.cpp:61
+msgid "Yes"
+msgstr "Da"
+
+#: RoadLayer.cpp:271
+msgid "Network of links.\n"
+msgstr "Reţea de legături.\n"
+
+#: RoadLayer.cpp:274
+#, c-format
+msgid "Nodes: %d, selected: %d\n"
+msgstr "Noduri: %d, selectate: %d\n"
+
+#: RoadLayer.cpp:276
+#, c-format
+msgid "Links: %d, selected: %d\n"
+msgstr "Legături: %d, selectate: %d\n"
+
+#: RoadLayer.cpp:489
+#: RoadMapEdit.cpp:93
+msgid "Node Properties"
+msgstr "Proprietăţi nod"
+
+#: RoadLayer.cpp:513
+msgid "Link Properties"
+msgstr "Proprietăţi legătură"
+
+#: RoadLayer.cpp:528
+#, c-format
+msgid "Selected %d nodes"
+msgstr "Noduri %d selectate"
+
+#: RoadLayer.cpp:539
+#, c-format
+msgid "Selected %d links"
+msgstr "Legături %d selectate"
+
+#: RoadLayer.cpp:561
+msgid "Scanning Grid against Roads"
+msgstr "Scanare grid versus drumuri"
+
+#: RoadMapEdit.cpp:374
+msgid "Road Properties"
+msgstr "Proprietăţi drum"
+
+#: SelectDlg.cpp:73
+msgid "X (longitude)"
+msgstr "X (longitudine)"
+
+#: SelectDlg.cpp:74
+msgid "Y (latitude)"
+msgstr "Y (latitudine)"
+
+#: SelectDlg.cpp:78
+msgid "X (easting)"
+msgstr "X (est)"
+
+#: SelectDlg.cpp:79
+msgid "Y (northing)"
+msgstr "Y (nord)"
+
+#: SelectDlg.cpp:85
+msgid "Z (meters)"
+msgstr "Z (meteri)"
+
+#: StatusBar.cpp:106
+#: StatusBar.cpp:129
+msgid "Mouse"
+msgstr "Mouse"
+
+#: StructLayer.cpp:361
+msgid "Filename: "
+msgstr "Nume fişier:"
+
+#: StructLayer.cpp:366
+#, c-format
+msgid "Number of structures: %d\n"
+msgstr "Număr de structuri: %d\n"
+
+#: StructLayer.cpp:377
+#, c-format
+msgid "\t %d Buildings (procedural)\n"
+msgstr "\t %d Clădiri (procedural)\n"
+
+#: StructLayer.cpp:379
+#, c-format
+msgid "\t %d Linear (fences/walls)\n"
+msgstr "\t %d Liniar (fences/walls)\n"
+
+#: StructLayer.cpp:381
+#, c-format
+msgid "\t %d Instances (imported models)\n"
+msgstr "\t %d Instanţe (modele importate)\n"
+
+#: StructLayer.cpp:384
+#, c-format
+msgid "Number of selected structures: %d\n"
+msgstr "Numărul de structuri selectate: %d\n"
+
+#: StructLayer.cpp:580
+#, c-format
+msgid "Select level to edit (0 .. %d)"
+msgstr "Selectaţi etajul pentru editare (0 .. %d)"
+
+#: StructLayer.cpp:581
+#: StructLayer.cpp:673
+msgid "Level"
+msgstr "Nivel"
+
+#: StructLayer.cpp:581
+#: StructLayer.cpp:673
+msgid "Enter Value"
+msgstr "Introduceţi valoare"
+
+#: StructLayer.cpp:962
+msgid "Building Properties"
+msgstr "Proprietăţi clădire"
+
+#: TSDlg.cpp:49
+msgid "Relief"
+msgstr "Relief"
+
+#: TSDlg.cpp:51
+msgid "Topo"
+msgstr "Topografie"
+
+#: TSDlg.cpp:134
+msgid "Image Filename"
+msgstr "Nume fişier imagine"
+
+#: TreeView.cpp:158
+#: VTBuilder_wdr.cpp:1372
+msgid "Layers"
+msgstr "Straturi"
+
+#: TreeView.cpp:165
+msgid "Images"
+msgstr "Imagini"
+
+#: TreeView.cpp:166
+msgid "Structures"
+msgstr "Structuri"
+
+#: TreeView.cpp:167
+msgid "Roads"
+msgstr "Drumuri"
+
+#: TreeView.cpp:173
+msgid "Utilities"
+msgstr "Utilităţi"
+
+#: VTBuilder_wdr.cpp:51
+msgid "North"
+msgstr "Nord"
+
+#: VTBuilder_wdr.cpp:65
+msgid "West"
+msgstr "Vest"
+
+#: VTBuilder_wdr.cpp:76
+msgid "East"
+msgstr "Est"
+
+#: VTBuilder_wdr.cpp:90
+msgid "South"
+msgstr "Sud"
+
+#: VTBuilder_wdr.cpp:95
+msgid "Display coordinates as Degrees-Minutes-Seconds"
+msgstr "Afişează coordonatele în format Grade-Minute-Secunde"
+
+#: VTBuilder_wdr.cpp:102
+#: VTBuilder_wdr.cpp:218
+#: VTBuilder_wdr.cpp:290
+#: VTBuilder_wdr.cpp:341
+#: VTBuilder_wdr.cpp:488
+#: VTBuilder_wdr.cpp:539
+#: VTBuilder_wdr.cpp:645
+#: VTBuilder_wdr.cpp:696
+#: VTBuilder_wdr.cpp:900
+#: VTBuilder_wdr.cpp:943
+#: VTBuilder_wdr.cpp:1066
+#: VTBuilder_wdr.cpp:1159
+#: VTBuilder_wdr.cpp:1350
+#: VTBuilder_wdr.cpp:1477
+#: VTBuilder_wdr.cpp:1512
+#: VTBuilder_wdr.cpp:1653
+#: VTBuilder_wdr.cpp:1776
+#: VTBuilder_wdr.cpp:1808
+#: VTBuilder_wdr.cpp:1914
+#: VTBuilder_wdr.cpp:2044
+#: VTBuilder_wdr.cpp:2092
+#: VTBuilder_wdr.cpp:2169
+#: VTBuilder_wdr.cpp:2260
+#: VTBuilder_wdr.cpp:2300
+#: VTBuilder_wdr.cpp:2428
+#: VTBuilder_wdr.cpp:2512
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:163
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:346
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:995
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1050
+msgid "OK"
+msgstr "OK"
+
+#: VTBuilder_wdr.cpp:105
+#: VTBuilder_wdr.cpp:221
+#: VTBuilder_wdr.cpp:293
+#: VTBuilder_wdr.cpp:344
+#: VTBuilder_wdr.cpp:491
+#: VTBuilder_wdr.cpp:542
+#: VTBuilder_wdr.cpp:648
+#: VTBuilder_wdr.cpp:699
+#: VTBuilder_wdr.cpp:903
+#: VTBuilder_wdr.cpp:946
+#: VTBuilder_wdr.cpp:1069
+#: VTBuilder_wdr.cpp:1162
+#: VTBuilder_wdr.cpp:1353
+#: VTBuilder_wdr.cpp:1480
+#: VTBuilder_wdr.cpp:1515
+#: VTBuilder_wdr.cpp:1656
+#: VTBuilder_wdr.cpp:1779
+#: VTBuilder_wdr.cpp:1917
+#: VTBuilder_wdr.cpp:2047
+#: VTBuilder_wdr.cpp:2095
+#: VTBuilder_wdr.cpp:2172
+#: VTBuilder_wdr.cpp:2263
+#: VTBuilder_wdr.cpp:2303
+#: VTBuilder_wdr.cpp:2431
+#: VTBuilder_wdr.cpp:2515
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:998
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1053
+msgid "Cancel"
+msgstr "Revocare"
+
+#: VTBuilder_wdr.cpp:114
+msgid "Origin and Size:"
+msgstr "Origine şi dimensiuni:"
+
+#: VTBuilder_wdr.cpp:138
+msgid "Bytes per sample"
+msgstr "Bytes pe eşantion"
+
+#: VTBuilder_wdr.cpp:144
+#: VegDlg.cpp:82
+msgid "Width"
+msgstr "Lăţime"
+
+#: VTBuilder_wdr.cpp:150
+#: VTBuilder_wdr.cpp:1134
+#: VegDlg.cpp:84
+msgid "Height"
+msgstr "Înălţime"
+
+#: VTBuilder_wdr.cpp:156
+msgid "Little Endian"
+msgstr ""
+
+#: VTBuilder_wdr.cpp:159
+msgid "Big Endian  "
+msgstr ""
+
+#: VTBuilder_wdr.cpp:162
+msgid "Vertical units in meters"
+msgstr "Unităţile de măsură verticală în metri"
+
+#: VTBuilder_wdr.cpp:170
+msgid "Coordinate Reference System (CRS)"
+msgstr "Sistem de coordonate de referinţă (SCR)"
+
+#: VTBuilder_wdr.cpp:173
+msgid "Simple meters (UTM zone 1)"
+msgstr "Metri (UTM zona 1)"
+
+#: VTBuilder_wdr.cpp:176
+msgid "Use current"
+msgstr "Utilizează sistem curent"
+
+#: VTBuilder_wdr.cpp:181
+msgid "Enter exact CRS:"
+msgstr "Introduceţi SCR:"
+
+#: VTBuilder_wdr.cpp:184
+msgid "CRS"
+msgstr "SCR"
+
+#: VTBuilder_wdr.cpp:196
+msgid "Based on grid spacing:"
+msgstr "Bazat pe spaţierea gridului:"
+
+#: VTBuilder_wdr.cpp:206
+msgid "Enter exact extents: "
+msgstr "Introduceţi extinderea exactă:"
+
+#: VTBuilder_wdr.cpp:248
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:448
+msgid "Left"
+msgstr "Stânga"
+
+#: VTBuilder_wdr.cpp:258
+msgid "Top"
+msgstr "Sus"
+
+#: VTBuilder_wdr.cpp:268
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:449
+msgid "Right"
+msgstr "Dreapta"
+
+#: VTBuilder_wdr.cpp:278
+msgid "Bottom"
+msgstr "Jos"
+
+#: VTBuilder_wdr.cpp:314
+msgid "Field to use:"
+msgstr "Câmpul utilizat:"
+
+#: VTBuilder_wdr.cpp:325
+msgid "Interpretation of the field:"
+msgstr "Interpretarea câmpurilor:"
+
+#: VTBuilder_wdr.cpp:328
+msgid "Density (0 to 1) (double)"
+msgstr "Densitatea (0 şi 1) (dublu)"
+
+#: VTBuilder_wdr.cpp:331
+msgid "Biotype by name (string)"
+msgstr "Bio-tip după nume (şir alfanumeric)"
+
+#: VTBuilder_wdr.cpp:334
+msgid "Biotype by ID (integer)"
+msgstr "Bio-tip după ID (întreg)"
+
+#: VTBuilder_wdr.cpp:365
+msgid "Grid spacing of sampling, in meters:"
+msgstr "Spaţiere grid pentru eşantionare, în metri"
+
+#: VTBuilder_wdr.cpp:371
+msgid "Artificial scarcity, set to 1.0 for full density:"
+msgstr "Densitate artificială, seteţi 1.0 pentru densitate maximă:"
+
+#: VTBuilder_wdr.cpp:379
+#: VTBuilder_wdr.cpp:1088
+#: VTBuilder_wdr.cpp:1827
+msgid "Species"
+msgstr "Specii"
+
+#: VTBuilder_wdr.cpp:384
+msgid "Single species:"
+msgstr "O singură specie:"
+
+#: VTBuilder_wdr.cpp:395
+msgid "Single biotype:"
+msgstr "Un singur bio-tip"
+
+#: VTBuilder_wdr.cpp:406
+msgid "Biotype from layer:"
+msgstr "Bio-tip din strat:"
+
+#: VTBuilder_wdr.cpp:417
+msgid "Density"
+msgstr "Densitate"
+
+#: VTBuilder_wdr.cpp:422
+msgid "Fixed density:"
+msgstr "Densitate fixă:"
+
+#: VTBuilder_wdr.cpp:428
+msgid "plants per m2"
+msgstr "plante pe m2"
+
+#: VTBuilder_wdr.cpp:433
+msgid "Inherit from biotype"
+msgstr "Moştenit din bio-tip"
+
+#: VTBuilder_wdr.cpp:438
+msgid "Combine density from layer:"
+msgstr "Combină densitate din strat:"
+
+#: VTBuilder_wdr.cpp:449
+msgid "Size"
+msgstr "Dimensiune"
+
+#: VTBuilder_wdr.cpp:454
+msgid "Fixed size:"
+msgstr "Dimensiune fixă:"
+
+#: VTBuilder_wdr.cpp:460
+#: VTBuilder_wdr.cpp:857
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:111
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:255
+msgid "meters"
+msgstr "metri"
+
+#: VTBuilder_wdr.cpp:467
+msgid "Randomize from:"
+msgstr "Aleator din:"
+
+#: VTBuilder_wdr.cpp:473
+msgid "to"
+msgstr "în"
+
+#: VTBuilder_wdr.cpp:479
+msgid "percent of maximum"
+msgstr "procent din maximum"
+
+#: VTBuilder_wdr.cpp:512
+msgid "Tower Position"
+msgstr "Poziţia turnului"
+
+#: VTBuilder_wdr.cpp:518
+msgid "Tower Type"
+msgstr "Tipul turnului"
+
+#: VTBuilder_wdr.cpp:525
+msgid "Tower Material"
+msgstr "Material construcţie turn"
+
+#: VTBuilder_wdr.cpp:534
+msgid "Tower Elevated"
+msgstr ""
+
+#: VTBuilder_wdr.cpp:565
+msgid "Number of Lanes"
+msgstr "Număr de benzi"
+
+#: VTBuilder_wdr.cpp:571
+msgid "Highway Name"
+msgstr "Nume autostradă"
+
+#: VTBuilder_wdr.cpp:577
+msgid "Sidewalk"
+msgstr "Trotuar"
+
+#: VTBuilder_wdr.cpp:584
+msgid "Parking"
+msgstr "Parcare"
+
+#: VTBuilder_wdr.cpp:591
+msgid "Margin"
+msgstr "Margine"
+
+#: VTBuilder_wdr.cpp:598
+msgid "Lane Width"
+msgstr "Lăţime badă"
+
+#: VTBuilder_wdr.cpp:604
+msgid "Pavement Width"
+msgstr "Lăţime pavaj"
+
+#: VTBuilder_wdr.cpp:610
+msgid "Curb Height"
+msgstr "Înălţime bordură"
+
+#: VTBuilder_wdr.cpp:616
+msgid "Parking Width"
+msgstr "Lăţime parcare"
+
+#: VTBuilder_wdr.cpp:622
+msgid "Hard Shoulder Width"
+msgstr ""
+
+#: VTBuilder_wdr.cpp:632
+msgid "Surface Type:"
+msgstr "Tip suprafaţă:"
+
+#: VTBuilder_wdr.cpp:671
+msgid "Intersection Type"
+msgstr "Tip intersecţie"
+
+#: VTBuilder_wdr.cpp:678
+msgid "Road Number"
+msgstr "Număr şosea"
+
+#: VTBuilder_wdr.cpp:685
+msgid "Behavior"
+msgstr "Comportament"
+
+#: VTBuilder_wdr.cpp:706
+msgid "View"
+msgstr "Vizualizare"
+
+#: VTBuilder_wdr.cpp:729
+#: VTBuilder_wdr.cpp:1534
+#: VTBuilder_wdr.cpp:1752
+#: VTBuilder_wdr.cpp:1889
+#: VTBuilder_wdr.cpp:1936
+msgid "Output"
+msgstr "Ieşiere"
+
+#: VTBuilder_wdr.cpp:732
+#: VTBuilder_wdr.cpp:1537
+#: VTBuilder_wdr.cpp:1755
+#: VTBuilder_wdr.cpp:1892
+msgid "Create new layer"
+msgstr "Creează strat nou"
+
+#: VTBuilder_wdr.cpp:737
+#: VTBuilder_wdr.cpp:1542
+#: VTBuilder_wdr.cpp:1760
+#: VTBuilder_wdr.cpp:1898
+msgid "To file"
+msgstr "În fişier"
+
+#: VTBuilder_wdr.cpp:743
+#: VTBuilder_wdr.cpp:781
+#: VTBuilder_wdr.cpp:1548
+#: VTBuilder_wdr.cpp:1766
+#: VTBuilder_wdr.cpp:1904
+#: VTBuilder_wdr.cpp:1956
+#: VTBuilder_wdr.cpp:2197
+#: VTBuilder_wdr.cpp:2221
+#: VTBuilder_wdr.cpp:2236
+#: VTBuilder_wdr.cpp:2251
+#: VTBuilder_wdr.cpp:2330
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:639
+msgid "..."
+msgstr "..."
+
+#: VTBuilder_wdr.cpp:751
+#: VTBuilder_wdr.cpp:1556
+msgid "To folder of Tiles"
+msgstr "În folder de subseturi"
+
+#: VTBuilder_wdr.cpp:757
+#: VTBuilder_wdr.cpp:1562
+msgid "Tile Options"
+msgstr "Opţiuni subset:"
+
+#: VTBuilder_wdr.cpp:766
+msgid "Also create derived image tiles"
+msgstr "Creează imagini ale subseturilor"
+
+#: VTBuilder_wdr.cpp:769
+#: VTBuilder_wdr.cpp:1042
+msgid "Rendering options..."
+msgstr "Opţiuni afişare..."
+
+#: VTBuilder_wdr.cpp:789
+#: VTBuilder_wdr.cpp:1569
+msgid "Sampling"
+msgstr "Eşantionare"
+
+#: VTBuilder_wdr.cpp:794
+msgid "Grid spacing:"
+msgstr "Rezoluţia spaţială a gridului:"
+
+#: VTBuilder_wdr.cpp:807
+msgid "Grid size:"
+msgstr "Dimensiunea gridului:"
+
+#: VTBuilder_wdr.cpp:820
+msgid "Size constraint: power of 2 plus 1 for terrain LOD"
+msgstr "Constrângere dimesiune: putere a lui 2 + 1 pentru algoritmul de LOD"
+
+#: VTBuilder_wdr.cpp:827
+#: VTBuilder_wdr.cpp:1610
+#: VTBuilder_wdr.cpp:2032
+msgid "<< Smaller"
+msgstr "<< Mai mic"
+
+#: VTBuilder_wdr.cpp:830
+#: VTBuilder_wdr.cpp:1613
+#: VTBuilder_wdr.cpp:2035
+msgid ">> Bigger"
+msgstr ">> Mai mare"
+
+#: VTBuilder_wdr.cpp:843
+msgid "Floating point"
+msgstr "Număr zecimal"
+
+#: VTBuilder_wdr.cpp:846
+msgid "Short integer"
+msgstr "Număr întreg (scurt)"
+
+#: VTBuilder_wdr.cpp:851
+#: VTBuilder_wdr.cpp:974
+msgid "Vertical units:"
+msgstr "Unităţi verticale:"
+
+#: VTBuilder_wdr.cpp:862
+msgid "Fill gaps (NODATA) in the resampled grid with interpolated values"
+msgstr "Umple golurile (NODATA) din gridul re-eşantionat cu valori interpolate "
+
+#: VTBuilder_wdr.cpp:867
+#: VTBuilder_wdr.cpp:1620
+#: VTBuilder_wdr.cpp:2373
+msgid "Information"
+msgstr "Informaţii"
+
+#: VTBuilder_wdr.cpp:872
+#: VTBuilder_wdr.cpp:1625
+#: VTBuilder_wdr.cpp:2391
+msgid "Size of sample area:"
+msgstr "Dimensiunea zonei test:"
+
+#: VTBuilder_wdr.cpp:885
+#: VTBuilder_wdr.cpp:1638
+msgid "Estimated spacing of existing data:"
+msgstr "Estimează rezoluţia spaţială pentru datele existente:"
+
+#: VTBuilder_wdr.cpp:922
+msgid "Select all features which satisfy the condition:"
+msgstr "Afişează toate elementele ce satisfac condiţia:"
+
+#: VTBuilder_wdr.cpp:967
+msgid "Show features:"
+msgstr "Afişează elementele:"
+
+#: VTBuilder_wdr.cpp:981
+msgid "Delete Highlighted"
+msgstr "Şterge elementele evidenţiate"
+
+#: VTBuilder_wdr.cpp:1005
+msgid "Show toolbar"
+msgstr "Afişează bara de instrumente"
+
+#: VTBuilder_wdr.cpp:1010
+msgid "Status Bar"
+msgstr "Bara de stare"
+
+#: VTBuilder_wdr.cpp:1013
+msgid "Show minutes and seconds for degree values"
+msgstr "Afişează minutele şi secundele pentru valorile în grade"
+
+#: VTBuilder_wdr.cpp:1018
+msgid "Show elevation values as:"
+msgstr "Afişează valorile de elevaţie ca:"
+
+#: VTBuilder_wdr.cpp:1032
+msgid "Show outline only (faster, saves memory)"
+msgstr "Afişează doar amprenta (rapid, economiseşte memorie)"
+
+#: VTBuilder_wdr.cpp:1035
+msgid "Artificial color by elevation value"
+msgstr "Rampă de culori artificială pe baza valorilor de elevaţie"
+
+#: VTBuilder_wdr.cpp:1047
+msgid "Hide areas of unknown elevation"
+msgstr "Ascunde zonele fără valori de elevaţie"
+
+#: VTBuilder_wdr.cpp:1056
+msgid "Show roads with width"
+msgstr "Afişează drumurile si lăţimea acestora"
+
+#: VTBuilder_wdr.cpp:1059
+msgid "Show full pathnames in Layer View"
+msgstr "Afişează calea completă în lista cu straturi"
+
+#: VTBuilder_wdr.cpp:1093
+msgid "Use species:"
+msgstr "Foloseşte speciile:"
+
+#: VTBuilder_wdr.cpp:1104
+#: VTBuilder_wdr.cpp:1146
+msgid "Use field:"
+msgstr "Foloseşte câmpul:"
+
+#: VTBuilder_wdr.cpp:1115
+msgid "Species ID (integer)"
+msgstr "ID specii (întreg)"
+
+#: VTBuilder_wdr.cpp:1118
+msgid "Species Name (string)"
+msgstr "Nume specii (şir alfanumeric)"
+
+#: VTBuilder_wdr.cpp:1121
+msgid "Common Name (string)"
+msgstr "Nume comun (şir alfanumeric)"
+
+#: VTBuilder_wdr.cpp:1124
+msgid "BioType ID (integer)"
+msgstr "ID TipBio (întreg)"
+
+#: VTBuilder_wdr.cpp:1127
+msgid "BioType Name (string)"
+msgstr "Nume TipBio (şir alfanumeric)"
+
+#: VTBuilder_wdr.cpp:1139
+msgid "Randomize"
+msgstr "Aleator"
+
+#: VTBuilder_wdr.cpp:1181
+msgid "Structure Type:"
+msgstr "Tip structură:"
+
+#: VTBuilder_wdr.cpp:1186
+#: VTBuilder_wdr.cpp:1443
+msgid "Linear (fences or walls)"
+msgstr "Liniar (garduri sau ziduri)"
+
+#: VTBuilder_wdr.cpp:1189
+#: VTBuilder_wdr.cpp:1446
+msgid "Instances (external model references)"
+msgstr "Instanţe (referinţe model extern)"
+
+#: VTBuilder_wdr.cpp:1196
+#: VTBuilder_wdr.cpp:1453
+msgid "Filename field:"
+msgstr "Câmpul pentru numele de fişier:"
+
+#: VTBuilder_wdr.cpp:1205
+msgid "Buildings (parametric by center)"
+msgstr "Clădiri (pe baza punctului central)"
+
+#: VTBuilder_wdr.cpp:1208
+msgid "Buildings (parametric by footprint, polygon or closed polyline)"
+msgstr "Clădiri (pe baza amprentei, poligon sau polilinie închisă)"
+
+#: VTBuilder_wdr.cpp:1215
+msgid "Height field:"
+msgstr "Câmpul pentru înălţime:"
+
+#: VTBuilder_wdr.cpp:1224
+#: VTBuilder_wdr.cpp:1398
+msgid "Stories"
+msgstr "Etaje"
+
+#: VTBuilder_wdr.cpp:1226
+#: VTBuilder_wdr.cpp:1400
+#: VTBuilder_wdr.cpp:1419
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1040
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:46
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:52
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:58
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:64
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:323
+msgid "Feet"
+msgstr "Picioare"
+
+#: VTBuilder_wdr.cpp:1227
+msgid "Meters (single story)"
+msgstr "Metri (un singur etaj)"
+
+#: VTBuilder_wdr.cpp:1228
+msgid "Feet (single story)"
+msgstr "Picioare (un singur etaj)"
+
+#: VTBuilder_wdr.cpp:1239
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:131
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:298
+msgid "Color:"
+msgstr "Culoare:"
+
+#: VTBuilder_wdr.cpp:1248
+#: VTBuilder_wdr.cpp:1290
+msgid "Default"
+msgstr "Implicit"
+
+#: VTBuilder_wdr.cpp:1257
+msgid "Building:"
+msgstr "Clădire:"
+
+#: VTBuilder_wdr.cpp:1263
+#: VTBuilder_wdr.cpp:1272
+#: VTBuilder_wdr.cpp:2144
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:124
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:137
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:150
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:281
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:304
+msgid "Set"
+msgstr "Setare"
+
+#: VTBuilder_wdr.cpp:1266
+msgid "Roof:"
+msgstr "Acoperiş:"
+
+#: VTBuilder_wdr.cpp:1281
+msgid "Roof type:"
+msgstr "Tip acoperiş:"
+
+#: VTBuilder_wdr.cpp:1299
+msgid "Single type:"
+msgstr "Tip unic:"
+
+#: VTBuilder_wdr.cpp:1304
+msgid "Flat"
+msgstr "Plat"
+
+#: VTBuilder_wdr.cpp:1305
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:527
+msgid "Shed"
+msgstr "Acoperiş înclinat"
+
+#: VTBuilder_wdr.cpp:1306
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:528
+msgid "Gable"
+msgstr "Acoperiş 2 planuri: formă V"
+
+#: VTBuilder_wdr.cpp:1307
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:529
+msgid "Hip"
+msgstr "Acoperiş 4 planuri"
+
+#: VTBuilder_wdr.cpp:1312
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:311
+msgid "Slope:"
+msgstr "Pantă:"
+
+#: VTBuilder_wdr.cpp:1324
+msgid "Field:"
+msgstr "Câmp:"
+
+#: VTBuilder_wdr.cpp:1337
+msgid "Defaults from:"
+msgstr "Valori implicite din:"
+
+#: VTBuilder_wdr.cpp:1345
+#: VTBuilder_wdr.cpp:1467
+msgid "Only import features inside the Area Tool extents"
+msgstr "Importă doar elementele din zona de interes"
+
+#: VTBuilder_wdr.cpp:1375
+msgid "Import from"
+msgstr "Importă din"
+
+#: VTBuilder_wdr.cpp:1384
+msgid "Fields"
+msgstr "Câmpuri"
+
+#: VTBuilder_wdr.cpp:1389
+msgid "Feature height"
+msgstr "Înălţime element"
+
+#: VTBuilder_wdr.cpp:1409
+msgid "Feature elevation"
+msgstr "Altitudine element"
+
+#: VTBuilder_wdr.cpp:1428
+msgid "Structure type"
+msgstr "Tip structuri"
+
+#: VTBuilder_wdr.cpp:1431
+msgid "Buildings"
+msgstr "Clădiri"
+
+#: VTBuilder_wdr.cpp:1438
+msgid "Build foundations"
+msgstr "Construcţie fundaţii"
+
+#: VTBuilder_wdr.cpp:1470
+msgid "Use 2.5D for elevation"
+msgstr "Utilizare 2.5D pentru elevaţii"
+
+#: VTBuilder_wdr.cpp:1501
+msgid "Select level to edit"
+msgstr "Selectaţi etajul de editat"
+
+#: VTBuilder_wdr.cpp:1574
+#: VTBuilder_wdr.cpp:2009
+msgid "Image size:"
+msgstr "Dimensiune imagine:"
+
+#: VTBuilder_wdr.cpp:1587
+msgid "Pixel spacing:"
+msgstr "Spaţiere pixeli:"
+
+#: VTBuilder_wdr.cpp:1600
+#: VTBuilder_wdr.cpp:2022
+msgid "Size constraint: power of 2 for texture map"
+msgstr "Dimensiune constrânsă: putere a lui 2 pentru textură"
+
+#: VTBuilder_wdr.cpp:1603
+#: VTBuilder_wdr.cpp:2025
+msgid "Constrain to size for 4x4 overlap tiling"
+msgstr "Constrângere dimensiune pentru suprapunere subseturi 4x4"
+
+#: VTBuilder_wdr.cpp:1675
+msgid "WMS base URL:"
+msgstr "URL WMS"
+
+#: VTBuilder_wdr.cpp:1682
+msgid "Query Layers"
+msgstr "Interoghează straturile"
+
+#: VTBuilder_wdr.cpp:1689
+msgid "Layer:"
+msgstr "Strat:"
+
+#: VTBuilder_wdr.cpp:1692
+#: VTBuilder_wdr.cpp:1711
+msgid "Description:"
+msgstr "Descriere:"
+
+#: VTBuilder_wdr.cpp:1708
+msgid "Style:"
+msgstr "Stil:"
+
+#: VTBuilder_wdr.cpp:1725
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:518
+msgid "Width:"
+msgstr "Lăţime:"
+
+#: VTBuilder_wdr.cpp:1731
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:416
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:795
+msgid "Height:"
+msgstr "Înălţime:"
+
+#: VTBuilder_wdr.cpp:1737
+msgid "Format"
+msgstr "Format"
+
+#: VTBuilder_wdr.cpp:1746
+msgid "Query URL:"
+msgstr "URL interogare:"
+
+#: VTBuilder_wdr.cpp:1847
+msgid "Appearances"
+msgstr "Înfăţişări"
+
+#: VTBuilder_wdr.cpp:1869
+msgid "Theme:"
+msgstr "Temă:"
+
+#: VTBuilder_wdr.cpp:1880
+msgid "Meters per pixel:"
+msgstr "Metri pe pixel:"
+
+#: VTBuilder_wdr.cpp:1939
+msgid "Create new image layer"
+msgstr "Creează un strat imagine nou "
+
+#: VTBuilder_wdr.cpp:1944
+msgid "Write to file:"
+msgstr "Scrie în fişier:"
+
+#: VTBuilder_wdr.cpp:1963
+msgid "Format:"
+msgstr "Format:"
+
+#: VTBuilder_wdr.cpp:1966
+msgid "GeoTIFF"
+msgstr "GeoTIFF"
+
+#: VTBuilder_wdr.cpp:1969
+msgid "JPEG"
+msgstr "JPEG"
+
+#: VTBuilder_wdr.cpp:1976
+msgid "Appearance"
+msgstr "Înfăţişare"
+
+#: VTBuilder_wdr.cpp:1981
+msgid "Colors:"
+msgstr "Culori:"
+
+#: VTBuilder_wdr.cpp:1988
+#: VTBuilder_wdr.cpp:2462
+msgid "Edit Colors..."
+msgstr "Editare culori..."
+
+#: VTBuilder_wdr.cpp:1997
+msgid "Use view options for shading"
+msgstr "Utilizare opţiuni vizualizare pentru umbrire"
+
+#: VTBuilder_wdr.cpp:2004
+msgid "Bitmap Size"
+msgstr "Dimensiune imagine"
+
+#: VTBuilder_wdr.cpp:2081
+msgid "Link field:"
+msgstr "Câmp hyper-legătură:"
+
+#: VTBuilder_wdr.cpp:2116
+msgid "Easting field:"
+msgstr "Câmp X:"
+
+#: VTBuilder_wdr.cpp:2127
+msgid "Northing field:"
+msgstr "Câmp Y:"
+
+#: VTBuilder_wdr.cpp:2138
+msgid "CRS:"
+msgstr "SCR:"
+
+#: VTBuilder_wdr.cpp:2149
+msgid "Number format:"
+msgstr "Format număr:"
+
+#: VTBuilder_wdr.cpp:2152
+msgid "Decimal"
+msgstr "Zecimal"
+
+#: VTBuilder_wdr.cpp:2155
+msgid "Packed degrees: DDDMMSSSS, DDMMSSSS"
+msgstr "Grade compacte:  DDDMMSSSS, DDMMSSSS"
+
+#: VTBuilder_wdr.cpp:2162
+msgid "Longitude is west"
+msgstr "Longitudinea este vest"
+
+#: VTBuilder_wdr.cpp:2191
+msgid "Data File"
+msgstr "Fişier date:"
+
+#: VTBuilder_wdr.cpp:2202
+msgid "Geocoding"
+msgstr "Geocodare"
+
+#: VTBuilder_wdr.cpp:2215
+msgid "Places:"
+msgstr "Locuri:"
+
+#: VTBuilder_wdr.cpp:2230
+msgid "Zipcodes:"
+msgstr "Coduri poştale:"
+
+#: VTBuilder_wdr.cpp:2284
+msgid "Depth of the quadtree of chunks to generate:"
+msgstr ""
+
+#: VTBuilder_wdr.cpp:2290
+msgid "Maximum geometric error to allow at full LOD:"
+msgstr "Eroarea geometrică maximă permisă la LOD maxim:"
+
+#: VTBuilder_wdr.cpp:2324
+msgid "Tile output file:"
+msgstr "Fişier destinaţie subseturi:"
+
+#: VTBuilder_wdr.cpp:2338
+msgid "Columns"
+msgstr "Coloane"
+
+#: VTBuilder_wdr.cpp:2344
+msgid "Rows"
+msgstr "Rânduri"
+
+#: VTBuilder_wdr.cpp:2354
+msgid "LOD 0 Size:"
+msgstr "Dimensiune LOD 0:"
+
+#: VTBuilder_wdr.cpp:2365
+msgid "Number of LODs:"
+msgstr "Numărul de LOD-uri:"
+
+#: VTBuilder_wdr.cpp:2378
+msgid "Total size of all tiles:"
+msgstr "Dimesiunea totală a sub-seturilor:"
+
+#: VTBuilder_wdr.cpp:2404
+msgid "Spacing of existing data:"
+msgstr "Rezoluţia spaţială a datelor existente:"
+
+#: VTBuilder_wdr.cpp:2413
+msgid "Spacing of LOD 0:"
+msgstr "Spaţiere LOD 0:"
+
+#: VTBuilder_wdr.cpp:2450
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:776
+msgid "Colors"
+msgstr "Culori"
+
+#: VTBuilder_wdr.cpp:2453
+msgid "Color map file:"
+msgstr "Fişier rampă de culori:"
+
+#: VTBuilder_wdr.cpp:2469
+msgid "Shading"
+msgstr "Umbrire"
+
+#: VTBuilder_wdr.cpp:2477
+msgid "Quick (East-West)"
+msgstr "Rapidă (Est-Vest)"
+
+#: VTBuilder_wdr.cpp:2480
+msgid "Dot-product with surface"
+msgstr ""
+
+#: VTBuilder_wdr.cpp:2487
+msgid "Angle (0-90):"
+msgstr "Unghi (0-90)"
+
+#: VTBuilder_wdr.cpp:2495
+msgid "Direction (0-360):"
+msgstr "Direcţie (0-360)"
+
+#: VTBuilder_wdr.cpp:2503
+msgid "Cast Shadows"
+msgstr "Afişare umbre"
+
+#: VegDlg.cpp:67
+msgid "Scientific Name"
+msgstr "Nume ştiinţific"
+
+#: VegDlg.cpp:69
+msgid "Common Name"
+msgstr "Nume comun"
+
+#: VegDlg.cpp:71
+msgid "Max Height"
+msgstr "Înălţime maximă"
+
+#: VegDlg.cpp:78
+msgid "Billboard"
+msgstr ""
+
+#: VegDlg.cpp:80
+msgid "FileName"
+msgstr "Nume fişier"
+
+#: VegDlg.cpp:86
+msgid "Shadow Radius"
+msgstr "Unghi umbrire"
+
+#: VegDlg.cpp:88
+msgid "Shadow Darkness"
+msgstr "Obscuritate umbrire"
+
+#: VegDlg.cpp:95
+msgid "(All species)"
+msgstr "(Toate speciile)"
+
+#: VegDlg.cpp:182
+#, c-format
+msgid "Type %d"
+msgstr "Tip %d"
+
+#: VegLayer.cpp:56
+msgid "Vegetation layer type: "
+msgstr "Nume fişier vegetaţie:"
+
+#: VegLayer.cpp:60
+msgid "Density\n"
+msgstr "Densitate\n"
+
+#: VegLayer.cpp:61
+msgid "BioMap\n"
+msgstr "HartăBio\n"
+
+#: VegLayer.cpp:62
+msgid "Plant Instances\n"
+msgstr "Instanţe plante\n"
+
+#: VegLayer.cpp:69
+#, c-format
+msgid "Number of Instances: %d\n"
+msgstr "Număr de instanţe: %d\n"
+
+#: VegLayer.cpp:79
+#, c-format
+msgid "  %d instances of species %hs\n"
+msgstr "  %d instanţe ale speciilor %hs\n"
+
+#: VegLayer.cpp:116
+msgid ""
+"You must specify a species file (plant list) to use\n"
+" before working with vegetation files.\n"
+msgstr ""
+"Trebuie să specificaţi un fişier de specii (listă de plante)\n"
+" înainte de a putea lucra cu fişiere de vegetaţie.\n"
+
+#: WaterLayer.cpp:146
+#, c-format
+msgid "Features: %d\n"
+msgstr "Elemente: %d\n"
+
+#: WaterLayer.cpp:153
+#, c-format
+msgid "Water bodies: %d\n"
+msgstr "Corpuri de apă: %d\n"
+
+#: WaterLayer.cpp:155
+#, c-format
+msgid "Water vectors: %d\n"
+msgstr "Vectori apă: %d\n"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:50
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:194
+msgid "Building Levels"
+msgstr "Etaje clădire"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:59
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:203
+msgid "Copy"
+msgstr "Copiază"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:63
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:207
+msgid "Del"
+msgstr "Şterge"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:67
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:211
+msgid "Up"
+msgstr "Sus"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:70
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:214
+msgid "Down"
+msgstr "Jos"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:80
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:224
+msgid "Baseline Editor"
+msgstr "Editor linie de bază"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:83
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:227
+msgid "Set Roof Type"
+msgstr "Alegeţi tipul de acoperiş"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:90
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:234
+msgid "Level Properties"
+msgstr "Proprietăţi etaj"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:95
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:239
+msgid "Stories:"
+msgstr "Etaje:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:105
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:249
+msgid "Story Height:"
+msgstr "Înălţime etaj:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:118
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:275
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:478
+msgid "Material:"
+msgstr "Material:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:144
+msgid "Edge Slopes:"
+msgstr "Pante margine:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:168
+msgid "Edges >>"
+msgstr "Margini >>"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:260
+msgid "Edges:"
+msgstr "Margini:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:269
+msgid "Edge Properties"
+msgstr "Proprietăţi margine"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:288
+msgid "Facade"
+msgstr "Faţade"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:324
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:681
+msgid "Clear"
+msgstr "Şterge"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:327
+msgid "Wall"
+msgstr "Zid"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:330
+msgid "Window"
+msgstr "Fereastră"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:333
+msgid "Door"
+msgstr "Uşă"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:351
+msgid "Edges <<"
+msgstr "Margine <<"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:372
+msgid "Defined Style:"
+msgstr "Stil definit:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:377
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:394
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:469
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:483
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:590
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:606
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:622
+msgid "Item"
+msgstr "Articol"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:384
+msgid "Posts"
+msgstr "Stâlpi"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:389
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:464
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:601
+msgid "Type:"
+msgstr "Tip:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:403
+msgid "Spacing:"
+msgstr "Spaţiere:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:429
+msgid "Size:"
+msgstr "Dimensiune:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:442
+msgid "Extension:"
+msgstr "Extensie:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:450
+msgid "Double"
+msgstr "Dublu"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:459
+msgid "Connection"
+msgstr "Conexiune"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:492
+msgid "Top Height:"
+msgstr "Înălţimea părţii superioare:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:505
+msgid "Bottom Height:"
+msgstr "Înălţimea părţii inferioare:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:531
+msgid "Side Slope:"
+msgstr "Înclinare latură:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:544
+msgid "Profile:"
+msgstr "Profil:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:549
+msgid "ChoiceItem"
+msgstr "Selectează articol"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:554
+msgid "Edit"
+msgstr "Editare"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:559
+msgid "Constant Top Height"
+msgstr "Înălţime superioară constantă"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:578
+msgid "Instance from Content File"
+msgstr "Obiecte din fişier"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:585
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:756
+msgid "File:"
+msgstr "Fişier:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:617
+msgid "Item:"
+msgstr "Obiect:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:629
+msgid "Instance from 3D Model File"
+msgstr "Obiect din fişier 3D"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:647
+msgid "Location:"
+msgstr "Locaţie:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:673
+msgid "Line"
+msgstr "Linie"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:676
+msgid "Path"
+msgstr "Traseu"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:688
+msgid "Map Offset"
+msgstr "Decalaj hartă"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:698
+msgid "Map Distance"
+msgstr "Distanţă hartă"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:708
+msgid "Geodesic Distance"
+msgstr "Distanţă geodezică"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:718
+msgid "Approximate Ground"
+msgstr "Aproximează sol"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:728
+msgid "Vertical Difference"
+msgstr "Diferenţă verticală"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:766
+msgid "Scale relative to elevation range"
+msgstr "Scară relativă la ecartul altitudinal"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:769
+msgid "Blend colors smoothly"
+msgstr "Combină gradual culorile"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:784
+msgid "Change Color..."
+msgstr "Schimbă culoarea"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:787
+msgid "Delete Color"
+msgstr "Şterge culoarea"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:792
+msgid "New Color"
+msgstr "Culoare nouă"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:801
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1080
+msgid "Add"
+msgstr "Adaugă"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:810
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1096
+msgid "Save"
+msgstr "Salvare"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:813
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1099
+msgid "Save As..."
+msgstr "Salvează ca..."
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:816
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1102
+msgid "Load"
+msgstr "Încărcare"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:822
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1105
+msgid "Close"
+msgstr "Inchide"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:849
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:897
+msgid "Line of Sight"
+msgstr "Rază de vizibilitate"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:852
+msgid "Visibility"
+msgstr "Vizibilitate"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:855
+msgid "Show Fresnel zones"
+msgstr "Afişează zonele Fresnel"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:858
+msgid "Use effective radius of earth"
+msgstr "Utilizează curbură reală a pământului"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:865
+msgid "Start height:"
+msgstr "Înălţime la pornire:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:871
+msgid "End height:"
+msgstr "Înălţime la final:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:877
+msgid "Radio Frequency:"
+msgstr "Frecvenţă radio:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:885
+msgid "MHz"
+msgstr "MHz"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:890
+msgid "Apply curvature to:"
+msgstr "Aplică curbura la:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:896
+msgid "Terrain"
+msgstr "Teren"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:926
+msgid "Projection:"
+msgstr "Proiecţie:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:935
+msgid "Datum:"
+msgstr "Datum:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:938
+msgid "Show All Datums"
+msgstr "Afişează toate datumurile"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:949
+msgid "Ellipsoid:"
+msgstr "Elipsoid:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:957
+msgid "Horizontal Units:"
+msgstr "Unităţi de măsură orizontale:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:964
+msgid "Zone:"
+msgstr "Zona:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:971
+msgid "Parameters:"
+msgstr "Parametri:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:977
+msgid "Set State Plane Projection"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:982
+msgid "Load from File"
+msgstr "Încarcă din fişier"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:985
+msgid "Save to File"
+msgstr "Salvează în fişier"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1027
+msgid "NAD27"
+msgstr "NAD27"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1030
+msgid "NAD83"
+msgstr "NAD83"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1043
+msgid "U.S. Feet"
+msgstr "Picioare SUA"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1083
+msgid "Move"
+msgstr "Mută"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1086
+msgid "Remove"
+msgstr "Şterge"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:147
+msgid "Choose facade texture"
+msgstr "Alegeţi textura faţadei"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:369
+msgid " (flat roof)"
+msgstr " (acoperiş plat)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:371
+msgid " (shed roof)"
+msgstr " (acoperiş înclinat)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:373
+msgid " (gable roof)"
+msgstr " (acoperiş 2 planuri: formă V)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:375
+msgid " (hip roof)"
+msgstr " (acoperiş 4 planuri)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:379
+#, c-format
+msgid " (stories : %d)"
+msgstr " (etaje : %d)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:526
+msgid "Flat (all edges 0(degree sign))"
+msgstr "Plat (toate marginile 0°)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:530
+msgid "Vertical (all edges 90(degree sign))"
+msgstr "Vertical (toate marginile 90°)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:536
+msgid "Please indicate edge slopes"
+msgstr "Indicaţi panta marginilor"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:550
+msgid "Sloped edges"
+msgstr "Panta marginilor"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:550
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:319
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:197
+msgid "Degrees"
+msgstr "Grade"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:551
+msgid "Slope"
+msgstr "Pantă"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:686
+msgid "Set Building Material for All Edges"
+msgstr "Aplică materialul la toate marginile"
+
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:104
+#, c-format
+msgid "%.2f meters"
+msgstr "%.2f metri"
+
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:124
+msgid "Load ColorMap"
+msgstr "Încarcă rampa de culori"
+
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:125
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:156
+msgid "ColorMap Files (*.cmt)|*.cmt"
+msgstr "Rampă de culori (*.cmt)|*.cmt"
+
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:155
+msgid "Save ColorMap"
+msgstr "Salvează rampa de culori"
+
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:47
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:53
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:59
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:65
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:324
+msgid "US Survey Feet"
+msgstr "Picioare US Survey"
+
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:48
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:54
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:60
+msgid "Kilometers"
+msgstr "Kilometri"
+
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:49
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:55
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:61
+msgid "Miles"
+msgstr "Mile"
+
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:179
+msgid "<Projection failure>"
+msgstr "<Eroare de proiecţie>"
+
+#: ../../TerrainSDK/vtui/InstanceDlg.cpp:159
+msgid "(All)"
+msgstr "(Toate)"
+
+#: ../../TerrainSDK/vtui/InstanceDlg.cpp:177
+msgid "3D Model files"
+msgstr "Fişiere modele 3D"
+
+#: ../../TerrainSDK/vtui/InstanceDlg.cpp:179
+msgid "All files"
+msgstr "Toate fişierele"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:109
+msgid "Wooden posts, wire"
+msgstr "Stâlpi de lemn, sîrmă"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:110
+msgid "Metal posts, wire"
+msgstr "Stâlpi de metal, sârmă"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:111
+msgid "Metal poles, chain-link"
+msgstr "Stâlpi de metal, plasă"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:112
+msgid "Security fence"
+msgstr "Gard securizat"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:113
+msgid "Dry-stone wall"
+msgstr "Zid piatră de râu"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:114
+msgid "Stone wall"
+msgstr "Zid de piatră"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:115
+msgid "Privet hedge"
+msgstr "Gard viu"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:116
+msgid "Berm"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:117
+msgid "Railing (Pipe)"
+msgstr "Gard de protecţie (ţeavă)"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:118
+msgid "Railing (Wire)"
+msgstr "Gard de protecţie (sârmă)"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:119
+msgid "Railing (EU)"
+msgstr "Gard de protecţie (EU)"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:120
+msgid "(custom)"
+msgstr "(particularizat)"
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:295
+msgid "Edit Linear Structure Profile"
+msgstr "Editează profilul structurilor liniare"
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:557
+msgid "No Endpoints"
+msgstr "Nu există puncte finale"
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:592
+msgid "No Data"
+msgstr "Nu există date"
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:816
+#, c-format
+msgid "Minimum: %.2f m at distance %.1f\n"
+msgstr "Minimum: %.2f m la distanţa %.1f\n"
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:819
+#, c-format
+msgid "Maximum: %.2f m at distance %.1f"
+msgstr "Maximum: %.2f m la distanţa %.1f"
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:826
+#, c-format
+msgid "Mouse: %.2f m at distance %.1f"
+msgstr "Mouse: %.2f m la distanţa %.1f"
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:832
+#, c-format
+msgid "Slope %.3f (%.1f degrees)"
+msgstr "Panta %.3f (%.1f grade)"
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:840
+#, c-format
+msgid "Fresnel Zone 1: Radius: %.1f, Clearance %.1f"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:845
+#, c-format
+msgid "  OF Zone: Radius: %.1f, Clearance %.1f"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:855
+#, c-format
+msgid "Fresnel zone radius at midpoint %.2fm (Object free zone %.2fm) Geoid Height %.1fm"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:864
+#, c-format
+msgid "Intersects ground at height %.2f, distance %.1f"
+msgstr "Intersectează solul la înălţimea %.2f, distanţa %.1f"
+
+#: ../../TerrainSDK/vtui/ProfileEditDlg.cpp:253
+msgid "Load Profile"
+msgstr "Încarcă profil"
+
+#: ../../TerrainSDK/vtui/ProfileEditDlg.cpp:254
+#: ../../TerrainSDK/vtui/ProfileEditDlg.cpp:273
+msgid "Profile Files (*.shp)|*.shp"
+msgstr "Fişiere profil (*.shp)|*.shp"
+
+#: ../../TerrainSDK/vtui/ProfileEditDlg.cpp:272
+msgid "Save Profile"
+msgstr "Salvează profilul"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:68
+msgid "Albers Equal Area Conic"
+msgstr "Albers Equal Area Conic"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:69
+msgid "Geographic"
+msgstr "Geographic"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:70
+msgid "Hotine Oblique Mercator"
+msgstr "Hotine Oblique Mercator"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:71
+msgid "Lambert Azimuthal Equal-Area"
+msgstr "Lambert Azimuthal Equal-Area"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:72
+msgid "Lambert Conformal Conic"
+msgstr "Lambert Conformal Conic"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:73
+msgid "New Zealand Map Grid"
+msgstr "New Zealand Map Grid"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:74
+msgid "Oblique Stereographic"
+msgstr "Oblique Stereographic"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:75
+msgid "Polar Stereographic"
+msgstr "Polar Stereographic"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:76
+msgid "Sinusoidal"
+msgstr "Sinusoidal"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:77
+msgid "Stereographic"
+msgstr "Stereographic"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:78
+msgid "Mercator"
+msgstr "Mercator"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:79
+msgid "Transverse Mercator"
+msgstr "Transverse Mercator"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:80
+msgid "UTM"
+msgstr "UTM"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:81
+msgid "Dymaxion"
+msgstr "Dymaxion"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:87
+msgid "Attribute"
+msgstr "Atribut"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:89
+msgid "Value"
+msgstr "Valoare"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:206
+msgid "Unit Edges"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:258
+msgid "(Invalid projection)"
+msgstr "(Proiecţie invalidă)"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:355
+msgid "Unknown projection: "
+msgstr "Proiecţie necunoscută:"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:372
+msgid "Save Projection to File"
+msgstr "Salvează proiecţia în fişier"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:373
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:383
+msgid "Projection Files (*.prj)|*.prj"
+msgstr "Fişiere proiecţie (*.prj)|*.prj"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:382
+msgid "Load Projection from File"
+msgstr "Încărcă proiecţie din fişier"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:390
+msgid "Couldn't load projection from that file.\n"
+msgstr "Imposibil de încărcat proiecţia din fişierul specificat.\n"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:410
+msgid ""
+"Couldn't set that Datum.  Perhaps the EPSG\n"
+" tables could not be located.  Check that your\n"
+" GEOTIFF_CSV environment variable is set."
+msgstr ""
+"Imposibil de aplicat datumul.  Posibil că tabelele EPSG\n"
+" să nu putut fi localizate. Verificaţi dacă\n"
+" variabila de sistem GEOTIFF_CSV este setată."
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:438
+msgid "Value for "
+msgstr "Valoarea pentru"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:442
+msgid "Enter new value"
+msgstr "Introduceţi valoarea nouă"
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:589
+msgid "Select State Plane"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:608
+msgid ""
+"Couldn't set state plane projection.  Perhaps the\n"
+" EPSG tables could not be located.  Check that your\n"
+" GEOTIFF_CSV environment variable is set."
+msgstr ""
+"Imposibil de aplicat proiecţia.  Posibil că tabelele EPSG\n"
+" să nu putut fi localizate. Verificaţi dacă\n"
+" variabila de sistem GEOTIFF_CSV este setată."
+

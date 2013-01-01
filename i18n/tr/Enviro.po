@@ -1,0 +1,2684 @@
+# Turkish translation of Enviro text.
+# Copyright (C) VTP
+# This file is distributed under the same license as the VTP package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-12-06 15:18-1000\n"
+"PO-Revision-Date: 2006-12-18 22:39-1000\n"
+"Last-Translator: Ben Discoe <ben@vterrain.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: \n"
+
+#: wx/EnviroApp.cpp:216
+msgid " Startup"
+msgstr " Başlatma"
+
+#: wx/EnviroApp.cpp:348
+msgid "Scanning data paths for terrains"
+msgstr ""
+
+#: wx/EnviroApp.cpp:404
+msgid "No terrains found (datapath/Terrains/*.xml)"
+msgstr "Hiç teren bulunamadı (datapath/Terrains/*.xml)"
+
+#: wx/EnviroApp.cpp:408
+msgid "Please choose a terrain"
+msgstr "Lütfen teren seçiniz"
+
+#: wx/EnviroApp.cpp:409
+msgid "Select Terrain"
+msgstr "Teren seçiniz"
+
+#: wx/EnviroApp.cpp:437
+msgid "Terrain Creation Parameters"
+msgstr "Teren Yaratma Parametreleri"
+
+#: wx/EnviroApp.cpp:443
+msgid "Couldn't load from that file."
+msgstr "Bu dosyadan yüklenemedi."
+
+#: wx/EnviroApp.cpp:456
+msgid "Upgrading the .ini to a .xml file.\n"
+msgstr ".ini dosyası .xml dosyasına yükseltiliyor.\n"
+
+#: wx/EnviroApp.cpp:457
+msgid "Deleting old file: "
+msgstr "Eski dosya siliniyor: "
+
+#: wx/EnviroApp.cpp:470
+#: wx/ScenarioSelectDialog.cpp:287
+#: wx/ScenarioSelectDialog.cpp:310
+#, c-format
+msgid "Couldn't save to file %hs.\n"
+msgstr "%hs dosyasına kaydedilemedi.\n"
+
+#: wx/EnviroApp.cpp:471
+#: wx/ScenarioSelectDialog.cpp:288
+#: wx/ScenarioSelectDialog.cpp:311
+msgid "Please make sure the file is not read-only."
+msgstr "Lütfen dosyanın yazılabilir olduğunu kontrol ediniz."
+
+#: wx/EnviroFrame.cpp:313
+msgid "Building Properties"
+msgstr "Bina Özellikleri"
+
+#: wx/EnviroFrame.cpp:314
+msgid "Camera-View"
+msgstr "Kamera-Açısı"
+
+#: wx/EnviroFrame.cpp:315
+#: wx/enviro_wdr.cpp:990
+msgid "Distance"
+msgstr "Mesafe"
+
+#: wx/EnviroFrame.cpp:316
+msgid "Linear Structures"
+msgstr "Lineer Yapılar"
+
+#: wx/EnviroFrame.cpp:317
+#: wx/EnviroFrame.cpp:381
+msgid "Instances"
+msgstr "Gerçeklemeler"
+
+#: wx/EnviroFrame.cpp:319
+msgid "Terrain LOD Info"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:321
+#: wx/EnviroFrame.cpp:379
+#: wx/enviro_wdr.cpp:1027
+msgid "Plants"
+msgstr "Bitkiler"
+
+#: wx/EnviroFrame.cpp:324
+#: wx/EnviroFrame.cpp:588
+msgid "Locations"
+msgstr "Yerler"
+
+#: wx/EnviroFrame.cpp:326
+#: wx/EnviroFrame.cpp:369
+#: wx/LayerDlg.cpp:229
+#: wx/LayerDlg.cpp:395
+msgid "Layers"
+msgstr "Katmanlar"
+
+#: wx/EnviroFrame.cpp:329
+#: wx/EnviroFrame.cpp:414
+#: wx/EnviroFrame.cpp:611
+msgid "Scene Graph"
+msgstr "Sahne Grafı"
+
+#: wx/EnviroFrame.cpp:332
+#: wx/EnviroFrame.cpp:606
+#: wx/enviro_wdr.cpp:1319
+msgid "Time"
+msgstr "Zaman"
+
+#: wx/EnviroFrame.cpp:333
+#: wx/EnviroFrame.cpp:378
+msgid "Routes"
+msgstr "Yollar"
+
+#: wx/EnviroFrame.cpp:334
+#: wx/EnviroFrame.cpp:444
+#: wx/enviro_wdr.cpp:195
+msgid "Scenarios"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:335
+#: wx/EnviroFrame.cpp:382
+msgid "Vehicles"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:371
+msgid "E&xit (Esc)"
+msgstr "Çı&kış (Esc)"
+
+#: wx/EnviroFrame.cpp:371
+msgid "Exit"
+msgstr "Çıkış"
+
+#: wx/EnviroFrame.cpp:372
+msgid "&File"
+msgstr "&Dosya"
+
+#: wx/EnviroFrame.cpp:375
+#: wx/EnviroFrame.cpp:540
+msgid "Select"
+msgstr "Seç"
+
+#: wx/EnviroFrame.cpp:376
+msgid "Fences"
+msgstr "Çitler"
+
+#: wx/EnviroFrame.cpp:377
+msgid "Buildings"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:380
+msgid "Points"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:384
+#: wx/EnviroFrame.cpp:562
+msgid "Navigate"
+msgstr "Yol Bul"
+
+#: wx/EnviroFrame.cpp:385
+msgid "Measure Distances\tCtrl+D"
+msgstr "Uzaklıkları Ölç\tCtrl+D"
+
+#: wx/EnviroFrame.cpp:386
+msgid "&Tools"
+msgstr "&Araçlar"
+
+#: wx/EnviroFrame.cpp:416
+msgid "Go to Terrain...\tCtrl+G"
+msgstr "Terene Git...\tCtrl+G"
+
+#: wx/EnviroFrame.cpp:417
+#: wx/EnviroFrame.cpp:593
+msgid "Go to Space"
+msgstr "Uzaya Git"
+
+#: wx/EnviroFrame.cpp:420
+msgid "Save scene graph to .osg"
+msgstr "Sahne grafını .osg dosyasına kaydet"
+
+#: wx/EnviroFrame.cpp:423
+msgid "Time...\tCtrl+I"
+msgstr "Zaman...\tCtrl+I"
+
+#: wx/EnviroFrame.cpp:424
+#: wx/EnviroFrame.cpp:608
+msgid "Time Stop"
+msgstr "Zamanı Durdur"
+
+#: wx/EnviroFrame.cpp:425
+#: wx/EnviroFrame.cpp:607
+msgid "Time Faster"
+msgstr "Zaman Akışını Hızlandır"
+
+#: wx/EnviroFrame.cpp:426
+msgid "&Scene"
+msgstr "&Sahne"
+
+#: wx/EnviroFrame.cpp:430
+msgid "Wireframe\tCtrl+W"
+msgstr "Tel Kafes\tCtrl+W"
+
+#: wx/EnviroFrame.cpp:431
+msgid "Fullscreen\tCtrl+F"
+msgstr "Tam Ekran\tCtrl+F"
+
+#: wx/EnviroFrame.cpp:432
+msgid "Top-Down Camera\tCtrl+T"
+msgstr "Kamera Yukarı Aşağı\tCtrl+T"
+
+#: wx/EnviroFrame.cpp:433
+msgid "Framerate Chart\tCtrl+Z"
+msgstr "Çerçeve/Saniye Grafiği\tCtrl+Z"
+
+#: wx/EnviroFrame.cpp:434
+msgid "Elevation Legend"
+msgstr "Yükseklik Renkleri"
+
+#: wx/EnviroFrame.cpp:435
+msgid "Overview"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:437
+msgid "Camera - View Settings\tCtrl+S"
+msgstr "Kamera – Görüntü Ayarları\tCtrl+S"
+
+#: wx/EnviroFrame.cpp:438
+msgid "Store/Recall Locations\tCtrl+L"
+msgstr "Pozisyonları Kaydet/Hatırla\tCtrl+L"
+
+#: wx/EnviroFrame.cpp:440
+msgid "Save Window Snapshot"
+msgstr "Pençere Görüntüsünü Kaydet"
+
+#: wx/EnviroFrame.cpp:441
+msgid "Save Numbered Snapshot\tCtrl+N"
+msgstr "Numaralı Görüntüyü Kaydet\tCtrl+N"
+
+#: wx/EnviroFrame.cpp:443
+msgid "&Status Bar"
+msgstr "D&urum Çubuğu"
+
+#: wx/EnviroFrame.cpp:445
+msgid "&View"
+msgstr "&Görüntü"
+
+#: wx/EnviroFrame.cpp:448
+msgid "Fly Slower (S)"
+msgstr "Daha Yavaş Uç (S)"
+
+#: wx/EnviroFrame.cpp:449
+msgid "Fly Faster (F)"
+msgstr "Daha Hızlı Uç (F)"
+
+#: wx/EnviroFrame.cpp:450
+msgid "Maintain height above ground (A)"
+msgstr "Yer yüksekliğini koru (A)"
+
+#: wx/EnviroFrame.cpp:451
+msgid "&Navigate"
+msgstr "&Navigasyon"
+
+#: wx/EnviroFrame.cpp:455
+#: wx/TParamsDlg.cpp:956
+msgid "Normal Terrain Flyer"
+msgstr "Normal Teren Uçuşu"
+
+#: wx/EnviroFrame.cpp:456
+msgid "Flyer with Velocity"
+msgstr "Hız Ayarlı Uçuş"
+
+#: wx/EnviroFrame.cpp:457
+#: wx/TParamsDlg.cpp:958
+msgid "Grab-Pivot"
+msgstr "Pivotu-Yakala"
+
+#: wx/EnviroFrame.cpp:459
+#: wx/TParamsDlg.cpp:960
+msgid "Panoramic Flyer"
+msgstr "Manzaralı Uçuş"
+
+#: wx/EnviroFrame.cpp:460
+msgid "Navigation Style"
+msgstr "Navigasyon Stili"
+
+#: wx/EnviroFrame.cpp:463
+msgid "LOD Terrain Surface\tF3"
+msgstr "LOD Teren Yüzeyi\tF3"
+
+#: wx/EnviroFrame.cpp:464
+msgid "Cull every frame\tCtrl+C"
+msgstr "Her çerçeveye cull uygula\tCtrl+C"
+
+#: wx/EnviroFrame.cpp:465
+msgid "Cull once\tCtrl+K"
+msgstr "Bir kez cull et\tCtrl+K"
+
+#: wx/EnviroFrame.cpp:467
+msgid "Show Sky\tF4"
+msgstr "Gökyüzünü Göster\tF4"
+
+#: wx/EnviroFrame.cpp:468
+msgid "Show Horizon"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:469
+msgid "Show Ocean\tF5"
+msgstr "Okyanusu Göster\tF5"
+
+#: wx/EnviroFrame.cpp:470
+msgid "Show Plants\tF6"
+msgstr "Bitkileri Göster\tF6"
+
+#: wx/EnviroFrame.cpp:471
+msgid "Show Structures\tF7"
+msgstr "Yapıları Göster\tF7"
+
+#: wx/EnviroFrame.cpp:472
+msgid "Show Roads\tF8"
+msgstr "Yolları Göster\tF8"
+
+#: wx/EnviroFrame.cpp:473
+msgid "Show Fog\tF9"
+msgstr "Sisi göster\tF9"
+
+#: wx/EnviroFrame.cpp:475
+msgid "Increase Detail (+)"
+msgstr "Detayı Arttır (+)"
+
+#: wx/EnviroFrame.cpp:476
+msgid "Decrease Detail (-)"
+msgstr "Detayı Azalt (-)"
+
+#: wx/EnviroFrame.cpp:477
+msgid "Level of Detail Info\tCtrl+Q"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:479
+msgid "Toggle Artificial Foundations"
+msgstr "İnsan Yapısı Temelleri Göster(me)"
+
+#: wx/EnviroFrame.cpp:480
+msgid "&Recalculate Shading\tCtrl+R"
+msgstr "&Gölgelemeyi Tekrar Hesapla\tCtrl+R"
+
+#: wx/EnviroFrame.cpp:481
+msgid "&Change Texture"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:482
+msgid "&Distribute Vehicles (test)"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:483
+msgid "Te&rrain"
+msgstr "Te&ren"
+
+#: wx/EnviroFrame.cpp:488
+msgid "&Show Shading"
+msgstr "Gölg&elemeyi Göster"
+
+#: wx/EnviroFrame.cpp:489
+msgid "Show &Axes\tCtrl+A"
+msgstr "A&ksisleri Göster\tCtrl+A"
+
+#: wx/EnviroFrame.cpp:490
+msgid "Seasonal &Tilt"
+msgstr "Me&vsim Eğimi"
+
+#: wx/EnviroFrame.cpp:491
+msgid "&Flatten\tCtrl+E"
+msgstr "D&üzlet\tCtrl+E"
+
+#: wx/EnviroFrame.cpp:492
+msgid "&Unfold\tCtrl+U"
+msgstr "Katlamayı Geri Al\tCtrl+U"
+
+#: wx/EnviroFrame.cpp:493
+msgid "&Load Point Data...\tCtrl+P"
+msgstr "&Noktaları Yükle...\tCtrl+P"
+
+#: wx/EnviroFrame.cpp:494
+msgid "&Earth"
+msgstr "&Yeryüzü"
+
+#: wx/EnviroFrame.cpp:498
+msgid "About"
+msgstr "Hakkında"
+
+#: wx/EnviroFrame.cpp:503
+msgid "Documentation (local)"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:504
+msgid "Documentation (online)"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:505
+msgid "&Help"
+msgstr "Ya&rdım"
+
+#: wx/EnviroFrame.cpp:554
+msgid "Create Fences"
+msgstr "Çit Yarat"
+
+#: wx/EnviroFrame.cpp:555
+msgid "Create Buildings"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:556
+msgid "Create Routes"
+msgstr "Yol Yarat"
+
+#: wx/EnviroFrame.cpp:557
+msgid "Create Plants"
+msgstr "Bitki Yarat"
+
+#: wx/EnviroFrame.cpp:558
+msgid "Create Points"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:560
+msgid "Create Instances"
+msgstr "Gerçeklemeler Yarat"
+
+#: wx/EnviroFrame.cpp:561
+msgid "Create Vehicles"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:566
+msgid "Measure Distance"
+msgstr "Uzaklığı Ölç"
+
+#: wx/EnviroFrame.cpp:571
+#: wx/EnviroFrame.cpp:2046
+msgid "Elevation Profile"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:574
+msgid "Snapshot"
+msgstr "Görüntü"
+
+#: wx/EnviroFrame.cpp:575
+msgid "Numbered Snapshot"
+msgstr "Numaralı Görüntü"
+
+#: wx/EnviroFrame.cpp:579
+msgid "Show Layer Dialog"
+msgstr "Katman İletişimini Göster"
+
+#: wx/EnviroFrame.cpp:584
+msgid "Maintain Height"
+msgstr "Yükseklıği Koru"
+
+#: wx/EnviroFrame.cpp:585
+msgid "Fly Faster"
+msgstr "Daha Hızlı Uç"
+
+#: wx/EnviroFrame.cpp:586
+msgid "Fly Slower"
+msgstr "Daha Yavaş Uç"
+
+#: wx/EnviroFrame.cpp:587
+msgid "Camera Dialog"
+msgstr "Kamera İletişimi"
+
+#: wx/EnviroFrame.cpp:594
+msgid "Go to Terrain"
+msgstr "Terene Git"
+
+#: wx/EnviroFrame.cpp:598
+msgid "Show Sunlight"
+msgstr "Günışığı Göster"
+
+#: wx/EnviroFrame.cpp:599
+msgid "Axes"
+msgstr "Aksisler"
+
+#: wx/EnviroFrame.cpp:600
+msgid "Tilt"
+msgstr "Eğim"
+
+#: wx/EnviroFrame.cpp:601
+msgid "Add Point Data"
+msgstr "Nokta Ekle"
+
+#: wx/EnviroFrame.cpp:602
+msgid "Unfold"
+msgstr "Katlamayı Aç"
+
+#: wx/EnviroFrame.cpp:1109
+msgid "Save View Snapshot"
+msgstr "Görüntüyü Kaydet"
+
+#: wx/EnviroFrame.cpp:1641
+msgid "Recalculating Shading"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:1659
+msgid "Change Texture"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:1666
+msgid "Changing Texture"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:1713
+msgid "Vehicles:"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:1799
+msgid "Abstract Data"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:1800
+msgid "GIS Data Sources (*.shp)|*.shp"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:1813
+msgid "Couldn't open"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:1815
+msgid "That file isn't point data."
+msgstr "Bu dosya nokta içermiyor."
+
+#: wx/EnviroFrame.cpp:1852
+msgid "About "
+msgstr ""
+
+#: wx/EnviroFrame.cpp:1873
+msgid "Couldn't find local documentation files"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:2076
+msgid "Properties"
+msgstr "Özellikler"
+
+#: wx/EnviroFrame.cpp:2089
+msgid "Flip Footprint Direction"
+msgstr "Temel Kesiminin Yönünü Çevir"
+
+#: wx/EnviroFrame.cpp:2091
+msgid "Reload from Disk"
+msgstr "Diskten Yeniden Yükle"
+
+#: wx/EnviroFrame.cpp:2098
+msgid "URL"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:2105
+msgid "Start Driving"
+msgstr ""
+
+#: wx/EnviroFrame.cpp:2109
+#: wx/TerrManDlg.cpp:345
+#: wx/enviro_wdr.cpp:1390
+#: wx/enviro_wdr.cpp:2079
+#: wx/enviro_wdr.cpp:2227
+msgid "Delete"
+msgstr "Sil"
+
+#: wx/EnviroGUI.cpp:197
+msgid "Save Vegetation Data"
+msgstr ""
+
+#: wx/EnviroGUI.cpp:198
+msgid "Vegetation Files (*.vf)|*.vf"
+msgstr ""
+
+#: wx/EnviroGUI.cpp:226
+msgid "Save Built Structures Data"
+msgstr ""
+
+#: wx/EnviroGUI.cpp:227
+msgid "Structure Files (*.vtst)|*.vtst"
+msgstr ""
+
+#: wx/EnviroGUI.cpp:337
+msgid "Style"
+msgstr ""
+
+#: wx/CameraDlg.cpp:81
+msgid "Meters/sec"
+msgstr "Metre/saniye"
+
+#: wx/CameraDlg.cpp:82
+msgid "Km/hour"
+msgstr "Km/saat"
+
+#: wx/CameraDlg.cpp:83
+msgid "Miles/hour"
+msgstr "Mil/saat"
+
+#: wx/CameraDlg.cpp:195
+msgid "View Width (meters)"
+msgstr ""
+
+#: wx/CameraDlg.cpp:201
+#: wx/enviro_wdr.cpp:516
+msgid "Horizontal FOV (degrees)"
+msgstr "Horizontal FOV (derece)"
+
+#: wx/LayerDlg.cpp:252
+msgid "Building"
+msgstr "Bina"
+
+#: wx/LayerDlg.cpp:254
+msgid "Fence"
+msgstr "Çit"
+
+#: wx/LayerDlg.cpp:285
+#, c-format
+msgid "Buildings: %d"
+msgstr "Binalar: %d"
+
+#: wx/LayerDlg.cpp:291
+#, c-format
+msgid "Fences: %d"
+msgstr "Çitler: %d"
+
+#: wx/LayerDlg.cpp:297
+#, c-format
+msgid "Instances: %d"
+msgstr "Gerçeklemeler: %d"
+
+#: wx/LayerDlg.cpp:314
+msgid " (Type: "
+msgstr ""
+
+#: wx/LayerDlg.cpp:317
+msgid ", Features: "
+msgstr ""
+
+#: wx/LayerDlg.cpp:447
+msgid "Abstract (Points with labels)"
+msgstr ""
+
+#: wx/LayerDlg.cpp:448
+msgid "Structure"
+msgstr ""
+
+#: wx/LayerDlg.cpp:449
+msgid "Layer type:"
+msgstr ""
+
+#: wx/LayerDlg.cpp:449
+msgid "Create new layer"
+msgstr ""
+
+#: wx/LayerDlg.cpp:479
+msgid "Save Abstract Data"
+msgstr ""
+
+#: wx/LayerDlg.cpp:480
+msgid "GIS Files (*.shp)|*.shp"
+msgstr ""
+
+#: wx/LocationDlg.cpp:611
+msgid "Please select an animpath to record."
+msgstr ""
+
+#: wx/LocationDlg.cpp:616
+msgid "Output directory for the images"
+msgstr ""
+
+#: wx/LocationDlg.cpp:631
+msgid "Animation time step for each frame, in seconds:"
+msgstr ""
+
+#: wx/LocationDlg.cpp:632
+#: wx/LocationDlg.cpp:643
+msgid "Animation"
+msgstr ""
+
+#: wx/LocationDlg.cpp:641
+#, c-format
+msgid "The animation of %.2f seconds will be recorded as %d frames (%.2f/sec)"
+msgstr ""
+
+#: wx/LocationDlg.cpp:646
+msgid "Output"
+msgstr ""
+
+#: wx/LocationDlg.cpp:660
+msgid "Polyline Data Sources"
+msgstr ""
+
+#: wx/LocationDlg.cpp:662
+msgid "Load Animation Path"
+msgstr "Animasyon Kütüğünü Yükle"
+
+#: wx/LocationDlg.cpp:709
+msgid "Save AnimPath"
+msgstr ""
+
+#: wx/LocationDlg.cpp:710
+msgid "AnimPath Files (*.vtap)|*.vtap"
+msgstr ""
+
+#: wx/LocationDlg.cpp:735
+#: wx/LocationDlg.cpp:822
+msgid "Couldn't recall point, probably a coordinate system transformation problem."
+msgstr "Nokta bulunamıyor, koordinasyon sistemi dönüştirme hatası olabilir."
+
+#: wx/LocationDlg.cpp:741
+msgid "Load Locations"
+msgstr "Yerleri Yükle"
+
+#: wx/LocationDlg.cpp:742
+#: wx/LocationDlg.cpp:770
+msgid "Location Files (*.loc)|*.loc"
+msgstr ""
+
+#: wx/LocationDlg.cpp:769
+msgid "Save Locations"
+msgstr "Yerleri Kaydet"
+
+#: wx/LocationDlg.cpp:786
+#, c-format
+msgid "Location %d"
+msgstr "Lokasyon %d"
+
+#: wx/LocationDlg.cpp:787
+msgid "Type a name for the new location:"
+msgstr "Yenı lokasyon için isim gir:"
+
+#: wx/LocationDlg.cpp:788
+msgid "Location Name"
+msgstr "Lokasyon Adı"
+
+#: wx/LocationDlg.cpp:801
+#: wx/LocationDlg.cpp:811
+msgid "Couldn't store point, probably a coordinate system transformation problem."
+msgstr "Nokta bulunamıyor, koordinasyon sistemi dönüştirme hatası olabilir."
+
+#: wx/SceneGraphDlg.cpp:147
+msgid "Engines"
+msgstr "Motorlar"
+
+#: wx/SceneGraphDlg.cpp:169
+msgid "Light"
+msgstr "Işık"
+
+#: wx/SceneGraphDlg.cpp:174
+#: wx/enviro_wdr.cpp:1871
+msgid "Geometry"
+msgstr "Geometri"
+
+#: wx/SceneGraphDlg.cpp:190
+msgid "Group"
+msgstr "Grup"
+
+#: wx/SceneGraphDlg.cpp:196
+msgid "Other"
+msgstr "Başka"
+
+#: wx/SceneGraphDlg.cpp:243
+#, c-format
+msgid "Mesh %d, %hs, %d verts, %d prims"
+msgstr "Meş %d, %hs, %d verts, %d prims"
+
+#: wx/SceneGraphDlg.cpp:247
+msgid "Text Mesh"
+msgstr "Tekst Meş"
+
+#: wx/SceneGraphDlg.cpp:260
+#, c-format
+msgid "(%d children)"
+msgstr "(%d çocuk)"
+
+#: wx/SceneGraphDlg.cpp:271
+msgid "(internal node)"
+msgstr "(iç nod)"
+
+#: wx/SceneGraphDlg.cpp:289
+msgid "unnamed"
+msgstr ""
+
+#: wx/SceneGraphDlg.cpp:305
+msgid "(non-node)"
+msgstr "(nod olmayan)"
+
+#: wx/SceneGraphDlg.cpp:310
+#, c-format
+msgid " (%d targets total)"
+msgstr " (%d toplam hedef)"
+
+#: wx/StartupDlg.cpp:63
+#, c-format
+msgid "Maximum Texture Dimension: %d\n"
+msgstr "Maksimum Doku Boyutu: %d\n"
+
+#: wx/StartupDlg.cpp:69
+#: wx/enviro_wdr.cpp:92
+msgid "OpenGL Info"
+msgstr "OpenGL Bilgisi"
+
+#: wx/StartupDlg.cpp:199
+#: wx/enviro_wdr.cpp:86
+msgid "Terrain Manager"
+msgstr "Teren Menajeri"
+
+#: wx/StartupDlg.cpp:261
+#: wx/enviro_wdr.cpp:89
+msgid "Global Options"
+msgstr "Global Ayarlar"
+
+#: wx/StyleDlg.cpp:76
+msgid "ADD"
+msgstr ""
+
+#: wx/StyleDlg.cpp:77
+msgid "MODULATE"
+msgstr ""
+
+#: wx/StyleDlg.cpp:78
+msgid "DECAL"
+msgstr ""
+
+#: wx/StyleDlg.cpp:215
+msgid "(none)"
+msgstr "(hiç)"
+
+#: wx/TParamsDlg.cpp:601
+#: wx/TParamsDlg.cpp:621
+#: wx/TextureDlg.cpp:147
+#: wx/TextureDlg.cpp:167
+msgid "<none>"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:720
+msgid "(default)"
+msgstr "(fabrika ayarı)"
+
+#: wx/TParamsDlg.cpp:829
+#: wx/TextureDlg.cpp:267
+msgid "Looking for files on data paths"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:957
+msgid "Terrain Flyer with Velocity"
+msgstr "Hız Ayarlı Alan Uçuşu"
+
+#: wx/TParamsDlg.cpp:1022
+#: wx/TParamsDlg.cpp:1023
+#: wx/TParamsDlg.cpp:1024
+#: wx/TParamsDlg.cpp:1029
+msgid "(double-click to add files)"
+msgstr "(dosya eklemek için çift tıkla)"
+
+#: wx/TParamsDlg.cpp:1125
+msgid "Please select a filename."
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1135
+#: wx/TextureDlg.cpp:218
+msgid "Couldn't locate file."
+msgstr "Dosya bulunamadı."
+
+#: wx/TParamsDlg.cpp:1139
+#: wx/TextureDlg.cpp:222
+msgid "ColorMap"
+msgstr "Renk Haritası"
+
+#: wx/TParamsDlg.cpp:1196
+#: wx/TParamsDlg.cpp:1224
+#: wx/TParamsDlg.cpp:1249
+#: wx/TParamsDlg.cpp:1275
+msgid "One of the following to add:"
+msgstr "Eklemek için aşağıdakilerden biri:"
+
+#: wx/TParamsDlg.cpp:1197
+#: wx/TParamsDlg.cpp:1224
+msgid "Choose a structure file"
+msgstr "Yapı dosyası seç"
+
+#: wx/TParamsDlg.cpp:1249
+msgid "Choose an animpath file"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1276
+msgid "Choose an image file"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1314
+msgid "Set Initial Time"
+msgstr "Başlama Zamanı Seç"
+
+#: wx/TParamsDlg.cpp:1334
+msgid "Feature Style"
+msgstr "Özellik Stili"
+
+#: wx/TParamsDlg.cpp:1346
+msgid "Overlay Image File"
+msgstr "Üst Katman Görüntü Dosyası"
+
+#: wx/TParamsDlg.cpp:1347
+msgid "Image Files (*.png,*.jpg,*.bmp)|*.png;*.jpg;*.bmp"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1381
+#: wx/ScenarioSelectDialog.cpp:247
+msgid "Enter Scenario Name"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1382
+#: wx/ScenarioSelectDialog.cpp:247
+msgid "New Scenario"
+msgstr ""
+
+#: wx/TParamsDlg.cpp:1412
+#: wx/ScenarioSelectDialog.cpp:210
+msgid "Scenario Parameters"
+msgstr ""
+
+#: wx/TerrManDlg.cpp:69
+msgid "Terrain Data Paths"
+msgstr "Teren Dosyası Yolları"
+
+#: wx/TerrManDlg.cpp:166
+msgid "Please enter the name for the terrain copy."
+msgstr "Lütfen teren kopyasının adını gir."
+
+#: wx/TerrManDlg.cpp:167
+msgid "Add Copy of Terrain"
+msgstr "Teren Kopyası Ekle"
+
+#: wx/TerrManDlg.cpp:236
+msgid "Please enter the name for a new terrain .xml file."
+msgstr "Lütfen teren .xml dosyasının adını gir."
+
+#: wx/TerrManDlg.cpp:237
+#: wx/enviro_wdr.cpp:1381
+msgid "Add Terrain"
+msgstr "Teren Ekle"
+
+#: wx/TerrManDlg.cpp:270
+msgid "Specify Data Directory"
+msgstr "Dosyaların Kütüğünü Belirt"
+
+#: wx/TerrManDlg.cpp:343
+#: wx/enviro_wdr.cpp:358
+#: wx/enviro_wdr.cpp:1591
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1086
+msgid "Remove"
+msgstr "Sil"
+
+#: wx/TimeDlg.cpp:83
+#: wx/enviro_wdr.cpp:99
+#: wx/enviro_wdr.cpp:201
+#: wx/enviro_wdr.cpp:661
+#: wx/enviro_wdr.cpp:1401
+#: wx/enviro_wdr.cpp:1834
+#: wx/enviro_wdr.cpp:2046
+#: wx/enviro_wdr.cpp:2194
+#: wx/enviro_wdr.cpp:2251
+#: wx/enviro_wdr.cpp:2412
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:163
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:346
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:995
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1050
+msgid "OK"
+msgstr "Tamam"
+
+#: wx/TimeDlg.cpp:86
+#: wx/enviro_wdr.cpp:103
+#: wx/enviro_wdr.cpp:204
+#: wx/enviro_wdr.cpp:1838
+#: wx/enviro_wdr.cpp:2049
+#: wx/enviro_wdr.cpp:2197
+#: wx/enviro_wdr.cpp:2254
+#: wx/enviro_wdr.cpp:2415
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:998
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1053
+msgid "Cancel"
+msgstr "Vazgeç"
+
+#: wx/enviro_wdr.cpp:44
+msgid "Launch with:"
+msgstr "... ile başlat:"
+
+#: wx/enviro_wdr.cpp:47
+msgid "Earth View"
+msgstr "Yeryüzü Görüntüsü"
+
+#: wx/enviro_wdr.cpp:54
+msgid "Image:  "
+msgstr "Görüntü: "
+
+#: wx/enviro_wdr.cpp:63
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:896
+msgid "Terrain"
+msgstr "Teren"
+
+#: wx/enviro_wdr.cpp:72
+#: wx/enviro_wdr.cpp:685
+#: wx/enviro_wdr.cpp:716
+#: wx/enviro_wdr.cpp:730
+#: wx/enviro_wdr.cpp:762
+#: wx/enviro_wdr.cpp:781
+#: wx/enviro_wdr.cpp:846
+#: wx/enviro_wdr.cpp:862
+#: wx/enviro_wdr.cpp:913
+#: wx/enviro_wdr.cpp:1232
+#: wx/enviro_wdr.cpp:1290
+#: wx/enviro_wdr.cpp:1825
+#: wx/enviro_wdr.cpp:2033
+#: wx/enviro_wdr.cpp:2350
+#: wx/enviro_wdr.cpp:2366
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:377
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:394
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:469
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:483
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:590
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:606
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:622
+msgid "Item"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:77
+msgid "Edit Properties"
+msgstr "Ayarları Değiştir"
+
+#: wx/enviro_wdr.cpp:127
+msgid "Enabled"
+msgstr "Etkinleştirilmiş"
+
+#: wx/enviro_wdr.cpp:130
+#: wx/enviro_wdr.cpp:1579
+msgid "Zoom To"
+msgstr "-e Zumla"
+
+#: wx/enviro_wdr.cpp:133
+msgid "Refresh"
+msgstr "Tazele"
+
+#: wx/enviro_wdr.cpp:154
+#: wx/enviro_wdr.cpp:2171
+msgid "Name:"
+msgstr "İsim:"
+
+#: wx/enviro_wdr.cpp:171
+msgid "Elevation"
+msgstr "Yükselti"
+
+#: wx/enviro_wdr.cpp:175
+#: wx/enviro_wdr.cpp:833
+msgid "Texture"
+msgstr "Doku"
+
+#: wx/enviro_wdr.cpp:179
+msgid "Culture"
+msgstr "Kültür"
+
+#: wx/enviro_wdr.cpp:183
+msgid "Sky && Ocean"
+msgstr "Gök && Okyanus"
+
+#: wx/enviro_wdr.cpp:187
+#: wx/enviro_wdr.cpp:1513
+msgid "Abstract Layers"
+msgstr "Sanal Katmanlar"
+
+#: wx/enviro_wdr.cpp:191
+msgid "Miscellaneous"
+msgstr "Değişik"
+
+#: wx/enviro_wdr.cpp:225
+msgid " Species:"
+msgstr " Türler:"
+
+#: wx/enviro_wdr.cpp:236
+msgid "Common names"
+msgstr "Ortak isimler"
+
+#: wx/enviro_wdr.cpp:239
+msgid "Language:"
+msgstr "Dil:"
+
+#: wx/enviro_wdr.cpp:250
+msgid "    Height:"
+msgstr "     Yükseklik"
+
+#: wx/enviro_wdr.cpp:256
+#: wx/enviro_wdr.cpp:306
+#: wx/enviro_wdr.cpp:1088
+#: wx/enviro_wdr.cpp:1247
+#: wx/enviro_wdr.cpp:1305
+#: wx/enviro_wdr.cpp:1785
+#: wx/enviro_wdr.cpp:1798
+#: wx/enviro_wdr.cpp:1899
+#: wx/enviro_wdr.cpp:1984
+#: wx/enviro_wdr.cpp:1999
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:111
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:255
+msgid "meters"
+msgstr "metre"
+
+#: wx/enviro_wdr.cpp:264
+msgid "Planting Options"
+msgstr "Bitkilendirme Ayarları"
+
+#: wx/enviro_wdr.cpp:269
+msgid "Individual instances"
+msgstr "Tekil gerçeklemeler"
+
+#: wx/enviro_wdr.cpp:272
+msgid "Straight line"
+msgstr "Düz çizgi"
+
+#: wx/enviro_wdr.cpp:276
+msgid "Continuously"
+msgstr "Devamlı"
+
+#: wx/enviro_wdr.cpp:284
+msgid "Height variance:"
+msgstr "Yükseklik varyansı:"
+
+#: wx/enviro_wdr.cpp:290
+msgid "%"
+msgstr "%"
+
+#: wx/enviro_wdr.cpp:300
+msgid "Minimum spacing:"
+msgstr "En küçük ara:"
+
+#: wx/enviro_wdr.cpp:337
+#: wx/enviro_wdr.cpp:380
+#: wx/enviro_wdr.cpp:1582
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:810
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1096
+msgid "Save"
+msgstr "Kaydet"
+
+#: wx/enviro_wdr.cpp:340
+#: wx/enviro_wdr.cpp:383
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:816
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1102
+msgid "Load"
+msgstr "Yükle"
+
+#: wx/enviro_wdr.cpp:349
+msgid "Recall ->"
+msgstr "Hatırla ->"
+
+#: wx/enviro_wdr.cpp:352
+msgid "<- Store"
+msgstr "<- Kaydet"
+
+#: wx/enviro_wdr.cpp:355
+msgid "Store As.."
+msgstr ".. Gibi Kaydet"
+
+#: wx/enviro_wdr.cpp:377
+#: wx/enviro_wdr.cpp:2076
+#: wx/enviro_wdr.cpp:2224
+msgid "New"
+msgstr "Yeni"
+
+#: wx/enviro_wdr.cpp:411
+msgid "Active"
+msgstr "Aktif"
+
+#: wx/enviro_wdr.cpp:416
+msgid "Playback"
+msgstr "Yeniden Çal"
+
+#: wx/enviro_wdr.cpp:421
+#: wx/enviro_wdr.cpp:1674
+#: wx/enviro_wdr.cpp:2452
+msgid "Speed:"
+msgstr "Hız:"
+
+#: wx/enviro_wdr.cpp:430
+msgid "m/s"
+msgstr "m/s"
+
+#: wx/enviro_wdr.cpp:437
+msgid "Loop"
+msgstr "Döngü"
+
+#: wx/enviro_wdr.cpp:440
+msgid "Continuous"
+msgstr "Devamlı"
+
+#: wx/enviro_wdr.cpp:443
+msgid "Smooth"
+msgstr "Düzgün"
+
+#: wx/enviro_wdr.cpp:446
+msgid "Position Only"
+msgstr "Sadece Lokasyon"
+
+#: wx/enviro_wdr.cpp:451
+msgid "Play animation to disk as a series of images"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:456
+msgid "Recording"
+msgstr "Kaydetme"
+
+#: wx/enviro_wdr.cpp:459
+msgid "Use linear distance"
+msgstr "Lineer mesafe kullan"
+
+#: wx/enviro_wdr.cpp:464
+msgid "Time interval"
+msgstr "Zaman aralığı"
+
+#: wx/enviro_wdr.cpp:470
+msgid "seconds"
+msgstr "saniye"
+
+#: wx/enviro_wdr.cpp:493
+msgid "Position:"
+msgstr "Yer:"
+
+#: wx/enviro_wdr.cpp:506
+msgid "Elevation:"
+msgstr "Yükseklik:"
+
+#: wx/enviro_wdr.cpp:529
+msgid "Near Clipping Plane (meters):"
+msgstr "Yakın Kesme Yüzeyi (metre)"
+
+#: wx/enviro_wdr.cpp:542
+msgid "Far Clipping Plane (meters):"
+msgstr "Uzak Kesme Yüzeyi (metre)"
+
+#: wx/enviro_wdr.cpp:555
+msgid "Stereo Eye Separation:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:571
+msgid "Navigation Speed:"
+msgstr "Navigasyon Hızı:"
+
+#: wx/enviro_wdr.cpp:584
+msgid "Units"
+msgstr "Birimler"
+
+#: wx/enviro_wdr.cpp:597
+#: wx/enviro_wdr.cpp:1267
+msgid "Accelerate by height above ground"
+msgstr "Yerden yükseklikle hızlan"
+
+#: wx/enviro_wdr.cpp:607
+msgid "LOD distance for Vegetation"
+msgstr "Bitkiler için detay uzaklığı"
+
+#: wx/enviro_wdr.cpp:620
+msgid "LOD distance for Structures"
+msgstr "Binalar için detay uzaklığı"
+
+#: wx/enviro_wdr.cpp:633
+msgid "LOD distance for Roads"
+msgstr "Yollar için detay uzaklığı"
+
+#: wx/enviro_wdr.cpp:680
+msgid "Structure Type:"
+msgstr "Bina Tipi:"
+
+#: wx/enviro_wdr.cpp:706
+msgid "Grid"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:711
+msgid "Grid Filename: "
+msgstr "Grid Dosyası: "
+
+#: wx/enviro_wdr.cpp:725
+msgid "Terrain LOD Method:"
+msgstr "Teren LOD (detay) Yöntemi:"
+
+#: wx/enviro_wdr.cpp:739
+msgid "Triangle count target: "
+msgstr ""
+
+#: wx/enviro_wdr.cpp:745
+msgid "Use strips/fans"
+msgstr "Strip/Fan Kullan"
+
+#: wx/enviro_wdr.cpp:752
+msgid "TIN"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:757
+msgid "TIN Filename:"
+msgstr "TIN Dosyası:"
+
+#: wx/enviro_wdr.cpp:771
+msgid "Grid Tiles"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:776
+#: wx/enviro_wdr.cpp:908
+msgid "Tileset .ini file:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:790
+msgid "Vertex count target: "
+msgstr ""
+
+#: wx/enviro_wdr.cpp:796
+msgid "RAM cache size (MB):"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:808
+msgid "Vertical Exaggeration:"
+msgstr "Vertikal Abartı:"
+
+#: wx/enviro_wdr.cpp:814
+#: wx/enviro_wdr.cpp:1350
+msgid "x"
+msgstr "x"
+
+#: wx/enviro_wdr.cpp:836
+msgid "No texture"
+msgstr "Dokusuz"
+
+#: wx/enviro_wdr.cpp:841
+#: wx/enviro_wdr.cpp:2345
+msgid "Single texture "
+msgstr "Tek Doku"
+
+#: wx/enviro_wdr.cpp:853
+#: wx/enviro_wdr.cpp:2357
+msgid "Derive texture from elevation"
+msgstr "Yukseltiden doku edin"
+
+#: wx/enviro_wdr.cpp:867
+#: wx/enviro_wdr.cpp:2371
+msgid "Edit Colors..."
+msgstr "Renkleri Değiştir..."
+
+#: wx/enviro_wdr.cpp:872
+#: wx/enviro_wdr.cpp:2376
+msgid "4x4 Tiled texture"
+msgstr "4x4 Döşeli doku"
+
+#: wx/enviro_wdr.cpp:878
+#: wx/enviro_wdr.cpp:2382
+msgid "Tile size: "
+msgstr "Döşeme boyu: "
+
+#: wx/enviro_wdr.cpp:883
+#: wx/enviro_wdr.cpp:893
+#: wx/enviro_wdr.cpp:2102
+#: wx/enviro_wdr.cpp:2387
+#: wx/enviro_wdr.cpp:2397
+#: wx/enviro_wdr.cpp:2483
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:549
+msgid "ChoiceItem"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:888
+#: wx/enviro_wdr.cpp:2392
+msgid "Filename base: "
+msgstr "Dosya adı kökü: "
+
+#: wx/enviro_wdr.cpp:898
+#: wx/enviro_wdr.cpp:2402
+msgid "Filename: "
+msgstr "Dosya adı: "
+
+#: wx/enviro_wdr.cpp:924
+msgid "Mipmapping"
+msgstr "Mipmapleme"
+
+#: wx/enviro_wdr.cpp:927
+msgid "Request 16-bit"
+msgstr "16-bit İste"
+
+#: wx/enviro_wdr.cpp:934
+msgid "Precompute lighting"
+msgstr "Işığı önceden hesapla"
+
+#: wx/enviro_wdr.cpp:939
+msgid "Lighting factor: "
+msgstr "Işık faktörü: "
+
+#: wx/enviro_wdr.cpp:947
+msgid "Cast shadows"
+msgstr "Gölge vur"
+
+#: wx/enviro_wdr.cpp:956
+msgid "Retain loaded texture in memory for faster re-lighting"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:965
+msgid "Detail Texture"
+msgstr "Detay Dokusu"
+
+#: wx/enviro_wdr.cpp:968
+msgid "Show detail texture"
+msgstr "Detay dokusunu göster"
+
+#: wx/enviro_wdr.cpp:977
+msgid "Scale"
+msgstr "Oranla"
+
+#: wx/enviro_wdr.cpp:985
+msgid "(meter size of detail texture)"
+msgstr "(detay dokusunun metre boyu)"
+
+#: wx/enviro_wdr.cpp:1000
+msgid "Image Layers"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1035
+#: wx/enviro_wdr.cpp:1067
+msgid "Source file: "
+msgstr "Kaynak dosyası: "
+
+#: wx/enviro_wdr.cpp:1046
+#: wx/enviro_wdr.cpp:1154
+msgid " Visibility distance: "
+msgstr "Görebilme mesafesi: "
+
+#: wx/enviro_wdr.cpp:1052
+#: wx/enviro_wdr.cpp:1160
+msgid "m"
+msgstr "m"
+
+#: wx/enviro_wdr.cpp:1059
+msgid "Roads"
+msgstr "Yollar"
+
+#: wx/enviro_wdr.cpp:1082
+msgid "Ground offset: "
+msgstr "Yerden ofset: "
+
+#: wx/enviro_wdr.cpp:1091
+msgid "Visibility distance:"
+msgstr "Görebilme mesafesi:"
+
+#: wx/enviro_wdr.cpp:1097
+msgid "km"
+msgstr "km"
+
+#: wx/enviro_wdr.cpp:1102
+msgid "Texture-map roads"
+msgstr "Dokulu yollar"
+
+#: wx/enviro_wdr.cpp:1105
+msgid "Road culture (stoplights, etc.)"
+msgstr "Yol tipi (trafik ışıkları, vs.)"
+
+#: wx/enviro_wdr.cpp:1114
+msgid "Include:"
+msgstr "Ekle:"
+
+#: wx/enviro_wdr.cpp:1117
+msgid "Highways"
+msgstr "Otoyollar"
+
+#: wx/enviro_wdr.cpp:1120
+msgid "Paved"
+msgstr "Kaldırım Taşlı"
+
+#: wx/enviro_wdr.cpp:1123
+msgid "Dirt"
+msgstr "Toprak"
+
+#: wx/enviro_wdr.cpp:1136
+msgid "Terrain-specific content:"
+msgstr "Terene bağlı içerik:"
+
+#: wx/enviro_wdr.cpp:1145
+msgid "Structure Files"
+msgstr "Yapı Dosyaları"
+
+#: wx/enviro_wdr.cpp:1167
+msgid "Structure shadows (preliminary!)"
+msgstr "Yapı gölgesi (deneme!)"
+
+#: wx/enviro_wdr.cpp:1174
+msgid "Resolution:"
+msgstr "Çözünürlük:"
+
+#: wx/enviro_wdr.cpp:1187
+msgid "Darkness:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1201
+msgid "Enable Vehicles"
+msgstr "Araçları Etkin Kıl"
+
+#: wx/enviro_wdr.cpp:1222
+msgid "Navigation"
+msgstr "Navigasyon"
+
+#: wx/enviro_wdr.cpp:1227
+msgid "Style:"
+msgstr "Stil:"
+
+#: wx/enviro_wdr.cpp:1241
+msgid "Minimum height above ground: "
+msgstr "Yere olan en az yükseklik: "
+
+#: wx/enviro_wdr.cpp:1254
+msgid "Navigation speed:"
+msgstr "Navigasyon hızı:"
+
+#: wx/enviro_wdr.cpp:1260
+msgid "meters/frame"
+msgstr "metre/çerçeve"
+
+#: wx/enviro_wdr.cpp:1274
+msgid "Default Locations File:"
+msgstr "Herzamanki Lokasyon Dosyası:"
+
+#: wx/enviro_wdr.cpp:1285
+msgid "Initial Camera Location"
+msgstr "Birincil Kamera Lokasyonu"
+
+#: wx/enviro_wdr.cpp:1299
+msgid "Near clipping (\"Hither\") distance"
+msgstr "Yakın kesme (\"Hither\") mesafesi"
+
+#: wx/enviro_wdr.cpp:1310
+msgid "Animation Paths:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1324
+msgid "Initial Time: "
+msgstr "Başlangıç Zamanı: "
+
+#: wx/enviro_wdr.cpp:1330
+#: wx/enviro_wdr.cpp:1492
+#: wx/enviro_wdr.cpp:2496
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:124
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:137
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:150
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:281
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:304
+msgid "Set"
+msgstr "Set"
+
+#: wx/enviro_wdr.cpp:1337
+msgid "Time Moves"
+msgstr "Zaman Akıyor"
+
+#: wx/enviro_wdr.cpp:1344
+msgid "Faster than real: "
+msgstr "Gerçek zamandan hızlı akış:"
+
+#: wx/enviro_wdr.cpp:1378
+msgid "Add Path"
+msgstr "Yol Ekle"
+
+#: wx/enviro_wdr.cpp:1387
+msgid "Add Copy"
+msgstr "Kopya Ekle"
+
+#: wx/enviro_wdr.cpp:1396
+msgid "Edit Parameters"
+msgstr "Parametre Değiştir"
+
+#: wx/enviro_wdr.cpp:1425
+msgid "Ocean plane"
+msgstr "Okyanus Yüzeyi"
+
+#: wx/enviro_wdr.cpp:1432
+#: wx/enviro_wdr.cpp:1447
+msgid "Level (meters)"
+msgstr "Seviye (metre)"
+
+#: wx/enviro_wdr.cpp:1440
+msgid "Depress Ocean"
+msgstr "Okyanusu Bastır"
+
+#: wx/enviro_wdr.cpp:1455
+msgid "Sky dome"
+msgstr "Yüzey kubbesi"
+
+#: wx/enviro_wdr.cpp:1468
+msgid "Artificial Horizon"
+msgstr "Suni Ufuk"
+
+#: wx/enviro_wdr.cpp:1473
+msgid "Fog"
+msgstr "Sis"
+
+#: wx/enviro_wdr.cpp:1476
+msgid "Distance (km)"
+msgstr "Mesafe (km)"
+
+#: wx/enviro_wdr.cpp:1486
+msgid "Scene background color:"
+msgstr "Sahne Arkaplan rengi:"
+
+#: wx/enviro_wdr.cpp:1520
+msgid "Style..."
+msgstr "Stil..."
+
+#: wx/enviro_wdr.cpp:1525
+msgid "Window Overlay (HUD)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1528
+msgid "Image file:"
+msgstr "Görüntü dosyası:"
+
+#: wx/enviro_wdr.cpp:1536
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:639
+msgid "..."
+msgstr "..."
+
+#: wx/enviro_wdr.cpp:1543
+msgid "Placement:"
+msgstr "Yerleştirme:"
+
+#: wx/enviro_wdr.cpp:1554
+msgid "(pixels from the lower-left corner)"
+msgstr "(sol-alt köşeden noktalar)"
+
+#: wx/enviro_wdr.cpp:1585
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:813
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1099
+msgid "Save As..."
+msgstr "... olarak Sakla"
+
+#: wx/enviro_wdr.cpp:1588
+msgid "Create"
+msgstr "Yarat"
+
+#: wx/enviro_wdr.cpp:1597
+msgid "Visible"
+msgstr "Görülebilir"
+
+#: wx/enviro_wdr.cpp:1600
+msgid "Shadow"
+msgstr "Gölge"
+
+#: wx/enviro_wdr.cpp:1606
+msgid "Show All"
+msgstr "Hepsini Göster"
+
+#: wx/enviro_wdr.cpp:1630
+msgid "Year:"
+msgstr "Yıl:"
+
+#: wx/enviro_wdr.cpp:1636
+msgid "Month"
+msgstr "Ay"
+
+#: wx/enviro_wdr.cpp:1642
+msgid "Day"
+msgstr "Gün"
+
+#: wx/enviro_wdr.cpp:1652
+msgid "Hour:"
+msgstr "Saat:"
+
+#: wx/enviro_wdr.cpp:1658
+msgid "Minute"
+msgstr "Dakika"
+
+#: wx/enviro_wdr.cpp:1664
+msgid "Second"
+msgstr "Saniye"
+
+#: wx/enviro_wdr.cpp:1683
+msgid "Stop"
+msgstr "Dur"
+
+#: wx/enviro_wdr.cpp:1704
+msgid "Display"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1707
+msgid "Start in full screen"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1710
+msgid "Stereo"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1717
+msgid "Anaglyphic (red-blue)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1722
+msgid "Quad buffer (shutter glasses)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1729
+msgid "Window size"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1734
+msgid "Window X"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1740
+msgid "Window Y"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1746
+msgid "Width"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1752
+msgid "Height"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1760
+msgid "Size is inside (3D view area, not frame)"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1765
+msgid "Texture compression"
+msgstr "Doku sıkıştırması"
+
+#: wx/enviro_wdr.cpp:1768
+msgid "Disable model mipmaps"
+msgstr "Model mıpmapleri iptal"
+
+#: wx/enviro_wdr.cpp:1771
+msgid "Selection"
+msgstr "Seçim"
+
+#: wx/enviro_wdr.cpp:1774
+msgid "Use direct picking of object under 2D cursor"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1779
+msgid "Selection cutoff distance:"
+msgstr "Kesme uzaklığını seçme:"
+
+#: wx/enviro_wdr.cpp:1792
+msgid "Maximum radius for selecting models:"
+msgstr "Model seçimi için en büyük yarıçap:"
+
+#: wx/enviro_wdr.cpp:1807
+msgid "Size exaggeration for plants and fences: "
+msgstr "Bitki ve çitler için boyut abartma: "
+
+#: wx/enviro_wdr.cpp:1815
+msgid "Show only species with available appearances"
+msgstr "Sadece görüntüleri belli olan türleri göster"
+
+#: wx/enviro_wdr.cpp:1820
+msgid "Global content file:"
+msgstr "Global içerik dosyası:"
+
+#: wx/enviro_wdr.cpp:1861
+msgid "Feature type:"
+msgstr "Özellik tipi:"
+
+#: wx/enviro_wdr.cpp:1881
+#: wx/enviro_wdr.cpp:1940
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:131
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:298
+msgid "Color:"
+msgstr "Renk:"
+
+#: wx/enviro_wdr.cpp:1893
+#: wx/enviro_wdr.cpp:1978
+msgid "Height above ground"
+msgstr "Yerden yükseklik"
+
+#: wx/enviro_wdr.cpp:1908
+msgid "Line width"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1914
+msgid "pixels"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1923
+msgid "Tessellate edges"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:1930
+msgid "Text Labels"
+msgstr "Yazı Etiketleri"
+
+#: wx/enviro_wdr.cpp:1952
+msgid "Text field:"
+msgstr "Yazı alanı:"
+
+#: wx/enviro_wdr.cpp:1965
+msgid "Color field:"
+msgstr "Renk alanı:"
+
+#: wx/enviro_wdr.cpp:1993
+msgid "Label Size (vertical)"
+msgstr "Etiket Boyu (dikey)"
+
+#: wx/enviro_wdr.cpp:2008
+msgid "Font:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2018
+msgid "Texture Overlay"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2028
+msgid "Mode:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2082
+#: wx/enviro_wdr.cpp:2230
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:554
+msgid "Edit"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2085
+#: wx/enviro_wdr.cpp:2233
+msgid "Move Up"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2088
+#: wx/enviro_wdr.cpp:2236
+msgid "Move Down"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2097
+msgid "Start with active scenario:"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2125
+#: wx/enviro_wdr.cpp:2188
+msgid "Visible Layers"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2136
+msgid "<<"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2139
+msgid ">>"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2144
+msgid "Available Layers"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2239
+msgid "Previous"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2242
+msgid "Next"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2257
+msgid "Apply"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2276
+msgid "Detail levels chart"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2286
+msgid "Target Count"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2292
+msgid "Current"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2302
+msgid "Tile RAM cache used"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2308
+msgid "K"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2315
+msgid "Disk loads"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2321
+msgid "Cache hits"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2455
+msgid "2.0"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2458
+msgid "fps"
+msgstr ""
+
+#: wx/enviro_wdr.cpp:2490
+msgid "Body color:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:50
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:194
+msgid "Building Levels"
+msgstr "Bina Seviyeleri"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:59
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:203
+msgid "Copy"
+msgstr "Kopyala"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:63
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:207
+msgid "Del"
+msgstr "Sil"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:67
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:211
+msgid "Up"
+msgstr "Yukarı"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:70
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:214
+msgid "Down"
+msgstr "Aşağı"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:80
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:224
+msgid "Baseline Editor"
+msgstr "Temel Editör"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:83
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:227
+msgid "Set Roof Type"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:90
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:234
+msgid "Level Properties"
+msgstr "Seviye Özellikleri"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:95
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:239
+msgid "Stories:"
+msgstr "Katlar:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:105
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:249
+msgid "Story Height:"
+msgstr "Kat Yükseklik:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:118
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:275
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:478
+msgid "Material:"
+msgstr "Malzeme:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:144
+msgid "Edge Slopes:"
+msgstr "Kenar Eğimi:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:168
+msgid "Edges >>"
+msgstr "Kenarlar >>"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:260
+msgid "Edges:"
+msgstr "Kenarlar:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:269
+msgid "Edge Properties"
+msgstr "Kenar Özellikleri"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:288
+msgid "Facade"
+msgstr "Fasad"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:311
+msgid "Slope:"
+msgstr "Eğim:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:324
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:681
+msgid "Clear"
+msgstr "Temiz"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:327
+msgid "Wall"
+msgstr "Duvar"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:330
+msgid "Window"
+msgstr "Pencere"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:333
+msgid "Door"
+msgstr "Kapı"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:351
+msgid "Edges <<"
+msgstr "Kenarlar <<"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:372
+msgid "Defined Style:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:384
+msgid "Posts"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:389
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:464
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:601
+msgid "Type:"
+msgstr "Tip:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:403
+msgid "Spacing:"
+msgstr "Aralık:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:416
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:795
+msgid "Height:"
+msgstr "Yükseklik:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:429
+msgid "Size:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:442
+msgid "Extension:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:447
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:895
+msgid "None"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:448
+msgid "Left"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:449
+msgid "Right"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:450
+msgid "Double"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:459
+msgid "Connection"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:492
+msgid "Top Height:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:505
+msgid "Bottom Height:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:518
+msgid "Width:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:531
+msgid "Side Slope:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:544
+msgid "Profile:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:559
+msgid "Constant Top Height"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:578
+msgid "Instance from Content File"
+msgstr "İçerik dosyasından Gerçekleme"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:585
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:756
+msgid "File:"
+msgstr "Dosya:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:617
+msgid "Item:"
+msgstr "Şey:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:629
+msgid "Instance from 3D Model File"
+msgstr "3D Model dosyasından Gerçekleme"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:647
+msgid "Location:"
+msgstr "Lokasyon:"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:673
+msgid "Line"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:676
+msgid "Path"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:688
+msgid "Map Offset"
+msgstr "Harita Ofset"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:698
+msgid "Map Distance"
+msgstr "Harita Mesafesi"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:708
+msgid "Geodesic Distance"
+msgstr "Geodezik Mesafe"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:718
+msgid "Approximate Ground"
+msgstr "Yaklaşık Yer Seviyesi"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:728
+msgid "Vertical Difference"
+msgstr "Dikey Fark"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:766
+msgid "Scale relative to elevation range"
+msgstr "Yükselti farkına orantı"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:769
+msgid "Blend colors smoothly"
+msgstr "Renkleri düzgün karıştır"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:776
+msgid "Colors"
+msgstr "Renkler"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:784
+msgid "Change Color..."
+msgstr "Renk değiştir..."
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:787
+msgid "Delete Color"
+msgstr "Renk Sil"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:792
+msgid "New Color"
+msgstr "Yeni Renk"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:801
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1080
+msgid "Add"
+msgstr "Ekle"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:822
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1105
+msgid "Close"
+msgstr "Kapat"
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:849
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:897
+msgid "Line of Sight"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:852
+msgid "Visibility"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:855
+msgid "Show Fresnel zones"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:858
+msgid "Use effective radius of earth"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:865
+msgid "Start height:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:871
+msgid "End height:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:877
+msgid "Radio Frequency:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:885
+msgid "MHz"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:890
+msgid "Apply curvature to:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:926
+msgid "Projection:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:935
+msgid "Datum:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:938
+msgid "Show All Datums"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:949
+msgid "Ellipsoid:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:957
+msgid "Horizontal Units:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:964
+msgid "Zone:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:971
+msgid "Parameters:"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:977
+msgid "Set State Plane Projection"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:982
+msgid "Load from File"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:985
+msgid "Save to File"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1027
+msgid "NAD27"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1030
+msgid "NAD83"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1037
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:45
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:51
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:57
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:63
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:322
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:199
+msgid "Meters"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1040
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:46
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:52
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:58
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:64
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:323
+msgid "Feet"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1043
+msgid "U.S. Feet"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/vtui_wdr.cpp:1083
+msgid "Move"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:147
+msgid "Choose facade texture"
+msgstr "Fasad dokusunu seç"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:369
+msgid " (flat roof)"
+msgstr " (yatay çatı)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:371
+msgid " (shed roof)"
+msgstr "(tek yüzey eğimli çatı)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:373
+msgid " (gable roof)"
+msgstr "(iki yüzey eğimli çatı)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:375
+msgid " (hip roof)"
+msgstr "(dört yüzey eğimli çatı)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:379
+#, c-format
+msgid " (stories : %d)"
+msgstr " (katlar : %d)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:470
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:111
+msgid "Unknown"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:526
+msgid "Flat (all edges 0(degree sign))"
+msgstr "Yatay (kenarlar 0°)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:527
+msgid "Shed"
+msgstr "Shed"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:528
+msgid "Gable"
+msgstr "Gable"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:529
+msgid "Hip"
+msgstr "Hip"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:530
+msgid "Vertical (all edges 90(degree sign))"
+msgstr "Dikey (kenarlar 90°)"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:536
+msgid "Please indicate edge slopes"
+msgstr "Kenar eğimini belirt"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:550
+msgid "Sloped edges"
+msgstr "Eğimli kenarlar"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:550
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:319
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:197
+msgid "Degrees"
+msgstr "Derece"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:551
+msgid "Slope"
+msgstr "Eğim"
+
+#: ../../TerrainSDK/vtui/BuildingDlg.cpp:686
+msgid "Set Building Material for All Edges"
+msgstr "Tüm kenarlar için malzeme ayarla"
+
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:104
+#, c-format
+msgid "%.2f meters"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:124
+msgid "Load ColorMap"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:125
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:156
+msgid "ColorMap Files (*.cmt)|*.cmt"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ColorMapDlg.cpp:155
+msgid "Save ColorMap"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:47
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:53
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:59
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:65
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:324
+msgid "US Survey Feet"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:48
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:54
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:60
+msgid "Kilometers"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:49
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:55
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:61
+msgid "Miles"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/DistanceDlg.cpp:179
+msgid "<Projection failure>"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/InstanceDlg.cpp:159
+msgid "(All)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/InstanceDlg.cpp:177
+msgid "3D Model files"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/InstanceDlg.cpp:179
+msgid "All files"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:109
+msgid "Wooden posts, wire"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:110
+msgid "Metal posts, wire"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:111
+msgid "Metal poles, chain-link"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:112
+msgid "Security fence"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:113
+msgid "Dry-stone wall"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:114
+msgid "Stone wall"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:115
+msgid "Privet hedge"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:116
+msgid "Berm"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:117
+msgid "Railing (Pipe)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:118
+msgid "Railing (Wire)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:119
+msgid "Railing (EU)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:120
+msgid "(custom)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/LinearStructDlg.cpp:295
+msgid "Edit Linear Structure Profile"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:557
+msgid "No Endpoints"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:592
+msgid "No Data"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:816
+#, c-format
+msgid "Minimum: %.2f m at distance %.1f\n"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:819
+#, c-format
+msgid "Maximum: %.2f m at distance %.1f"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:826
+#, c-format
+msgid "Mouse: %.2f m at distance %.1f"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:832
+#, c-format
+msgid "Slope %.3f (%.1f degrees)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:840
+#, c-format
+msgid "Fresnel Zone 1: Radius: %.1f, Clearance %.1f"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:845
+#, c-format
+msgid "  OF Zone: Radius: %.1f, Clearance %.1f"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:855
+#, c-format
+msgid "Fresnel zone radius at midpoint %.2fm (Object free zone %.2fm) Geoid Height %.1fm"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileDlg.cpp:864
+#, c-format
+msgid "Intersects ground at height %.2f, distance %.1f"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileEditDlg.cpp:253
+msgid "Load Profile"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileEditDlg.cpp:254
+#: ../../TerrainSDK/vtui/ProfileEditDlg.cpp:273
+msgid "Profile Files (*.shp)|*.shp"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProfileEditDlg.cpp:272
+msgid "Save Profile"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:68
+msgid "Albers Equal Area Conic"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:69
+msgid "Geographic"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:70
+msgid "Hotine Oblique Mercator"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:71
+msgid "Lambert Azimuthal Equal-Area"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:72
+msgid "Lambert Conformal Conic"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:73
+msgid "New Zealand Map Grid"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:74
+msgid "Oblique Stereographic"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:75
+msgid "Polar Stereographic"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:76
+msgid "Sinusoidal"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:77
+msgid "Stereographic"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:78
+msgid "Mercator"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:79
+msgid "Transverse Mercator"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:80
+msgid "UTM"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:81
+msgid "Dymaxion"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:87
+msgid "Attribute"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:89
+msgid "Value"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:202
+msgid "Feet (International)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:203
+msgid "Feet (U.S. Survey)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:206
+msgid "Unit Edges"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:258
+msgid "(Invalid projection)"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:355
+msgid "Unknown projection: "
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:372
+msgid "Save Projection to File"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:373
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:383
+msgid "Projection Files (*.prj)|*.prj"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:382
+msgid "Load Projection from File"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:390
+msgid "Couldn't load projection from that file.\n"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:410
+msgid ""
+"Couldn't set that Datum.  Perhaps the EPSG\n"
+" tables could not be located.  Check that your\n"
+" GEOTIFF_CSV environment variable is set."
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:438
+msgid "Value for "
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:442
+msgid "Enter new value"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:589
+msgid "Select State Plane"
+msgstr ""
+
+#: ../../TerrainSDK/vtui/ProjectionDlg.cpp:608
+msgid ""
+"Couldn't set state plane projection.  Perhaps the\n"
+" EPSG tables could not be located.  Check that your\n"
+" GEOTIFF_CSV environment variable is set."
+msgstr ""
+
+#~ msgid "Save Vegetation As..."
+#~ msgstr "Bitkileri ... Olarak Kaydet"
+#~ msgid "Save Built Structures As..."
+#~ msgstr "Binaları ... Olarak Kaydet"
+#~ msgid "Follow Route"
+#~ msgstr "Yol Takip Et"
+#~ msgid "Load Point Data"
+#~ msgstr "Noktaları Yükle"
+#~ msgid "Point Data Sources (*.shp)|*.shp|"
+#~ msgstr "Nokta Kaynakları (*.shp)|*.shp|"
+#~ msgid "Couldn't Open"
+#~ msgstr "Açılamadı"
+#~ msgid "Polyline Data Sources (*.shp)|*.shp|"
+#~ msgstr "Çizgi Kaynakları (*.shp)|*.shp|"
+#~ msgid "Location Files (*.loc)|*.loc|"
+#~ msgstr "Yer Dosyaları (*.loc)|*.loc|"
+#~ msgid "Image Files (*.png,*.jpg,*.bmp)|*.png;*.jpg;*.bmp|"
+#~ msgstr "Görüntü Dosyaları (*.png,*.jpg,*.bmp)|*.png;*.jpg;*.bmp|"
+#~ msgid "Elevation Grid"
+#~ msgstr "Yükselti Gridi"
+#~ msgid "Triangle Count: "
+#~ msgstr "Üçgen Sayısı:"
+#~ msgid "Pixel Error Bound: "
+#~ msgstr "Nokta Hata Sınırı:"
+#~ msgid "Elevation TIN"
+#~ msgstr "Yükselti TIN"
+#~ msgid "File Format:"
+#~ msgstr "Dosya Formatı:"
+#~ msgid "JPEG"
+#~ msgstr "JPEG"
+#~ msgid "Overlay"
+#~ msgstr "Üzerine yaz"
+#~ msgid "Set Active"
+#~ msgstr "Aktif Kıl"
+#~ msgid "Full screen"
+#~ msgstr "Tüm ekran"
+#~ msgid "Recalculate Heights"
+#~ msgstr "Yükseklikleri yeniden hesapla"
+#~ msgid "Baseline offset"
+#~ msgstr "Temel ofset"
+
