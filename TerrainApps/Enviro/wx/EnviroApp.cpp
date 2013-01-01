@@ -114,6 +114,8 @@ void EnviroApp::SetupLocale()
 	VTLOG1("SetupLocale:\n");
 
 	wxLog::SetVerbose(true);
+
+	// Enable this for very detailed locale troubleshooting (in debugger only)
 //	wxLog::AddTraceMask(_T("i18n"));
 
 	// Locale stuff
@@ -129,6 +131,10 @@ void EnviroApp::SetupLocale()
 	//  look in the current directory as well.
 	wxString cwd = wxGetCwd();
 	m_locale.AddCatalogLookupPathPrefix(cwd);
+
+#if VTDEBUG
+	m_locale.AddCatalogLookupPathPrefix("../../../i18n");
+#endif
 
 	bool bSuccess=false;
 	if (m_locale_name != "")

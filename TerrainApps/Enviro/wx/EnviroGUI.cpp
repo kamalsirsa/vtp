@@ -156,16 +156,19 @@ void EnviroGUI::SetProgressTerrain(vtTerrain *pTerr)
 	pTerr->SetProgressCallback(progress_callback_minor);
 }
 
-void EnviroGUI::UpdateProgress(const char *msg, int amount1, int amount2)
+void EnviroGUI::UpdateProgress(const char *msg1, const char *msg2, int amount1, int amount2)
 {
-	wxString str(msg, wxConvUTF8);
+	wxString ws1(msg1, wxConvUTF8);
+	wxString ws2(msg2, wxConvUTF8);
 
-	// Try to translate it; a translation might be available.
+	// Try to translate the first part; a translation might be available.
 	// If the string is not found in any of the loaded message catalogs,
 	// the original string is returned.
-	wxString str2 = wxGetTranslation(str);
+	if (ws1 != _T(""))
+		ws1 = wxGetTranslation(ws1);
 
-	UpdateProgressDialog2(amount1, amount2, str2);
+	// Concatenate
+	UpdateProgressDialog2(amount1, amount2, ws1 + ws2);
 }
 
 void EnviroGUI::ExtendStructure(vtStructInstance *si)

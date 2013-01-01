@@ -1118,9 +1118,9 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer41;
 	bSizer41 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text14 = new wxStaticText( TParamsPanel3, ID_TEXT, _(" Visibility distance: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text14 = new wxStaticText( TParamsPanel3, ID_TEXT, _("Visibility distance:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text14->Wrap( -1 );
-	bSizer41->Add( m_text14, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+	bSizer41->Add( m_text14, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	mmegdistance = new wxTextCtrl( TParamsPanel3, ID_VEGDISTANCE, wxEmptyString, wxDefaultPosition, wxSize( 50,-1 ), 0 );
 	bSizer41->Add( mmegdistance, 0, wxALIGN_CENTER|wxALL, 0 );
@@ -1252,7 +1252,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer48;
 	bSizer48 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text19 = new wxStaticText( TParamsPanel8, ID_TEXT, _("Visibility distance: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text19 = new wxStaticText( TParamsPanel8, ID_TEXT, _("Visibility distance:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text19->Wrap( -1 );
 	bSizer48->Add( m_text19, 0, wxALIGN_CENTER|wxALL, 5 );
 	

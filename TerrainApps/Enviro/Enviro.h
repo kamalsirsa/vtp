@@ -110,7 +110,7 @@ public:
 	void DumpCameraInfo();
 	void SetSpeed(float x);
 	float GetSpeed();
-	vtString GetStatusString(int which);
+	void GetStatusString(int which, vtString &str1, vtString &str2);
 
 	void ActivateAStructureLayer();
 	void ActivateAVegetationLayer();
@@ -142,11 +142,12 @@ public:
 	void ShowEarthLines(bool bShow);
 	vtTerrain *FindTerrainOnEarth(const DPoint2 &p);
 
-	vtString GetMessage() { return m_strMessage; }
-	void SetMessage(const vtString &msg, float time = 0.0f);
+	vtString GetMessage1() { return m_strMessage1; }
+	vtString GetMessage2() { return m_strMessage2; }
+	void SetMessage(const vtString &str1, const vtString &str2 = "", float time = 0.0f);
 	void FormatCoordString(vtString &str, const DPoint3 &coord, LinearUnits units, bool seconds = false);
-	void DescribeCoordinatesEarth(vtString &str);
-	void DescribeCoordinatesTerrain(vtString &str);
+	void DescribeCoordinatesEarth(vtString &str1, vtString &str2);
+	void DescribeCoordinatesTerrain(vtString &str1, vtString &str2);
 	void DescribeCLOD(vtString &str);
 
 	// location of 3d cursor on the ground, in earth coordinates
@@ -247,7 +248,7 @@ public:
 	MouseMode	m_mode;
 	NavType		m_nav;
 	bool		m_bOnTerrain;
-	vtString	m_strMessage;
+	vtString	m_strMessage1, m_strMessage2;
 
 	// used for mouse interaction
 	bool		m_bDragging;
@@ -294,7 +295,7 @@ public:
 	virtual vtString GetStringFromUser(const vtString &title, const vtString &msg) = 0;
 	virtual void ShowProgress(bool bShow) {}
 	virtual void SetProgressTerrain(vtTerrain *pTerr) {}
-	virtual void UpdateProgress(const char *msg, int amount1, int amount2) {}
+	virtual void UpdateProgress(const char *msg1, const char *msg2, int amount1, int amount2) {}
 	virtual void ExtendStructure(vtStructInstance *si) {}
 	virtual void AddVehicle(CarEngine *eng) {}
 	virtual void RemoveVehicle(CarEngine *eng) {}

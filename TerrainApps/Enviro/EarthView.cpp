@@ -24,6 +24,12 @@
 #define LL_COUNT	640
 #define LL_RADIUS	1.002
 
+// Although there is no string translation in the core of Enviro (because it
+//  is independent of wx or any GUI library) nonetheless we want the text
+//  messages to be found by the gettext utility, so we need to enclose
+//  anything to be translated in _()
+#define _(x) x
+
 
 void Enviro::FlyToSpace()
 {
@@ -63,7 +69,7 @@ void Enviro::SetupGlobe()
 	if (m_iInitStep == 1)
 	{
 		m_pTerrainPicker->SetEnabled(false);
-		SetMessage("Creating Globe");
+		SetMessage(_("Creating Globe"));
 	}
 	if (m_iInitStep == 2)
 	{
@@ -75,7 +81,7 @@ void Enviro::SetupGlobe()
 			m_SpaceTrackballState[2].Set(0,0,0);
 			m_pRoot->addChild(m_pGlobeContainer);
 		}
-		SetMessage("Switching to Globe");
+		SetMessage(_("Switching to Globe"));
 	}
 	if (m_iInitStep == 3)
 	{
@@ -118,10 +124,7 @@ void Enviro::SetupGlobe()
 	{
 		SetState(AS_Orbit);
 		SetMode(MM_SELECT);
-		if (!strncmp((const char *) g_Options.m_strEarthImage, "geosphere", 9))
-			SetMessage("Earth image (c) The GeoSphere Project", 3);
-		else
-			SetMessage("Earth View", 10);
+		SetMessage(_("Earth View"), "", 10);	// Show for 10 seconds
 		m_pGlobePicker->SetEnabled(true);
 
 		// Layer view needs to update
@@ -839,16 +842,15 @@ void Enviro::SetDisplayedArc(const DLine2 &path)
 	m_fArcLength = angle * EARTH_RADIUS;
 }
 
-void Enviro::DescribeCoordinatesEarth(vtString &str)
+void Enviro::DescribeCoordinatesEarth(vtString &str1, vtString &str2)
 {
-	DPoint3 epos;
-	vtString str1;
-
 	// give location of 3D cursor
-	str = "Cursor: ";
+	str1 = _("Cursor: ");
+
+	DPoint3 epos;
 	m_pGlobePicker->GetCurrentEarthPos(epos);
-	FormatCoordString(str1, epos, LU_DEGREES);
-	str += str1;
+
+	FormatCoordString(str2, epos, LU_DEGREES);
 }
 
 // this was a quick hack for the PW conference.  if we ever need a real
@@ -1025,9 +1027,7 @@ void Enviro::FlyInStage1()
 		m_pTerrainPicker->SetEnabled(true);
 		SetMode(MM_NAVIGATE);
 
-		vtString str = "Welcome to ";
-		str += m_pTargetTerrain->GetName();
-		SetMessage(str, 5.0f);
+		SetMessage(_("Welcome to "), m_pTargetTerrain->GetName(), 5.0f);
 
 		// Layer view needs to update
 		RefreshLayerView();

@@ -35,60 +35,42 @@ MyStatusBar::MyStatusBar(wxWindow *parent) :
 	SetStatusWidths(Field_Max, widths);
 }
 
-wxString trans_table[5] =
-{
-	_T("Welcome to "),
-	_T("Elev: "),
-	_T("Cursor: "),
-	_T("Creating Terrain "),
-	_T("Not on ground")
-};
-
-void DoTranslate(wxString &str)
-{
-	// Try to translate it.  This will work only if the locale catalog has
-	//  an exact match for the string.
-	str = wxGetTranslation(str);
-
-	// Also try to catch some compound strings which will vary
-	for (int i = 0; i < 5; i++)
-	{
-		//int len = trans_table[i].GetLength();
-		//if (str.Left(len) == trans_table[i])
-		if (str.Contains(trans_table[i]))
-		{
-			str.Replace(trans_table[i], wxGetTranslation(trans_table[i]));
-		}
-	}
-}
-
 void MyStatusBar::UpdateText()
 {
-	vtString str;
-	wxString ws;
+	vtString str1, str2;
+	wxString ws1, ws2;
 
-	str = g_App.GetMessage();
-	if (str != "")
-	{
-		ws = wxString(str, wxConvUTF8);
-		DoTranslate(ws);
-		SetStatusText(ws, Field_Text);
-	}
+	str1 = g_App.GetMessage1();
+	str2 = g_App.GetMessage2();
 
-	str = g_App.GetStatusString(0);
-	ws = wxString(str, wxConvUTF8);
-	DoTranslate(ws);
-	SetStatusText(ws, Field_Fps);
+	ws1 = wxString(str1, wxConvUTF8);
+	ws2 = wxString(str2, wxConvUTF8);
 
-	str = g_App.GetStatusString(1);
-	ws = wxString(str, wxConvUTF8);
-	DoTranslate(ws);
-	SetStatusText(ws, Field_Cursor);
+	if (ws1 != _T(""))
+		ws1 = wxGetTranslation(ws1);
 
-	str = g_App.GetStatusString(2);
-	ws = wxString(str, wxConvUTF8);
-	DoTranslate(ws);
-	SetStatusText(ws, Field_CursorVal);
+	SetStatusText(ws1 + ws2, Field_Text);
+
+	g_App.GetStatusString(0, str1, str2);
+	ws1 = wxString(str1, wxConvUTF8);
+	ws2 = wxString(str2, wxConvUTF8);
+	if (ws1 != _T(""))
+		ws1 = wxGetTranslation(ws1);
+	SetStatusText(ws1 + ws2, Field_Fps);
+
+	g_App.GetStatusString(1, str1, str2);
+	ws1 = wxString(str1, wxConvUTF8);
+	ws2 = wxString(str2, wxConvUTF8);
+	if (ws1 != _T(""))
+		ws1 = wxGetTranslation(ws1);
+	SetStatusText(ws1 + ws2, Field_Cursor);
+
+	g_App.GetStatusString(2, str1, str2);
+	ws1 = wxString(str1, wxConvUTF8);
+	ws2 = wxString(str2, wxConvUTF8);
+	if (ws1 != _T(""))
+		ws1 = wxGetTranslation(ws1);
+	SetStatusText(ws1 + ws2, Field_CursorVal);
 }
 
 //

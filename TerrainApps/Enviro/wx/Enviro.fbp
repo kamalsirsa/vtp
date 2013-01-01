@@ -10685,7 +10685,7 @@
                                                             <property name="permission">none</property>
                                                             <object class="sizeritem" expanded="0">
                                                                 <property name="border">5</property>
-                                                                <property name="flag">wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM</property>
+                                                                <property name="flag">wxALIGN_CENTER|wxALL</property>
                                                                 <property name="proportion">0</property>
                                                                 <object class="wxStaticText" expanded="0">
                                                                     <property name="bg"></property>
@@ -10696,7 +10696,7 @@
                                                                     <property name="font"></property>
                                                                     <property name="hidden"></property>
                                                                     <property name="id">ID_TEXT</property>
-                                                                    <property name="label"> Visibility distance: </property>
+                                                                    <property name="label">Visibility distance:</property>
                                                                     <property name="maximum_size"></property>
                                                                     <property name="minimum_size"></property>
                                                                     <property name="name">m_text14</property>
@@ -12021,7 +12021,7 @@
                                                                     <property name="font"></property>
                                                                     <property name="hidden"></property>
                                                                     <property name="id">ID_TEXT</property>
-                                                                    <property name="label">Visibility distance: </property>
+                                                                    <property name="label">Visibility distance:</property>
                                                                     <property name="maximum_size"></property>
                                                                     <property name="minimum_size"></property>
                                                                     <property name="name">m_text19</property>

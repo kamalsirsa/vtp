@@ -40,10 +40,11 @@ void EnviroCanvas::OnAfterUpdate()
 	// update the status bar every 1/10 of a second
 	static float last_stat = 0.0f;
 	static vtString last_msg;
+	vtString current_msg = g_App.GetMessage1() + g_App.GetMessage2();
 	float cur = vtGetTime();
-	if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
+	if (cur - last_stat > 0.1f || current_msg != last_msg)
 	{
-		last_msg = g_App.GetMessage();
+		last_msg = current_msg;
 		last_stat = cur;
 		frame->UpdateStatus();
 	}

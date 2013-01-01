@@ -1515,7 +1515,7 @@ void EnviroFrame::OnClose(wxCloseEvent &event)
 	{
 		// Pause rendering
 		m_canvas->m_bRunning = false;
-		int ret = wxMessageBox("Really Exit?", "Enviro", wxYES_NO);
+		int ret = wxMessageBox(_("Really Exit?"), _T("Enviro"), wxYES_NO);
 		if (ret == wxNO)
 		{
 			event.Veto();

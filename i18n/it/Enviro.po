@@ -82,6 +82,14 @@ msgstr "Cursore: "
 msgid "Not on ground"
 msgstr "Non sul terreno"
 
+#: TerrainApps/Enviro/Enviro.cpp:2665
+msgid "Cursor: Not on ground"
+msgstr "Cursore: Non sul terreno"
+
+#: TerrainApps/Enviro/wx/EnviroFrame.cpp:1518
+msgid "Really Exit?"
+msgstr "Sei sicuro di voler uscire?"
+
 #: TerrainApps/Enviro/Enviro.cpp:2770
 msgid "Elev: "
 msgstr "Quota: "
@@ -210,7 +218,7 @@ msgstr "Posizioni"
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:672
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:935
 msgid "Scene Graph"
-msgstr "Scene Graph"
+msgstr "Scene Grafo"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:527
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:717
@@ -239,7 +247,7 @@ msgstr "Veicoli"
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:674
 #: TerrainApps/Enviro/wx/EnviroUI.h:1132
 msgid "Performance Monitor"
-msgstr ""
+msgstr "Monitor delle prestazioni"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:551
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:556
@@ -324,7 +332,7 @@ msgstr "Misura Distanze\tCtrl+D"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:637
 msgid "Constrain building angles"
-msgstr ""
+msgstr "Angoli Retti Edifici"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:640
 #, fuzzy
@@ -333,7 +341,7 @@ msgstr "&Appiattisci\tCtrl+E"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:640
 msgid "Calculate visual impact factor"
-msgstr ""
+msgstr "Calcola fattore impatto visivo"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:641
 #, fuzzy
@@ -342,7 +350,7 @@ msgstr "&Appiattisci\tCtrl+E"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:641
 msgid "Produce visual impact plot"
-msgstr ""
+msgstr "Produci stampa impatto visivo"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:642
 #, fuzzy
@@ -351,11 +359,11 @@ msgstr "Azzera"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:642
 msgid "Clear visual impact target and all contributors"
-msgstr ""
+msgstr "Azzera obiettivo e tutti i contributori dell'impatto visivo"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:644
 msgid "Visual Impact.."
-msgstr ""
+msgstr "Impatto visivo.."
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:646
 msgid "&Tools"
@@ -410,7 +418,7 @@ msgstr "Camera Zenitale\tCtrl+T"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:695
 msgid "Rendering Statistics\tx"
-msgstr ""
+msgstr "Statistiche di rendering"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:696
 msgid "Elevation Legend"
@@ -428,7 +436,7 @@ msgstr "Mappa generale"
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:699
 #, fuzzy
 msgid "Drive Vehicle"
-msgstr "Distribuisci veicoli."
+msgstr "Conduci veicoli"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:701
 msgid "Camera - View Settings\tCtrl+S"
@@ -504,7 +512,7 @@ msgstr "Volo con velocità"
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:730
 #: TerrainApps/Enviro/wx/TParamsDlg.cpp:944
 msgid "Grab-Pivot"
-msgstr "Modalità grab-pivot"
+msgstr "Modalità afferra-perno"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:732
 #: TerrainApps/Enviro/wx/TParamsDlg.cpp:946
@@ -587,13 +595,13 @@ msgstr "&Distribuisci Veicoli"
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:3010
 #, fuzzy
 msgid "Write Elevation to BT"
-msgstr "Elevazione"
+msgstr "Salva Elevazione su BT"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:756
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:3048
 #, fuzzy
 msgid "Add Contours"
-msgstr "Continuo"
+msgstr "Aggiungi Curve"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:757
 msgid "Te&rrain"
@@ -678,7 +686,7 @@ msgstr "Profilo altimetrico"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:890
 msgid "Constrain Angles"
-msgstr ""
+msgstr "Angoli vincolati"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:896
 msgid "Numbered Snapshot"
@@ -746,34 +754,36 @@ msgid ""
 "If the size requested is greater than your graphics card supports, the size "
 "will be clamped to the card's limit"
 msgstr ""
+"Se la dimensione richiesta è maggiore di quella supportata dalla tua scheda, "
+"la dimensione sarà impostata sul limite"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:2188
 msgid "Your 3d driver does not support off screen rendering.\n"
-msgstr ""
+msgstr "Il tuo driver 3d non supporta il rendering off screen.\n"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:2189
 msgid "If the main 3d window is obscured by any other windows\n"
-msgstr ""
+msgstr "Se la finestra 3d è oscurata da un'altra finestra\n"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:2190
 msgid "(including popup dialogs). The accuracy of the visual impact\n"
-msgstr ""
+msgstr "(inclusi pannelli popup). L'accuratezza del calcolo dell'impatto\n"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:2191
 msgid "calculation will be impaired."
-msgstr ""
+msgstr " visivo sarà compromessa."
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:2197
 msgid "Not available."
-msgstr ""
+msgstr "Non disponibile."
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:2365
 msgid "Visual Impact Plot successful"
-msgstr ""
+msgstr "Stampa Impatto Visivo terminata"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:2367
 msgid "Visual Impact Plot unsuccessful"
-msgstr ""
+msgstr "Stampa Impatto Visivo fallita"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:2875
 msgid "Adding Foundations"
@@ -851,7 +861,7 @@ msgstr "Inviare il feedback a : ben@vterrain.org\n"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:3256
 msgid "Build date: "
-msgstr "Data di rilascio:"
+msgstr "Data di rilascio: "
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:3265
 msgid "About "
@@ -893,19 +903,19 @@ msgstr "URL"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:3618
 msgid "&Visual Impact Contributor\tCtrl+V"
-msgstr ""
+msgstr "Contributore Impatto &Visivo\tCtrl+V"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:3619
 msgid "Set this structure as a contributor to the VIA calculation"
-msgstr ""
+msgstr "Imposta questa struttura come contributore al calcolo VIA"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:3621
 msgid "Visual Impact &Target\tCtrl+T"
-msgstr ""
+msgstr "Bersaglio Impa&Tto Visivo\tCtrl+T"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:3622
 msgid "Set this structure as the viewer target for VIA plots"
-msgstr ""
+msgstr "Imposta questa struttura come bersaglio visivo per stampe VIA"
 
 #: TerrainApps/Enviro/wx/EnviroFrame.cpp:3632
 msgid "Start Driving"
@@ -1192,15 +1202,15 @@ msgstr "Elevazione:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:510
 msgid "Near Clipping Plane (meters):"
-msgstr "Piano di visibilità prossima (metri);"
+msgstr "Piano di visibilità prossima (metri):"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:525
 msgid "Far Clipping Plane (meters):"
-msgstr "Piano di visibilità remota (metri)"
+msgstr "Piano di visibilità remota (metri):"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:540
 msgid "Stereo Eye Separation:"
-msgstr "Distanza interpupillare per stereoscopia"
+msgstr "Distanza interpupillare per stereoscopia:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:555
 msgid "Stereo Fusion Distance:"
@@ -1208,7 +1218,7 @@ msgstr "Distanza Fusione Stereo:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:573
 msgid "Navigation Speed:"
-msgstr "Velocità di navigazione"
+msgstr "Velocità di navigazione:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:588
 msgid "Units"
@@ -1221,7 +1231,7 @@ msgstr "Accelerazione proporzionale all'altezza sul terreno"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:614
 msgid "Velocity Damping:"
-msgstr ""
+msgstr "Velocità di smorzamento:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:627
 msgid "LOD Distance"
@@ -1262,11 +1272,11 @@ msgstr "Nome del File Griglia: "
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:788
 msgid "Terrain LOD Method:"
-msgstr "Metodo LOD del Terreno"
+msgstr "Metodo LOD del Terreno:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:798
 msgid "Triangle count target: "
-msgstr "Numero massimo di triangoli visibili"
+msgstr "Numero massimo di triangoli visibili: "
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:815
 msgid "TIN"
@@ -1274,7 +1284,7 @@ msgstr "TIN"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:820
 msgid "TIN Filename:"
-msgstr "Nome File Tin"
+msgstr "Nome File Tin:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:833
 msgid "Grid Tiles"
@@ -1287,7 +1297,7 @@ msgstr "File paginato .ini:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:851
 msgid "Vertex count target: "
-msgstr "Numero massimo di vertici visibili:"
+msgstr "Numero massimo di vertici visibili: "
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:858
 msgid "RAM cache size (MB):"
@@ -1299,11 +1309,11 @@ msgstr "Utilizza multithreading per caricamento tile asincrono"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:880
 msgid "External"
-msgstr ""
+msgstr "Esterno"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:885
 msgid "External Data:"
-msgstr ""
+msgstr "Dati Esterni:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:899
 msgid "Vertical Exaggeration:"
@@ -1348,7 +1358,7 @@ msgstr "Avvia con il numero minimo di tiles e carica gradualmente"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:993
 msgid "Texture LOD factor:"
-msgstr ""
+msgstr "Fattore LOD texture:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1008
 msgid "Mipmapping"
@@ -1364,7 +1374,7 @@ msgstr "Precalcola Illuminazione"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1028
 msgid "Lighting factor: "
-msgstr "Fattore di illuminazione:"
+msgstr "Fattore di illuminazione: "
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1037
 msgid "Cast shadows"
@@ -1397,10 +1407,6 @@ msgstr "(dimensione della texture di dettaglio in metri)"
 msgid "Plant Layers"
 msgstr "Carica Livelli"
 
-#: TerrainApps/Enviro/wx/EnviroUI.cpp:1121
-msgid " Visibility distance: "
-msgstr "Distanza di visibilità:"
-
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1128
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1262
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1345
@@ -1411,7 +1417,7 @@ msgstr "m"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1134
 msgid "Use Shaders for Plants"
-msgstr ""
+msgstr "Usa Shader per le Piante"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1154
 msgid "Source file: "
@@ -1419,7 +1425,7 @@ msgstr "File sorgente: "
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1174
 msgid "Ground offset: "
-msgstr "Scostamento dal terreno:"
+msgstr "Scostamento dal terreno: "
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1185
 msgid "Visibility distance:"
@@ -1455,17 +1461,12 @@ msgstr "Terreno nudo"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1238
 msgid "Plants and Roads"
-msgstr ""
+msgstr "Piante e Strade"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1244
 #, fuzzy
 msgid "Structure Layers"
-msgstr "Tipo Struttura:"
-
-#: TerrainApps/Enviro/wx/EnviroUI.cpp:1255
-#, fuzzy
-msgid "Visibility distance: "
-msgstr "Distanza di visibilità:"
+msgstr "Tipo Struttura"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1271
 msgid "Terrain-specific content:"
@@ -1483,7 +1484,7 @@ msgstr "Risoluzione:"
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1318
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3265
 msgid "Darkness:"
-msgstr "Oscurità"
+msgstr "Oscurità:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1327
 msgid "All structures cast shadows by default"
@@ -1497,7 +1498,7 @@ msgstr "Ricalcola ombre ogni fotogramma"
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1338
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3284
 msgid "Limit shadow area:"
-msgstr "Limite area ombre"
+msgstr "Limite area ombre:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1355
 msgid "Paging"
@@ -1505,12 +1506,12 @@ msgstr "Paginazione"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1365
 msgid "Maximum structures:"
-msgstr "Massimo strutture"
+msgstr "Massimo strutture:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1380
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3132
 msgid "Page-out distance:"
-msgstr "Distanza di paginazione"
+msgstr "Distanza di paginazione:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1411
 #, fuzzy
@@ -1530,7 +1531,7 @@ msgstr "Livello (metri)"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1432
 msgid "Water surface"
-msgstr ""
+msgstr "Superficie Acqua"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1440
 msgid "Depress Ocean"
@@ -1553,7 +1554,7 @@ msgstr "Distanza (km)"
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1493
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3304
 msgid "Scene background color:"
-msgstr "Colore di sfondo della scena"
+msgstr "Colore di sfondo della scena:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1500
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1521
@@ -1566,7 +1567,7 @@ msgstr "Imposta"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1514
 msgid "Initial Time: "
-msgstr "Data e ora di avvio:"
+msgstr "Data e ora di avvio: "
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1530
 msgid "Time Moves"
@@ -1574,7 +1575,7 @@ msgstr "Tempo in movimento"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1539
 msgid "Faster than real: "
-msgstr "Più veloce del reale"
+msgstr "Più veloce del reale: "
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1569
 msgid "Abstract Layers"
@@ -1630,7 +1631,7 @@ msgstr "Stile:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1689
 msgid "Minimum height above ground: "
-msgstr "Altezza minima sul suolo:"
+msgstr "Altezza minima sul suolo: "
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1708
 msgid "Navigation speed:"
@@ -1642,7 +1643,7 @@ msgstr "metri/frame"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1727
 msgid "Velocity damping:"
-msgstr ""
+msgstr "Velocità di smorzamento:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1743
 msgid "Allow Roll"
@@ -1650,7 +1651,7 @@ msgstr "Permetti Rollio"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1752
 msgid "Default Locations File:"
-msgstr "File Posizioni di default"
+msgstr "File Posizioni di default:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1764
 msgid "Initial Camera Location"
@@ -1662,7 +1663,7 @@ msgstr "Distanza di visibilità ravvicinata"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1797
 msgid "Animation Paths:"
-msgstr "Percorsi d'Animazione"
+msgstr "Percorsi d'Animazione:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1809
 msgid "Camera"
@@ -1738,7 +1739,7 @@ msgstr "Quad buffer (occhiali polarizzati)"
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:1998
 #, fuzzy
 msgid "Horizontal split"
-msgstr "Unità orizzontali:"
+msgstr "Unità orizzontali"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2004
 #, fuzzy
@@ -1747,21 +1748,21 @@ msgstr "Unità Verticale"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2009
 msgid "Anti-aliasing (Multisamples):"
-msgstr ""
+msgstr "Anti-aliasing (Campionamento Multiplo):"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2019
 msgid "None / System Default"
-msgstr ""
+msgstr "Nessuno / Valore di default"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2022
 #, fuzzy
 msgid "4x"
-msgstr "x"
+msgstr "4x"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2025
 #, fuzzy
 msgid "8x"
-msgstr "x"
+msgstr "8x"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2028
 #, fuzzy
@@ -1838,11 +1839,11 @@ msgstr "Vola gradualmente dalla vista della Terra"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2167
 msgid "Enable joystick navigation"
-msgstr ""
+msgstr "Abilita navigazione joystick"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2171
 msgid "Enable SpaceNavigator"
-msgstr ""
+msgstr "Abilita SpaceNavigator"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2293
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2326
@@ -1947,7 +1948,7 @@ msgstr "Geometria Linea"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2865
 msgid "Text field:"
-msgstr "Campo testo"
+msgstr "Campo testo:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:2896
 msgid "Label Size (vertical)"
@@ -1975,7 +1976,7 @@ msgstr "Diagramma dei livelli di dettaglio"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3010
 msgid "Number of Triangles"
-msgstr ""
+msgstr "Numero di Triangoli"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3020
 msgid "Current"
@@ -2023,7 +2024,7 @@ msgstr "2k"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3124
 msgid "Surface and Textures"
-msgstr ""
+msgstr "Superfici e Texture"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3127
 msgid "Structure Paging Status"
@@ -2051,32 +2052,32 @@ msgstr "Velocità Vento:"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3365
 msgid "Right click on counter to enable/disable"
-msgstr ""
+msgstr "Click destro sul contatore per abilitare/disabilitare"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3396
 #, fuzzy
 msgid "Speed"
-msgstr "Velocità:"
+msgstr "Velocità"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3406
 msgid "kmph"
-msgstr ""
+msgstr "km orari"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3410
 msgid "Follow with camera"
-msgstr ""
+msgstr "Segui con la camera"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3413
 msgid "Rate of turn"
-msgstr ""
+msgstr "Velocità in curva"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3421
 msgid "radians"
-msgstr ""
+msgstr "radianti"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3492
 msgid "Percentage of human binocular field of view"
-msgstr ""
+msgstr "Percentuale del campo visivo binoculare umano"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3509
 #, fuzzy
@@ -2106,7 +2107,7 @@ msgstr "Opzioni per inserimento piante"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3571
 msgid "Sample Grid"
-msgstr ""
+msgstr "Campionamento Griglia"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3573
 #, fuzzy
@@ -2120,19 +2121,19 @@ msgstr "Intervallo di tempo"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3594
 msgid "Data conversion options"
-msgstr ""
+msgstr "Opzioni conversione dati"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3596
 msgid "Data Type"
-msgstr ""
+msgstr "Tipo Dati"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3600
 msgid "Combo!"
-msgstr ""
+msgstr "Combinazione!"
 
 #: TerrainApps/Enviro/wx/EnviroUI.cpp:3608
 msgid "Scale Factor"
-msgstr ""
+msgstr "Fattore di scala"
 
 #: TerrainApps/Enviro/wx/LayerDlg.cpp:110 TerrainSDK/vtui/vtui_UI.cpp:756
 msgid "Create"
@@ -2177,7 +2178,7 @@ msgstr "Visibilità livello"
 #: TerrainApps/Enviro/wx/LayerDlg.cpp:118
 #, fuzzy
 msgid "Table of Attributes"
-msgstr "Attributo"
+msgstr "Tabella degli Attributi"
 
 #: TerrainApps/Enviro/wx/LayerDlg.cpp:119
 msgid "Shadow"
@@ -2207,7 +2208,7 @@ msgstr "(Piante: %d)"
 
 #: TerrainApps/Enviro/wx/LayerDlg.cpp:322
 msgid ", Features: "
-msgstr ", Caratteristiche:"
+msgstr ", Caratteristiche: "
 
 #: TerrainApps/Enviro/wx/LayerDlg.cpp:330
 msgid ", Selected: "
@@ -2404,15 +2405,15 @@ msgstr "Nuovo Scenario"
 
 #: TerrainApps/Enviro/wx/StartupDlg.cpp:58
 msgid "OpenGL Version: "
-msgstr ""
+msgstr "Versione OpenGL: "
 
 #: TerrainApps/Enviro/wx/StartupDlg.cpp:61
 msgid "Vendor: "
-msgstr ""
+msgstr "Produttore: "
 
 #: TerrainApps/Enviro/wx/StartupDlg.cpp:64
 msgid "Renderer: "
-msgstr ""
+msgstr "Renderer: "
 
 #: TerrainApps/Enviro/wx/StartupDlg.cpp:67
 #, c-format
@@ -2421,15 +2422,15 @@ msgstr "Dimensione Massima della Texture: %d\n"
 
 #: TerrainApps/Enviro/wx/StartupDlg.cpp:70
 msgid "GLSL Version: "
-msgstr ""
+msgstr "Versione GLSL: "
 
 #: TerrainApps/Enviro/wx/StartupDlg.cpp:75
 msgid "Extensions: "
-msgstr "Estensioni:"
+msgstr "Estensioni: "
 
 #: TerrainApps/Enviro/wx/StyleDlg.cpp:129
 msgid "ADD"
-msgstr "Aggiunta"
+msgstr "Aggiungere"
 
 #: TerrainApps/Enviro/wx/StyleDlg.cpp:130
 msgid "MODULATE"
@@ -2513,7 +2514,7 @@ msgstr "Scegli un file con strutture"
 #: TerrainApps/Enviro/wx/TParamsDlg.cpp:1238
 #, fuzzy
 msgid "Load features"
-msgstr "Mostra Caratteristiche:"
+msgstr "Mostra Caratteristiche"
 
 #: TerrainApps/Enviro/wx/TParamsDlg.cpp:1239
 #, fuzzy
@@ -2550,15 +2551,15 @@ msgstr "Files Immagine (*.png,*.jpg,*.bmp)|*.png;*.jpg;*.bmp"
 #: TerrainApps/Enviro/wx/VIAGDALOptionsDlg.cpp:36
 #, c-format
 msgid "%0.2f"
-msgstr ""
+msgstr "%0.2f"
 
 #: TerrainApps/Enviro/wx/EnviroUI.h:1167
 msgid "Drive"
-msgstr ""
+msgstr "Guida"
 
 #: TerrainApps/Enviro/wx/EnviroUI.h:1196
 msgid "Visual Impact Calculation"
-msgstr ""
+msgstr "Calcolo Impatto Visivo"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:152
 msgid "Engines"
@@ -2566,19 +2567,19 @@ msgstr "Motori"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:174
 msgid "vtLightSource"
-msgstr ""
+msgstr "vtLightSource"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:179
 msgid "vtDynGeom"
-msgstr ""
+msgstr "vtDynGeom"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:184
 msgid "vtGeode"
-msgstr ""
+msgstr "vtGeode"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:199
 msgid "vtFog"
-msgstr ""
+msgstr "vtFog"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:204
 #, fuzzy
@@ -2587,7 +2588,7 @@ msgstr "Ombra"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:209
 msgid "vtHUD"
-msgstr ""
+msgstr "vtHUD"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:215
 #, fuzzy
@@ -2596,11 +2597,11 @@ msgstr "Gruppo"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:221
 msgid "MatrixTransform"
-msgstr ""
+msgstr "MatrixTransform"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:226
 msgid "LOD"
-msgstr ""
+msgstr "LOD"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:231
 msgid "Group"
@@ -2608,7 +2609,7 @@ msgstr "Gruppo"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:236
 msgid "Geode"
-msgstr ""
+msgstr "Geode"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:242
 msgid "Other"
@@ -2626,7 +2627,7 @@ msgstr "Mesh Testo"
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:301
 #, c-format
 msgid "%d: Drawable, %d verts"
-msgstr ""
+msgstr "%d: Drawable, %d vertici"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:306
 #, fuzzy
@@ -2636,12 +2637,12 @@ msgstr "Tetto a due falde"
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:322
 #, c-format
 msgid "%d: %d verts"
-msgstr ""
+msgstr "%d: %d vertici"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:327
 #, c-format
 msgid "%d: drawable"
-msgstr ""
+msgstr "%d: drawable"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:342
 #, c-format
@@ -2671,16 +2672,16 @@ msgstr ""
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:492
 msgid "A dot file (scene.dot)"
-msgstr ""
+msgstr "Un file dot (scene.dot)"
 
 #: TerrainSDK/wxosg/SceneGraphDlg.cpp:493
 #, fuzzy
 msgid "Log the scene graph to:"
-msgstr "Salva la scena in .osg"
+msgstr "Salva la scena in .osg per:"
 
 #: TerrainSDK/wxosg/wxosg_UI.cpp:24
 msgid "Year:"
-msgstr "Anno"
+msgstr "Anno:"
 
 #: TerrainSDK/wxosg/wxosg_UI.cpp:31
 msgid "Month"
@@ -2692,7 +2693,7 @@ msgstr "Giorno"
 
 #: TerrainSDK/wxosg/wxosg_UI.cpp:50
 msgid "Hour:"
-msgstr "Ora"
+msgstr "Ora:"
 
 #: TerrainSDK/wxosg/wxosg_UI.cpp:57
 msgid "Minute"
@@ -2844,6 +2845,8 @@ msgid ""
 "Enter the path to a SHP file containing a polyline, or a series of points in "
 "the form X Y X Y .."
 msgstr ""
+"Inserire percorso del file SHP file contenente una polilinea, o una serie di punti "
+"nella forma X Y X Y .."
 
 #: TerrainSDK/vtui/DistanceDlg.cpp:369
 #, fuzzy
@@ -3174,7 +3177,7 @@ msgstr "(Proiezione non valida)"
 
 #: TerrainSDK/vtui/ProjectionDlg.cpp:367
 msgid "Unknown projection: "
-msgstr "Proiezione sconosciuta:"
+msgstr "Proiezione sconosciuta: "
 
 #: TerrainSDK/vtui/ProjectionDlg.cpp:384
 msgid "Save Projection to File"
@@ -3288,7 +3291,7 @@ msgstr "Pendenza degli spigoli:"
 #: TerrainSDK/vtui/vtui_UI.cpp:169
 #, fuzzy
 msgid "Edges"
-msgstr "Spigoli:"
+msgstr "Spigoli"
 
 #: TerrainSDK/vtui/vtui_UI.cpp:183
 msgid "Edge Properties"
@@ -3365,16 +3368,16 @@ msgstr "Salva Come..."
 #: TerrainSDK/vtui/vtui_UI.cpp:423
 #, fuzzy
 msgid "Single contour at:"
-msgstr "Numero massimo di triangoli visibili"
+msgstr "Numero massimo di triangoli visibili:"
 
 #: TerrainSDK/vtui/vtui_UI.cpp:439
 msgid "Contours every:"
-msgstr ""
+msgstr "Curva ogni:"
 
 #: TerrainSDK/vtui/vtui_UI.cpp:466
 #, fuzzy
 msgid "Add to layer:"
-msgstr "Zoom su Livello"
+msgstr "Zoom su Livello:"
 
 #: TerrainSDK/vtui/vtui_UI.cpp:514
 msgid "Line"
@@ -3415,7 +3418,7 @@ msgstr "Mostra Caratteristiche:"
 
 #: TerrainSDK/vtui/vtui_UI.cpp:631
 msgid "Vertical units:"
-msgstr "Unità Verticale"
+msgstr "Unità Verticale:"
 
 #: TerrainSDK/vtui/vtui_UI.cpp:640
 msgid "Delete Highlighted"
@@ -3444,7 +3447,7 @@ msgstr "Posizione:"
 
 #: TerrainSDK/vtui/vtui_UI.cpp:782
 msgid "Defined Style:"
-msgstr "Definisci Stile"
+msgstr "Definisci Stile:"
 
 #: TerrainSDK/vtui/vtui_UI.cpp:795
 msgid "Posts"

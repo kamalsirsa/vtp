@@ -469,12 +469,9 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	VTLOG("SetupTerrain step %d\n", m_iInitStep);
 	if (m_iInitStep == 1)
 	{
-		vtString str = _("Setting up Terrain ");
-		str += "'";
-		str += pTerr->GetName();
-		str += "'";
-		SetMessage(str);
-		UpdateProgress(m_strMessage, 8, 0);
+		vtString name_quotes = vtString("'") + pTerr->GetName() + "'";
+		SetMessage(_("Setting up Terrain "), name_quotes);
+		UpdateProgress(m_strMessage1, m_strMessage2, 8, 0);
 	}
 	else if (m_iInitStep == 2)
 	{
@@ -485,7 +482,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		}
 		else
 			SetMessage(_("Loading Elevation"));
-		UpdateProgress(m_strMessage, 16, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 16, 0);
 	}
 	else if (m_iInitStep == 3)
 	{
@@ -509,11 +506,11 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (!pTerr->CreateStep2())
 		{
 			SetState(AS_Error);
-			SetMessage(pTerr->GetLastError());
+			SetMessage("", pTerr->GetLastError());	// Don't try to translate error
 			return;
 		}
 		SetMessage(_("Loading/Coloring/Prelighting Textures"));
-		UpdateProgress(m_strMessage, 24, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 24, 0);
 	}
 	else if (m_iInitStep == 4)
 	{
@@ -531,61 +528,61 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (!pTerr->CreateStep3(GetSunLightTransform(), GetSunLightSource()))
 		{
 			SetState(AS_Error);
-			SetMessage(pTerr->GetLastError());
+			SetMessage("", pTerr->GetLastError());
 			return;
 		}
 		SetMessage(_("Processing Elevation"));
-		UpdateProgress(m_strMessage, 32, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 32, 0);
 	}
 	else if (m_iInitStep == 5)
 	{
 		if (!pTerr->CreateStep4())
 		{
 			SetState(AS_Error);
-			SetMessage(pTerr->GetLastError());
+			SetMessage("", pTerr->GetLastError());
 			return;
 		}
 		SetMessage(_("Building CLOD"));
-		UpdateProgress(m_strMessage, 40, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 40, 0);
 	}
 	else if (m_iInitStep == 6)
 	{
 		if (!pTerr->CreateStep5())
 		{
 			SetState(AS_Error);
-			SetMessage(pTerr->GetLastError());
+			SetMessage("", pTerr->GetLastError());
 			return;
 		}
 		SetMessage(_("Creating Structures"));
-		UpdateProgress(m_strMessage, 48, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 48, 0);
 	}
 	else if (m_iInitStep == 7)
 	{
 		pTerr->CreateStep6();
 
 		SetMessage(_("Creating Roads"));
-		UpdateProgress(m_strMessage, 56, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 56, 0);
 	}
 	else if (m_iInitStep == 8)
 	{
 		pTerr->CreateStep7();
 
 		SetMessage(_("Creating Vegetation"));
-		UpdateProgress(m_strMessage, 64, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 64, 0);
 	}
 	else if (m_iInitStep == 9)
 	{
 		pTerr->CreateStep8();
 
 		SetMessage(_("Creating Water and Abstracts"));
-		UpdateProgress(m_strMessage, 72, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 72, 0);
 	}
 	else if (m_iInitStep == 10)
 	{
 		pTerr->CreateStep9();
 
 		SetMessage(_("Setting Camera"));
-		UpdateProgress(m_strMessage, 80, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 80, 0);
 	}
 	else if (m_iInitStep == 11)
 	{
@@ -599,7 +596,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			m_pTrackball->SetEnabled(false);
 
 		SetMessage(_("Switching to Terrain"));
-		UpdateProgress(m_strMessage, 88, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 88, 0);
 	}
 	else if (m_iInitStep == 12)
 	{
@@ -620,9 +617,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	else if (m_iInitStep == 13)
 	{
-		vtString str = _("Welcome to ");
-		str += pTerr->GetName();
-		SetMessage(str, 5.0f);
+		SetMessage(_("Welcome to "), pTerr->GetName(), 5.0f);
 
 		clock_t clock2 = clock();
 		VTLOG(" seconds since app start: %.2f\n", (float)clock2/CLOCKS_PER_SEC);
@@ -1218,40 +1213,27 @@ void Enviro::StoreTerrainParameters()
 	}
 }
 
-//
-// Display a message as a text sprite in the middle of the window.
-//
-// The fTime argument lets you specify how long the message should
-// appear, in seconds.
-//
-void Enviro::SetMessage(const vtString &msg, float fTime)
-{
-	VTLOG("  SetMessage: '%s'\n", (const char *) msg);
+/**
+  Display a message in the UI. The surrounding flavor of Enviro might show this
+  in the status bar of the frame window (for wxEnviro) or as a HUD text (for
+  a pure OpenGL version of Enviro).
 
-#if 0
-	if (m_pMessageSprite == NULL)
-	{
-		m_pMessageSprite = new vtSprite;
-		m_pMessageSprite->setName("MessageSprite");
-		m_pRoot->addChild(m_pMessageSprite);
-	}
-	if (msg == "")
-		m_pMessageSprite->SetEnabled(false);
-	else
-	{
-		m_pMessageSprite->SetEnabled(true);
-		m_pMessageSprite->SetText(msg);
-		int len = msg.GetLength();
-		m_pMessageSprite->SetWindowRect(0.5f - (len * 0.01f), 0.45f,
-										0.5f + (len * 0.01f), 0.55f);
-	}
-#endif
-	if (msg != "" && fTime != 0.0f)
+  \param str1 The first part of the message, which should be translated.
+  \param str2 The second part of the message, which should not be translated.
+	The two parts will be concatenated.
+  \param fTime How long the message should appear, in seconds.
+*/
+void Enviro::SetMessage(const vtString &str1, const vtString &str2, float fTime)
+{
+	VTLOG(" SetMessage: '%s' '%s'\n", (const char *) str1, (const char *) str2);
+
+	if ((str1 + str2) != "" && fTime != 0.0f)
 	{
 		m_fMessageStart = vtGetTime();
 		m_fMessageTime = fTime;
 	}
-	m_strMessage = msg;
+	m_strMessage1 = str1;
+	m_strMessage2 = str2;
 }
 
 void Enviro::SetFlightSpeed(float speed)
@@ -2657,38 +2639,32 @@ void Enviro::CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags)
 	}
 }
 
-void Enviro::DescribeCoordinatesTerrain(vtString &str)
+/**
+ There are two message strings set by reference.
+
+ The first string should contain the part of the message that will be
+ translated (like "Cursor: ").
+ 
+ The second string can contain the part of the message that should not be
+ translated (like "1152.5, 12351.4")
+
+ The two strings will be concatenated later.
+ */
+void Enviro::DescribeCoordinatesTerrain(vtString &str1, vtString &str2)
 {
-#if 0
-	// give location of camera and cursor
-	str = "Camera: ";
-	// get camera pos
-	vtScene *scene = vtGetScene();
-	vtCamera *camera = scene->GetCamera();
-	FPoint3 campos = camera->GetTrans();
-
-	// Find corresponding earth coordinates
-	g_Conv.ConvertToEarth(campos, epos);
-
-	FormatCoordString(str1, epos, g_Conv.GetUnits());
-	str += str1;
-	str1.Format(" elev %.1f", epos.z);
-	str += str1;
-	str += ", ";
-#endif
-
-	// ground cursor
-	str = _("Cursor: ");
+	// Ground cursor
 	DPoint3 epos;
 	bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
 	if (bOn)
 	{
-		vtString str1;
-		FormatCoordString(str1, epos, g_Conv.GetUnits(), true);
-		str += str1;
+		str1 = _("Cursor: ");
+		FormatCoordString(str2, epos, g_Conv.GetUnits(), true);
 	}
 	else
-		str += _("Not on ground");
+	{
+		str1 = _("Cursor: Not on ground");
+		str2 = "";
+	}
 }
 
 void Enviro::DescribeCLOD(vtString &str)
@@ -2716,32 +2692,37 @@ void Enviro::DescribeCLOD(vtString &str)
 	}
 }
 
-vtString Enviro::GetStatusString(int which)
+/**
+ \param which 0 for the "fps" field,
+			  1 for the "cursor" field (location of the cursor),
+			  2 for the "cursor val" (value under the cursor).
+ */
+void Enviro::GetStatusString(int which, vtString &str1, vtString &str2)
 {
 	vtScene *scene = vtGetScene();
 
 	vtString str;
 	if (which == 0)
 	{
+		str1 = _("fps");
+
 		// Fps: get framerate
 		float fps = scene->GetFrameRate();
 
 		// only show 3 significant digits
 		if (fps < 10)
-			str.Format("fps %1.2f", fps);
+			str2.Format(" %1.2f", fps);
 		else if (fps < 80)
-			str.Format("fps %2.1f", fps);
+			str2.Format(" %2.1f", fps);
 		else
-			str.Format("fps %3.0f", fps);
-
-		return str;
+			str2.Format(" %3.0f", fps);
 	}
 	if (which == 1)
 	{
 		if (m_state == AS_Orbit)
-			DescribeCoordinatesEarth(str);
+			DescribeCoordinatesEarth(str1, str2);
 		else if (m_state == AS_Terrain)
-			DescribeCoordinatesTerrain(str);
+			DescribeCoordinatesTerrain(str1, str2);
 	}
 	if (which == 2)
 	{
@@ -2752,7 +2733,10 @@ vtString Enviro::GetStatusString(int which)
 			m_pGlobePicker->GetCurrentEarthPos(epos);
 			vtTerrain *pTerr = FindTerrainOnEarth(DPoint2(epos.x, epos.y));
 			if (pTerr)
-				str = pTerr->GetName();
+			{
+				str1 = "";
+				str2 = pTerr->GetName();	// Don't try to translate the name.
+			}
 		}
 		else if (m_state == AS_Terrain)
 		{
@@ -2767,16 +2751,16 @@ vtString Enviro::GetStatusString(int which)
 					exag = GetCurrentTerrain()->GetVerticalExag();
 				}
 				epos.z /= exag;
-				str = _("Elev: ");
-				vtString str2;
-				str2.Format("%.1f", epos.z);
-				str += str2;
+				str1 = _("Elev: ");				// Part to translate
+				str2.Format("%.1f", epos.z);	// Part to not translate
 			}
 			else
-				str += _("Not on ground");
+			{
+				str1 = _("Not on ground");
+				str2 = "";
+			}
 		}
 	}
-	return str;
 }
 
 void Enviro::ActivateAStructureLayer()
