@@ -68,7 +68,8 @@ Source: "C:\APIs\expat-2.0.1\win32\bin\Release\libexpat.dll"; DestDir: "{app}\Ap
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\Documentation"; Filename: "{app}\Docs\en\index.html"
+Name: "{group}\Documentation"; Filename: "{app}\Docs\VTBuilder\en\index.html"
+Name: "{group}\Documentation - Italian"; Filename: "{app}\Docs\VTBuilder\it\index.html"
 Name: "{group}\VTBuilder"; Filename: "{app}\Apps\VTBuilder.exe"; WorkingDir: "{app}/Apps"
 Name: "{group}\Uninstall VTBuilder"; Filename: "{uninstallexe}"
 
