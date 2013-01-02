@@ -60,7 +60,7 @@ msgstr ""
 
 #: Builder.cpp:347
 msgid "Do you want to load the default species file from:"
-msgstr ""
+msgstr "Vuoi caricare il file delle specie di default da:"
 
 #: Builder.cpp:350
 #, fuzzy
@@ -133,7 +133,7 @@ msgstr "Caricando Livello Elevazione"
 #: Builder.cpp:978
 #, fuzzy
 msgid "difference"
-msgstr "Preferenze"
+msgstr "differenze"
 
 #: Builder.cpp:999
 #, fuzzy
@@ -169,7 +169,7 @@ msgstr "Salva Immagine"
 
 #: Builder.cpp:1291
 msgid "Sorry, could not allocate an image of that size."
-msgstr "Spiacente, impossibile allocare un'immagine i questa grandezza."
+msgstr "Spiacente, impossibile allocare un'immagine di questa grandezza."
 
 #: Builder.cpp:1332
 msgid "Generating Vegetation"
@@ -182,7 +182,7 @@ msgstr "colonna %d/%d, piante: %d"
 
 #: Builder.cpp:1500
 msgid "Vegetation distribution results:\n"
-msgstr "Risultati istribuzione vegetazione:\n"
+msgstr "Risultati distribuzione vegetazione:\n"
 
 #: Builder.cpp:1512
 #, c-format
@@ -488,7 +488,7 @@ msgstr "Scrivendo il file"
 #: Export.cpp:559 FrameMenus.cpp:647
 #, fuzzy
 msgid "Sample Elevation to Tileset"
-msgstr "Ricampionamento Ottimizzato Elevazione in Tileset"
+msgstr "Campionamento Ottimizzato Elevazione in Tileset"
 
 #: Export.cpp:581
 msgid "Sample floating-point elevation values?"
@@ -506,7 +506,7 @@ msgstr "Su file"
 #: Export.cpp:651 FrameMenus.cpp:649
 #, fuzzy
 msgid "Sample Imagery to Tileset"
-msgstr "Ricampionamento Ottimizzato Immagine in Tileset"
+msgstr "Campionamento Ottimizzato Immagine in Tileset"
 
 #: Export.cpp:737 Export.cpp:1144
 #, fuzzy
@@ -801,7 +801,7 @@ msgstr "Geocodifica"
 
 #: FrameMenus.cpp:396
 msgid "Run test"
-msgstr ""
+msgstr "Esegui test"
 
 #: FrameMenus.cpp:397
 msgid "Copy Elevation Layer to Clipboard"
@@ -901,7 +901,7 @@ msgstr "Importa Livelli Astratti da DXF"
 
 #: FrameMenus.cpp:435
 msgid "Import multiple layers from a OpenStreetMap .osm File"
-msgstr ""
+msgstr "Importa livelli multipli da un file OpenStreetMap .osm"
 
 #: FrameMenus.cpp:436
 #, fuzzy
@@ -1112,7 +1112,7 @@ msgstr "&Rimuovi Range Elevazione..."
 
 #: FrameMenus.cpp:520
 msgid "&Compute Difference Layer"
-msgstr ""
+msgstr "&Calcola Livello Differenza"
 
 #: FrameMenus.cpp:523 VTBuilder_UI.cpp:1849
 msgid "Fast"
@@ -1149,7 +1149,7 @@ msgstr "Re&ndi in Bitmap..."
 
 #: FrameMenus.cpp:534
 msgid "Convert Grid to TIN"
-msgstr ""
+msgstr "Converti Griglia in TIN"
 
 #: FrameMenus.cpp:535
 #, fuzzy
@@ -1214,7 +1214,7 @@ msgstr "Esporta SHP"
 
 #: FrameMenus.cpp:563
 msgid "Write species to HTML"
-msgstr ""
+msgstr "Scrivi specie in HTML"
 
 #: FrameMenus.cpp:564
 msgid "Veg&etation"
@@ -1247,7 +1247,7 @@ msgstr "Pulizia punti legati"
 
 #: FrameMenus.cpp:581
 msgid "Clean up degenerate footprint geometry"
-msgstr ""
+msgstr "Pulisci la geometria dei poligoni edifici degeneri"
 
 #: FrameMenus.cpp:582
 #, fuzzy
@@ -1256,16 +1256,16 @@ msgstr "Seleziona Caratteristiche per Condizione"
 
 #: FrameMenus.cpp:584 FrameMenus.cpp:3393
 msgid "Export footprints to SHP"
-msgstr "Esporta impronte edifici in SHP"
+msgstr "Esporta poligoni edifici in SHP"
 
 #: FrameMenus.cpp:585 FrameMenus.cpp:3407
 #, fuzzy
 msgid "Export footprints to Canoma3DV"
-msgstr "Esporta impronte edifici in SHP"
+msgstr "Esporta poligoni edifici in SHP"
 
 #: FrameMenus.cpp:588
 msgid "Constrain angles on footprint edit"
-msgstr "Vincola angoli in modifica impronte edifici"
+msgstr "Vincola angoli in modifica poligoni edifici"
 
 #: FrameMenus.cpp:589
 msgid "&Structures"
@@ -1306,11 +1306,11 @@ msgstr "Stile..."
 
 #: FrameMenus.cpp:605
 msgid "Scale horizontally"
-msgstr ""
+msgstr "Scala orizzontalmente"
 
 #: FrameMenus.cpp:606
 msgid "Scale vertically"
-msgstr ""
+msgstr "Scala verticalmente"
 
 #: FrameMenus.cpp:607
 #, fuzzy
@@ -1319,7 +1319,7 @@ msgstr "Scostamento Verticale Elevazione"
 
 #: FrameMenus.cpp:608
 msgid "Clean polygon geometry"
-msgstr ""
+msgstr "Pulisci geometria poligoni"
 
 #: FrameMenus.cpp:609
 #, fuzzy
@@ -1344,7 +1344,7 @@ msgstr "Genera Griglia da Punti 3D"
 
 #: FrameMenus.cpp:615 FrameMenus.cpp:3646 FrameMenus.cpp:3656
 msgid "Generate TIN"
-msgstr ""
+msgstr "Genera TIN"
 
 #: FrameMenus.cpp:616
 #, fuzzy
@@ -1499,20 +1499,20 @@ msgstr "Carica Progetto"
 
 #: FrameMenus.cpp:809
 msgid "Import elevation grid data, write BT"
-msgstr ""
+msgstr "Importa dati griglia elevazione, scrivi BT"
 
 #: FrameMenus.cpp:810
 msgid "Import 3D point data, produce a TIN and write ITF"
-msgstr ""
+msgstr "Importa dati punti 3D, produci TIN e scrivi ITF"
 
 #: FrameMenus.cpp:812
 #, fuzzy
 msgid "Choose operation:"
-msgstr "Scegli file output"
+msgstr "Scegli file output:"
 
 #: FrameMenus.cpp:818
 msgid "Choose directory that has the input files"
-msgstr ""
+msgstr "Scegli directory che contiene file in input"
 
 #: FrameMenus.cpp:823
 #, fuzzy
@@ -1868,16 +1868,16 @@ msgstr "Totale istanze piante: %d\n"
 
 #: FrameMenus.cpp:3341
 msgid "How close are degenerate points? (epsilon)"
-msgstr ""
+msgstr "Quanto sono vicini i punti degeneri? (epsilon)"
 
 #: FrameMenus.cpp:3369
 #, c-format
 msgid "Index (0 .. %d)"
-msgstr ""
+msgstr "Indice (0 .. %d)"
 
 #: FrameMenus.cpp:3370
 msgid "Index"
-msgstr ""
+msgstr "Indice"
 
 #: FrameMenus.cpp:3394
 msgid "SHP Files (*.shp)|*.shp"
@@ -1906,7 +1906,7 @@ msgstr "Inserire coordinate"
 
 #: FrameMenus.cpp:3557
 msgid "Enter well-known-text (WKT) of a feature (in current CRS)"
-msgstr ""
+msgstr "Inserisci well-known-text (WKT) di una geometria (nel corrente CRS)"
 
 #: FrameMenus.cpp:3599
 msgid "Select"
@@ -1928,7 +1928,7 @@ msgstr "Selezionate %d entità"
 #: FrameMenus.cpp:3646
 #, fuzzy
 msgid "Height Field"
-msgstr "Campo Altezza:"
+msgstr "Campo Altezza"
 
 #: FrameMenus.cpp:3655
 msgid "What height to use for the TIN surface?"
@@ -1966,7 +1966,7 @@ msgstr "Livello Scala Grezzo"
 
 #: FrameMenus.cpp:4004
 msgid "Distance threshhold for proximity and co-linearity?"
-msgstr ""
+msgstr "Distanza soglia per prossimità e co-linearità?"
 
 #: FrameMenus.cpp:4005
 #, fuzzy
@@ -1976,11 +1976,11 @@ msgstr "Livello Scala Grezzo"
 #: FrameMenus.cpp:4016
 #, c-format
 msgid "Removed %d degenerate points"
-msgstr ""
+msgstr "Rimossi %d punti degeneri"
 
 #: FrameMenus.cpp:4031
 msgid "Distance threshhold for proximity?"
-msgstr ""
+msgstr "Distanza soglia per prossimità?"
 
 #: FrameMenus.cpp:4032
 #, fuzzy
@@ -1990,7 +1990,7 @@ msgstr "Seleziona usando Poligoni"
 #: FrameMenus.cpp:4039
 #, c-format
 msgid "Found %d degenerate polygons"
-msgstr ""
+msgstr "Trovati %d poligoni degeneri"
 
 #: FrameMenus.cpp:4051
 msgid ""
@@ -2832,11 +2832,11 @@ msgstr "Geocodifica"
 
 #: VTBuilder_UI.cpp:459
 msgid "Use Geocode.us (Web, US street addresses)"
-msgstr ""
+msgstr "Usa Geocode.us (Web, indirizzi strade US)"
 
 #: VTBuilder_UI.cpp:463
 msgid "Use Gazeteer (US Cities)"
-msgstr ""
+msgstr "Usa Gazeteer (Città US)"
 
 #: VTBuilder_UI.cpp:473
 msgid "Places:"
@@ -2859,6 +2859,12 @@ msgid ""
 "image map with clickable areas derived from\n"
 "the polygon features of the active Raw layer."
 msgstr ""
+"Questa operazione prenderà il contenuto corrente della\n"
+"finestra e la esporterà come file PNG.\n"
+"Un equivalente file HTML sarà scritto con una\n"
+"image map e aree cliccabili derivate dai\n"
+"poligoni presenti nel livello astratto attivo."
+
 
 #: VTBuilder_UI.cpp:568
 msgid "Link field:"
@@ -3096,7 +3102,7 @@ msgstr "Indirizzo WMS:"
 
 #: VTBuilder_UI.cpp:1296
 msgid "Query Layers"
-msgstr "Livelli Interrogazione:"
+msgstr "Livelli Interrogazione"
 
 #: VTBuilder_UI.cpp:1308
 msgid "Layer:"
@@ -3290,7 +3296,7 @@ msgstr "Decomprimi immagini TIFF in scrittura"
 
 #: VTBuilder_UI.cpp:1830
 msgid "When reprojecting an integer elevation grid:"
-msgstr "Quando si proietta una griglia elevazione intera"
+msgstr "Quando si proietta una griglia elevazione intera:"
 
 #: VTBuilder_UI.cpp:1832
 msgid "Leave it as integer"
@@ -3306,7 +3312,7 @@ msgstr "Riempitura aree non note di griglie elevazione:"
 
 #: VTBuilder_UI.cpp:1866
 msgid "Maximum size for rendered elevation layers:"
-msgstr "Dimensione massima per i livelli elevazione visualizzati"
+msgstr "Dimensione massima per i livelli elevazione visualizzati:"
 
 #: VTBuilder_UI.cpp:1875
 msgid "Default to gzip-compressed BT files"
@@ -3320,7 +3326,7 @@ msgstr "Ritardo per ricampionamento nel caricare griglie elevazione"
 #: VTBuilder_UI.cpp:1889
 #, fuzzy
 msgid "Maximum memory used for elevation (MB):"
-msgstr "Memoria massima usata per griglie (MB)"
+msgstr "Memoria massima usata per griglie (MB):"
 
 #: VTBuilder_UI.cpp:1934
 msgid "Bytes per sample"
@@ -3538,7 +3544,7 @@ msgid "Vertical units:"
 msgstr "Unità Verticale:"
 
 #: VTBuilder_UI.cpp:2648
-msgid "Fill gaps (NODATA) in the resampled grid with interpolated values"
+msgid "Fill gaps (NODATA) in the sampled grid with interpolated values"
 msgstr "Riempi fessure (NODATA) griglia ricampionata con valori interpolati"
 
 #: VTBuilder_UI.cpp:2655 VTBuilder_UI.cpp:2804 VTBuilder_UI.cpp:2993
@@ -3547,7 +3553,7 @@ msgstr "Informazione"
 
 #: VTBuilder_UI.cpp:2660 VTBuilder_UI.cpp:2809 VTBuilder_UI.cpp:3013
 msgid "Size of sample area:"
-msgstr "Dimensione dell'area campionata"
+msgstr "Dimensione dell'area campionata:"
 
 #: VTBuilder_UI.cpp:2675 VTBuilder_UI.cpp:2824
 msgid "Estimated spacing of existing data:"
@@ -3603,7 +3609,7 @@ msgstr "Maschera aree sconosciute di elevazione con valori alfa di texture"
 
 #: VTBuilder_UI.cpp:3065
 msgid "Use texture alpha values"
-msgstr ""
+msgstr "Usa texture valori alfa"
 
 #: VTBuilder_UI.cpp:3069
 msgid "Texture Compression"
@@ -3838,6 +3844,8 @@ msgid ""
 "Enter the path to a SHP file containing a polyline, or a series of points in "
 "the form X Y X Y .."
 msgstr ""
+"Inserisci il percorso di un file SHP contenente una polilinea, o una serie di punti "
+"nella forma di X Y X Y .."
 
 #: ../../TerrainSDK/vtui/DistanceDlg.cpp:369
 #, fuzzy
@@ -4274,7 +4282,7 @@ msgstr "Pendenze Lati:"
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:169
 #, fuzzy
 msgid "Edges"
-msgstr "Lati:"
+msgstr "Lati"
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:183
 msgid "Edge Properties"
@@ -4355,12 +4363,12 @@ msgstr "Singolo biotipo:"
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:439
 msgid "Contours every:"
-msgstr ""
+msgstr "Curve ogni:"
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:466
 #, fuzzy
 msgid "Add to layer:"
-msgstr "Aggiungi Torre"
+msgstr "Aggiungi Torre:"
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:514
 msgid "Line"
@@ -4372,7 +4380,7 @@ msgstr "Percorso"
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:524
 msgid "Load Path..."
-msgstr ""
+msgstr "Carica Percorso..."
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:539
 msgid "Map Offset"
@@ -4425,7 +4433,7 @@ msgstr "Posizione:"
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:756
 msgid "Create"
-msgstr ""
+msgstr "Crea"
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:782
 msgid "Defined Style:"
@@ -4527,12 +4535,12 @@ msgstr "Terreno"
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:1103
 #, fuzzy
 msgid "Export:"
-msgstr "Esporta"
+msgstr "Esporta:"
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:1107
 #, fuzzy
 msgid "Profile"
-msgstr "Profilo:"
+msgstr "Profilo"
 
 #: ../../TerrainSDK/vtui/vtui_UI.cpp:1111
 #, fuzzy

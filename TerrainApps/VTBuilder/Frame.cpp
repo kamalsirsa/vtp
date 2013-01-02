@@ -430,8 +430,8 @@ void MainFrame::AddMainToolbars()
 	ADD_TOOL2(m_pToolbar, ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Area Tool"), wxITEM_CHECK);
 	ADD_TOOL2(m_pToolbar, ID_VIEW_PROFILE, wxBITMAP(view_profile), _("Elevation Profile"), wxITEM_CHECK);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(m_pToolbar, ID_AREA_SAMPLE_ELEV, wxBITMAP(elev_resample), _("Merge/Resample Elevation"));
-	ADD_TOOL(m_pToolbar, ID_AREA_SAMPLE_IMAGE, wxBITMAP(image_resample), _("Merge/Resample Imagery"));
+	ADD_TOOL(m_pToolbar, ID_AREA_SAMPLE_ELEV, wxBITMAP(elev_resample), _("Sample Elevation"));
+	ADD_TOOL(m_pToolbar, ID_AREA_SAMPLE_IMAGE, wxBITMAP(image_resample), _("Sample Imagery"));
 	m_pToolbar->Realize();
 
 	// Raw

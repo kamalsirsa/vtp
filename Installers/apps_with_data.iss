@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 1.38 (2012.12.28)
+AppVerName=VTP Software 1.4 (2013.01.01)
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -50,8 +50,11 @@ Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*"; DestDir: "{app}\Docs\VTBuilder"; 
 
 Source: "C:\VTP\vc10\TerrainApps\Simple\Release\Simple.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 
+; Common to all documentation
+Source: "C:\VTP\TerrainApps\docs.css"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs; Components: docs
+
 ; Translation files
-Source: "C:\VTP\i18n\*"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: main
+Source: "C:\VTP\i18n\*"; DestDir: "{app}\Apps"; Excludes: "*.po"; Flags: ignoreversion recursesubdirs; Components: main
 
 ; Core Data
 Source: "G:\Data-Distro\*"; DestDir: "{app}\Data"; Flags: ignoreversion recursesubdirs; Components: data

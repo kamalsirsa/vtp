@@ -24117,7 +24117,7 @@
                             <property name="proportion">0</property>
                             <object class="wxCheckBox" expanded="0">
                                 <property name="bg"></property>
-                                <property name="checked"></property>
+                                <property name="checked">0</property>
                                 <property name="context_help"></property>
                                 <property name="context_menu">1</property>
                                 <property name="enabled">1</property>
@@ -24125,7 +24125,7 @@
                                 <property name="font"></property>
                                 <property name="hidden"></property>
                                 <property name="id">ID_FILL_GAPS</property>
-                                <property name="label">Fill gaps (NODATA) in the resampled grid with interpolated values</property>
+                                <property name="label">Fill gaps (NODATA) in the sampled grid with interpolated values</property>
                                 <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_fill_gaps</property>

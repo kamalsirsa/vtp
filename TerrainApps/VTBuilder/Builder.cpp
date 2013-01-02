@@ -1181,7 +1181,7 @@ void Builder::AreaSampleElevation(BuilderView *pView)
 		spacing.Set(1,1);
 	}
 
-	// Open the Resample dialog
+	// Open the Sample dialog
 	SampleElevationDlg dlg(m_pParentWindow, -1, _("Sample Elevation"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
@@ -1268,7 +1268,7 @@ void Builder::AreaSampleImages(BuilderView *pView)
 		return;
 	}
 
-	// Open the Resample dialog
+	// Open the Sample dialog
 	SampleImageDlg dlg(m_pParentWindow, -1, _("Sample Imagery"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;

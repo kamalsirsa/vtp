@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTBuilder
-AppVerName=VTBuilder 1.38 (2012.12.28)
+AppVerName=VTBuilder 1.4 (2013.01.01)
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -12,7 +12,7 @@ DefaultDirName={pf}\VTP
 DefaultGroupName=VTP
 AllowNoIcons=yes
 LicenseFile=C:\VTP\license.txt
-OutputBaseFilename=VTBuilder_121228
+OutputBaseFilename=VTBuilder_130101
 OutputDir=C:\Distrib
 ; We need the following because some Windows machines won't turn Registry settings into Environment variables w/o a reboot
 AlwaysRestart=yes
@@ -40,9 +40,10 @@ Source: "C:\VTP\license.txt"; DestDir: "{app}"; Flags: ignoreversion; Components
 Source: "C:\VTP\vc10\TerrainApps\VTBuilder\Release\VTBuilder.exe"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\Ship\VTBuilder.xml"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*"; DestDir: "{app}\Docs\VTBuilder"; Flags: ignoreversion recursesubdirs; Components: docs
+Source: "C:\VTP\TerrainApps\docs.css"; DestDir: "{app}\Docs"; Flags: ignoreversion; Components: docs
 
 ; Translation files
-Source: "C:\VTP\i18n\*"; DestDir: "{app}\Apps"; Flags: ignoreversion recursesubdirs; Components: main
+Source: "C:\VTP\i18n\*"; DestDir: "{app}\Apps"; Excludes: "*.po,Enviro.*"; Flags: ignoreversion recursesubdirs; Components: main
 
 ; Core Data
 Source: "G:\Data-Distro\WorldMap\gnv19.*"; DestDir: "{app}/Data/WorldMap"; Flags: ignoreversion; Components: data

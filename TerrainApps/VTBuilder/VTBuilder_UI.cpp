@@ -2645,8 +2645,7 @@ SampleElevationDlgBase::SampleElevationDlgBase( wxWindow* parent, wxWindowID id,
 	
 	bSizer52->Add( bSizer53, 0, wxALIGN_CENTER, 5 );
 	
-	m_fill_gaps = new wxCheckBox( this, ID_FILL_GAPS, _("Fill gaps (NODATA) in the resampled grid with interpolated values"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fill_gaps->SetValue(true); 
+	m_fill_gaps = new wxCheckBox( this, ID_FILL_GAPS, _("Fill gaps (NODATA) in the sampled grid with interpolated values"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer52->Add( m_fill_gaps, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer43->Add( bSizer52, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
