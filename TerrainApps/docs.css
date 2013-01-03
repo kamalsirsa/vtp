@@ -10,6 +10,8 @@ a.bt:link, a.bt:visited, a.bt:active, a.bt:hover {
 
 body
 {
+	font-family: Georgia;
+	font-size: 95%;
 	background-color:#EEEEEC;
 }
 h1 {
