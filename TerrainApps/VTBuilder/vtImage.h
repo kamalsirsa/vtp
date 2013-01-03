@@ -9,6 +9,8 @@
 #define VTIMAGE_H
 
 #include "wx/image.h"
+#include "gdal.h"
+
 #include "TilingOptions.h"
 #include "vtdata/Projections.h"
 
@@ -167,7 +169,7 @@ protected:
 };
 
 // Helpers
-int GetBitDepthUsingGDAL(const char *fname);
+bool GetBitDepthUsingGDAL(const char *fname, int &depth_in_bits, GDALDataType &eType);
 void MakeSampleOffsets(const DPoint2 cellsize, uint N, DLine2 &offsets);
 void SampleMipLevel(vtBitmap *bigger, vtBitmap *smaller);
 

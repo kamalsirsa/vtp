@@ -295,8 +295,6 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 //
 vtLayer *Builder::LoadLayer(const wxString &fname_in)
 {
-	LayerType ltype = LT_UNKNOWN;
-
 	// check file extension
 	wxString fname = fname_in;
 	wxString ext = fname.AfterLast('.');
@@ -393,8 +391,14 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 	{
 		// If it's a 8-bit or 24-bit TIF, then it's likely to be an image.
 		// If it's a 16-bit TIF, then it's likely to be elevation.
-		int depth = GetBitDepthUsingGDAL(fname_in.mb_str(wxConvUTF8));
-		if (depth == 8 || depth == 24 || depth == 32)
+		int depth;
+		GDALDataType eType = GDT_Unknown;
+		bool success = GetBitDepthUsingGDAL(fname_in.mb_str(wxConvUTF8), depth, eType);
+		if (eType == GDT_Float32 || eType == GDT_Int16)
+		{
+			// We only support elevation from that kind of TIFF
+		}
+		else if (depth == 8 || depth == 24 || depth == 32)
 		{
 			vtImageLayer *pIL = new vtImageLayer;
 			if (pIL->Load(fname))
@@ -402,8 +406,6 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 			else
 				delete pIL;
 		}
-		else if (depth == 16)
-			ltype = LT_ELEVATION;
 	}
 	if (pLayer)
 	{

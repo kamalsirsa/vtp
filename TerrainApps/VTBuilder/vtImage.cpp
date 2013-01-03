@@ -1778,22 +1778,23 @@ bool vtImage::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 }
 
 // Helper
-int GetBitDepthUsingGDAL(const char *fname)
+bool GetBitDepthUsingGDAL(const char *fname, int &depth_in_bits, GDALDataType &eType)
 {
 	// GDAL doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(fname);
 
 	GDALDataset *pDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
 	if (pDataset == NULL)
-		return -1;
+		return false;
 
 	// Raster count should be 3 for colour images (assume RGB)
 	int iRasterCount = pDataset->GetRasterCount();
 	GDALRasterBand *pBand = pDataset->GetRasterBand(1);
-	GDALDataType eType = pBand->GetRasterDataType();
-	int bits = iRasterCount * GDALGetDataTypeSize(eType);
+	eType = pBand->GetRasterDataType();
+	depth_in_bits = iRasterCount * GDALGetDataTypeSize(eType);
 	GDALClose(pDataset);
-	return bits;
+
+	return true;
 }
 
 bool vtImage::WriteTileset(TilingOptions &opts, BuilderView *pView)
