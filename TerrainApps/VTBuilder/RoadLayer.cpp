@@ -682,7 +682,8 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 	grid->GetDimensions(xsize, ysize);
 	for (i = 0; i < xsize; i++)
 	{
-		UpdateProgressDialog(i*100/xsize);
+		if ((i % 5) == 0)
+			UpdateProgressDialog(i*100/xsize);
 		for (j = 0; j < ysize; j++)
 		{
 			grid->GetEarthLocation(i, j, loc);
@@ -709,9 +710,12 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 				// That assumes the link is draped perfectly.  In reality,
 				//  it's draped based only on the height at each vertex of
 				//  the link.  Just use those.
+				// Also, if the road isn't entirely on elevation, skip it.
 				float alt1, alt2;
-				grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint), alt1);
-				grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint+1), alt2);
+				if (!grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint), alt1))
+					continue;
+				if (!grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint+1), alt2))
+					continue;
 				height = alt1 + (alt2 - alt1) * fractional;
 
 				// If the point falls in the 'fade' region, interpolate
