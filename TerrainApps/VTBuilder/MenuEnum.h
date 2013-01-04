@@ -1,7 +1,7 @@
 //
 // MenuEnum.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,7 @@ enum
 	ID_FILE_SAVE,
 	ID_FILE_MRU,
 	ID_FILE_PREFS,
+	ID_SPECIAL_FLIP,
 	ID_SPECIAL_BATCH,
 	ID_SPECIAL_DYMAX_TEXTURES,
 	ID_SPECIAL_DYMAX_MAP,

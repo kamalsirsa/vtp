@@ -548,6 +548,16 @@ void VisitorOSM::MakeBuilding()
 {
 	vtBuilding *bld = m_struct_layer->AddNewBuilding();
 
+	// We expect the building to be closed, which means the last node should
+	// be the same as the first.  If not, something is wrong.
+	if (m_refs.size() < 4)
+		return;
+	if (m_refs[0] != m_refs[m_refs.size()-1])
+		return;
+
+	// Our polylines are implicitly closed so we don't need redundancy.
+	m_refs.erase(m_refs.end() - 1);
+
 	// Apply footprint
 	DLine2 foot(m_refs.size());
 	for (uint r = 0; r < m_refs.size(); r++)
