@@ -112,7 +112,7 @@ void vtHeightField3d::Initialize(const LinearUnits units,
 void vtHeightField3d::SetEarthExtents(const DRECT &ext)
 {
 	vtHeightField::SetEarthExtents(ext);
-	m_Conversion.SetOrigin(DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
+	m_Conversion.Setup(m_Conversion.GetUnits(), DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
 	UpdateWorldExtents();
 }
 

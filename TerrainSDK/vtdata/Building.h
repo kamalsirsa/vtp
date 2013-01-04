@@ -17,7 +17,6 @@
 #include "ogrsf_frmts.h"
 
 class vtHeightField;
-class vtStructureArray;
 
 ////////////////////////////////////////////////////
 
@@ -259,9 +258,16 @@ public:
 	void SwapLevels(int lev1, int lev2);
 	void CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight);
 
+	void SetCRS(vtProjection *proj) { m_pCRS = proj; }
+
 protected:
 	// information about each story
 	vtArray<vtLevel *> m_Levels;
+
+	// Every building needs a link back up to its containing array, because
+	// that's where its CRS is stored, which it needs to know for LocalCoords.
+	// This is more simple and efficient than storing a CRS on every building.
+	vtProjection *m_pCRS;
 
 private:
 	void DeleteLevels();

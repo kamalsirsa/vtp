@@ -64,6 +64,10 @@ vtStructInstance *vtStructureArray::NewInstance()
 vtBuilding *vtStructureArray::AddNewBuilding()
 {
 	vtBuilding *nb = NewBuilding();
+
+	// Every building needs a link back up to its containing array's CRS.
+	nb->SetCRS(&m_proj);
+
 	push_back(nb);
 	return nb;
 }
@@ -610,7 +614,6 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			const char *type  = atts.getValue("type");
 			const char *value = atts.getValue("value");
 			m_pSA->m_proj.SetTextDescription(type, value);
-			g_Conv.Setup(m_pSA->m_proj.GetUnits(), DRECT(0,1,1,0));
 		}
 		else if (string(name) == (string)"structures")
 		{
@@ -637,17 +640,17 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			{
 				if (string(attval) == (string)"building")
 				{
-					vtBuilding *bld = m_pSA->NewBuilding();
+					vtBuilding *bld = m_pSA->AddNewBuilding();
 					pStruct = bld;
 				}
 				if (string(attval) == (string)"linear")
 				{
-					vtFence *fen = m_pSA->NewFence();
+					vtFence *fen = m_pSA->AddNewFence();
 					pStruct = fen;
 				}
 				if (string(attval) == (string)"instance")
 				{
-					vtStructInstance *inst = m_pSA->NewInstance();
+					vtStructInstance *inst = m_pSA->AddNewInstance();
 					pStruct = inst;
 				}
 			}
@@ -874,8 +877,6 @@ void StructureVisitor::endElement(const char * name)
 	}
 	if (string(name) == (string)"structure")
 	{
-		if (st.item != NULL)
-			m_pSA->push_back(st.item);
 		pop_state();
 	}
 	if (string(name) == (string)"shapes")
@@ -969,14 +970,14 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 	{
 		if (!strcmp(name, "Building"))
 		{
-			m_pBuilding = m_pSA->NewBuilding();
+			m_pBuilding = m_pSA->AddNewBuilding();
 			m_pStructure = m_pBuilding;
 			m_state = 2;
 			m_iLevel = 0;
 		}
 		else if (!strcmp(name, "Linear"))
 		{
-			m_pFence = m_pSA->NewFence();
+			m_pFence = m_pSA->AddNewFence();
 			m_pFence->GetParams().Blank();
 			m_pStructure = m_pFence;
 
@@ -992,7 +993,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		}
 		else if (!strcmp(name, "Imported"))
 		{
-			m_pInstance = m_pSA->NewInstance();
+			m_pInstance = m_pSA->AddNewInstance();
 			m_pStructure = m_pInstance;
 
 			m_state = 20;
@@ -1286,7 +1287,6 @@ void StructVisitorGML::endElement(const char *name)
 			// do this once after we done adding levels
 			m_pBuilding->DetermineLocalFootprints();
 
-			m_pSA->push_back(m_pStructure);
 			m_pStructure = NULL;
 		}
 		else
@@ -1295,9 +1295,6 @@ void StructVisitorGML::endElement(const char *name)
 	else if (m_state == 1 && (!strcmp(name, "SRS")))
 	{
 		m_pSA->m_proj.SetTextDescription("wkt", data);
-
-		// This seems wrong - why would each .vtst file reset the global projection?
-		// g_Conv.Setup(m_pSA->m_proj.GetUnits(), DPoint2(0,0));
 	}
 	else if (m_state == 10)
 	{
@@ -1305,7 +1302,6 @@ void StructVisitorGML::endElement(const char *name)
 		{
 			m_state = 1;
 
-			m_pSA->push_back(m_pStructure);
 			m_pStructure = NULL;
 		}
 	}
@@ -1333,7 +1329,6 @@ void StructVisitorGML::endElement(const char *name)
 		if (!strcmp(name, "Imported"))
 		{
 			m_state = 1;
-			m_pSA->push_back(m_pStructure);
 			m_pStructure = NULL;
 		}
 		else if (!strcmp(name, "Rotation"))

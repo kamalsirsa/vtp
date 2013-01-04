@@ -435,9 +435,8 @@ void vtStructureLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	case LB_AddLinear:
 		if (ui.m_pCurLinear == NULL)
 		{
-			ui.m_pCurLinear = NewFence();
+			ui.m_pCurLinear = AddNewFence();
 			ui.m_pCurLinear->SetParams(g_bld->m_LSOptions);
-			push_back(ui.m_pCurLinear);
 			ui.m_bRubber = true;
 		}
 		ui.m_pCurLinear->AddPoint(ui.m_CurLocation);

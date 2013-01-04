@@ -134,8 +134,8 @@ public:
 	int NumSelectedOfType(vtStructureType t);
 	void DeselectAll();
 
-	// override these 'Factory' methods so that the vtStructureArray base
-	// methods can be capable of handling subclasses of vtBuilding
+	// Override these 'Factory' methods so that the vtStructureArray base
+	// methods can be capable of handling subclasses of vtBuilding etc.
 	virtual vtBuilding *NewBuilding();
 	virtual vtFence *NewFence();
 	virtual vtStructInstance *NewInstance();

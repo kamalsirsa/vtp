@@ -477,21 +477,20 @@ bool vtLevel::IsUniform() const
 
 void vtLevel::DetermineLocalFootprint(float fHeight)
 {
-	DPoint2 p;
+	const uint rings = m_Foot.size();
 	FPoint3 lp;
 
-	uint rings = m_Foot.size();
 	m_LocalFootprint.resize(rings);
 	for (unsigned ring = 0; ring < rings; ring++)
 	{
-		DLine2 &dline2 = m_Foot[ring];
+		const DLine2 &dline2 = m_Foot[ring];
 		FLine3 &fline3 = m_LocalFootprint[ring];
 
-		uint edges = dline2.GetSize();
+		const uint edges = dline2.GetSize();
 		fline3.SetSize(edges);
 		for (unsigned i = 0; i < edges; i++)
 		{
-			p = dline2[i];
+			const DPoint2 &p = dline2[i];
 			vtBuilding::s_Conv.ConvertFromEarth(p, lp.x, lp.z);
 			lp.y = fHeight;
 			fline3.SetAt(i, lp);
@@ -677,6 +676,7 @@ void vtLevel::FlipFootprintDirection()
 vtBuilding::vtBuilding() : vtStructure()
 {
 	SetType(ST_BUILDING);
+	m_pCRS = NULL;
 }
 
 vtBuilding::~vtBuilding()
@@ -1118,9 +1118,7 @@ vtLevel *vtBuilding::CreateLevel()
 	vtLevel *pLev = new vtLevel;
 	m_Levels.Append(pLev);
 
-	// keep 2d and 3d in synch
-	DetermineLocalFootprints();
-
+	// We don't have to call DetermineLocalFootprints(), because the new level is empty.
 	return pLev;
 }
 
@@ -1397,10 +1395,8 @@ void vtBuilding::DetermineLocalFootprints()
 	DPoint2 center;
 	GetBaseLevelCenter(center);
 
-	// The local conversion for a building must be the same as the global conversion,
-	//  wiht the only difference being a different origin.
-	s_Conv = g_Conv;
-	s_Conv.SetOrigin(center);
+	// The local conversion will be use to make the local footprints.
+	s_Conv.Setup(m_pCRS->GetUnits(), center);
 
 	int i;
 	int levs = m_Levels.GetSize();
