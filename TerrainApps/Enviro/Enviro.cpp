@@ -2619,7 +2619,6 @@ void Enviro::CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags)
 	//  extending it as desired.
 	ExtendStructure(inst);
 
-	st_layer->push_back(inst);
 	const int index = st_layer->size() - 1;
 	bool success = pTerr->CreateStructure(st_layer, index);
 	if (success)
