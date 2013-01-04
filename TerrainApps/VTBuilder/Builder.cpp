@@ -459,7 +459,7 @@ bool Builder::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 					str1, pLayer->GetLayerFilename().c_str(), str2);
 				OGRFree(str1);
 				OGRFree(str2);
-				ret = wxMessageBox(msg, _("Convert Coordinate System?"), wxYES_NO | wxCANCEL);
+				ret = wxMessageBox(msg, _("Convert Coordinate System?"), wxYES_NO);
 				if (ret == wxNO)
 					keep = true;
 			}

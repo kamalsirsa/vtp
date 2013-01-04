@@ -79,6 +79,7 @@ EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
 EVT_MENU(ID_FILE_OPEN,		MainFrame::OnProjectOpen)
 EVT_MENU(ID_FILE_SAVE,		MainFrame::OnProjectSave)
 EVT_MENU(ID_FILE_PREFS,		MainFrame::OnProjectPrefs)
+EVT_MENU(ID_SPECIAL_FLIP,	MainFrame::OnElevFlip)
 EVT_MENU(ID_SPECIAL_BATCH,	MainFrame::OnBatchConvert)
 EVT_MENU(ID_SPECIAL_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
 EVT_MENU(ID_SPECIAL_DYMAX_MAP,	MainFrame::OnDymaxMap)
@@ -388,6 +389,7 @@ void MainFrame::CreateMenus()
 	fileMenu->Append(ID_FILE_MRU, _("Recent Projects"), mruMenu);
 	fileMenu->AppendSeparator();
 	wxMenu *specialMenu = new wxMenu;
+	specialMenu->Append(ID_SPECIAL_FLIP, _("&Flip Elevation North/South"));
 	specialMenu->Append(ID_SPECIAL_BATCH, _("Batch Conversion of Elevation"));
 	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _("Create Dymaxion Textures"));
 	specialMenu->Append(ID_SPECIAL_DYMAX_MAP, _("Create Dymaxion Map"));
@@ -396,7 +398,7 @@ void MainFrame::CreateMenus()
 	specialMenu->Append(ID_SPECIAL_RUN_TEST, _("Run test"));
 	specialMenu->Append(ID_ELEV_COPY, _("Copy Elevation Layer to Clipboard"));
 	specialMenu->Append(ID_ELEV_PASTE_NEW, _("New Elevation Layer from Clipboard"));
-	fileMenu->Append(0, _("Special"), specialMenu);
+	fileMenu->Append(0, _T("&") + _("Special"), specialMenu);
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_FILE_PREFS, _("Preferences"));
 	fileMenu->AppendSeparator();
@@ -801,6 +803,29 @@ void MainFrame::OnProjectPrefs(wxCommandEvent &event)
 		// safety checks
 		CheckOptionBounds();
 	}
+}
+
+void MainFrame::OnElevFlip(wxCommandEvent &event)
+{
+	vtElevLayer *t = GetActiveElevLayer();
+	if (!t || !t->GetGrid())
+		return;
+
+	// Quick and dirty flip code.  Yes, this could be optimized.
+	vtElevationGrid *grid = t->GetGrid();
+	IPoint2 dim = grid->GetDimensions();
+	for (int j = 0; j < dim.y / 2; j++)
+	{
+		for (int i = 0; i < dim.x; i++)
+		{
+			float f = grid->GetFValue(i, j);
+			grid->SetFValue(i, j, grid->GetFValue(i, dim.y - 1 - j));
+			grid->SetFValue(i, dim.y - 1 - j, f);
+		}
+	}
+	t->SetModified(true);
+	t->ReRender();
+	m_pView->Refresh();
 }
 
 void MainFrame::OnBatchConvert(wxCommandEvent &event)
