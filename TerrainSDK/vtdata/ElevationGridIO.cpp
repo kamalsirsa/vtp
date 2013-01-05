@@ -1682,17 +1682,20 @@ bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName) const
 	// GDAL doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(szFileName);
 
-	GDALDataset *pDataset = pDriver->Create(fname_local, m_iSize.x, m_iSize.y,
-		1, GDT_Int16, papszParmList );
+	GDALDataset *pDataset;
+	if (m_bFloatMode)
+		pDataset = pDriver->Create(fname_local, m_iSize.x, m_iSize.y,
+			1, GDT_Float32, papszParmList );
+	else
+		pDataset = pDriver->Create(fname_local, m_iSize.x, m_iSize.y,
+			1, GDT_Int16, papszParmList );
 	if (!pDataset)
 		return false;
 
-	DPoint2 spacing = GetSpacing();
+	const DPoint2 &spacing = GetSpacing();
 	double adfGeoTransform[6] = { m_EarthExtents.left, spacing.x, 0,
 								  m_EarthExtents.top, 0, -spacing.y };
 	pDataset->SetGeoTransform(adfGeoTransform);
-
-	GInt16 *raster = new GInt16[m_iSize.x*m_iSize.y];
 
 	char *pszSRS_WKT = NULL;
 	m_proj.exportToWkt( &pszSRS_WKT );
@@ -1701,21 +1704,38 @@ bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName) const
 
 	GDALRasterBand *pBand = pDataset->GetRasterBand(1);
 
-	int x, y;
-	float value;
-	for (x = 0; x < m_iSize.x; x++)
+	if (m_bFloatMode)
 	{
-		for (y = 0; y < m_iSize.y; y++)
+		float *raster = new float[m_iSize.x*m_iSize.y];
+		for (int x = 0; x < m_iSize.x; x++)
 		{
-			// flip as we copy
-			value = GetFValue(x, m_iSize.y-1-y);
-			raster[y*m_iSize.x + x] = (short) value;
+			for (int y = 0; y < m_iSize.y; y++)
+			{
+				// flip as we copy
+				const float value = GetFValue(x, m_iSize.y-1-y);
+				raster[y*m_iSize.x + x] = value;
+			}
 		}
+		pBand->RasterIO(GF_Write, 0, 0, m_iSize.x, m_iSize.y,
+			raster, m_iSize.x, m_iSize.y, GDT_Float32, 0, 0);
+		delete raster;
 	}
-	pBand->RasterIO( GF_Write, 0, 0, m_iSize.x, m_iSize.y,
-		raster, m_iSize.x, m_iSize.y, GDT_Int16, 0, 0 );
-
-	delete raster;
+	else
+	{
+		GInt16 *raster = new GInt16[m_iSize.x*m_iSize.y];
+		for (int x = 0; x < m_iSize.x; x++)
+		{
+			for (int y = 0; y < m_iSize.y; y++)
+			{
+				// flip as we copy
+				const float value = GetFValue(x, m_iSize.y-1-y);
+				raster[y*m_iSize.x + x] = (short) value;
+			}
+		}
+		pBand->RasterIO(GF_Write, 0, 0, m_iSize.x, m_iSize.y,
+			raster, m_iSize.x, m_iSize.y, GDT_Int16, 0, 0);
+		delete raster;
+	}
 	GDALClose(pDataset);
 
 	return true;
