@@ -78,7 +78,7 @@ public:
 	// determine bounding box
 	void ComputeExtent();
 	//is target in the bounding box?
-	bool WithinExtent(const DRECT &target);
+	bool OverlapsExtent(const DRECT &target);
 	bool WithinExtent(const DPoint2 &target);
 
 	//is extent of the road in "bound"
@@ -102,7 +102,7 @@ public:
 	NodeEdit *GetNode(int n) { return (NodeEdit *)m_pNode[n]; }
 	LinkEdit *GetNext() { return (LinkEdit *)m_pNext; }
 
-	DRECT	m_extent;		// bounding box in world coordinates
+	DRECT	m_extent;		// bounding box, kept up-to-date at all times
 	int		m_iPriority;	// used to determine intersection behavior. lower number => higher priority
 	float	m_fLength;		// length of the road
 	bool	m_bDrawPoints;	// draw each point in the road individually
@@ -182,11 +182,11 @@ public:
 	DRECT* DeleteSelected(int &nBounds);
 
 	// find which road is within a given distance of a given point
-	LinkEdit *FindLink(DPoint2 point, float error);
+	LinkEdit *FindLink(const DPoint2 &point, float error);
 	// inverts m_bSelect value of road within error of utmCoord
-	bool SelectLink(DPoint2 point, float error, DRECT &bound);
+	bool SelectLink(const DPoint2 &point, float error, DRECT &bound);
 	// if bval true, select roads within bound.  otherwise deselect roads
-	int SelectLinks(DRECT bound, bool bval);
+	int SelectLinks(const DRECT &bound, bool bval);
 
 	// selects a road, as well as any adjacent roads that is an extension of that road.
 	bool SelectAndExtendLink(DPoint2 point, float error, DRECT &bound);

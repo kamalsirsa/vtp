@@ -233,7 +233,7 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 		vtStructure *str = at(i);
 		dist = 1E9;
 
-		// or a building
+		// a building
 		vtBuilding *bld = str->GetBuilding();
 		if (bld)
 			dist = bld->GetDistanceToInterior(point);
@@ -251,7 +251,7 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 			closest = dist;
 		}
 	}
-	// then check fences
+	// then check linears
 	for (uint i = 0; i < size(); i++)
 	{
 		vtStructure *str = at(i);

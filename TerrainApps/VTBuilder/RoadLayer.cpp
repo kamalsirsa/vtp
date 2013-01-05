@@ -462,7 +462,7 @@ bool vtRoadLayer::EditLinkProperties(const DPoint2 &point, float error,
 
 	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curLink->WithinExtent(target))
+		if (curLink->OverlapsExtent(target))
 		{
 			b = curLink->DistanceToPoint(point);
 			if (b < dist)

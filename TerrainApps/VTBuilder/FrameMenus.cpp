@@ -2414,8 +2414,10 @@ void MainFrame::OnElevCarve(wxCommandEvent &event)
 		return;
 	}
 
-	vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
-	if (!pR)
+	// Must have at least some culture to carve
+	vtRoadLayer *pR = (vtRoadLayer *) FindLayerOfType(LT_ROAD);
+	vtStructureLayer *pS = (vtStructureLayer *) FindLayerOfType(LT_STRUCTURE);
+	if (!pR && !pS)
 		return;
 
 	vtElevLayer *pEL = GetActiveElevLayer();
@@ -2424,8 +2426,8 @@ void MainFrame::OnElevCarve(wxCommandEvent &event)
 	float margin = 2.0;
 	wxString str;
 	str.Printf(_T("%g"), margin);
-	str = wxGetTextFromUser(_("How many meters for the margin at the edge of each road?"),
-		_("Flatten elevation grid under roads"), str, this);
+	str = wxGetTextFromUser(_("How many meters for the margin at the edge of each feature?"),
+		_("Carve elevation grid under culture"), str, this);
 	if (str == _T(""))
 		return;
 

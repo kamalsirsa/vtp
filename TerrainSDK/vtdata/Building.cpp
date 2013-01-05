@@ -1210,7 +1210,7 @@ double vtBuilding::GetDistanceToInterior(const DPoint2 &point) const
 {
 	vtLevel *lev = m_Levels[0];
 
-	// Ignore holes - a small shortcut, coulbe be addressed later
+	// Ignore holes - a small shortcut, could be be addressed later
 	const DLine2 &foot = lev->GetOuterFootprint();
 	if (foot.ContainsPoint(point))
 		return 0.0;

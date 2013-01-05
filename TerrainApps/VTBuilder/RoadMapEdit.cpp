@@ -236,7 +236,7 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 	}
 }
 
-bool LinkEdit::WithinExtent(const DRECT &target)
+bool LinkEdit::OverlapsExtent(const DRECT &target)
 {
 	return (target.left < m_extent.right && target.right > m_extent.left &&
 		target.top > m_extent.bottom && target.bottom < m_extent.top);
@@ -559,7 +559,7 @@ DRECT *RoadMapEdit::DeleteSelected(int &nDeleted)
 	return array;
 }
 
-bool RoadMapEdit::SelectLink(DPoint2 point, float error, DRECT &bound)
+bool RoadMapEdit::SelectLink(const DPoint2 &point, float error, DRECT &bound)
 {
 	LinkEdit *link = FindLink(point, error);
 	if (link)
@@ -571,7 +571,7 @@ bool RoadMapEdit::SelectLink(DPoint2 point, float error, DRECT &bound)
 	return false;
 }
 
-int RoadMapEdit::SelectLinks(DRECT bound, bool bval)
+int RoadMapEdit::SelectLinks(const DRECT &bound, bool bval)
 {
 	int found = 0;
 	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
@@ -801,17 +801,18 @@ DRECT *RoadMapEdit::DeSelectAll(int &numRegions)
 }
 
 
-LinkEdit *RoadMapEdit::FindLink(DPoint2 point, float error)
+LinkEdit *RoadMapEdit::FindLink(const DPoint2 &point, float error)
 {
 	LinkEdit *bestSoFar = NULL;
 	double dist = error;
 	double b;
 
-	//a backwards rectangle, to provide greater flexibility for finding the link.
+	// A buffer rectangle, to make it easier to click a link.
 	DRECT target(point.x-error, point.y+error, point.x+error, point.y-error);
-	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
+
+	for (LinkEdit *curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curLink->WithinExtent(target))
+		if (curLink->OverlapsExtent(target))
 		{
 			b = curLink->DistanceToPoint(point);
 			if (b < dist)
@@ -827,7 +828,7 @@ LinkEdit *RoadMapEdit::FindLink(DPoint2 point, float error)
 void RoadMapEdit::DeleteSingleLink(LinkEdit *pDeleteLink)
 {
 	LinkEdit *prev = NULL;
-	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
+	for (LinkEdit *curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
 		if (curLink == pDeleteLink)
 		{

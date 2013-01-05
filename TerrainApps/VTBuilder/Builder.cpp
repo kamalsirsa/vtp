@@ -993,24 +993,59 @@ void Builder::CarveWithCulture(vtElevLayer *pElev, float margin)
 	if (!pElev || !grid)
 		return;
 
+	// Must have at least some culture we can carve in
 	vtRoadLayer *pR = (vtRoadLayer *) FindLayerOfType(LT_ROAD);
-	if (!pR)
+	vtStructureLayer *pS = (vtStructureLayer *) FindLayerOfType(LT_STRUCTURE);
+	if (!pR && !pS)
 		return;
 
 	// how many units to flatten on either side of the roadway, past the
 	//  physical edge of the link surface
-	float shoulder = margin;
+	float shoulder = margin / 2;
 	float fade = margin;
 
 	OpenProgressDialog(_("Scanning Grid against Roads"));
 
-	float half;
-	LinkEdit *pLink;
-	for (pLink = pR->GetFirstLink(); pLink; pLink = pLink->GetNext())
+	if (pR)
 	{
-		pLink->ComputeExtent();
-		half = pLink->m_fWidth / 2 + shoulder + fade;
-		pLink->m_extent.Grow(half, half);
+		// Prepare the road layer
+		LinkEdit *pLink;
+		for (pLink = pR->GetFirstLink(); pLink; pLink = pLink->GetNext())
+		{
+			pLink->ComputeExtent();	// Shouldn't need this; it should already have extents
+			const float half = pLink->m_fWidth / 2 + shoulder + fade;
+			pLink->m_extent.Grow(half, half);
+		}
+	}
+	std::vector<float> building_heights;
+	std::vector<DRECT> building_extents;
+	if (pS)
+	{
+		// Prepare the structure layer: precompute a centroid of each building
+		// and the elevation of the existing surface at that point.
+		building_heights.resize(pS->size());
+		building_extents.resize(pS->size());
+		float elev;
+
+		for (uint i = 0; i < pS->size(); i++)
+		{
+			vtStructure *str = pS->at(i);
+			vtBuilding *bld = str->GetBuilding();
+
+			building_heights[i] = INVALID_ELEVATION;
+
+			if (bld && bld->GetLevel(0))
+			{
+				const DPolygon2 &dpoly = bld->GetLevel(0)->GetFootprint();
+				building_extents[i].SetRect(1E9,-1E9,-1E9,1E9);
+				building_extents[i].GrowToContainLine(dpoly[0]);
+				building_extents[i].Grow(margin, margin);
+
+				const DPoint2 center = dpoly[0].Centroid();
+				if (grid->FindAltitudeOnEarth(center, elev, true))
+					building_heights[i] = elev;
+			}
+		}
 	}
 
 	int altered_heixels = 0;
@@ -1032,58 +1067,101 @@ void Builder::CarveWithCulture(vtElevLayer *pElev, float margin)
 
 			float sum_elev = 0.0f;
 			float sum_weight = 0.0f;
-			for (pLink = pR->GetFirstLink(); pLink; pLink = pLink->GetNext())
+			const float existing = grid->GetFValue(i, j);
+
+			if (pR)
 			{
-				if (!pLink->WithinExtent(p2))
-					continue;
-
-				// Find position in link coordinates.
-				// These factors (a,b) are similar to what Pete Willemsen calls
-				//  Curvilinear Coordinates: distance and offset.
-				DPoint2 closest;
-				total = pLink->GetLinearCoordinates(p2, a, b, closest,
-					linkpoint, fractional, false);
-				half = pLink->m_fWidth / 2 + shoulder + fade;
-
-				// Check if the point is actually on the link
-				if (a < 0 || a > total || b < -half || b > half)
-					continue;
-
-				// Don't use the height of the ground at the middle of the link.
-				// That assumes the link is draped perfectly.  In reality,
-				//  it's draped based only on the height at each vertex of
-				//  the link.  Just use those.
-				// Also, if the road isn't entirely on elevation, skip it.
-				float alt1, alt2;
-				if (!grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint), alt1))
-					continue;
-				if (!grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint+1), alt2))
-					continue;
-
-				const float road_height = alt1 + (alt2 - alt1) * fractional;
-
-				// If the point falls in the 'fade' region, interpolate
-				//  the offset from 1 to 0 across the region.
-				if (fabs(b) < half - fade)
+				for (LinkEdit *pLink = pR->GetFirstLink(); pLink; pLink = pLink->GetNext())
 				{
-					sum_elev += road_height;
-					sum_weight += 1.0f;
-				}
-				else
-				{
-					const float amount = (half - fabs(b)) / fade;
-					if (amount > 0.01)	// Avoid precision issues
+					if (!pLink->WithinExtent(p2))
+						continue;
+
+					// Find position in link coordinates.
+					// These factors (a,b) are similar to what Pete Willemsen calls
+					//  Curvilinear Coordinates: distance and offset.
+					DPoint2 closest;
+					total = pLink->GetLinearCoordinates(p2, a, b, closest,
+						linkpoint, fractional, false);
+					const float half = pLink->m_fWidth / 2 + shoulder + fade;
+
+					// Check if the point is actually on the link
+					if (a < 0 || a > total || b < -half || b > half)
+						continue;
+
+					// Don't use the height of the ground at the middle of the link.
+					// That assumes the link is draped perfectly.  In reality,
+					//  it's draped based only on the height at each vertex of
+					//  the link.  Just use those.
+					// Also, if the road isn't entirely on elevation, skip it.
+					float alt1, alt2;
+					if (!grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint), alt1))
+						continue;
+					if (!grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint+1), alt2))
+						continue;
+
+					const float road_height = alt1 + (alt2 - alt1) * fractional;
+
+					// If the point falls in the 'fade' region, interpolate
+					//  the offset from 1 to 0 across the region.
+					if (fabs(b) < half - fade)
 					{
-						const float current = grid->GetFValue(i, j);
-						const float diff = road_height - current;
-						sum_elev += (current + diff * amount) * amount;
-						sum_weight += amount;
+						sum_elev += road_height;
+						sum_weight += 1.0f;
+					}
+					else
+					{
+						const float amount = (half - fabs(b)) / fade;
+						if (amount > 0.01)	// Avoid precision issues
+						{
+							const float diff = road_height - existing;
+							sum_elev += (existing + diff * amount) * amount;
+							sum_weight += amount;
+						}
 					}
 				}
-				altered_heixels++;
+			}
+
+			// Also compare to buildings
+			if (pS)
+			{
+				for (uint i = 0; i < pS->size(); i++)
+				{
+					vtStructure *str = pS->at(i);
+
+					// a building
+					vtBuilding *bld = str->GetBuilding();
+					if (!bld)
+						continue;
+					if (!building_extents[i].ContainsPoint(p2))
+						continue;
+					if (building_heights[i] == INVALID_ELEVATION)
+						continue;
+
+					const float dist = bld->GetDistanceToInterior(p2);
+					if (dist > margin)
+						continue;
+					if (dist == 0)
+					{
+						sum_elev += building_heights[i];
+						sum_weight += 1.0f;
+					}
+					else
+					{
+						const float amount = 1.0f - (dist / margin);
+						if (amount > 0.01)	// Avoid precision issues
+						{
+							const float diff = building_heights[i] - existing;
+							sum_elev += (existing + diff * amount) * amount;
+							sum_weight += amount;
+						}
+					}
+				}
 			}
 			if (sum_weight != 0.0f)
+			{
 				grid->SetFValue(i, j, sum_elev / sum_weight);
+				altered_heixels++;
+			}
 		}
 	}
 	if (altered_heixels)

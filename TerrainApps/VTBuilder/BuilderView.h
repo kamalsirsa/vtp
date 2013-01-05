@@ -38,7 +38,7 @@ enum LBMode {
 	LB_LinkExtend,  //extend a link selection,
 	LB_TSelect,		// select elevation layer
 	LB_Box,			// set area box
-	LB_FSelect,		// select feature
+	LB_FSelect,		// select feature (raw or structure)
 	LB_BldEdit,		// edit built structures
 	LB_BldAddPoints,		// add footprint points
 	LB_BldDeletePoints,		// delete footprint points
