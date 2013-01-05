@@ -2431,7 +2431,7 @@ void MainFrame::OnElevCarve(wxCommandEvent &event)
 
 	margin = atof(str.mb_str(wxConvUTF8));
 
-	pR->CarveRoadway(pEL, margin);
+	CarveWithCulture(pEL, margin);
 	m_pView->Refresh();
 }
 

@@ -138,6 +138,7 @@ public:
 	bool FillElevGaps(vtElevLayer *el, DRECT *area = NULL, int iMethod = -1);
 	void FlagStickyLayers(const std::vector<vtElevLayer*> &elevs);
 	vtElevLayer *ComputeDifference(vtElevLayer *pElev);
+	void CarveWithCulture(class vtElevLayer *pElev, float margin);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);
