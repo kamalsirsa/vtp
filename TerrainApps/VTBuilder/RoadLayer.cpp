@@ -672,7 +672,6 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 	}
 
 	int altered_heixels = 0;
-	float height;
 	int linkpoint;
 	float fractional;
 	double a, b, total;
@@ -689,6 +688,8 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 			grid->GetEarthLocation(i, j, loc);
 			DPoint2 p2(loc.x, loc.y);
 
+			float sum_elev = 0.0f;
+			float sum_weight = 0.0f;
 			for (pLink = GetFirstLink(); pLink; pLink = pLink->GetNext())
 			{
 				if (!pLink->WithinExtent(p2))
@@ -716,22 +717,31 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 					continue;
 				if (!grid->FindAltitudeOnEarth(pLink->GetAt(linkpoint+1), alt2))
 					continue;
-				height = alt1 + (alt2 - alt1) * fractional;
+
+				const float road_height = alt1 + (alt2 - alt1) * fractional;
 
 				// If the point falls in the 'fade' region, interpolate
 				//  the offset from 1 to 0 across the region.
-				if (half - fabs(b) > fade)
-					grid->SetFValue(i, j, height);
+				if (fabs(b) < half - fade)
+				{
+					sum_elev += road_height;
+					sum_weight += 1.0f;
+				}
 				else
 				{
-					float amount = (half - fabs(b)) / fade;
-					float current = grid->GetFValue(i, j);
-					float diff = height - current;
-					grid->SetFValue(i, j, current + amount * diff);
+					const float amount = (half - fabs(b)) / fade;
+					if (amount > 0.01)	// Avoid precision issues
+					{
+						const float current = grid->GetFValue(i, j);
+						const float diff = road_height - current;
+						sum_elev += (current + diff * amount) * amount;
+						sum_weight += amount;
+					}
 				}
 				altered_heixels++;
-				break;
 			}
+			if (sum_weight != 0.0f)
+				grid->SetFValue(i, j, sum_elev / sum_weight);
 		}
 	}
 	if (altered_heixels)

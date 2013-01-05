@@ -172,7 +172,6 @@ EVT_MENU(ID_ROAD_SHOWNODES,		MainFrame::OnRoadShowNodes)
 EVT_MENU(ID_ROAD_SELECTHWY,		MainFrame::OnSelectHwy)
 EVT_MENU(ID_ROAD_CLEAN,			MainFrame::OnRoadClean)
 EVT_MENU(ID_ROAD_GUESS,			MainFrame::OnRoadGuess)
-EVT_MENU(ID_ROAD_FLATTEN,		MainFrame::OnRoadFlatten)
 
 EVT_UPDATE_UI(ID_ROAD_SELECTROAD,	MainFrame::OnUpdateSelectLink)
 EVT_UPDATE_UI(ID_ROAD_SELECTNODE,	MainFrame::OnUpdateSelectNode)
@@ -180,7 +179,6 @@ EVT_UPDATE_UI(ID_ROAD_SELECTWHOLE,	MainFrame::OnUpdateSelectWhole)
 EVT_UPDATE_UI(ID_ROAD_DIRECTION,	MainFrame::OnUpdateDirection)
 EVT_UPDATE_UI(ID_ROAD_EDIT,			MainFrame::OnUpdateRoadEdit)
 EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateRoadShowNodes)
-EVT_UPDATE_UI(ID_ROAD_FLATTEN,		MainFrame::OnUpdateRoadFlatten)
 
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
 EVT_MENU(ID_ELEV_REMOVERANGE,		MainFrame::OnElevRemoveRange)
@@ -198,6 +196,7 @@ EVT_MENU(ID_ELEV_PASTE_NEW,			MainFrame::OnElevPasteNew)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_TOTIN,				MainFrame::OnElevToTin)
 EVT_MENU(ID_ELEV_CONTOURS,			MainFrame::OnElevContours)
+EVT_MENU(ID_ELEV_CARVE,				MainFrame::OnElevCarve)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 EVT_MENU(ID_ELEV_TRIMTIN,			MainFrame::OnElevTrimTin)
 
@@ -216,6 +215,7 @@ EVT_UPDATE_UI(ID_ELEV_COPY,			MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_TOTIN,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_CONTOURS,		MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_CARVE,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 EVT_UPDATE_UI(ID_ELEV_TRIMTIN,		MainFrame::OnUpdateElevTrimTin)
 
@@ -497,7 +497,6 @@ void MainFrame::CreateMenus()
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_CLEAN, _("Clean RoadMap"), _("Clean"));
 	roadMenu->Append(ID_ROAD_GUESS, _("Guess Intersection Types"));
-	roadMenu->Append(ID_ROAD_FLATTEN, _("Flatten Elevation Grid Under Roads"));
 	m_pMenuBar->Append(roadMenu, _("&Roads"));
 	m_iLayerMenu[LT_ROAD] = menu_num;
 	menu_num++;
@@ -535,6 +534,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_BITMAP, _("Re&nder to Bitmap..."));
 	elevMenu->Append(ID_ELEV_TOTIN, _("Convert Grid to TIN"));
 	elevMenu->Append(ID_ELEV_CONTOURS, _("Generate Contours"));
+	elevMenu->Append(ID_ELEV_CARVE, _("Carve Grid with Culture"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _("&Merge shared TIN vertices"));
 	elevMenu->AppendCheckItem(ID_ELEV_TRIMTIN, _("Trim TIN triangles by line segment"));
@@ -1957,32 +1957,6 @@ void MainFrame::OnRoadGuess(wxCommandEvent &event)
 	m_pView->Refresh();
 }
 
-void MainFrame::OnRoadFlatten(wxCommandEvent &event)
-{
-	if (m_proj.IsGeographic())
-	{
-		wxMessageBox(_("Sorry, but precise grid operations require a non-geographic coordinate\n system (meters as horizontal units, not degrees.)"),
-			_("Info"), wxOK);
-		return;
-	}
-
-	float margin = 2.0;
-	wxString str;
-	str.Printf(_T("%g"), margin);
-	str = wxGetTextFromUser(_("How many meters for the margin at the edge of each road?"),
-		_("Flatten elevation grid under roads"), str, this);
-	if (str == _T(""))
-		return;
-
-	margin = atof(str.mb_str(wxConvUTF8));
-
-	vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
-	vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
-
-	pR->CarveRoadway(pE, margin);
-	m_pView->Refresh();
-}
-
 void MainFrame::OnUpdateRoadFlatten(wxUpdateUIEvent& event)
 {
 	vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
@@ -2429,6 +2403,36 @@ void MainFrame::OnElevContours(wxCommandEvent& event)
 
 	m_pView->Refresh();
 #endif // SUPPORT_QUIKGRID
+}
+
+void MainFrame::OnElevCarve(wxCommandEvent &event)
+{
+	if (m_proj.IsGeographic())
+	{
+		wxMessageBox(_("Sorry, but precise grid operations require a non-geographic coordinate\n system (meters as horizontal units, not degrees.)"),
+			_("Info"), wxOK);
+		return;
+	}
+
+	vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
+	if (!pR)
+		return;
+
+	vtElevLayer *pEL = GetActiveElevLayer();
+	vtElevationGrid *grid = pEL->GetGrid();
+
+	float margin = 2.0;
+	wxString str;
+	str.Printf(_T("%g"), margin);
+	str = wxGetTextFromUser(_("How many meters for the margin at the edge of each road?"),
+		_("Flatten elevation grid under roads"), str, this);
+	if (str == _T(""))
+		return;
+
+	margin = atof(str.mb_str(wxConvUTF8));
+
+	pR->CarveRoadway(pEL, margin);
+	m_pView->Refresh();
 }
 
 void MainFrame::OnElevMergeTin(wxCommandEvent& event)
