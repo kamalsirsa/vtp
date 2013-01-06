@@ -186,35 +186,6 @@ void NevadaTerrain::CreatePast()
 	FPoint3 center;
 	g_Conv.convert_earth_to_local_xz(MAN_LON, MAN_LAT, center.x, center.z);
 
-#if 0
-	//butterfly: circle radius, speed, height above ground, center, size_exag
-	float height = 80.0f;
-
-	vtGeode *bfly = new Butterfly(this, 0.2f, 50.0f, height, center, 200.0);
-	m_pPast->addChild(bfly);
-	vtGeode *bfly2 = new Butterfly(this, 0.3f, 50.0f, height, center, 200.0);
-	m_pPast->addChild(bfly2);
-	vtGeode *bfly3 = new Butterfly(this, 0.4f, 50.0f, height, center, 200.0);
-	m_pPast->addChild(bfly3);
-#endif
-
-#if 0
-	{
-		typedef vtGeode *shapeptr;
-		int x, y;
-		FPoint3 location;
-		for (x = 0; x < 8; x++)
-		for (y = 0; y < 8; y++)
-		{
-			int num = x*8+y;
-			location.x = center.x - 8 + (x * 2.0f);
-			location.z = center.z - 8 + (y * 2.0f);
-			Butterfly *but = new Butterfly(this, 0.8f, 60 + random(40), height, location, 40);
-			m_pPast->addChild(but);
-		}
-	}
-#endif
-
 #if ENABLE_PLANTS	// enable/disable plants
 	//tree generation
 #define TREE_EXAG	6.0f

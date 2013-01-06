@@ -31,6 +31,11 @@ bool IsGUIApp()
 	return pApp != NULL;
 }
 
+/**
+  Make a wxBitmap of a given pixel size, filled with a single color.
+  
+  The caller is responsible for deleting the bitmap later.
+ */
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 {
 	wxImage pImage(xsize, ysize);
@@ -231,14 +236,15 @@ int AddFilenamesToStringArray(vtStringArray &array, const char *directory,
 //////////////////////////////////////
 
 /**
- * Add a file format type to a directory dialog filter string.
- *
- * Example, to ask the user for a BT or JPEG file:
-
+ Add a file format type to a directory dialog filter string.
+ 
+ \par For example, to ask the user for a BT or JPEG file:
+ \code
 	wxString filter = _("All Formats|");
 	AddType(filter, _T("BT Files (*.bt)|*.bt"));
 	AddType(filter, _T("JPEG Files (*.jpg;*.jpeg)|*.jpg;*.jpeg"));
 	wxFileDialog loadFile(NULL, _("Open file"), _T(""), _T(""), filter, wxFD_OPEN);
+ \endcode
  */
 void AddType(wxString &str, const wxString &filter)
 {

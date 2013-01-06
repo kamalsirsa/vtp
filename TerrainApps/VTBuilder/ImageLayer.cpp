@@ -24,11 +24,11 @@ vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 	m_pImage = new vtImage;
 }
 
-vtImageLayer::vtImageLayer(const DRECT &area, int xsize, int ysize,
+vtImageLayer::vtImageLayer(const DRECT &area, const IPoint2 &size,
 						   const vtProjection &proj) : vtLayer(LT_IMAGE)
 {
 	m_wsFilename = _("Untitled");
-	m_pImage = new vtImage(area, xsize, ysize, proj);
+	m_pImage = new vtImage(area, size, proj);
 }
 
 vtImageLayer::~vtImageLayer()
@@ -253,7 +253,7 @@ bool vtImageLayer::ImportFromDB(const char *szFileName, bool progress_callback(i
 	area.SetRect(dbuf.nwx, dbuf.nwy, dbuf.sex, dbuf.sey);
 
 	m_wsFilename = _("Untitled");
-	m_pImage = new vtImage(area, dbuf.xsize, dbuf.ysize, proj);
+	m_pImage = new vtImage(area, IPoint2(dbuf.xsize, dbuf.ysize), proj);
 
 	RGBf rgb;
 	RGBAf rgba;

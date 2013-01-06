@@ -1,6 +1,7 @@
 PROJECT_NAME       = "vtlib library"
 OUTPUT_DIRECTORY   = ../Doc
 HTML_OUTPUT        = vtlib
+
 EXTRACT_ALL        = NO
 EXTRACT_LOCAL_CLASSES = NO
 GENERATE_LATEX     = NO
@@ -10,9 +11,6 @@ CASE_SENSE_NAMES   = YES
 ENABLE_PREPROCESSING = YES
 INPUT              = . ./core ./vtosg
 FILE_PATTERNS      = *.h *.cpp
-
-EXCLUDE = core/FrameTimer.cpp core/FrameTimer.h \
-		  core/AttribMap.cpp core/AttribMap.h
 
 QUIET              = YES
 JAVADOC_AUTOBRIEF  = NO
@@ -29,13 +27,17 @@ SHOW_USED_FILES =NO
 
 HAVE_DOT           = YES
 DOT_IMAGE_FORMAT   = png
+DOTFILE_DIRS	= .
+GRAPHICAL_HIERARCHY = YES
+PREDEFINED = DOXYGEN_SHOULD_SKIP_THIS SUPPORT_QUIKGRID SUPPORT_NETCDF SUPPORT_HTTP SUPPORT_UNZIP SUPPORT_BZIP2 SUPPORT_WSTRING
 
 HIDE_UNDOC_MEMBERS = YES
 HIDE_UNDOC_CLASSES = YES
 
-PREDEFINED = DOXYGEN_SHOULD_SKIP_THIS SUPPORT_QUIKGRID SUPPORT_NETCDF SUPPORT_HTTP SUPPORT_UNZIP SUPPORT_BZIP2 SUPPORT_WSTRING
-
 GENERATE_TAGFILE = vtlib.tag
+
+EXCLUDE = core/FrameTimer.cpp core/FrameTimer.h \
+		  core/AttribMap.cpp core/AttribMap.h
 
 TAGFILES          = ../vtdata/vtdata.tag=../vtdata
 
@@ -45,4 +47,3 @@ TAGFILES          = ../vtdata/vtdata.tag=../vtdata
 # Temporarily leave the .dot files around:
 # DOT_CLEANUP = NO
 
-DOTFILE_DIRS	= .

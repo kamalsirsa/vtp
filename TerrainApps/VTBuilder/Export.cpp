@@ -395,8 +395,7 @@ void Builder::ElevExportTiles(BuilderView *pView)
 
 void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 {
-	int xsize = ropt.m_iSizeX;
-	int ysize = ropt.m_iSizeY;
+	const IPoint2 size = ropt.m_Size;
 
 	ColorMap cmap;
 	vtString fname = (const char *) ropt.m_strColorMap.mb_str(wxConvUTF8);
@@ -424,7 +423,7 @@ void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 
 	if (ropt.m_bToFile)
 	{
-		if (!dib.Create(xsize, ysize, 24))
+		if (!dib.Create(size, 24))
 		{
 			DisplayAndLog("Failed to create bitmap.");
 			return;
@@ -433,7 +432,7 @@ void Builder::ExportBitmap(vtElevLayer *pEL, RenderOptions &ropt)
 	}
 	else
 	{
-		pOutputLayer = new vtImageLayer(area, xsize, ysize, proj);
+		pOutputLayer = new vtImageLayer(area, size, proj);
 		pBitmap = pOutputLayer->GetImage()->GetBitmap();
 	}
 
@@ -864,7 +863,7 @@ bool Builder::SampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
 			// Now sample the elevation we found to the highest LOD we need
 			UpdateProgressDialog2(done*99/total, -1, _("Sampling elevation"));
 
-			vtElevationGrid base_lod(tile_area, base_tilesize+1, base_tilesize+1,
+			vtElevationGrid base_lod(tile_area, IPoint2(base_tilesize+1, base_tilesize+1),
 				bFloat, m_proj);
 
 			int iNumInvalid = 0;
@@ -949,12 +948,12 @@ bool Builder::SampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
 
 				if (opts.bImageAlpha)
 				{
-					dib.Create(base_tilesize, base_tilesize, 32);
+					dib.Create(IPoint2(base_tilesize, base_tilesize), 32);
 					base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBAi(0,0,0,0));
 				}
 				else
 				{
-					dib.Create(base_tilesize, base_tilesize, 24);
+					dib.Create(IPoint2(base_tilesize, base_tilesize), 24);
 					base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBi(255,0,0));
 				}
 

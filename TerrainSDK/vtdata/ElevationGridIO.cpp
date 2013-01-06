@@ -1301,9 +1301,9 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 	if (!_AllocateArray())
 		return false;
 
-	int x, y;
 	float z;
-	for (y = 0; y < ny; y++)
+	double dz;
+	for (int y = 0; y < ny; y++)
 	{
 		if (progress_callback != NULL)
 		{
@@ -1314,15 +1314,14 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 				return false;
 			}
 		}
-		for (x = 0; x < nx; x++)
+		for (int x = 0; x < nx; x++)
 		{
 			if (bDSRB) //DSRB format
 			{
-				double dz;
 				quiet = fread(&dz, 8, 1, fp);
-				z = (float)dz;
+				z = (float) dz;
 
-				if(z < zlo || z > zhi)
+				if (z < zlo || z > zhi)
 					z = INVALID_ELEVATION;
 
 				SetFValue(x, y, z);
@@ -1331,7 +1330,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 			{
 				quiet = fread(&z, 4, 1, fp);
 
-				if(z < zlo || z > zhi)
+				if (z < zlo || z > zhi)
 					z = INVALID_ELEVATION;
 
 				SetFValue(x, y, z);
@@ -1757,16 +1756,14 @@ bool vtElevationGrid::SaveToBMP(const char *szFileName) const
 	float fScale = (fRange == 0.0f ? 0.0f : 255.0f / fRange);
 
 	vtDIB dib;
-	if (!dib.Create(m_iSize.x, m_iSize.y, 8, true))
+	if (!dib.Create(m_iSize, 8, true))
 		return false;
 
-	int x, y;
-	float value;
-	for (x = 0; x < m_iSize.x; x++)
+	for (int x = 0; x < m_iSize.x; x++)
 	{
-		for (y = 0; y < m_iSize.y; y++)
+		for (int y = 0; y < m_iSize.y; y++)
 		{
-			value = GetFValue(x, y);
+			const float value = GetFValue(x, y);
 			dib.SetPixel8(x, y, (uchar) ((value - fMin) * fScale));
 		}
 	}
@@ -2645,7 +2642,7 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 
 	// Create the grid, then go back and read all the points
 	vtProjection unknown;
-	Create(extents, iColumns, iRows, !bInteger, unknown);
+	Create(extents, IPoint2(iColumns, iRows), !bInteger, unknown);
 
 	DPoint2 base(extents.left, extents.bottom);
 	DPoint2 spacing = GetSpacing();

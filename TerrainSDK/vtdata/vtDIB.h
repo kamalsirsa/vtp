@@ -28,8 +28,7 @@ public:
 	virtual void SetPixel24(int x, int y, const RGBi &rgb) = 0;
 	virtual void SetPixel32(int x, int y, const RGBAi &rgba) = 0;
 
-	virtual uint GetWidth() const = 0;
-	virtual uint GetHeight() const = 0;
+	virtual IPoint2 GetSize() const = 0;
 	virtual uint GetDepth() const = 0;
 
 	void ScalePixel8(int x, int y, float fScale);
@@ -67,7 +66,7 @@ public:
 	vtDIB(void *pDIB);	// wrap an existing DIB
 	virtual ~vtDIB();
 
-	bool Create(int width, int height, int bitdepth, bool create_palette = false);
+	bool Create(const IPoint2 &size, int bitdepth, bool create_palette = false);
 	bool Create24From8bit(const vtDIB &from);
 
 	bool Read(const char *fname, bool progress_callback(int) = NULL);
@@ -100,6 +99,7 @@ public:
 	void Invert();
 	void Blit(vtDIB &target, int x, int y);
 
+	IPoint2 GetSize() const { return IPoint2(m_iWidth, m_iHeight); }
 	uint GetWidth() const { return m_iWidth; }
 	uint GetHeight() const { return m_iHeight; }
 	uint GetDepth() const { return m_iBitCount; }

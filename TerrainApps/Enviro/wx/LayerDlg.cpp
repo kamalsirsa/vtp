@@ -678,7 +678,7 @@ bool SaveAbstractLayer(vtAbstractLayer *alay, bool bAskFilename)
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Abstract Data"), default_dir,
-			default_file, _("Shape Files (*.shp)|*.shp"), wxFD_SAVE);
+			default_file, _("Shapefiles (*.shp)|*.shp"), wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);
 		if (!bResult)
@@ -706,7 +706,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 
 	bool bTerrain = (g_App.m_state == AS_Terrain);
 
-	wxString filter = _("Shape Files (*.shp)|*.shp");
+	wxString filter = _("Shapefiles (*.shp)|*.shp");
 	if (bTerrain)
 	{
 		filter += _T("|");

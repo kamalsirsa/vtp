@@ -37,16 +37,14 @@ void IslandTerrain::PaintDib(bool progress_callback(int))
 
 		vtImageWrapper wrap(m_pUnshadedImage);
 	
-		int width = wrap.GetWidth();
-		int height = wrap.GetHeight();
+		const IPoint2 size = wrap.GetSize();
 
 		FPoint3 tpos;
-		int i, j;
-		for (i = 0; i < width; i++)
+		for (int i = 0; i < size.x; i++)
 		{
-			for (j = 0; j < height; j++)
+			for (int j = 0; j < size.y; j++)
 			{
-				pGrid->GetWorldLocation(i, height-1-j, tpos);
+				pGrid->GetWorldLocation(i, size.y-1-j, tpos);
 				tpos.y += 1;
 				if (pGrid->LineOfSight(campos, tpos))
 					wrap.SetPixel24(i, j, RGBi(255,128,128));
@@ -599,41 +597,6 @@ void MyGeom::DoCalcBoundBox(FBox3 &box)
 
 void IslandTerrain::do_test_code()
 {
-#if 0
-	vtElevationGrid grid;
-	grid.LoadFromBT("C:/VTP/TerrainApps/Data/Elevation/crater_0513.bt");
-	grid.SetupConversion(1.0);
-	FPoint3 p;
-	grid.GetWorldLocation(200, 200, p);
-
-	float alt;
-	grid.FindAltitudeAtPoint(p, alt);
-#endif
-
-#if 0
-	float x, y;
-	DPoint3 p;
-	int meter_height;
-	char string[80];
-	vtFeatures feat;
-	feat.SetEntityType(SHPT_POINTZ);
-	feat.AddField("Text", FTString);
-	feat.GetAtProjection() = m_proj;
-	vtString labels_path = FindFileOnPaths(s_DataPaths, "PointData/places.txt");
-	FILE *fp = vtFileOpen(labels_path, "r");
-	while( !feof(fp) )
-	{
-		int ret = fscanf(fp, "%f %f %d %s\n", &x, &y, &meter_height, string);
-		if (!ret) break;
-		p.x = x;
-		p.y = y;
-		p.z = meter_height;
-		int rec = feat.AddPoint(p);
-		feat.SetValue(rec, 0, string);
-	}
-	fclose(fp);
-	feat.SaveToSHP("../Data/PointData/hawai`i.shp");
-#endif
 }
 
 void IslandTerrain::create_airplanes(float fSpeed)

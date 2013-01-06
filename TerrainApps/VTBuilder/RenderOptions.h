@@ -5,8 +5,7 @@
 class RenderOptions
 {
 public:
-	int  m_iSizeX;
-	int  m_iSizeY;
+	IPoint2 m_Size;
 	wxString   m_strColorMap;
 	bool m_bToFile;
 	RGBi m_ColorNODATA;

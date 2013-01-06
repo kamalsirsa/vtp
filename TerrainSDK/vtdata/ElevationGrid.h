@@ -44,7 +44,7 @@ class vtElevationGrid : public vtHeightFieldGrid3d
 public:
 	vtElevationGrid();
 	vtElevationGrid(const vtElevationGrid &rhs);
-	vtElevationGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
+	vtElevationGrid(const DRECT &area, const IPoint2 &size, bool bFloat,
 		const vtProjection &proj);
 	virtual ~vtElevationGrid();
 
@@ -54,7 +54,7 @@ public:
 	bool CopyHeaderFrom(const vtElevationGrid &rhs);
 	bool CopyDataFrom(const vtElevationGrid &rhs);
 
-	bool Create(const DRECT &area, int iColumns, int iRows, bool bFloat,
+	bool Create(const DRECT &area, const IPoint2 &size, bool bFloat,
 		const vtProjection &proj);
 	void FreeData();
 

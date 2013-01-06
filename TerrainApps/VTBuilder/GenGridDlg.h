@@ -9,6 +9,7 @@
 #define __GenGridDlg_H__
 
 #include "VTBuilder_UI.h"
+#include "vtdata/MathTypes.h"
 
 // WDR: class declarations
 
@@ -35,8 +36,7 @@ public:
 
 	double  m_fSpacingX;
 	double  m_fSpacingY;
-	int	 m_iSizeX;
-	int	 m_iSizeY;
+	IPoint2 m_Size;
 	double  m_fAreaX;
 	double  m_fAreaY;
 	float m_fDistanceCutoff;

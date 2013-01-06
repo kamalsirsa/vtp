@@ -51,8 +51,7 @@ public:
 
 	double  m_fSpacingX;
 	double  m_fSpacingY;
-	int	 m_iSizeX;
-	int	 m_iSizeY;
+	IPoint2	m_Size;
 	bool	m_bConstraint;
 
 	double  m_fAreaX;

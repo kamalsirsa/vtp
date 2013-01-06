@@ -36,8 +36,7 @@ extern "C" {
 
 void vtBitmapBase::ScalePixel8(int x, int y, float fScale)
 {
-	uint texel = GetPixel8(x, y);
-	texel = (int) (texel * fScale);
+	uint texel = (int) (GetPixel8(x, y) * fScale);
 	if (texel > 255)
 		texel = 255;
 	SetPixel8(x, y, (uchar) texel);
@@ -67,28 +66,25 @@ void vtBitmapBase::ScalePixel32(int x, int y, float fScale)
 
 void vtBitmapBase::BlitTo(vtBitmapBase &target, int x, int y)
 {
-	int depth = GetDepth();
-	int tdepth = target.GetDepth();
+	const int depth = GetDepth();
+	const int tdepth = target.GetDepth();
 
-	uint w = GetWidth();
-	uint h = GetHeight();
-	int tw = target.GetWidth();
-	int th = target.GetHeight();
+	const IPoint2 source_size = GetSize();
+	const IPoint2 target_size = target.GetSize();
 
-	uint i, j;
 	RGBi rgb;
 	RGBAi rgba;
-	for (i = 0; i < w; i++)
+	for (int i = 0; i < source_size.x; i++)
 	{
-		for (j = 0; j < h; j++)
+		for (int j = 0; j < source_size.y; j++)
 		{
-			int tx = i+x, ty = j+y;
-			if (tx < 0 || tx > tw-1 || ty < 0 || ty > th-1)
+			const int tx = i+x, ty = j+y;
+			if (tx < 0 || tx > target_size.x-1 || ty < 0 || ty > target_size.y-1)
 				continue;
 
 			if (depth == 8 && tdepth == 8)
 			{
-				uchar value = GetPixel8(i, j);
+				const uchar value = GetPixel8(i, j);
 				target.SetPixel8(tx, ty, value);
 			}
 			else if (tdepth == 24)
@@ -209,10 +205,10 @@ vtDIB::~vtDIB()
 /**
  * Create a new DIB in memory.
  */
-bool vtDIB::Create(int xsize, int ysize, int bitdepth, bool create_palette)
+bool vtDIB::Create(const IPoint2 &size, int bitdepth, bool create_palette)
 {
-	m_iWidth = xsize;
-	m_iHeight = ysize;
+	m_iWidth = size.x;
+	m_iHeight = size.y;
 	m_iBitCount = bitdepth;
 	m_iByteCount = m_iBitCount/8;
 
@@ -235,8 +231,8 @@ bool vtDIB::Create(int xsize, int ysize, int bitdepth, bool create_palette)
 	m_Data = ((byte *)m_Hdr) + sizeof(BITMAPINFOHEADER) + m_iPaletteSize;
 
 	m_Hdr->biSize = sizeof(BITMAPINFOHEADER);
-	m_Hdr->biWidth = xsize;
-	m_Hdr->biHeight = ysize;
+	m_Hdr->biWidth = size.x;
+	m_Hdr->biHeight = size.y;
 	m_Hdr->biPlanes = 1;
 	m_Hdr->biBitCount = (word) bitdepth;
 	m_Hdr->biCompression = BI_RGB;
@@ -257,7 +253,7 @@ bool vtDIB::Create(int xsize, int ysize, int bitdepth, bool create_palette)
 
 bool vtDIB::Create24From8bit(const vtDIB &from)
 {
-	if (!Create(from.GetWidth(), from.GetHeight(), 24))
+	if (!Create(from.GetSize(), 24))
 		return false;
 
 	RGBi rgb;
@@ -499,7 +495,7 @@ bool vtDIB::ReadJPEG(const char *fname, bool progress_callback(int))
 		bitdepth = 8;
 	else
 		bitdepth = 24;
-	if (!Create(cinfo.image_width, cinfo.image_height, bitdepth, bitdepth == 8))
+	if (!Create(IPoint2(cinfo.image_width, cinfo.image_height), bitdepth, bitdepth == 8))
 		return false;
 
 	/* Start decompressor */
@@ -750,7 +746,7 @@ bool vtDIB::ReadPNG(const char *fname, bool progress_callback(int))
 			return false;
 	}
 
-	Create(width, height, iBitCount, iBitCount == 8);
+	Create(IPoint2(width, height), iBitCount, iBitCount == 8);
 
 	int png_stride = png_get_rowbytes(png, info);
 	uint row, col;
@@ -1052,15 +1048,14 @@ bool vtDIB::WriteTIF(const char *fname, const DRECT *area,
 
 	GByte *raster = new GByte[m_iWidth*m_iHeight];
 
-	uint x, y;
 	GDALRasterBand *pBand;
 
 	if (m_iBitCount == 8)
 	{
 		pBand = pDataset->GetRasterBand(1);
-		for (x = 0; x < m_iWidth; x++)
+		for (uint x = 0; x < m_iWidth; x++)
 		{
-			for (y = 0; y < m_iHeight; y++)
+			for (uint y = 0; y < m_iHeight; y++)
 				raster[y*m_iWidth + x] = GetPixel8(x, y);
 		}
 		pBand->RasterIO( GF_Write, 0, 0, m_iWidth, m_iHeight,
@@ -1069,17 +1064,16 @@ bool vtDIB::WriteTIF(const char *fname, const DRECT *area,
 	else
 	{
 		RGBi rgb;
-		int i;
-		for (i = 1; i <= 3; i++)
+		for (int i = 1; i <= 3; i++)
 		{
 			pBand = pDataset->GetRasterBand(i);
 
-			for (x = 0; x < m_iWidth; x++)
+			for (uint x = 0; x < m_iWidth; x++)
 			{
 				if (progress_callback != NULL)
 					progress_callback((i-1)*33 + (x * 33 / m_iWidth));
 
-				for (y = 0; y < m_iHeight; y++)
+				for (uint y = 0; y < m_iHeight; y++)
 				{
 					GetPixel24(x, y, rgb);
 					if (i == 1) raster[y*m_iWidth + x] = (GByte) rgb.r;

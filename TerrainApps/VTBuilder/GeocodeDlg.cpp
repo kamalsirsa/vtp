@@ -54,7 +54,7 @@ GeocodeDlg::GeocodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void GeocodeDlg::OnGetFileData( wxCommandEvent &event )
 {
 	wxFileDialog dlg(this, _T(""), _T(""), _T(""),
-		_T("SHP and DBF Files (*.shp,*.dbf,*.csv)|*.shp;*.dbf;*.csv|Shape Files (*.shp)|*.shp|DBF Files (*.dbf)|*.dbf"),
+		_T("SHP and DBF Files (*.shp,*.dbf,*.csv)|*.shp;*.dbf;*.csv|Shapefiles (*.shp)|*.shp|DBF Files (*.dbf)|*.dbf"),
 		wxFD_OPEN);
 	if (dlg.ShowModal() == wxID_OK)
 	{

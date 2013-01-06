@@ -391,7 +391,7 @@ vtImage::vtImage()
 	SetDefaults();
 }
 
-vtImage::vtImage(const DRECT &area, int xsize, int ysize,
+vtImage::vtImage(const DRECT &area, const IPoint2 &size,
 				 const vtProjection &proj)
 {
 	SetDefaults();
@@ -400,8 +400,8 @@ vtImage::vtImage(const DRECT &area, int xsize, int ysize,
 
 	// yes, we could use some error-checking here
 	vtBitmap *pBitmap = new vtBitmap;
-	pBitmap->Allocate(xsize, ysize);
-	SetupBitmapInfo(xsize, ysize);
+	pBitmap->Allocate(size);
+	SetupBitmapInfo(size);
 	m_Bitmaps[0].m_pBitmap = pBitmap;
 }
 
@@ -438,11 +438,11 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 	// Determine which overview resolution (with an in-memory bitmap) is
 	//  most appropriate to draw
 	double dRes = 1.0 / pView->GetScale();
-	DPoint2 spacing = GetSpacing();
+	const DPoint2 spacing = GetSpacing();
 	double spacing_diff = 1E9;
 	for (uint i = 0; i < m_Bitmaps.size(); i++)
 	{
-		double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
+		const double d2 = fabs(dRes - m_Bitmaps[i].m_Spacing.x);
 		if (d2 < spacing_diff && m_Bitmaps[i].m_pBitmap)
 		{
 			spacing_diff = d2;
@@ -453,8 +453,7 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 	if (pBitmap == NULL)
 		bDrawImage = false;
 
-	wxRect screenrect = pView->WorldToCanvas(m_Extents);
-	wxRect destRect = screenrect;
+	const wxRect screenrect = pView->WorldToCanvas(m_Extents);
 
 	if (!bDrawImage)
 	{
@@ -475,13 +474,15 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 	pView->CalcUnscrolledPosition(0, 0, &client1.x, &client1.y);
 	pView->CalcUnscrolledPosition(client_width, client_height, &client2.x, &client2.y);
 
+	wxRect destRect = screenrect;
 	if ((destRect.x + destRect.width < client1.x) ||
 		(destRect.y + destRect.height < client1.y) ||
 		(destRect.x > client2.x) ||
 		(destRect.y > client2.y))
 		return;		//image completely off screen
 
-	wxRect srcRect(0, 0, pBitmap->GetWidth(), pBitmap->GetHeight());
+	IPoint2 bitmap_size = pBitmap->GetSize();
+	wxRect srcRect(0, 0, bitmap_size.x, bitmap_size.y);
 	double ratio_x = (double) srcRect.width / destRect.width;
 	double ratio_y = (double) srcRect.height / destRect.height;
 
@@ -557,8 +558,6 @@ void vtImage::DrawToView(wxDC *pDC, vtScaledView *pView)
 bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 								int iSampleN, bool progress_callback(int))
 {
-	int i, j;
-
 	// Create conversion object
 	const vtProjection *pSource, *pDest;
 	pSource = &pOld->GetAtProjection();
@@ -583,7 +582,7 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	DLine2 Corners = OldCorners;
 	m_Extents.SetRect(1E9, -1E9, -1E9, 1E9);
 	int success;
-	for (i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		success = trans->Transform(1, &Corners[i].x, &Corners[i].y);
 		if (success == 0)
@@ -602,7 +601,7 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	bool bOldGeo = (pSource->IsGeographic() != 0);
 	bool bNewGeo = (pDest->IsGeographic() != 0);
 
-	DPoint2 old_step = pOld->GetSpacing();
+	const DPoint2 old_step = pOld->GetSpacing();
 	DPoint2 new_step;
 	double meters_per_longitude;
 
@@ -623,29 +622,28 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	else
 	{
 		// check horizontal units or old and new terrain
-		double units_old = pSource->GetLinearUnits(NULL);
-		double units_new = pDest->GetLinearUnits(NULL);
+		const double units_old = pSource->GetLinearUnits(NULL);
+		const double units_new = pDest->GetLinearUnits(NULL);
 		new_step = old_step * (units_old / units_new);
 	}
-	double fColumns = m_Extents.Width() / new_step.x;
-	double fRows = m_Extents.Height() / new_step.y;
+	const double fColumns = m_Extents.Width() / new_step.x;
+	const double fRows = m_Extents.Height() / new_step.y;
 
 	// round up to the nearest integer
-	int iXSize = (int)(fColumns + 0.999);
-	int iYSize = (int)(fRows + 0.999);
+	const IPoint2 size(fColumns + 0.999, fRows + 0.999);
 
 	// do safety checks
-	if (iXSize < 1 || iYSize < 1)
+	if (size.x < 1 || size.y < 1)
 		return false;
-	if (iXSize > 40000 || iYSize > 40000)
+	if (size.x > 40000 || size.y > 40000)
 		return false;
 
 	// Now we're ready to fill in the new image.
 	m_proj = NewProj;
 	vtBitmap *pBitmap = new vtBitmap;
-	if (!pBitmap->Allocate(iXSize, iYSize))
+	if (!pBitmap->Allocate(size))
 		return false;
-	SetupBitmapInfo(iXSize, iYSize);
+	SetupBitmapInfo(size);
 	m_Bitmaps[0].m_pBitmap = pBitmap;
 
 	// Convert each bit of data from the old array to the new
@@ -659,24 +657,23 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	}
 
 	// Prepare to multisample
-	DPoint2 step = GetSpacing();
+	const DPoint2 step = GetSpacing();
 	DLine2 offsets;
 	MakeSampleOffsets(step, iSampleN, offsets);
 
-	DPoint2 p, mp;
 	RGBAi value, sum;
 	int count;
-	for (i = 0; i < iXSize; i++)
+	DPoint2 mp;
+	for (int i = 0; i < size.x; i++)
 	{
 		if (progress_callback != NULL)
-			progress_callback(i*99/iXSize);
+			progress_callback(i * 99 / size.x);
 
-		for (j = 0; j < iYSize; j++)
+		for (int j = 0; j < size.y; j++)
 		{
 			// Sample at pixel centers
-			p.x = m_Extents.left + (step.x/2) + (i * step.x);
-			p.y = m_Extents.bottom + (step.y/2)+ (j * step.y);
-
+			const DPoint2 p(m_Extents.left + (step.x/2) + (i * step.x),
+							m_Extents.bottom + (step.y/2)+ (j * step.y));
 			count = 0;
 			sum.Set(0,0,0);
 			for (uint k = 0; k < offsets.GetSize(); k++)
@@ -694,9 +691,9 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 				}
 			}
 			if (count > 0)
-				SetRGBA(i, iYSize-1-j, sum / count);
+				SetRGBA(i, size.y-1-j, sum / count);
 			else
-				SetRGBA(i, iYSize-1-j, RGBAi(0,0,0,0));	// nodata
+				SetRGBA(i, size.y-1-j, RGBAi(0,0,0,0));	// nodata
 		}
 	}
 	delete trans;
@@ -941,25 +938,26 @@ void vtImage::ReplaceColor(const RGBi &rgb1, const RGBi &rgb2)
 		}
 }
 
-void vtImage::SetupBitmapInfo(int iXSize, int iYSize)
+void vtImage::SetupBitmapInfo(const IPoint2 &size)
 {
-	DPoint2 spacing(m_Extents.Width() / iXSize, m_Extents.Height() / iYSize);
-	int smaller = min(iXSize, iYSize);
+	DPoint2 spacing(m_Extents.Width() / size.x, m_Extents.Height() / size.y);
+	int smaller = min(size.x, size.y);
 
 	// How many mipmaps to consider?
 	int powers = vt_log2(smaller) - 3;
 
 	m_Bitmaps.resize(powers);
+	IPoint2 size2 = size;
 	for (int m = 0; m < powers; m++)
 	{
 		m_Bitmaps[m].number = m;
 		m_Bitmaps[m].m_pBitmap = NULL;
 		m_Bitmaps[m].m_bOnDisk = false;
-		m_Bitmaps[m].m_Size.Set(iXSize, iYSize);
+		m_Bitmaps[m].m_Size = size2;
 		m_Bitmaps[m].m_Spacing = spacing;
 
-		iXSize /= 2;
-		iYSize /= 2;
+		size2.x /= 2;
+		size2.y /= 2;
 		spacing *= 2;
 	}
 }
@@ -971,15 +969,15 @@ void vtImage::AllocMipMaps()
 	if (m_Bitmaps[0].m_pBitmap == NULL)
 		return;
 
-	IPoint2 size = m_Bitmaps[0].m_Size;
-	int depth = m_Bitmaps[0].m_pBitmap->GetDepth();
+	const IPoint2 &size = m_Bitmaps[0].m_Size;
+	const int depth = m_Bitmaps[0].m_pBitmap->GetDepth();
 
 	for (size_t m = 1; m < m_Bitmaps.size(); m++)
 	{
 		if (!m_Bitmaps[m].m_pBitmap)
 		{
 			vtBitmap *bm = new vtBitmap;
-			bm->Allocate(size.x >> m, size.y >> m, depth);
+			bm->Allocate(IPoint2(size.x >> m, size.y >> m), depth);
 			m_Bitmaps[m].m_pBitmap = bm;
 		}
 	}
@@ -1083,10 +1081,13 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 		}
 	}
 
-	int iXSize = atoi(sbuf);		// store xsize of array
-	quiet = fscanf(fp,"%s",sbuf);		// read ysize of array
-	int iYSize = atoi(sbuf);
-	quiet = fscanf(fp,"%s\n",sbuf);		// read maxval of array
+	IPoint2 size;
+	size.x = atoi(sbuf);			// store xsize of array
+
+	quiet = fscanf(fp,"%s",sbuf);	// read ysize of array
+	size.y = atoi(sbuf);
+
+	quiet = fscanf(fp,"%s\n",sbuf);	// read maxval of array
 	int maxval = atoi(sbuf);
 
 	// set the corresponding vtElevationGrid info
@@ -1127,14 +1128,14 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 		m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
 
 		ext.left = 0;
-		ext.top = iYSize-1;
-		ext.right = iXSize-1;
+		ext.top = size.y - 1;
+		ext.right = size.x - 1;
 		ext.bottom = 0;
 	}
 	m_Extents = ext;
 	vtBitmap *pBitmap = new vtBitmap;
-	pBitmap->Allocate(iXSize, iYSize, 24);
-	SetupBitmapInfo(iXSize, iYSize);
+	pBitmap->Allocate(size, 24);
+	SetupBitmapInfo(size);
 	m_Bitmaps[0].m_pBitmap = pBitmap;
 
 	// read PPM binary
@@ -1144,19 +1145,19 @@ bool vtImage::ReadPPM(const char *fname, bool progress_callback(int))
 	fseek(fp, offset_start, SEEK_SET);	// go back again
 
 	int data_length = offset_end - offset_start;
-	int data_size = data_length / (iXSize*iYSize);
+	int data_size = data_length / (size.x * size.y);
 
-	int line_length = 3 * iXSize;
+	int line_length = 3 * size.x;
 	uchar *line = new uchar[line_length];
 
-	for (int j = 0; j < iYSize; j++)
+	for (int j = 0; j < size.y; j++)
 	{
 		if (progress_callback != NULL)
-			progress_callback(j * 100 / iYSize);
+			progress_callback(j * 100 / size.y);
 
 		quiet = (int) fread(line, line_length, 1, fp);
 
-		for (int i = 0; i < iXSize; i++)
+		for (int i = 0; i < size.x; i++)
 			pBitmap->SetPixel24(i, j, line[i*3+0], line[i*3+1], line[i*3+2]);
 	}
 	delete [] line;
@@ -1175,17 +1176,18 @@ bool vtImage::WritePPM(const char *fname) const
 	if (!fp)		// Could not open output file
 		return false;
 
+	const IPoint2 size = bm->GetSize();
 	fprintf(fp, "P6\n");		// PGM binary format
-	fprintf(fp, "%d %d\n", bm->GetWidth(), bm->GetHeight());
+	fprintf(fp, "%d %d\n", size.x, size.y);
 	fprintf(fp, "255\n");		// PGM standard value
 
-	int line_length = 3 * bm->GetWidth();
+	int line_length = 3 * size.x;
 	uchar *line = new uchar[line_length];
 
 	RGBi rgb;
-	for (uint j = 0; j < bm->GetHeight(); j++)
+	for (int j = 0; j < size.y; j++)
 	{
-		for (uint i = 0; i < bm->GetWidth(); i++)
+		for (int i = 0; i < size.x; i++)
 		{
 			bm->GetPixel24(i, j, rgb);
 			line[i*3+0] = rgb.r;
@@ -1274,16 +1276,15 @@ bool vtImage::SaveToFile(const char *fname) const
 	// having to make another entire copy in memory, as it does now:
 	RGBi rgb;
 	GDALRasterBand *pBand;
-	int i, x, y;
-	for (i = 1; i <= 3; i++)
+	for (int i = 1; i <= 3; i++)
 	{
 		pBand = pDataset->GetRasterBand(i);
 
-		for (y = 0; y < size.y; y++)
+		for (int y = 0; y < size.y; y++)
 		{
 			progress_callback((i-1)*33 + (y * 33 / size.y));
 
-			for (x = 0; x < size.x; x++)
+			for (int x = 0; x < size.x; x++)
 			{
 				bm->GetPixel24(x, y, rgb);
 				if (i == 1) raster[y*size.x + x] = rgb.r;
@@ -1307,7 +1308,7 @@ bool vtImage::ReadPNGFromMemory(uchar *buf, int len)
 	vtBitmap *pBitmap = new vtBitmap;
 	if (pBitmap->ReadPNGFromMemory(buf, len))
 	{
-		SetupBitmapInfo(pBitmap->GetWidth(), pBitmap->GetHeight());
+		SetupBitmapInfo(pBitmap->GetSize());
 		m_Bitmaps[0].m_pBitmap = pBitmap;
 		return true;
 	}
@@ -1414,7 +1415,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 				throw "Import Cancelled.";
 		}
 
-		SetupBitmapInfo(Size.x, Size.y);
+		SetupBitmapInfo(Size);
 
 		if (Size.x * Size.y > 512*512)
 			OpenProgressDialog(_("Reading file"), false);
@@ -1447,7 +1448,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		if (!bDefer)
 		{
 			vtBitmap *pBitmap = new vtBitmap;
-			if (!pBitmap->Allocate(Size.x, Size.y))
+			if (!pBitmap->Allocate(Size))
 			{
 				delete pBitmap;
 				msg.Printf(_("Couldn't allocate bitmap of size %d x %d.\n"),
@@ -1967,7 +1968,6 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 	int cb = 0;	// count bytes
 
 	DPoint2 p;
-	int x, y;
 	RGBAi rgba;
 
 	// Get ready to multisample
@@ -1976,10 +1976,10 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 	MakeSampleOffsets(spacing, iNSampling, offsets);
 	double dRes = (spacing.x+spacing.y)/2;
 
-	for (y = tilesize-1; y >= 0; y--)
+	for (int y = tilesize-1; y >= 0; y--)
 	{
 		p.y = tile_area.bottom + y * spacing.y;
-		for (x = 0; x < tilesize; x++)
+		for (int x = 0; x < tilesize; x++)
 		{
 			p.x = tile_area.left + x * spacing.x;
 
@@ -2025,11 +2025,10 @@ bool vtImage::WriteTile(const TilingOptions &opts, BuilderView *pView, vtString 
 
 void SampleMipLevel(vtBitmap *bigger, vtBitmap *smaller)
 {
-	int xsize = bigger->GetWidth();
-	int ysize = bigger->GetHeight();
+	const IPoint2 size = bigger->GetSize();
 
-	int xsmall = xsize / 2;
-	int ysmall = ysize / 2;
+	const int xsmall = size.x / 2;
+	const int ysmall = size.y / 2;
 
 	RGBi rgb, sum;
 

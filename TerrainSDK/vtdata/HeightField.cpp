@@ -511,15 +511,15 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	   bool progress_callback(int))
 {
 	VTLOG1(" ColorDibFromTable:");
-	int w = pBM->GetWidth();
-	int h = pBM->GetHeight();
+	const IPoint2 bitmap_size = pBM->GetSize();
 	int depth = pBM->GetDepth();
 
-	VTLOG(" dib size %d x %d, grid %d x %d.. ", w, h, m_iSize.x, m_iSize.y);
+	VTLOG(" dib size %d x %d, grid %d x %d.. ", bitmap_size.x, bitmap_size.y,
+		m_iSize.x, m_iSize.y);
 
-	const bool bExact = (w == m_iSize.x && h == m_iSize.y);
-	double ratiox = (double)(m_iSize.x - 1)/(w - 1),
-		   ratioy = (double)(m_iSize.y - 1)/(h - 1);
+	const bool bExact = (bitmap_size == m_iSize);
+	double ratiox = (double)(m_iSize.x - 1)/(bitmap_size.x - 1),
+		   ratioy = (double)(m_iSize.y - 1)/(bitmap_size.y - 1);
 
 	const float fRange = fMax - fMin;
 	const uint iGranularity = table.size() - 1;
@@ -528,14 +528,15 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	float elev;
 
 	// now iterate over the texels
-	for (int i = 0; i < w; i++)
+	for (int i = 0; i < bitmap_size.x; i++)
 	{
 		if (progress_callback != NULL && (i&40) == 0)
-			progress_callback(i * 100 / w);
+			progress_callback(i * 100 / bitmap_size.x);
 
-		const double x = i * ratiox;		// find corresponding location in height grid
+		// find the corresponding location in the height grid
+		const double x = i * ratiox;
 
-		for (int j = 0; j < h; j++)
+		for (int j = 0; j < bitmap_size.y; j++)
 		{
 			const double y = j * ratioy;
 
@@ -546,9 +547,9 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 			if (elev == INVALID_ELEVATION)
 			{
 				if (depth == 32)
-					pBM->SetPixel32(i, h-1-j, nodata);
+					pBM->SetPixel32(i, bitmap_size.y - 1 - j, nodata);
 				else
-					pBM->SetPixel24(i, h-1-j, nodata_24bit);
+					pBM->SetPixel24(i, bitmap_size.y - 1 - j, nodata_24bit);
 				has_invalid = true;
 				continue;
 			}
@@ -556,9 +557,9 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 			if (table_entry > iGranularity-1)
 				table_entry = iGranularity-1;
 			if (depth == 32)
-				pBM->SetPixel32(i, h-1-j, table[table_entry]);
+				pBM->SetPixel32(i, bitmap_size.y - 1 - j, table[table_entry]);
 			else
-				pBM->SetPixel24(i, h-1-j, table[table_entry]);
+				pBM->SetPixel24(i, bitmap_size.y - 1 - j, table[table_entry]);
 		}
 	}
 	VTLOG("Done.\n");
@@ -584,11 +585,10 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 	// consider upward-pointing normal vector, rather than downward-pointing
 	FPoint3 light_direction = -light_dir;
 
-	int w = pBM->GetWidth();
-	int h = pBM->GetHeight();
+	const IPoint2 bitmap_size = pBM->GetSize();
 
-	double ratiox = (double)(m_iSize.x - 1) / (w - 1),
-		   ratioy = (double)(m_iSize.y - 1) / (h - 1);
+	const double ratiox = (double)(m_iSize.x - 1) / (bitmap_size.x - 1),
+				 ratioy = (double)(m_iSize.y - 1) / (bitmap_size.y - 1);
 
 	// For purposes of shading, we need to look at adjacent heixels which are
 	//  at least one grid cell away:
@@ -603,14 +603,14 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 	FPoint3 c, l, r, t, b, v3;
 
 	// iterate over the texels
-	for (int j = 0; j < h; j++)
+	for (int j = 0; j < bitmap_size.y; j++)
 	{
 		if (progress_callback != NULL && (j%40) == 0)
-			progress_callback(j * 100 / h);
+			progress_callback(j * 100 / bitmap_size.y);
 
 		// find corresponding location in terrain
 		const int y = (int) (j * ratioy);
-		for (int i = 0; i < w; i++)
+		for (int i = 0; i < bitmap_size.x; i++)
 		{
 			const int x = (int) (i * ratiox);
 
@@ -684,11 +684,11 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 
 			// combine color and shading
 			if (depth == 8)
-				pBM->ScalePixel8(i, h-1-j, shade);
+				pBM->ScalePixel8(i, bitmap_size.y-1-j, shade);
 			else if (depth == 24)
-				pBM->ScalePixel24(i, h-1-j, shade);
+				pBM->ScalePixel24(i, bitmap_size.y-1-j, shade);
 			else if (depth == 32)
-				pBM->ScalePixel32(i, h-1-j, shade);
+				pBM->ScalePixel32(i, bitmap_size.y-1-j, shade);
 		}
 	}
 }
@@ -701,24 +701,23 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 									 bool bTrue, bool progress_callback(int))
 {
-	const int w = pBM->GetWidth();
-	const int h = pBM->GetHeight();
+	const IPoint2 bitmap_size = pBM->GetSize();
 	const int depth = pBM->GetDepth();
 
-	const int stepx = m_iSize.x / w;
-	const int stepy = m_iSize.y / h;
+	const int stepx = m_iSize.x / bitmap_size.x;
+	const int stepy = m_iSize.y / bitmap_size.y;
 
 	RGBi rgb;
 	RGBAi rgba;
 
-	for (int j = 0; j < h; j++)
+	for (int j = 0; j < bitmap_size.y; j++)
 	{
 		if (progress_callback != NULL && (j%40) == 0)
-				progress_callback(j * 100 / h);
+				progress_callback(j * 100 / bitmap_size.y);
 
 		// find corresponding location in heightfield
 		const int y = m_iSize.y-1 - (j * stepy);
-		for (int i = 0; i < w; i++)
+		for (int i = 0; i < bitmap_size.x; i++)
 		{
 			if (depth == 32)
 				pBM->GetPixel32(i, j, rgba);
@@ -726,7 +725,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float fLightFactor,
 				pBM->GetPixel24(i, j, rgb);
 
 			int x_offset = 0;
-			if (i == w-1)
+			if (i == bitmap_size.x-1)
 				x_offset = -1;
 
 			// index into elevation
@@ -843,12 +842,12 @@ inline DPoint2 GridPos(const DPoint2 &base, const DPoint2 &spacing, int i, int j
 void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_dir,
 	float fLightFactor, float fAmbient, bool progress_callback(int))
 {
-	const int w = pBM->GetWidth();
-	const int h = pBM->GetHeight();
+	const IPoint2 bitmap_size = pBM->GetSize();
 
 	// Compute area that we will sample for shading, bounded by the texel
 	//  centers, which are 1/2 texel in from the grid extents.
-	const DPoint2 texel_size(m_EarthExtents.Width() / w, m_EarthExtents.Height() / h);
+	const DPoint2 texel_size(m_EarthExtents.Width() / bitmap_size.x,
+							 m_EarthExtents.Height() / bitmap_size.y);
 	DRECT texel_area = m_EarthExtents;
 	texel_area.Grow(-texel_size.x/2, -texel_size.y/2);
 	const DPoint2 texel_base(texel_area.left, texel_area.bottom);
@@ -863,9 +862,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	//  completely dark terrain.  We can catch this case up front.
 	if (light_dir.y > 0)
 	{
-		for (int i = 0; i < w; i++)
+		for (int i = 0; i < bitmap_size.x; i++)
 		{
-			for (int j = 0; j < h; j++)
+			for (int j = 0; j < bitmap_size.y; j++)
 			{
 				if (b8bit)
 					pBM->ScalePixel8(i, j, fAmbient);
@@ -877,7 +876,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	}
 
 	// Create array to hold flags
-	LightMap lightmap(w, h);
+	LightMap lightmap(bitmap_size.x, bitmap_size.y);
 
 	// This factor is used when applying shading to non-shadowed areas to
 	// try and keep the "contrast" down to a min. (still get "patches" of
@@ -917,24 +916,24 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	if (grid_light_dir.x > 0)
 	{
 		i_init=0;
-		i_final=w;
+		i_final=bitmap_size.x;
 		i_incr=1;
 	}
 	else
 	{
-		i_init=w-1;
+		i_init=bitmap_size.x-1;
 		i_final=-1;
 		i_incr=-1;
 	}
 	if (grid_light_dir.z > 0)
 	{
 		j_init=0;
-		j_final=h;
+		j_final=bitmap_size.y;
 		j_incr=1;
 	}
 	else
 	{
-		j_init=h-1;
+		j_init=bitmap_size.y-1;
 		j_final=-1;
 		j_incr=-1;
 	}
@@ -950,7 +949,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	for (int j = j_init; j != j_final; j += j_incr)
 	{
 		if (progress_callback != NULL && (j%20) == 0)
-			progress_callback(abs(j-j_init) * 100 / h);
+			progress_callback(abs(j-j_init) * 100 / bitmap_size.y);
 
 		for (int i = i_init; i != i_final; i += i_incr)
 		{
@@ -971,7 +970,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				z = (int) (j + grid_light_dir.z*k + 0.5f);
 				shadowheight += grid_light_dir.y * HScale;
 
-				if ((x<0) || (x>w-1) || (z<0) || (z>h-1))
+				if ((x<0) || (x>bitmap_size.x-1) || (z<0) || (z>bitmap_size.y-1))
 				{
 					Under_Out = true; // Out of the grid
 					break;
@@ -1015,9 +1014,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 					// some anti-aliasing or edge softening algorithm to the LightMap.
 					// Once that's done, apply the whole LightMap to the DIB.
 					if (b8bit)
-						pBM->ScalePixel8(x, h-1-z, shade);
+						pBM->ScalePixel8(x, bitmap_size.y-1-z, shade);
 					else
-						pBM->ScalePixel24(x, h-1-z, shade);
+						pBM->ScalePixel24(x, bitmap_size.y-1-z, shade);
 
 					// set a flag to show that this texel has been shaded.
 					// (or set to value of the shading - see comment above)
@@ -1033,12 +1032,12 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 	// Second pass.  Now we are going to loop through the LightMap and apply
 	//  the full lighting formula to each texel that has not been shaded yet.
-	for (int j = 0; j < h; j++)
+	for (int j = 0; j < bitmap_size.y; j++)
 	{
 		if (progress_callback != NULL && (j%20) == 0)
-			progress_callback(j * 100 / h);
+			progress_callback(j * 100 / bitmap_size.y);
 
-		for (int i = 0; i < w; i++)
+		for (int i = 0; i < bitmap_size.x; i++)
 		{
 			if (lightmap.Get(i, j) > 0)
 				continue;
@@ -1094,9 +1093,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			// Once that's done, apply the whole LightMap to the DIB.
 			// LightMap[I][J]= shade; // set to value of the shading - see comment above)
 			if (b8bit)
-				pBM->ScalePixel8(i, h-1-j, shade);
+				pBM->ScalePixel8(i, bitmap_size.y-1-j, shade);
 			else
-				pBM->ScalePixel24(i, h-1-j, shade);
+				pBM->ScalePixel24(i, bitmap_size.y-1-j, shade);
 		}
 	}
 

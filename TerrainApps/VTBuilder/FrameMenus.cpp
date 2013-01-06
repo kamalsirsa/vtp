@@ -1111,7 +1111,8 @@ void MainFrame::OnLayerNew(wxCommandEvent &event)
 	if (lt == LT_ELEVATION)
 	{
 		vtElevLayer *pEL = (vtElevLayer *)pL;
-		vtElevationGrid *grid = new vtElevationGrid(m_area, 1025, 1025, false, m_proj);
+		vtElevationGrid *grid = new vtElevationGrid(m_area, IPoint2(1025, 1025),
+			false, m_proj);
 		grid->FillWithSingleValue(1000);
 		pEL->SetGrid(grid);
 	}
@@ -2297,8 +2298,8 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 	pEL->GetGrid()->GetDimensions(cols, rows);
 
 	RenderDlg dlg(this, -1, _("Render Elevation to Bitmap"));
-	dlg.m_iSizeX = cols;
-	dlg.m_iSizeY = rows;
+	dlg.m_Size.x = cols;
+	dlg.m_Size.y = rows;
 
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
@@ -2980,7 +2981,7 @@ void MainFrame::OnVegExportSHP(wxCommandEvent& event)
 
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T(""),
-		_("Shape Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		_("Shapefiles (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString strPathName = saveFile.GetPath();
@@ -2996,7 +2997,7 @@ void MainFrame::OnVegHTML(wxCommandEvent& event)
 
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T("plant_list.html"),
-		_("Shape Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		_("Shapefiles (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString strPathName = saveFile.GetPath();
@@ -3422,7 +3423,7 @@ void MainFrame::OnStructureExportFootprints(wxCommandEvent& event)
 {
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export footprints to SHP"), _T(""), _T(""),
-		_("Shape Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		_("Shapefiles (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
@@ -3550,11 +3551,10 @@ void MainFrame::OnRawAddPointText(wxCommandEvent& event)
 			_("Enter coordinate"));
 	if (str == _T(""))
 		return;
-	double x, y;
-	int num = sscanf(str.mb_str(wxConvUTF8), "%lf, %lf", &x, &y);
+	DPoint2 p;
+	int num = sscanf(str.mb_str(wxConvUTF8), "%lf, %lf", &p.x, &p.y);
 	if (num != 2)
 		return;
-	DPoint2 p(x, y);
 
 	vtRawLayer *pRL = GetActiveRawLayer();
 	pRL->AddPoint(p);
@@ -3805,21 +3805,20 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 
 	// First grab image
 	BuilderView *view = GetView();
-	int xsize, ysize;
-	view->GetClientSize(&xsize, &ysize);
+	IPoint2 size;
+	view->GetClientSize(&size.x, &size.y);
 
 	wxClientDC dc(view);
 	view->PrepareDC(dc);
 
 	vtDIB dib;
-	dib.Create(xsize, ysize, 24);
+	dib.Create(size, 24);
 
-	int x, y;
 	int xx, yy;
 	wxColour color;
-	for (x = 0; x < xsize; x++)
+	for (int x = 0; x < size.x; x++)
 	{
-		for (y = 0; y < ysize; y++)
+		for (int y = 0; y < size.y; y++)
 		{
 			view->CalcUnscrolledPosition(x, y, &xx, &yy);
 			dc.GetPixel(xx, yy, &color);
@@ -3896,7 +3895,7 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 	}
 	fprintf(fp, "</map>\n");
 	fprintf(fp, "<img border=\"0\" src=\"%s\" usemap=\"#ImageMap\" width=\"%d\" height=\"%d\">\n",
-		(const char *) filename, xsize, ysize);
+		(const char *) filename, size.x, size.y);
 	fprintf(fp, "</body>\n");
 	fprintf(fp, "</html>\n");
 	fclose(fp);
@@ -3937,8 +3936,8 @@ void MainFrame::OnRawGenElevation(wxCommandEvent& event)
 	GenGridDlg dlg(this, -1, _("Generate Grid from 3D Points"), bIsGeo);
 	dlg.m_fAreaX = extent.Width();
 	dlg.m_fAreaY = extent.Height();
-	dlg.m_iSizeX = 512;
-	dlg.m_iSizeY = 512;
+	dlg.m_Size.x = 512;
+	dlg.m_Size.y = 512;
 	dlg.RecomputeSize();
 	dlg.m_fDistanceCutoff = 1.5f;
 
@@ -3951,8 +3950,7 @@ void MainFrame::OnRawGenElevation(wxCommandEvent& event)
 	OpenProgressDialog(_T("Creating Grid"), true);
 	int xsize = 800;
 	int ysize = 300;
-	if (el->CreateFromPoints(pSet, dlg.m_iSizeX, dlg.m_iSizeY,
-			dlg.m_fDistanceCutoff))
+	if (el->CreateFromPoints(pSet, dlg.m_Size, dlg.m_fDistanceCutoff))
 		AddLayerWithCheck(el);
 	else
 		delete el;

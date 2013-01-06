@@ -377,8 +377,7 @@ void Enviro::MakeOverlayGlobe(vtImage *input, bool progress_callback(int))
 	// Make dymaxion overlay images
 	vtImage *output[10];
 
-	int input_x = input->GetWidth();
-	int input_y = input->GetHeight();
+	const IPoint2 input_size = input->GetSize();
 	int depth = input->GetDepth();
 	int output_size = 512;
 
@@ -419,8 +418,8 @@ void Enviro::MakeOverlayGlobe(vtImage *input, bool progress_callback(int))
 				uvw.y = v;
 				ico.FaceUVToGeo(face, uvw, lon, lat);
 
-				int source_x = (int) (lon / PI2d * input_x);
-				int source_y = (int) (lat / PId * input_y);
+				int source_x = (int) (lon / PI2d * input_size.x);
+				int source_y = (int) (lat / PId * input_size.y);
 
 				if (depth == 8)
 				{

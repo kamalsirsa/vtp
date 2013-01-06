@@ -34,18 +34,16 @@ bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 		DisplayAndLog("Couldn't read input file.");
 		return false;
 	}
-	int i, j, width, height, x, y;
-	width = dib1.GetWidth();
-	height = dib1.GetHeight();
+	const IPoint2 size = dib1.GetSize();
 
 	// First pass: restore color of edge texels by guessing correct
 	//  non-background color.
 	RGBAi c, res, diff;
-	dib2.Create(width, height, 32);
-	for (i = 0; i < width; i++)
+	dib2.Create(size, 32);
+	for (int i = 0; i < size.x; i++)
 	{
-		progress_callback(i*100/width);
-		for (j = 0; j < height; j++)
+		progress_callback(i * 100 / size.x);
+		for (int j = 0; j < size.y; j++)
 		{
 			dib1.GetPixel32(i, j, c);
 			if (c.a == 0)
@@ -72,7 +70,7 @@ bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 
 	// Now make many passes over the bitmap, filling in areas of alpha==0
 	//  with values from the nearest pixels.
-	dib3.Create(width, height, 24);
+	dib3.Create(size, 24);
 	int filled_in = 1;
 	int progress_target = -1;
 	while (filled_in)
@@ -82,9 +80,9 @@ bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 
 		RGBi sum;
 		int surround;
-		for (i = 0; i < width; i++)
+		for (int i = 0; i < size.x; i++)
 		{
-			for (j = 0; j < height; j++)
+			for (int j = 0; j < size.y; j++)
 			{
 				dib2.GetPixel32(i, j, c);
 				if (c.a != 0)
@@ -93,14 +91,14 @@ bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 				// collect surrounding values
 				sum.Set(0,0,0);
 				surround = 0;
-				for (x = -1; x <= 1; x++)
-				for (y = -1; y <= 1; y++)
+				for (int x = -1; x <= 1; x++)
+				for (int y = -1; y <= 1; y++)
 				{
 					if (x == 0 && y == 0) continue;
-					if (i+x < 0) continue;
-					if (i+x > width-1) continue;
-					if (j+y < 0) continue;
-					if (j+y > height-1) continue;
+					if (i + x < 0) continue;
+					if (i + x > size.x - 1) continue;
+					if (j + y < 0) continue;
+					if (j + y > size.y - 1) continue;
 					dib2.GetPixel32(i+x, j+y, c);
 					if (c.a != 0)
 					{
@@ -115,9 +113,9 @@ bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 				}
 			}
 		}
-		for (i = 0; i < width; i++)
+		for (int i = 0; i < size.x; i++)
 		{
-			for (j = 0; j < height; j++)
+			for (int j = 0; j < size.y; j++)
 			{
 				dib2.GetPixel32(i, j, c);
 				if (c.a == 0)
@@ -139,10 +137,10 @@ bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 	}
 	// One final pass: changed the regions with alpha==1 to 0
 	// (we were just using the value as a flag)
-	for (i = 0; i < width; i++)
+	for (int i = 0; i < size.x; i++)
 	{
-		progress_callback(i*100/width);
-		for (j = 0; j < height; j++)
+		progress_callback(i * 100 / size.x);
+		for (int j = 0; j < size.y; j++)
 		{
 			dib2.GetPixel32(i, j, c);
 			if (c.a == 1)
@@ -588,7 +586,7 @@ void Builder::ElevPasteNew()
 	}
 
 	// Create new layer
-	vtElevLayer *pEL = new vtElevLayer(area, width, breadth, bFP, 1.0f, proj);
+	vtElevLayer *pEL = new vtElevLayer(area, IPoint2(width, breadth), bFP, 1.0f, proj);
 
 	// Copy the elevations.
 	// Require packed pixel storage.
@@ -610,7 +608,7 @@ void Builder::ElevPasteNew()
 
 void MainFrame::DoDymaxTexture()
 {
-	int i, x, y, face;
+	int face;
 	DPoint3 uvw;
 	uvw.z = 0.0f;
 	double u, v;
@@ -675,18 +673,18 @@ void MainFrame::DoDymaxTexture()
 	uchar value;
 	RGBi rgb;
 	RGBAi rgba;
-	for (i = 0; i < 10; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		vtDIB out;
-		out.Create(output_size, output_size, depth);
+		out.Create(IPoint2(output_size, output_size), depth);
 
 		wxString msg;
 		msg.Printf(_("Creating tile %d ..."), i+1);
 		prog.Update((i+1)*10, msg);
 
-		for (x = 0; x < output_size; x++)
+		for (int x = 0; x < output_size; x++)
 		{
-			for (y = 0; y < output_size; y++)
+			for (int y = 0; y < output_size; y++)
 			{
 				if (y < output_size-1-x)
 				{
@@ -742,7 +740,6 @@ void MainFrame::DoDymaxMap()
 {
 	VTLOG1("DoDymaxMap\n");
 
-	int x, y;
 	DPoint3 uvw;
 	uvw.z = 0.0f;
 
@@ -806,7 +803,7 @@ void MainFrame::DoDymaxMap()
 	// Make output
 	vtDIB out;
 	VTLOG("output: size %d %d\n", output_x, output_y);
-	if (!out.Create(output_x, output_y, depth))
+	if (!out.Create(IPoint2(output_x, output_y), depth))
 	{
 		vtString msg;
 		msg.Format("Could not allocate DIB of size %d x %d (%.1f MB)", output_x, output_y,
@@ -825,7 +822,7 @@ void MainFrame::DoDymaxMap()
 
 	prog.Update(1, _T(""));
 
-	for (x = 0; x < input_x; x++)
+	for (int x = 0; x < input_x; x++)
 	{
 		msg.Printf(_T("Projecting %d/%d"), x, input_x);
 		if (prog.Update(x * 99 / input_x, msg) == false)
@@ -836,7 +833,7 @@ void MainFrame::DoDymaxMap()
 		}
 
 		p.x = (((double)x / (input_x-1)) * 360.0) - 180.0;
-		for (y = 0; y < input_y; y++)
+		for (int y = 0; y < input_y; y++)
 		{
 			p.y = -((((double)y / (input_y-1)) * 180.0) - 90.0);
 

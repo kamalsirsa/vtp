@@ -47,8 +47,7 @@ public:
 	void SetPixel24(int x, int y, const RGBi &rgb);
 	void SetPixel32(int x, int y, const RGBAi &rgba);
 
-	uint GetWidth() const;
-	uint GetHeight() const;
+	IPoint2 GetSize() const;
 	uint GetDepth() const;
 
 	uchar *GetData() { return data(); }
@@ -82,8 +81,7 @@ public:
 	void SetPixel24(int x, int y, const RGBi &rgb);
 	void SetPixel32(int x, int y, const RGBAi &rgba);
 
-	uint GetWidth() const { return m_image->s(); }
-	uint GetHeight() const { return m_image->t(); }
+	IPoint2 GetSize() const { return IPoint2(m_image->s(), m_image->t()); }
 	uint GetDepth() const { return m_image->getPixelSizeInBits(); }
 
 	uchar *GetData() { return m_image->data(); }

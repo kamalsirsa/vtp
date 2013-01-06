@@ -5,6 +5,7 @@
 // Copyright (c) 2002-2009 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
+/** \file Helper.h */
 
 #include "vtdata/vtString.h"
 #include "vtdata/MathTypes.h"

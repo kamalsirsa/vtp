@@ -88,7 +88,7 @@ class vtImage
 {
 public:
 	vtImage();
-	vtImage(const DRECT &area, int xsize, int ysize,
+	vtImage(const DRECT &area, const IPoint2 &size,
 		const vtProjection &proj);
 	virtual ~vtImage();
 
@@ -121,7 +121,7 @@ public:
 	void SetRGBA(int x, int y, uchar r, uchar g, uchar b, uchar a = 255);
 	void SetRGBA(int x, int y, const RGBAi &rgb);
 	void ReplaceColor(const RGBi &rgb1, const RGBi &rgb2);
-	void SetupBitmapInfo(int iXSize, int iYSize);
+	void SetupBitmapInfo(const IPoint2 &size);
 
 	// File IO
 	bool ReadPPM(const char *fname, bool progress_callback(int) = NULL);

@@ -3011,20 +3011,20 @@ void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)
 
 	// Get the properties of the dynamic terrain, make an elevation grid like it
 	vtDynTerrainGeom *dtg = pTerr->GetDynTerrain();
-	int iCols, iRows;
-	vtProjection proj = pTerr->GetProjection();
-	dtg->GetDimensions(iCols, iRows);
-	DRECT area = dtg->GetEarthExtents();
+
+	const vtProjection &proj = pTerr->GetProjection();
+	const IPoint2 &size = dtg->GetDimensions();
+	const  DRECT area = dtg->GetEarthExtents();
 	bool bFloat = true;
-	vtElevationGrid grid(area, iCols, iRows, bFloat, proj);
+	vtElevationGrid grid(area, size, bFloat, proj);
 
 	// Copy the data to the (temporary) elevation grid
-	for (int i = 0; i < iCols; i++)
+	for (int i = 0; i < size.x; i++)
 	{
-		progress_callback(i * 99 / iCols);
-		for (int j = 0; j < iRows; j++)
+		progress_callback(i * 99 / size.x);
+		for (int j = 0; j < size.y; j++)
 		{
-			float val = dtg->GetElevation(i, j, true);
+			const float val = dtg->GetElevation(i, j, true);
 			grid.SetFValue(i, j, val);
 		}
 	}

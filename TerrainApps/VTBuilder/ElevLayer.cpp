@@ -59,16 +59,16 @@ vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 	m_pTin = NULL;
 }
 
-vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
+vtElevLayer::vtElevLayer(const DRECT &area, const IPoint2 &size,
 	bool bFloats, float fScale, const vtProjection &proj) : vtLayer(LT_ELEVATION)
 {
 	SetupDefaults();
 
 	VTLOG(" Constructing vtElevLayer of size %d x %d, floats %d\n",
-		iColumns, iRows, bFloats);
+		size.x, size.y, bFloats);
 
 	m_pTin = NULL;
-	m_pGrid = new vtElevationGrid(area, iColumns, iRows, bFloats, proj);
+	m_pGrid = new vtElevationGrid(area, size, bFloats, proj);
 	if (!m_pGrid->HasData())
 		VTLOG1(" Grid allocation failed.\n");
 
@@ -371,7 +371,7 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 
 	wxRect screenrect = pView->WorldToCanvas(m_pGrid->GetAreaExtents());
 	wxRect destRect = screenrect;
-	wxRect srcRect(0, 0, m_iImageWidth, m_iImageHeight);
+	wxRect srcRect(0, 0, m_ImageSize.x, m_ImageSize.y);
 
 	double ratio_x = (float) srcRect.GetWidth() / destRect.GetWidth();
 	double ratio_y = (float) srcRect.GetHeight() / destRect.GetHeight();
@@ -536,8 +536,8 @@ void vtElevLayer::SetupDefaults()
 
 	m_pBitmap = NULL;
 	m_pMask = NULL;
-	m_iImageWidth = 0;
-	m_iImageHeight = 0;
+	m_ImageSize.x = 0;
+	m_ImageSize.y = 0;
 	m_fSpacing = 0.0f;
 }
 
@@ -546,23 +546,23 @@ void vtElevLayer::SetupBitmap(wxDC *pDC)
 {
 	int cols, rows;
 	m_pGrid->GetDimensions(cols, rows);
-	m_iImageWidth = cols;
-	m_iImageHeight = rows;
+	m_ImageSize.x = cols;
+	m_ImageSize.y = rows;
 
 	int iMax = g_Options.GetValueInt(TAG_ELEV_MAX_SIZE);
 
 	int div = 1;
-	while (m_iImageWidth * m_iImageHeight > 4096*4096 ||
-		m_iImageWidth > iMax || m_iImageHeight > iMax)
+	while (m_ImageSize.x * m_ImageSize.y > 4096*4096 ||
+		m_ImageSize.x > iMax || m_ImageSize.y > iMax)
 	{
 		// bitmap is too big, chop it down
 		div++;
-		m_iImageWidth = cols / div;
-		m_iImageHeight = rows / div;
+		m_ImageSize.x = cols / div;
+		m_ImageSize.y = rows / div;
 	}
 
 	m_pBitmap = new vtBitmap;
-	if (!m_pBitmap->Allocate(m_iImageWidth, m_iImageHeight))
+	if (!m_pBitmap->Allocate(m_ImageSize))
 	{
 		DisplayAndLog(_("Couldn't create bitmap, probably too large."));
 		delete m_pBitmap;
@@ -620,7 +620,7 @@ void vtElevLayer::RenderBitmap()
 	m_bNeedsDraw = false;
 
 	// safety check
-	if (m_iImageWidth == 0 || m_iImageHeight == 0)
+	if (m_ImageSize.x == 0 || m_ImageSize.y == 0)
 		return;
 
 	DetermineMeterSpacing();
@@ -629,7 +629,7 @@ void vtElevLayer::RenderBitmap()
 
 #if 0
 	// TODO: re-enable this friendly cancel behavior
-	if (UpdateProgressDialog(j*100/m_iImageHeight))
+	if (UpdateProgressDialog(j*100/m_ImageSize.y))
 	{
 		wxString msg = _("Turn off displayed elevation for elevation layers?");
 		if (wxMessageBox(msg, _T(""), wxYES_NO) == wxYES)
@@ -1064,7 +1064,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 //
 // Use the QuikGrid library to generate a grid from a set of 3D points.
 //
-bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, int iXSize, int iYSize,
+bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, const IPoint2 &size,
 								   float fDistanceRatio)
 {
 #if SUPPORT_QUIKGRID
@@ -1085,12 +1085,12 @@ bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, int iXSize, int iYSize,
 	}
 
 	// Make a SurfaceGrid to hold the results
-	DPoint2 spacing(extent.Width() / (iXSize-1), extent.Height() / (iYSize-1));
+	DPoint2 spacing(extent.Width() / (size.x-1), extent.Height() / (size.y-1));
 
-	SurfaceGrid Zgrid(iXSize, iYSize);
-	for (int x = 0; x < iXSize; x++)
+	SurfaceGrid Zgrid(size.x, size.y);
+	for (int x = 0; x < size.x; x++)
 		Zgrid.xset(x, extent.left + spacing.x * x);
-	for (int y = 0; y < iYSize; y++)
+	for (int y = 0; y < size.y; y++)
 		Zgrid.yset(y, extent.bottom + spacing.y * y);
 
 	// "When any new points will not contributed more than 1/(scan bandwidth cutoff)
@@ -1108,7 +1108,7 @@ bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, int iXSize, int iYSize,
 
 	// Do the expand operation, gradually so we get progress
 	XpandInit(Zgrid, sdata);
-	int count = 0, total = iXSize * iYSize;
+	int count = 0, total = size.x * size.y;
 	while (XpandPoint( Zgrid, sdata))
 	{
 		if ((count % 100) == 0)
@@ -1123,10 +1123,10 @@ bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, int iXSize, int iYSize,
 	}
 
 	// copy the result to a ElevationGrid
-	m_pGrid = new vtElevationGrid(extent, iXSize, iYSize, true, set->GetAtProjection());
+	m_pGrid = new vtElevationGrid(extent, size, true, set->GetAtProjection());
 
-	for (int x = 0; x < iXSize; x++)
-		for (int y = 0; y < iYSize; y++)
+	for (int x = 0; x < size.x; x++)
+		for (int y = 0; y < size.y; y++)
 		{
 			float value = Zgrid.z(x,y);
 			if (value == -99999)
@@ -1552,7 +1552,7 @@ bool vtElevLayer::WriteElevationTileset(TilingOptions &opts, BuilderView *pView)
 				pView->ShowGridMarks(area, opts.cols, opts.rows, col, opts.rows-1-row);
 
 			// Extract the highest LOD we need
-			vtElevationGrid base_lod(tile_area, base_tilesize+1, base_tilesize+1,
+			vtElevationGrid base_lod(tile_area, IPoint2(base_tilesize+1, base_tilesize+1),
 				bFloat, proj);
 
 			bool bAllInvalid = true;
@@ -1628,12 +1628,12 @@ bool vtElevLayer::WriteElevationTileset(TilingOptions &opts, BuilderView *pView)
 
 				if (opts.bImageAlpha)
 				{
-					dib.Create(base_tilesize, base_tilesize, 32);
+					dib.Create(IPoint2(base_tilesize, base_tilesize), 32);
 					base_lod.ColorDibFromElevation(&dib, &cmap, 4000, RGBAi(0,0,0,0));
 				}
 				else
 				{
-					dib.Create(base_tilesize, base_tilesize, 24);
+					dib.Create(IPoint2(base_tilesize, base_tilesize), 24);
 					base_lod.ColorDibFromElevation(&dib, &cmap, 4000, RGBi(255,0,0));
 				}
 
@@ -1722,11 +1722,10 @@ bool vtElevLayer::WriteElevationTileset(TilingOptions &opts, BuilderView *pView)
 				short *sdata = (short *) buf.data;
 
 				DPoint2 p;
-				int x, y;
-				for (y = base_tilesize; y >= 0; y -= (1<<lod))
+				for (int y = base_tilesize; y >= 0; y -= (1<<lod))
 				{
 					p.y = area.bottom + (j*tile_dim.y) + ((double)y / base_tilesize * tile_dim.y);
-					for (x = 0; x <= base_tilesize; x += (1<<lod))
+					for (int x = 0; x <= base_tilesize; x += (1<<lod))
 					{
 						p.x = area.left + (i*tile_dim.x) + ((double)x / base_tilesize * tile_dim.x);
 
@@ -1801,7 +1800,7 @@ bool vtElevLayer::ImportFromDB(const char *szFileName, bool progress_callback(in
 
 	area.SetRect(dbuf.nwx, dbuf.nwy, dbuf.sex, dbuf.sey);
 
-	if (!m_pGrid->Create(area, dbuf.xsize, dbuf.ysize, bFloat, proj))
+	if (!m_pGrid->Create(area, IPoint2(dbuf.xsize, dbuf.ysize), bFloat, proj))
 		return false;
 
 	int i, j;

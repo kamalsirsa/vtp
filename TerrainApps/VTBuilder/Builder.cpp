@@ -1388,13 +1388,14 @@ void Builder::AreaSampleElevation(BuilderView *pView)
 		return;
 
 	// Make new terrain
-	vtElevLayer *pOutput = new vtElevLayer(dlg.m_area, dlg.m_iSizeX,
-			dlg.m_iSizeY, dlg.m_bFloats, dlg.m_fVUnits, m_proj);
+	vtElevLayer *pOutput = new vtElevLayer(dlg.m_area, dlg.m_Size,
+			dlg.m_bFloats, dlg.m_fVUnits, m_proj);
 
 	if (!pOutput->GetGrid()->HasData())
 	{
 		wxString str;
-		str.Printf(_("Failed to initialize %d x %d elevation grid"), dlg.m_iSizeX, dlg.m_iSizeY);
+		str.Printf(_("Failed to initialize %d x %d elevation grid"),
+			dlg.m_Size.x, dlg.m_Size.y);
 		wxMessageBox(str);
 		return;
 	}
@@ -1474,8 +1475,7 @@ void Builder::AreaSampleImages(BuilderView *pView)
 		return;
 
 	// Make new image
-	vtImageLayer *pOutputLayer = new vtImageLayer(dlg.m_area, dlg.m_iSizeX,
-			dlg.m_iSizeY, m_proj);
+	vtImageLayer *pOutputLayer = new vtImageLayer(dlg.m_area, dlg.m_Size, m_proj);
 	vtImage *pOutput = pOutputLayer->GetImage();
 
 	if (!pOutput->GetBitmap())

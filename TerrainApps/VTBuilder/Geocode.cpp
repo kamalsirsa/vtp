@@ -294,7 +294,7 @@ void MainFrame::DoGeocode()
 	{
 		// Save to SHP
 		wxFileDialog saveFile(NULL, _T("Save to SHP"), _T(""), _T(""),
-			_T("Shape Files (*.shp)|*.shp"), wxFD_SAVE);
+			_T("Shapefiles (*.shp)|*.shp"), wxFD_SAVE);
 		if (saveFile.ShowModal() == wxID_OK)
 		{
 			shpname = saveFile.GetPath();

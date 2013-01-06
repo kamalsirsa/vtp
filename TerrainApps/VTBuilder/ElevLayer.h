@@ -32,7 +32,7 @@ class vtElevLayer : public vtLayer
 {
 public:
 	vtElevLayer();
-	vtElevLayer(const DRECT &area, int iColumns, int iRows,
+	vtElevLayer(const DRECT &area, const IPoint2 &size,
 		bool bFloats, float fScale, const vtProjection &proj);
 	vtElevLayer(vtElevationGrid *grid);
 	virtual ~vtElevLayer();
@@ -78,8 +78,7 @@ public:
 	float GetElevation(const DPoint2 &p);
 	bool GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
 	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
-	bool CreateFromPoints(vtFeatureSet *set, int iXSize, int iYSize,
-		float fDistanceRatio);
+	bool CreateFromPoints(vtFeatureSet *set, const IPoint2 &size, float fDistanceRatio);
 
 	// grid operations
 	void SetGrid(vtElevationGrid *grid);
@@ -121,7 +120,7 @@ protected:
 	float	m_fSpacing;
 	bool	m_bPreferGZip;	// user wants their elevation treated as a .gz file
 
-	int m_iImageWidth, m_iImageHeight;
+	IPoint2 m_ImageSize;
 
 	vtBitmap	*m_pBitmap;
 	wxMask		*m_pMask;

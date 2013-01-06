@@ -51,11 +51,10 @@ void ProfDlgView::OnDraw(wxDC &dc)
 	pen.SetColour(200,200,200);
 	dc.SetPen(pen);
 
-	int x, y;
-	for (x = -20; x <= 20; x++)
+	for (int x = -20; x <= 20; x++)
 		dc.DrawLine((int)(m_org.x + x * m_scale), (int)m_org.y + -500,
 					(int)(m_org.x + x * m_scale), m_org.y + 500);
-	for (y = -20; y <= 20; y++)
+	for (int y = -20; y <= 20; y++)
 		dc.DrawLine(m_org.x + -500, (int)(m_org.y + y * m_scale),
 					m_org.x + 500, (int)(m_org.y + y * m_scale));
 
@@ -69,9 +68,9 @@ void ProfDlgView::OnDraw(wxDC &dc)
 				m_org.x, m_org.y + 500);
 
 	// Draw profile
-	int i, size = m_profile.GetSize();
+	int size = m_profile.GetSize();
 	m_screen.SetSize(size);
-	for (i = 0; i < size; i++)
+	for (int i = 0; i < size; i++)
 	{
 		m_screen[i].x = (int) (m_org.x + m_profile[i].x * m_scale);
 		m_screen[i].y = (int) (m_org.y - m_profile[i].y * m_scale);
@@ -80,7 +79,7 @@ void ProfDlgView::OnDraw(wxDC &dc)
 	// line itself
 	pen.SetColour(0,0,255);
 	dc.SetPen(pen);
-	for (i = 0; i < size-1; i++)
+	for (int i = 0; i < size-1; i++)
 	{
 		dc.DrawLine(m_screen[i].x, m_screen[i].y,
 			m_screen[i+1].x, m_screen[i+1].y);
@@ -89,7 +88,7 @@ void ProfDlgView::OnDraw(wxDC &dc)
 	pen.SetColour(0,100,0);
 	pen.SetWidth(2);
 	dc.SetPen(pen);
-	for (i = 0; i < size; i++)
+	for (int i = 0; i < size; i++)
 	{
 		dc.DrawLine(m_screen[i].x-3, m_screen[i].y-3,
 			m_screen[i].x+3, m_screen[i].y+3);

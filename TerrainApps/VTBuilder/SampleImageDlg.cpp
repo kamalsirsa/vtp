@@ -61,8 +61,8 @@ SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString 
 	// sampling
 	AddNumValidator(this, ID_SPACINGX, &m_fSpacingX);
 	AddNumValidator(this, ID_SPACINGY, &m_fSpacingY);
-	AddNumValidator(this, ID_SIZEX, &m_iSizeX);
-	AddNumValidator(this, ID_SIZEY, &m_iSizeY);
+	AddNumValidator(this, ID_SIZEX, &m_Size.x);
+	AddNumValidator(this, ID_SIZEY, &m_Size.y);
 	AddValidator(this, ID_CONSTRAIN, &m_bConstraint);
 
 	// informations
@@ -87,8 +87,8 @@ void SampleImageDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_fSpacingY = m_fEstY;
 
 	// don't just truncate, round slightly to avoid precision issues
-	m_iSizeX = (int) (m_fAreaX / m_fSpacingX + 0.5);
-	m_iSizeY = (int) (m_fAreaY / m_fSpacingY + 0.5);
+	m_Size.x = (int) (m_fAreaX / m_fSpacingX + 0.5);
+	m_Size.y = (int) (m_fAreaY / m_fSpacingY + 0.5);
 
 	m_bSetting = true;
 	TransferDataToWindow();
@@ -100,10 +100,10 @@ void SampleImageDlg::OnInitDialog(wxInitDialogEvent& event)
 void SampleImageDlg::RecomputeSize()
 {
 	if (m_bConstraint)  // powers of 2 + 1
-		m_iSizeX = m_iSizeY = (1 << m_power);
+		m_Size.x = m_Size.y = (1 << m_power);
 
-	m_fSpacingX = m_fAreaX / m_iSizeX;
-	m_fSpacingY = m_fAreaY / m_iSizeY;
+	m_fSpacingX = m_fAreaX / m_Size.x;
+	m_fSpacingY = m_fAreaY / m_Size.y;
 }
 
 // WDR: handler implementations for SampleImageDlg
@@ -114,8 +114,8 @@ void SampleImageDlg::OnSpacingXY( wxCommandEvent &event )
 		return;
 
 	TransferDataFromWindow();
-	m_iSizeX = (int) (m_fAreaX / m_fSpacingX);
-	m_iSizeY = (int) (m_fAreaY / m_fSpacingY);
+	m_Size.x = (int) (m_fAreaX / m_fSpacingX);
+	m_Size.y = (int) (m_fAreaY / m_fSpacingY);
 
 	m_bSetting = true;
 	GetSizeX()->GetValidator()->TransferToWindow();
@@ -146,8 +146,8 @@ void SampleImageDlg::OnConstrain( wxCommandEvent &event )
 	{
 		// round up to a value at least as great as the current size
 		m_power = 1;
-		while (((1 << m_power) + 1) < m_iSizeX ||
-			   ((1 << m_power) + 1) < m_iSizeY)
+		while (((1 << m_power) + 1) < m_Size.x ||
+			   ((1 << m_power) + 1) < m_Size.y)
 			m_power++;
 	}
 	RecomputeSize();

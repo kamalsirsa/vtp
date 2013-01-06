@@ -44,8 +44,8 @@ GenGridDlg::GenGridDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 		digits = 3;
 	AddNumValidator(this, ID_SPACINGX, &m_fSpacingX, digits);
 	AddNumValidator(this, ID_SPACINGY, &m_fSpacingY, digits);
-	AddNumValidator(this, ID_SIZEX, &m_iSizeX);
-	AddNumValidator(this, ID_SIZEY, &m_iSizeY);
+	AddNumValidator(this, ID_SIZEX, &m_Size.x);
+	AddNumValidator(this, ID_SIZEY, &m_Size.y);
 	AddNumValidator(this, ID_TEXT_DIST_CUTOFF, &m_fDistanceCutoff);
 
 	GetSizer()->SetSizeHints(this);
@@ -53,8 +53,8 @@ GenGridDlg::GenGridDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 void GenGridDlg::RecomputeSize()
 {
-	m_fSpacingX = m_fAreaX / m_iSizeX;
-	m_fSpacingY = m_fAreaY / m_iSizeY;
+	m_fSpacingX = m_fAreaX / m_Size.x;
+	m_fSpacingY = m_fAreaY / m_Size.y;
 }
 
 
@@ -79,8 +79,8 @@ void GenGridDlg::OnSpacingXY( wxCommandEvent &event )
 		return;
 
 	TransferDataFromWindow();
-	m_iSizeX = (int) (m_fAreaX / m_fSpacingX);
-	m_iSizeY = (int) (m_fAreaY / m_fSpacingY);
+	m_Size.x = (int) (m_fAreaX / m_fSpacingX);
+	m_Size.y = (int) (m_fAreaY / m_fSpacingY);
 
 	m_bSetting = true;
 	GetSizeX()->GetValidator()->TransferToWindow();

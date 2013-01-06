@@ -61,8 +61,8 @@ SampleElevationDlg::SampleElevationDlg( wxWindow *parent, wxWindowID id, const w
 	// sampling
 	spacing1 = AddNumValidator(this, ID_SPACINGX, &m_fSpacingX);
 	spacing2 = AddNumValidator(this, ID_SPACINGY, &m_fSpacingY);
-	AddNumValidator(this, ID_SIZEX, &m_iSizeX);
-	AddNumValidator(this, ID_SIZEY, &m_iSizeY);
+	AddNumValidator(this, ID_SIZEX, &m_Size.x);
+	AddNumValidator(this, ID_SIZEY, &m_Size.y);
 	AddValidator(this, ID_CONSTRAIN, &m_bConstraint);
 
 	// output grid
@@ -95,8 +95,8 @@ void SampleElevationDlg::OnInitDialog(wxInitDialogEvent& event)
 	// initial value: based on estimate spacing
 	m_fSpacingX = m_fEstX;
 	m_fSpacingY = m_fEstY;
-	m_iSizeX = ((int) (m_fAreaX / m_fSpacingX + 0.5)) + 1;
-	m_iSizeY = ((int) (m_fAreaY / m_fSpacingY + 0.5)) + 1;
+	m_Size.x = ((int) (m_fAreaX / m_fSpacingX + 0.5)) + 1;
+	m_Size.y = ((int) (m_fAreaY / m_fSpacingY + 0.5)) + 1;
 
 	m_bSetting = true;
 	TransferDataToWindow();
@@ -110,10 +110,10 @@ void SampleElevationDlg::OnInitDialog(wxInitDialogEvent& event)
 void SampleElevationDlg::RecomputeSize()
 {
 	if (m_bConstraint)  // powers of 2 + 1
-		m_iSizeX = m_iSizeY = (1 << m_power) + 1;
+		m_Size.x = m_Size.y = (1 << m_power) + 1;
 
-	m_fSpacingX = m_fAreaX / (m_iSizeX - 1);
-	m_fSpacingY = m_fAreaY / (m_iSizeY - 1);
+	m_fSpacingX = m_fAreaX / (m_Size.x - 1);
+	m_fSpacingY = m_fAreaY / (m_Size.y - 1);
 }
 
 // WDR: handler implementations for SampleElevationDlg
@@ -189,8 +189,8 @@ void SampleElevationDlg::OnSpacingXY( wxCommandEvent &event )
 		return;
 
 	TransferDataFromWindow();
-	m_iSizeX = (int) (m_fAreaX / m_fSpacingX)+1;
-	m_iSizeY = (int) (m_fAreaY / m_fSpacingY)+1;
+	m_Size.x = (int) (m_fAreaX / m_fSpacingX)+1;
+	m_Size.y = (int) (m_fAreaY / m_fSpacingY)+1;
 
 	m_bSetting = true;
 	spacing1->Enable(false);
@@ -224,8 +224,8 @@ void SampleElevationDlg::OnConstrain( wxCommandEvent &event )
 	{
 		// round up to a value at least as great as the current size
 		m_power = 1;
-		while (((1 << m_power) + 1) < m_iSizeX ||
-			   ((1 << m_power) + 1) < m_iSizeY)
+		while (((1 << m_power) + 1) < m_Size.x ||
+			   ((1 << m_power) + 1) < m_Size.y)
 			m_power++;
 	}
 	RecomputeSize();

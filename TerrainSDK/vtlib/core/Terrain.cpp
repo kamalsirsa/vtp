@@ -740,8 +740,7 @@ void vtTerrain::SetVerticalExag(float fExag)
 
 void vtTerrain::_CreateErrorMessage(DTErr error, vtElevationGrid *pGrid)
 {
-	int x, y;
-	pGrid->GetDimensions(x, y);
+	const IPoint2 &size = pGrid->GetDimensions();
 	switch (error)
 	{
 	case DTErr_OK:
@@ -751,11 +750,11 @@ void vtTerrain::_CreateErrorMessage(DTErr error, vtElevationGrid *pGrid)
 		m_strErrorMsg.Format("The elevation has empty extents.");
 		break;
 	case DTErr_NOTSQUARE:
-		m_strErrorMsg.Format("The elevation grid (%d x %d) is not square.", x, y);
+		m_strErrorMsg.Format("The elevation grid (%d x %d) is not square.", size.x, size.y);
 		break;
 	case DTErr_NOTPOWER2:
 		m_strErrorMsg.Format("The elevation grid (%d x %d) is of an unsupported size.",
-			x, y);
+			size.x, size.y);
 		break;
 	case DTErr_NOMEM:
 		m_strErrorMsg = "Not enough memory for CLOD.";
