@@ -223,6 +223,7 @@ public:
 	// plants
 	vtVegLayer *GetVegLayer();
 	vtVegLayer *NewVegLayer();
+	vtVegLayer *LoadVegetation(const vtString &fname);
 	bool AddPlant(vtVegLayer *v_layer, const DPoint2 &pos, int iSpecies, float fSize);
 	int DeleteSelectedPlants(vtVegLayer *v_layer);
 	void SetSpeciesList(vtSpeciesList3d *pSpeciesList);
@@ -232,6 +233,7 @@ public:
 	int NumVegLayers() const;
 	bool FindClosestPlant(const DPoint2 &point, double epsilon,
 						  int &plant_index, vtVegLayer **v_layer);
+	void DeselectAllPlants();
 
 	// structures
 	vtStructureLayer *GetStructureLayer();

@@ -1385,48 +1385,13 @@ void vtTerrain::_CreateVegetation()
 		}
 		VTLOG("\tFound: %s\n", (const char *) plants_path);
 
-		vtVegLayer *v_layer = NewVegLayer();
-		bool success;
-		if (!fname.Right(3).CompareNoCase("shp"))
-			success = v_layer->ReadSHP(plants_path);
-		else
-			success = v_layer->ReadVF(plants_path);
-		if (success)
+		vtVegLayer *v_layer = LoadVegetation(plants_path);
+		if (v_layer)
 		{
-			VTLOG("\tLoaded plants file, %d plants.\n", v_layer->GetNumEntities());
-			v_layer->SetFilename(plants_path);
-		}
-		else
-		{
-			VTLOG1("\tCouldn't load plants file.\n");
-			continue;
-		}
-
-		// Create the 3d plants
-		VTLOG1(" Creating Plant geometry..\n");
-		if (m_Params.GetValueBool(STR_TREES_USE_SHADERS))
-		{
-			osg::GroupLOD::setGroupDistance(fVegDistance);
-			int created = v_layer->CreatePlantShaderNodes(m_progress_callback);
-			m_pVegGroup = v_layer->m_group;
-			m_pTerrainGroup->addChild(m_pVegGroup);
-		}
-		else
-		{
-			int created = v_layer->CreatePlantNodes(m_progress_callback);
-			VTLOG("\tCreated: %d of %d plants\n", created, v_layer->GetNumEntities());
-			if (v_layer->NumOffTerrain())
-				VTLOG("\t%d were off the terrain.\n", v_layer->NumOffTerrain());
-
-			int i, size = v_layer->GetNumEntities();
-			for (i = 0; i < size; i++)
-			{
-				vtTransform *pTrans = v_layer->GetPlantNode(i);
-
-				// add tree to scene graph
-				if (pTrans)
-					AddNodeToVegGrid(pTrans);
-			}
+			// If the user wants it to start hidden, hide it
+			bool bVisible;
+			if (tags.GetValueBool("visible", bVisible))
+				v_layer->SetEnabled(bVisible);
 		}
 	}
 	VTLOG(" Vegetation: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
@@ -1531,7 +1496,7 @@ void vtTerrain::_CreateStructures()
 		else
 		{
 			VTLOG("\tFound: %s\n", (const char *) building_path);
-			vtStructureArray3d *sa = LoadStructuresFromXML(building_path);
+			vtStructureLayer *sa = LoadStructuresFromXML(building_path);
 			if (sa)
 			{
 				// If the user wants it to start hidden, hide it
@@ -1551,16 +1516,16 @@ void vtTerrain::_CreateStructures()
 			created++;
 		}
 	}
-	if (created == 0)
-	{
-		// No structures loaded, but the user might want to create some later,
-		//  so create a default structure set, and set the projection to match
-		//  the terrain.
-		vtStructureLayer *slay = NewStructureLayer();
-		slay->SetFilename("Untitled.vtst");
-		slay->m_proj = m_proj;
-		SetActiveLayer(slay);
-	}
+	//if (created == 0)
+	//{
+	//	// No structures loaded, but the user might want to create some later,
+	//	//  so create a default structure set, and set the projection to match
+	//	//  the terrain.
+	//	vtStructureLayer *slay = NewStructureLayer();
+	//	slay->SetFilename("Untitled.vtst");
+	//	slay->m_proj = m_proj;
+	//	SetActiveLayer(slay);
+	//}
 }
 
 /////////////////////////
@@ -3044,6 +3009,7 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 {
 	vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
 	vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
+	vtVegLayer *vlay = dynamic_cast<vtVegLayer*>(lay);
 	if (slay)
 	{
 		// first remove each structure from the terrain
@@ -3074,20 +3040,20 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 		// Be certain we're not still trying to page it in
 		if (m_pPagedStructGrid)
 			m_pPagedStructGrid->ClearQueue(slay);
-
-		// If that was the current layer, deal with it
-		if (slay == GetStructureLayer())
-			SetActiveLayer(NULL);
 	}
 	else if (alay)
 	{
 		// first remove them from the terrain
 		RemoveFeatureGeometries(alay);
-
-		// If that was the current layer, deal with it
-		if (alay == GetAbstractLayer())
-			SetActiveLayer(NULL);
 	}
+	else if (vlay)
+	{
+	}
+
+	// If that was the active layer, deal with it
+	if (lay == GetActiveLayer())
+		SetActiveLayer(NULL);
+
 	m_Layers.Remove(lay);
 }
 
@@ -3102,6 +3068,10 @@ vtLayer *vtTerrain::LoadLayer(const char *fname)
 	if (!ext.CompareNoCase(".vtst"))
 	{
 		return LoadStructuresFromXML(fname);
+	}
+	else if (!ext.CompareNoCase(".vf"))
+	{
+		return LoadVegetation(fname);
 	}
 	else if (!ext.CompareNoCase(".shp"))
 	{
@@ -3144,6 +3114,54 @@ vtVegLayer *vtTerrain::NewVegLayer()
 
 	m_Layers.push_back(vlay);
 	return vlay;
+}
+
+vtVegLayer *vtTerrain::LoadVegetation(const vtString &fname)
+{
+	vtVegLayer *v_layer = NewVegLayer();
+	bool success;
+	if (!fname.Right(3).CompareNoCase("shp"))
+		success = v_layer->ReadSHP(fname);
+	else
+		success = v_layer->ReadVF(fname);
+	if (success)
+	{
+		VTLOG("\tLoaded plants file, %d plants.\n", v_layer->GetNumEntities());
+		v_layer->SetFilename(fname);
+	}
+	else
+	{
+		VTLOG1("\tCouldn't load plants file.\n");
+		return NULL;
+	}
+
+	// Create the 3d plants
+	VTLOG1(" Creating Plant geometry..\n");
+	if (m_Params.GetValueBool(STR_TREES_USE_SHADERS))
+	{
+		float fVegDistance = m_Params.GetValueInt(STR_VEGDISTANCE);
+		osg::GroupLOD::setGroupDistance(fVegDistance);
+		int created = v_layer->CreatePlantShaderNodes(m_progress_callback);
+		m_pVegGroup = v_layer->m_group;
+		m_pTerrainGroup->addChild(m_pVegGroup);
+	}
+	else
+	{
+		int created = v_layer->CreatePlantNodes(m_progress_callback);
+		VTLOG("\tCreated: %d of %d plants\n", created, v_layer->GetNumEntities());
+		if (v_layer->NumOffTerrain())
+			VTLOG("\t%d were off the terrain.\n", v_layer->NumOffTerrain());
+
+		for (uint i = 0; i < v_layer->GetNumEntities(); i++)
+		{
+			vtTransform *pTrans = v_layer->GetPlantNode(i);
+
+			// add tree to scene graph
+			if (pTrans)
+				AddNodeToVegGrid(pTrans);
+		}
+	}
+	return v_layer;
 }
 
 /**
@@ -3275,6 +3293,17 @@ bool vtTerrain::FindClosestPlant(const DPoint2 &point, double epsilon,
 	}
 	return (plant_index != -1);
 }
+
+void vtTerrain::DeselectAllPlants()
+{
+	for (size_t i = 0; i < m_Layers.size(); i++)
+	{
+		vtVegLayer *v_layer = dynamic_cast<vtVegLayer *>(m_Layers[i].get());
+		if (v_layer)
+			v_layer->VisualDeselectAll();
+	}
+}
+
 
 /**
  * Adds a node to the terrain.

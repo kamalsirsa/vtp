@@ -1666,10 +1666,13 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	//  near a structure's origin.
 	DPoint2 gpos(m_EarthPos.x, m_EarthPos.y);
 
-	double dist1, dist2, dist3;
+	// De-select
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!(event.flags & VT_CONTROL))
+	{
 		pTerr->DeselectAllStructures();
+		pTerr->DeselectAllPlants();
+	}
 
 	// SelectionCutoff is in meters, but the picking functions work in
 	//  Earth coordinates.  Try to convert it to earth horiz units.
@@ -1682,6 +1685,9 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	//  can be picked even if they are inside/on top of a building.
 	g_Conv.ConvertVectorToEarth(2.0f, 0, eoffset);
 	double linear_buffer = eoffset.x;
+
+	// Look at the distance to each type of object
+	double dist1, dist2, dist3;
 
 	// Check Structures
 	vtStructureLayer *st_layer;	// layer that contains the closest structure
@@ -1777,7 +1783,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 			}
 			m_bSelectedStruct = true;
 		}
-		if (st_layer != pTerr->GetStructureLayer())
+		if (st_layer != pTerr->GetActiveLayer())
 		{
 			// active structure set (layer) has changed due to picking
 			pTerr->SetActiveLayer(st_layer);
@@ -1791,6 +1797,14 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 		v_layer->VisualSelect(plant_index);
 		m_bDragging = true;
 		m_bSelectedPlant = true;
+
+		if (v_layer != pTerr->GetActiveLayer())
+		{
+			// active layer has changed due to picking
+			pTerr->SetActiveLayer(v_layer);
+			ShowLayerView();
+			UpdateLayerView();
+		}
 	}
 	else if (click_route)
 	{
