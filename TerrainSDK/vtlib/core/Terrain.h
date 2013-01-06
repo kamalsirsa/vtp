@@ -226,6 +226,7 @@ public:
 	vtVegLayer *LoadVegetation(const vtString &fname);
 	bool AddPlant(vtVegLayer *v_layer, const DPoint2 &pos, int iSpecies, float fSize);
 	int DeleteSelectedPlants(vtVegLayer *v_layer);
+	void RemoveAndDeletePlant(vtVegLayer *v_layer, int index);
 	void SetSpeciesList(vtSpeciesList3d *pSpeciesList);
 	vtSpeciesList3d *GetSpeciesList() { return m_pSpeciesList; }
 	/// Get the plant array for this terrain.  You can modify it directly.

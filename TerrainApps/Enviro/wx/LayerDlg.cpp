@@ -1101,9 +1101,9 @@ void LayerDlg::UpdateEnabling()
 		if (data->m_type == LT_ABSTRACT)
 			bRemovable = bSaveable = true;
 
-		// We can save (but not remove) a vegetation layer
+		// We can save a vegetation layer
 		if (data->m_type == LT_VEG)
-			bSaveable = true;
+			bRemovable = bSaveable = true;
 	}
 
 	m_pToolbar->EnableTool(ID_LAYER_TABLE, (data && data->m_alay));

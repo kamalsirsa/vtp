@@ -1103,7 +1103,7 @@ void vtPlantInstanceArray3d::DeletePlant(uint i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 
-	// get rid of the instance
+	// Get rid of the feature from the FeatureSet
 	SetToDelete(i);
 	ApplyDeletion();
 

@@ -3048,12 +3048,16 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 	}
 	else if (vlay)
 	{
+		for (int i = 0; i < vlay->GetNumEntities(); i++)
+			vlay->Select(i, true);
+		DeleteSelectedPlants(vlay);
 	}
 
 	// If that was the active layer, deal with it
 	if (lay == GetActiveLayer())
 		SetActiveLayer(NULL);
 
+	// Removing the reference-counted layer causes it to be deleted
 	m_Layers.Remove(lay);
 }
 
@@ -3192,26 +3196,29 @@ bool vtTerrain::AddPlant(vtVegLayer *v_layer, const DPoint2 &pos, int iSpecies, 
 int vtTerrain::DeleteSelectedPlants(vtVegLayer *v_layer)
 {
 	int num_deleted = 0;
-
-	// first remove them from the terrain
 	for (int i = v_layer->GetNumEntities() - 1; i >= 0; i--)
 	{
 		if (v_layer->IsSelected(i))
 		{
-			vtTransform *pTrans = v_layer->GetPlantNode(i);
-			if (pTrans != NULL)
-			{
-				osg::Group *pParent = pTrans->getParent(0);
-				if (pParent)
-				{
-					pParent->removeChild(pTrans);
-					v_layer->DeletePlant(i);
-					num_deleted ++;
-				}
-			}
+			RemoveAndDeletePlant(v_layer, i);
+			num_deleted++;
 		}
 	}
 	return num_deleted;
+}
+
+void vtTerrain::RemoveAndDeletePlant(vtVegLayer *v_layer, int index)
+{
+	vtTransform *pTrans = v_layer->GetPlantNode(index);
+	if (pTrans != NULL)
+	{
+		osg::Group *pParent = pTrans->getParent(0);
+		if (pParent)
+		{
+			pParent->removeChild(pTrans);
+			v_layer->DeletePlant(index);
+		}
+	}
 }
 
 /**
