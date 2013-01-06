@@ -21,6 +21,7 @@
 #include "vtdata/ChunkLOD.h"
 #include "vtdata/DataPath.h"
 #include "vtdata/ElevationGrid.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/Icosa.h"
 #include "vtdata/QuikGrid.h"
 #include "vtdata/TripDub.h"
@@ -38,7 +39,6 @@
 
 #include "App.h"
 #include "BuilderView.h"
-#include "FileFilters.h"
 #include "Frame.h"
 #include "MenuEnum.h"
 #include "Options.h"

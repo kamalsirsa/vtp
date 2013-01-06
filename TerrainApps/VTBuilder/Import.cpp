@@ -18,6 +18,7 @@
 #include "vtdata/DLG.h"
 #include "vtdata/DxfParser.h"
 #include "vtdata/ElevationGrid.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/LULC.h"
 #include "vtdata/Unarchive.h"
@@ -26,7 +27,6 @@
 #include "vtui/ProjectionDlg.h"
 
 #include "Builder.h"
-#include "FileFilters.h"
 #include "Tin2d.h"
 // Layers
 #include "StructLayer.h"

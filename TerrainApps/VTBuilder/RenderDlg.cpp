@@ -14,9 +14,9 @@
 
 #include <wx/colordlg.h>
 #include "RenderDlg.h"
-#include "FileFilters.h"
 
 #include "vtdata/DataPath.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/FilePath.h"
 #include "vtui/AutoDialog.h"
 #include "vtui/ColorMapDlg.h"

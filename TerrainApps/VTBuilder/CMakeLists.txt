@@ -48,7 +48,7 @@ set(VTBUILDER_DIALOG_SOURCE_FILES
 	MatchDlg.cpp NodeDlg.cpp OptionsDlg.cpp PrefDlg.cpp RenderDlg.cpp
 	SelectDlg.cpp	TSDlg.cpp VegDlg.cpp)
 set(VTBUILDER_HEADER_FILES
-	App.h DistanceDlg2d.h DistribVegDlg.h FeatInfoDlg.h FileFilters.h Frame.h
+	App.h DistanceDlg2d.h DistribVegDlg.h FeatInfoDlg.h Frame.h
 	GenGridDlg.h GeocodeDlg.h ImageMapDlg.h LayerPropDlg.h MapServerDlg.h
 	MatchDlg.h MenuEnum.h OptionsDlg.h PrefDlg.h RenderDlg.h RoadMapEdit.h
 	SelectDlg.h StatusBar.h TreeView.h TSDlg.h VegDlg.h VegPointOptions.h)

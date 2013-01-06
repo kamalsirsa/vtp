@@ -12,10 +12,10 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/FileFilters.h"
 #include "vtui/AutoDialog.h"
 
 #include "SampleElevationDlg.h"
-#include "FileFilters.h"
 #include "RenderOptionsDlg.h"
 
 // WDR: class implementations

@@ -13,7 +13,7 @@
 #endif
 
 #include "TSDlg.h"
-#include "FileFilters.h"	// for FSTRING_JPEG
+#include "vtdata/FileFilters.h"	// for FSTRING_JPEG
 #include "vtui/AutoDialog.h"
 
 // WDR: class implementations

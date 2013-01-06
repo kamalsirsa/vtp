@@ -17,12 +17,13 @@
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/ElevationGrid.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/Icosa.h"
 #include "vtui/Helper.h"	// for ProgressDialog
 #include "vtui/SizeDlg.h"
+
 #include "Frame.h"
 #include "ElevLayer.h"
-#include "FileFilters.h"
 
 bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
 							 const RGBi &bg, bool progress_callback(int) = NULL)

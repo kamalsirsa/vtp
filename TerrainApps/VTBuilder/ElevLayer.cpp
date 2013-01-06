@@ -16,6 +16,7 @@
 #include "vtdata/config_vtdata.h"
 #include "vtdata/DataPath.h"
 #include "vtdata/ElevationGrid.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
@@ -27,7 +28,6 @@
 #include "BuilderView.h"	// For grid marks
 #include "ElevLayer.h"
 #include "ExtentDlg.h"
-#include "FileFilters.h"
 #include "ImageGLCanvas.h"
 #include "Options.h"
 #include "RawDlg.h"

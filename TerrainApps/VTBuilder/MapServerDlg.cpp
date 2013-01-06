@@ -16,10 +16,10 @@
 #if SUPPORT_CURL
 #include "vtdata/WFSClient.h"
 #endif
+#include "vtdata/FileFilters.h"	// for FSTRING filters
 #include "vtdata/vtLog.h"
 #include "vtui/AutoDialog.h"
 #include "vtui/Helper.h"	// for progress dialog
-#include "FileFilters.h"	// for FSTRING filters
 
 // WDR: class implementations
 

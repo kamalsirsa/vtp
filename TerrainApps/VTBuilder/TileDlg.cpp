@@ -12,11 +12,12 @@
 #include "wx/wx.h"
 #endif
 
-#include "TileDlg.h"
-#include "FileFilters.h"	// for FSTRING_INI
-#include "BuilderView.h"
+#include "vtdata/FileFilters.h"	// for FSTRING_INI
 #include "vtdata/vtLog.h"
 #include "vtui/AutoDialog.h"
+
+#include "TileDlg.h"
+#include "BuilderView.h"
 
 // WDR: class implementations
 

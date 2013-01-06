@@ -19,12 +19,12 @@
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
+#include "vtdata/FileFilters.h"
 
 #include "vtui/Helper.h"
 
 #include "Builder.h"
 #include "BuilderView.h"
-#include "FileFilters.h"
 #include "ImageGLCanvas.h"
 #include "Options.h"
 #include "Tin2d.h"
