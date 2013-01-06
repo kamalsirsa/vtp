@@ -1,7 +1,7 @@
 //
 // InstanceDlg.cpp
 //
-// Copyright (c) 2003-2012 Virtual Terrain Project
+// Copyright (c) 2003-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,8 +15,10 @@
 #include <wx/filename.h>
 
 #include "InstanceDlg.h"
+
 #include "vtdata/Content.h"
 #include "vtdata/DataPath.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
@@ -191,11 +193,17 @@ void InstanceDlg::OnLocationText( wxCommandEvent &event )
 
 void InstanceDlg::OnBrowseModelFile( wxCommandEvent &event )
 {
-	wxString filter;
-	filter += _("3D Model files");
-	filter += _T(" (*.3ds;*.dae;*.obj;*.lwo;*.flt;*.osg;*.ive)|*.3ds;*.dae;*.obj;*.lwo;*.flt;*.osg;*.ive|");
-	filter += _("All files");
-	filter += _T(" (*.*)|*.*");
+	wxString filter = _("3D Model files");
+	filter += _T("|");
+	AddType(filter, FSTRING_3DS);
+	AddType(filter, FSTRING_DAE);
+	AddType(filter, FSTRING_OBJ);
+	AddType(filter, FSTRING_LWO);
+	AddType(filter, FSTRING_FLT);
+	AddType(filter, FSTRING_OSG);
+	AddType(filter, FSTRING_IVE);
+	filter += _T("|");
+	filter += FSTRING_ALL;
 	wxFileDialog SelectFile(this, _("Choose model file"),
 							_T(""), _T(""), filter, wxFD_OPEN);
 	if (SelectFile.ShowModal() != wxID_OK)

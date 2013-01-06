@@ -1,7 +1,7 @@
 //
 // Name: ProfileDlg.cpp
 //
-// Copyright (c) 2005-2011 Virtual Terrain Project
+// Copyright (c) 2005-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "ProfileDlg.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/vtString.h"
 
 #define MARGIN_LEFT   60
@@ -1180,7 +1181,7 @@ void ProfileDlg::OnShowCulture( wxCommandEvent &event )
 void ProfileDlg::OnExportDXF( wxCommandEvent &event )
 {
 	wxFileDialog saveFile(this, _("Export Profile to DXF"),
-		_T(""), _T(""), _("DXF Files (*.dxf)|*.dxf"),
+		_T(""), _T(""), FSTRING_DXF,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (bResult)
@@ -1194,7 +1195,7 @@ void ProfileDlg::OnExportDXF( wxCommandEvent &event )
 void ProfileDlg::OnExportTrace( wxCommandEvent &event )
 {
 	wxFileDialog saveFile(this, _("Export Trace to DXF"),
-		_T(""), _T(""), _("DXF Files (*.dxf)|*.dxf"),
+		_T(""), _T(""), FSTRING_DXF,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (bResult)
@@ -1208,7 +1209,7 @@ void ProfileDlg::OnExportTrace( wxCommandEvent &event )
 void ProfileDlg::OnExportCSV( wxCommandEvent &event )
 {
 	wxFileDialog saveFile(this, _("Export Trace to CSV"),
-		_T(""), _T(""), _("CSV Files (*.csv)|*.csv"),
+		_T(""), _T(""), FSTRING_CSV,
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (bResult)

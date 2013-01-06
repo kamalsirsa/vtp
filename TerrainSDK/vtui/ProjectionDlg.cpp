@@ -1,7 +1,7 @@
 //
 // Name:		ProjectionDlg.cpp
 //
-// Copyright (c) 2002-2011 Virtual Terrain Project
+// Copyright (c) 2002-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,7 +17,9 @@
 #include "ProjectionDlg.h"
 #include "StatePlaneDlg.h"
 #include "Helper.h"			// for GuessZoneFromGeo
+
 #include "vtdata/vtLog.h"
+#include "vtdata/FileFilters.h"
 
 //
 // Must offset the values we use for Datum because a Choice
@@ -382,7 +384,7 @@ void ProjectionDlg::GetProjection(vtProjection &proj)
 void ProjectionDlg::OnProjSave( wxCommandEvent &event )
 {
 	wxFileDialog saveFile(NULL, _("Save Projection to File"), _T(""), _T(""),
-		_("Projection Files (*.prj)|*.prj"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		FSTRING_PRJ, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString strPathName = saveFile.GetPath();
@@ -392,7 +394,7 @@ void ProjectionDlg::OnProjSave( wxCommandEvent &event )
 void ProjectionDlg::OnProjLoad( wxCommandEvent &event )
 {
 	wxFileDialog loadFile(NULL, _("Load Projection from File"), _T(""), _T(""),
-		_("Projection Files (*.prj)|*.prj"), wxFD_OPEN);
+		FSTRING_PRJ, wxFD_OPEN);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 	wxString strPathName = loadFile.GetPath();

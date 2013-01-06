@@ -32,7 +32,9 @@
 #include "vtlib/core/TiledGeom.h"
 #include "vtlib/vtosg/ScreenCaptureHandler.h"
 #include "vtlib/vtosg/SaveImageOSG.h"
+
 #include "vtdata/vtLog.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/TripDub.h"
 #include "vtdata/Version.h"	// for About box
 #include "vtui/Helper.h"	// for progress dialog
@@ -1866,10 +1868,8 @@ void EnviroFrame::Snapshot(bool bNumbered)
 		// save current directory
 		wxString path = wxGetCwd();
 
-		wxString filter = _T("JPEG Files (*.jpg)|*.jpg") _T("|")
-			_T("BMP Files (*.bmp)|*.bmp") _T("|")
-			_T("PNG Files (*.png)|*.png") _T("|")
-			_T("TIF Files (*.tif)|*.tif");
+		wxString filter = FSTRING_JPEG _T("|") FSTRING_BMP _T("|") FSTRING_PNG
+			_T("|") FSTRING_TIF;
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save View Snapshot"), _T(""), _T(""),
 			filter, wxFD_SAVE);
@@ -1934,7 +1934,8 @@ void EnviroFrame::OnViewSnapHigh(wxCommandEvent& event)
 	// save current directory
 	wxString path = wxGetCwd();
 
-	wxString filter = _T("JPEG Files (*.jpg)|*.jpg");
+	wxString filter = FSTRING_JPEG _T("|") FSTRING_BMP _T("|") FSTRING_PNG
+		_T("|") FSTRING_TIF;
 	EnableContinuousRendering(false);
 	wxFileDialog saveFile(NULL, _("Save View Snapshot"), _T(""), _T(""),
 		filter, wxFD_SAVE);
@@ -3000,7 +3001,7 @@ void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)
 
 	EnableContinuousRendering(false);
 	wxFileDialog saveFile(NULL, _("Write Elevation to BT"), _T(""), _T(""),
-		_T("BT Files (*.bt)|*.bt"), wxFD_SAVE);
+		FSTRING_BT, wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	EnableContinuousRendering(true);
 	if (!bResult)
@@ -3176,7 +3177,7 @@ void EnviroFrame::OnEarthUnfold(wxCommandEvent& event)
 void EnviroFrame::OnEarthClouds(wxCommandEvent& event)
 {
 	wxFileDialog loadFile(NULL, _("Load"), _T(""), _T(""),
-		_("JPEG Files (*.jpg)|*.jpg"), wxFD_OPEN);
+		FSTRING_JPEG, wxFD_OPEN);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 	vtString fname = (const char *) loadFile.GetPath().mb_str(wxConvUTF8);

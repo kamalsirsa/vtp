@@ -1,7 +1,7 @@
 //
-// Name:		LocationDlg.cpp
+// Name: LocationDlg.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,9 +18,12 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/vtosg/ScreenCaptureHandler.h"
-#include "vtui/Helper.h"
-#include "vtdata/vtLog.h"
+
+#include "vtdata/FileFilters.h"
 #include "vtdata/FilePath.h"
+#include "vtdata/vtLog.h"
+#include "vtui/Helper.h"
+
 #include "EnviroCanvas.h"		// for EnableContinuousRendering
 #include "LocationDlg.h"
 
@@ -641,7 +644,12 @@ void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
 void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 {
 	wxString filter = _("Polyline Data Sources");
-	filter += _T(" (*.vtap,*.shp,*.dxf,*.igc)|*.vtap;*.shp;*.dxf;*.igc");
+	filter += _T("|");
+	AddType(filter, FSTRING_VTAP);
+	AddType(filter, FSTRING_SHP);
+	AddType(filter, FSTRING_DXF);
+	AddType(filter, FSTRING_IGC);
+
 	wxFileDialog loadFile(NULL, _("Load Animation Path"), _T(""), _T(""),
 		filter, wxFD_OPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
@@ -690,7 +698,7 @@ void LocationDlg::OnSaveAnim( wxCommandEvent &event )
 	vtAnimPath *path = GetAnim(m_iAnim);
 
 	wxFileDialog saveFile(NULL, _("Save AnimPath"), _T(""), _T(""),
-		_("AnimPath Files (*.vtap)|*.vtap"), wxFD_SAVE);
+		FSTRING_VTAP, wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -722,7 +730,7 @@ void LocationDlg::OnListDblClick( wxCommandEvent &event )
 void LocationDlg::OnLoad( wxCommandEvent &event )
 {
 	wxFileDialog loadFile(NULL, _("Load Locations"), _T(""), _T(""),
-		_("Location Files (*.loc)|*.loc"), wxFD_OPEN);
+		FSTRING_LOC, wxFD_OPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -750,7 +758,7 @@ void LocationDlg::OnSave( wxCommandEvent &event )
 	}
 
 	wxFileDialog saveFile(NULL, _("Save Locations"), default_dir, default_file,
-		_("Location Files (*.loc)|*.loc"), wxFD_SAVE);
+		FSTRING_LOC, wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;

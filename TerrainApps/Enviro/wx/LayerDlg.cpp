@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.cpp
 //
-// Copyright (c) 2003-2011 Virtual Terrain Project
+// Copyright (c) 2003-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,11 +12,13 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/vtLog.h"
+#include "vtdata/FileFilters.h"
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/Globe.h"
-#include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for progress dialog
+
 #include "EnviroGUI.h"		// for GetCurrentTerrain
 #include "EnviroFrame.h"
 #include "EnviroCanvas.h"	// for EnableContinuousRendering
@@ -678,7 +680,7 @@ bool SaveAbstractLayer(vtAbstractLayer *alay, bool bAskFilename)
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Abstract Data"), default_dir,
-			default_file, _("Shapefiles (*.shp)|*.shp"), wxFD_SAVE);
+			default_file, FSTRING_SHP, wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);
 		if (!bResult)
@@ -706,18 +708,15 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 
 	bool bTerrain = (g_App.m_state == AS_Terrain);
 
-	wxString filter = _("Shapefiles (*.shp)|*.shp");
+	wxString filter = _("Layer Formats|");
+	AddType(filter, FSTRING_SHP);
 	if (bTerrain)
 	{
-		filter += _T("|");
-		filter += _("Structure Files (*.vtst)|*.vtst");
-		filter += _T("|");
-		filter += _("All supported layer formats (*.shp;*.vtst;*.vf)|*.shp;*.vtst");
+		AddType(filter, FSTRING_VTST);
+		AddType(filter, FSTRING_VF);
 	}
 
 	wxFileDialog loadFile(NULL, _("Load Layer"), _T(""), _T(""), filter, wxFD_OPEN);
-	if (bTerrain)
-		loadFile.SetFilterIndex(2);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;

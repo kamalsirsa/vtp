@@ -2,7 +2,7 @@
 // EnviroGUI.cpp
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003-2011 Virtual Terrain Project
+// Copyright (c) 2003-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
 #include "vtui/InstanceDlg.h"
@@ -293,7 +294,7 @@ bool EnviroGUI::SaveVegetation(bool bAskFilename)
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Vegetation Data"), default_dir,
-			default_file, _("Vegetation Files (*.vf)|*.vf"), wxFD_SAVE);
+			default_file, FSTRING_VF, wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);
 		if (!bResult)
@@ -327,7 +328,7 @@ bool EnviroGUI::SaveStructures(bool bAskFilename)
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Built Structures Data"),
-			default_dir, default_file, _("Structure Files (*.vtst)|*.vtst"),
+			default_dir, default_file, FSTRING_VTST,
 			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);

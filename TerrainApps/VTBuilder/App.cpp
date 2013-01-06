@@ -46,7 +46,7 @@ bool BuilderApp::OnInit()
 #endif
 
 	VTSTARTLOG("debug.txt");
-	VTLOG1(APPNAME);
+	VTLOG1("VTBuilder");
 	VTLOG1("\nBuild:");
 #if VTDEBUG
 	VTLOG(" Debug");
@@ -86,7 +86,7 @@ bool BuilderApp::OnInit()
 	wxFrame *frametest = new wxFrame(NULL, -1, _T("Title"));
 	delete frametest;
 
-	wxString title(APPNAME, wxConvUTF8);
+	wxString title("VTBuilder", wxConvUTF8);
 	VTLOG(" Creating Main Frame Window, title '%s'\n", (const char *) title.mb_str(wxConvUTF8));
 	MainFrame *frame = new MainFrame((wxFrame *) NULL, title,
 							   wxPoint(50, 50), wxSize(900, 500));

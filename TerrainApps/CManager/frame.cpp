@@ -17,6 +17,8 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
+
+#include "vtdata/FileFilters.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
 #include "vtdata/Version.h"
@@ -417,7 +419,7 @@ void vtFrame::OnOpen(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
 	wxFileDialog loadFile(NULL, _T("Load Content File"), _T(""), _T(""),
-		_T("Content XML Files (*.vtco)|*.vtco"), wxFD_OPEN);
+		FSTRING_VTCO, wxFD_OPEN);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
 		LoadContentsFile(loadFile.GetPath());
@@ -430,7 +432,7 @@ void vtFrame::OnSave(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
 	wxFileDialog loadFile(NULL, _T("Save Content File"), _T(""), _T(""),
-		_T("Content XML Files (*.vtco)|*.vtco"), wxFD_SAVE);
+		FSTRING_VTCO, wxFD_SAVE);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
 		SaveContentsFile(loadFile.GetPath());
@@ -589,16 +591,18 @@ void vtFrame::OnItemDelete(wxCommandEvent& event)
 
 void vtFrame::OnItemAddModel(wxCommandEvent& event)
 {
-	wxFileDialog loadFile(NULL, _T("Load 3d Model"), _T(""), _T(""),
-		_T("All 3D Models (*.3ds, *.dae, *.flt, *.lwo, *.obj, *.ive, *.osg)|*.3ds;*.dae;*.flt;*.lwo;*.obj;*.ive;*.osg|")
-		_T("3D Studio Files (*.3ds)|*.3ds|")
-		_T("Collada Files (*.dae)|*.dae|")
-		_T("OpenFlight Files (*.flt)|*.flt|")
-		_T("LightWave Files (*.lwo)|*.lwo|")
-		_T("Wavefront Files (*.obj)|*.obj|")
-		_T("IVE Files (*.ive)|*.ive|")
-		_T("OSG Files (*.osg)|*.osg|")
-		_T("All Files (*.*)|*.*"), wxFD_OPEN);
+	wxString filter= _("3D Model Files|");
+	AddType(filter, FSTRING_3DS);
+	AddType(filter, FSTRING_DAE);
+	AddType(filter, FSTRING_FLT);
+	AddType(filter, FSTRING_LWO);
+	AddType(filter, FSTRING_OBJ);
+	AddType(filter, FSTRING_IVE);
+	AddType(filter, FSTRING_OSG);
+	filter += _T("|");
+	filter += FSTRING_ALL;
+
+	wxFileDialog loadFile(NULL, _T("Load 3d Model"), _T(""), _T(""), filter, wxFD_OPEN);
 	loadFile.SetFilterIndex(0);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;

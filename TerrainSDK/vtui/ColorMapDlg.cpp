@@ -4,7 +4,7 @@
 // This dialog is for defining a set of colors which map onto elevations,
 //  to define how the user wants an elevation dataset to be colored.
 //
-// Copyright (c) 2004-2011 Virtual Terrain Project
+// Copyright (c) 2004-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,6 +18,7 @@
 #include <wx/colordlg.h>	// for wxColourDialog
 #include <wx/imaglist.h>	// for wxImageList
 #include "ColorMapDlg.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/FilePath.h"
 #include "vtui/Helper.h"
 
@@ -122,7 +123,7 @@ void ColorMapDlg::UpdateEnabling()
 void ColorMapDlg::OnLoad( wxCommandEvent &event )
 {
 	wxFileDialog loadFile(NULL, _("Load ColorMap"), _T(""), _T(""),
-		_("ColorMap Files (*.cmt)|*.cmt"), wxFD_OPEN);
+		FSTRING_CMT, wxFD_OPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -162,7 +163,7 @@ void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
 	}
 
 	wxFileDialog saveFile(NULL, _("Save ColorMap"), default_dir, default_file,
-		_("ColorMap Files (*.cmt)|*.cmt"), wxFD_SAVE);
+		FSTRING_CMT, wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;

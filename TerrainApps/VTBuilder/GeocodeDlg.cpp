@@ -1,7 +1,7 @@
 //
 // Name: GeocodeDlg.cpp
 //
-// Copyright (c) 2005-2011 Virtual Terrain Project
+// Copyright (c) 2005-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,9 @@
 
 #include "GeocodeDlg.h"
 #include "vtdata/config_vtdata.h"
+#include "vtdata/FileFilters.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/Helper.h"
 
 // WDR: class implementations
 
@@ -53,9 +55,12 @@ GeocodeDlg::GeocodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 void GeocodeDlg::OnGetFileData( wxCommandEvent &event )
 {
-	wxFileDialog dlg(this, _T(""), _T(""), _T(""),
-		_T("SHP and DBF Files (*.shp,*.dbf,*.csv)|*.shp;*.dbf;*.csv|Shapefiles (*.shp)|*.shp|DBF Files (*.dbf)|*.dbf"),
-		wxFD_OPEN);
+	wxString filter = _T("SHP and DBF files|");
+	AddType(filter, FSTRING_SHP);
+	AddType(filter, FSTRING_DBF);
+	AddType(filter, FSTRING_CSV);
+
+	wxFileDialog dlg(this, _T(""), _T(""), _T(""), filter, wxFD_OPEN);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		TransferDataFromWindow();

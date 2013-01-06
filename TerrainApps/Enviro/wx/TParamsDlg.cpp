@@ -21,7 +21,9 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Location.h"
+
 #include "vtdata/DataPath.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/FilePath.h"		// for FindFileOnPaths
 #include "vtdata/vtLog.h"
 #include "vtui/ColorMapDlg.h"
@@ -1235,8 +1237,12 @@ void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 	if (vtGetDataPath().size() > 0)
 		defdir = wxString((const char *) vtGetDataPath().at(0), wxConvUTF8);
 
+	wxString filter = _("Feature files|");
+	AddType(filter, FSTRING_SHP);
+	AddType(filter, FSTRING_IGC);
+	AddType(filter, FSTRING_DXF);
 	wxFileDialog loadFile(NULL, _("Load features"), defdir, _T(""),
-		_("Feature files (*.shp,*.igc,*.dxf)|*.shp;*.igc;*.dxf"), wxFD_OPEN);
+		filter, wxFD_OPEN);
 
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 
@@ -1362,8 +1368,12 @@ void TParamsDlg::OnOverlay( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
+	wxString filter = _("Image Files|");
+	AddType(filter, FSTRING_PNG);
+	AddType(filter, FSTRING_JPEG);
+	AddType(filter, FSTRING_BMP);
 	wxFileDialog loadFile(NULL, _("Overlay Image File"), _T(""), _T(""),
-		_("Image Files (*.png,*.jpg,*.bmp)|*.png;*.jpg;*.bmp"), wxFD_OPEN);
+		filter, wxFD_OPEN);
 	if (m_strOverlayFile != _T(""))
 		loadFile.SetPath(m_strOverlayFile);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);

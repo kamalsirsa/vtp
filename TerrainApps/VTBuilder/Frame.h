@@ -14,8 +14,6 @@
 #include "vtdata/WFSClient.h"	// for OGCServerArray
 #include "StatusBar.h"
 
-#define APPNAME "VTBuilder"
-
 // some shortcuts
 #define ADD_TOOL(bar, id, bmp, label) \
 	bar->AddTool(id, label, bmp, wxNullBitmap, wxITEM_NORMAL, label, label)

@@ -12,6 +12,7 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/FileFilters.h"
 #include "vtdata/GEOnet.h"
 #include "vtdata/TripDub.h"
 #include "vtui/Helper.h"
@@ -294,7 +295,7 @@ void MainFrame::DoGeocode()
 	{
 		// Save to SHP
 		wxFileDialog saveFile(NULL, _T("Save to SHP"), _T(""), _T(""),
-			_T("Shapefiles (*.shp)|*.shp"), wxFD_SAVE);
+			FSTRING_SHP, wxFD_SAVE);
 		if (saveFile.ShowModal() == wxID_OK)
 		{
 			shpname = saveFile.GetPath();

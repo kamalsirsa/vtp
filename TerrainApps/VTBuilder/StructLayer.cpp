@@ -13,6 +13,7 @@
 
 #include "vtdata/DLG.h"
 #include "vtdata/Fence.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/Triangulate.h"
@@ -1104,10 +1105,8 @@ void vtStructureLayer::AddElementsFromDLG(vtDLGFile *pDlg)
 
 bool vtStructureLayer::AskForSaveFilename()
 {
-	wxString filter;
-	filter += _("VTST File (.vtst)|*.vtst");
-	filter += _T("|");
-	filter += _("GZipped VTST File (.vtst.gz)|*.vtst.gz");
+	wxString filter = FSTRING_VTST;
+	AddType(filter, FSTRING_VTSTGZ);
 
 	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);

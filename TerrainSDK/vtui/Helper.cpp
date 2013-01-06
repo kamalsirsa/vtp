@@ -238,12 +238,17 @@ int AddFilenamesToStringArray(vtStringArray &array, const char *directory,
 /**
  Add a file format type to a directory dialog filter string.
  
- \par For example, to ask the user for a BT or JPEG file:
+ For example, to ask the user for a BT or JPEG file:
  \code
 	wxString filter = _("All Formats|");
 	AddType(filter, _T("BT Files (*.bt)|*.bt"));
 	AddType(filter, _T("JPEG Files (*.jpg;*.jpeg)|*.jpg;*.jpeg"));
 	wxFileDialog loadFile(NULL, _("Open file"), _T(""), _T(""), filter, wxFD_OPEN);
+ \endcode
+ It is even easier if you use the standard strings from vtdata/FileFilters.h:
+ \code
+	AddType(filter, FSTRING_BT);
+	AddType(filter, FSTRING_JPEG);
  \endcode
  */
 void AddType(wxString &str, const wxString &filter)

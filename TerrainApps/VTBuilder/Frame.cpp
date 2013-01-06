@@ -195,7 +195,7 @@ MainFrame::MainFrame(wxFrame *frame, const wxString& title,
 MainFrame::~MainFrame()
 {
 	VTLOG1("Frame destructor\n");
-	WriteXML(APPNAME ".xml");
+	WriteXML("VTBuilder.xml");
 	DeleteContents();
 
 	m_mgr.UnInit();
@@ -253,10 +253,10 @@ void MainFrame::SetupUI()
 	m_pView->Show(FALSE);
 
 	// Read INI file after creating the view
-	if (!ReadXML(APPNAME ".xml"))
+	if (!ReadXML("VTBuilder.xml"))
 	{
 		// fall back on older ini file
-		ReadINI(APPNAME ".ini");
+		ReadINI("VTBuilder.ini");
 	}
 
 	// Safety checks

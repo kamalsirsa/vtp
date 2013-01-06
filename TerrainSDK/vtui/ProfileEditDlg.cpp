@@ -13,6 +13,7 @@
 #endif
 
 #include "vtdata/Fence.h"
+#include "vtdata/FileFilters.h"
 #include "vtdata/PolyChecker.h"
 #include "ProfileEditDlg.h"
 
@@ -255,7 +256,7 @@ void ProfileEditDlg::OnOK( wxCommandEvent &event )
 void ProfileEditDlg::OnLoad( wxCommandEvent &event )
 {
 	wxFileDialog loadFile(NULL, _("Load Profile"), _T(""), _T(""),
-		_("Shapefiles (*.shp)|*.shp"), wxFD_OPEN);
+		FSTRING_SHP, wxFD_OPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -274,7 +275,7 @@ void ProfileEditDlg::OnSaveAs( wxCommandEvent &event )
 	CheckClockwisdom();
 
 	wxFileDialog saveFile(NULL, _("Save Profile"), _T(""), _T(""),
-		_("Shapefiles (*.shp)|*.shp"), wxFD_SAVE);
+		FSTRING_SHP, wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;

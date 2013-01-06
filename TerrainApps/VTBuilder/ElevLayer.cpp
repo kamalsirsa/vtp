@@ -1392,7 +1392,7 @@ bool vtElevLayer::AskForSaveFilename()
 	if (m_pTin)
 		filter = FSTRING_TIN;
 	else
-		filter = _("BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz");
+		filter = FSTRING_BT _T("|") FSTRING_BTGZ;
 
 	wxString defaultFilename = GetLayerFilename();
 

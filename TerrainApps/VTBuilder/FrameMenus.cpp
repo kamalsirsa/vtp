@@ -656,7 +656,7 @@ void MainFrame::CreateMenus()
 	// Help
 	helpMenu = new wxMenu;
 	wxString msg = _("About ");
-	msg += wxString(APPNAME, wxConvUTF8);
+	msg += wxString("VTBuilder", wxConvUTF8);
 #ifdef __WXMAC__
 #endif
 	helpMenu->Append(wxID_HELP, _("&About"), msg);
@@ -707,10 +707,7 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 
 wxString GetProjectFilter()
 {
-	wxString str(APPNAME, wxConvUTF8);
-	str += _T(" ");
-	str += _("Project Files (*.vtb)|*.vtb");
-	return str;
+	return FSTRING_VTB;
 }
 
 void MainFrame::OnProjectOpen(wxCommandEvent &event)
@@ -1378,7 +1375,7 @@ void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 void MainFrame::OnLayerImportXML(wxCommandEvent &event)
 {
 	wxFileDialog loadFile(NULL, _("Import XML Data"), _T(""), _T(""),
-		_("XML files (*.xml)|*.xml"), wxFD_OPEN);
+		FSTRING_XML, wxFD_OPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -1400,7 +1397,7 @@ void MainFrame::OnLayerImportXML(wxCommandEvent &event)
 void MainFrame::OnLayerImportDXF(wxCommandEvent &event)
 {
 	wxFileDialog loadFile(NULL, _("Import DXF Data"), _T(""), _T(""),
-		_("DXF files (*.dxf)|*.dxf"), wxFD_OPEN);
+		FSTRING_DXF, wxFD_OPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -2847,8 +2844,6 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 	// if SpeciesList has not previously been open, get the data from file first
 	if (m_strSpeciesFilename == "")
 	{
-		wxString filter = _("Plant Species List Files (*.xml)|*.xml");
-
 		// To make it easier for the user, look for a species.xml on the path and
 		// suggest that as the folder to look in.
 		wxString default_dir;
@@ -2869,6 +2864,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 			default_file.Replace("/", "\\");
 #endif
 		}
+		wxString filter = _("Plant Species List Files (*species.xml)|*.xml");
 
 		// Use file dialog to open plant list text file.
 		wxFileDialog loadFile(NULL, _("Load Plant Info"), default_dir,
@@ -2981,7 +2977,7 @@ void MainFrame::OnVegExportSHP(wxCommandEvent& event)
 
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T(""),
-		_("Shapefiles (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		FSTRING_SHP, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString strPathName = saveFile.GetPath();
@@ -2997,7 +2993,7 @@ void MainFrame::OnVegHTML(wxCommandEvent& event)
 
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T("plant_list.html"),
-		_("Shapefiles (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		FSTRING_SHP, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString strPathName = saveFile.GetPath();
@@ -3015,7 +3011,7 @@ void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 {
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Save Vegetation File"), _T(""), _T(""),
-		_("Vegetation Files (*.vf)|*.vf"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		FSTRING_VF, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
@@ -3423,7 +3419,7 @@ void MainFrame::OnStructureExportFootprints(wxCommandEvent& event)
 {
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export footprints to SHP"), _T(""), _T(""),
-		_("Shapefiles (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		FSTRING_SHP, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
@@ -3437,7 +3433,7 @@ void MainFrame::OnStructureExportCanoma(wxCommandEvent& event)
 {
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export footprints to Canoma3DV"), _T(""), _T(""),
-		_("Canoma3DV Files (*.3dv)|*.3dv"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		FSTRING_3DV, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
@@ -4102,7 +4098,7 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 #endif
 
 	wxString str2 = _("About ");
-	str2 += wxString(APPNAME, wxConvUTF8);
+	str2 += wxString("VTBuilder", wxConvUTF8);
 	wxMessageBox(str, str2);
 }
 
