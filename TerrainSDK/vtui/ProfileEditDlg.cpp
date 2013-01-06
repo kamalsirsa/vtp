@@ -256,7 +256,7 @@ void ProfileEditDlg::OnOK( wxCommandEvent &event )
 void ProfileEditDlg::OnLoad( wxCommandEvent &event )
 {
 	wxFileDialog loadFile(NULL, _("Load Profile"), _T(""), _T(""),
-		_("Profile Files (*.shp)|*.shp"), wxFD_OPEN);
+		_("Shapefiles (*.shp)|*.shp"), wxFD_OPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -275,7 +275,7 @@ void ProfileEditDlg::OnSaveAs( wxCommandEvent &event )
 	CheckClockwisdom();
 
 	wxFileDialog saveFile(NULL, _("Save Profile"), _T(""), _T(""),
-		_("Profile Files (*.shp)|*.shp"), wxFD_SAVE);
+		_("Shapefiles (*.shp)|*.shp"), wxFD_SAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;

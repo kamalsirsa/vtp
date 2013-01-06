@@ -48,7 +48,7 @@
 #define FSTRING_RAW		_T("Raw raster files (*.raw)|*.raw")
 #define FSTRING_S57		_T("S-57 Files (*.000)|*.000")
 #define FSTRING_SDTS	_T("SDTS Files (*catd.ddf)|*catd.ddf")
-#define FSTRING_SHP		_T("ArcView Shape Files (*.shp)|*.shp")
+#define FSTRING_SHP		_T("Shapefiles (*.shp)|*.shp")
 #define FSTRING_Surfer	_T("Surfer Binary Grids (*.grd)|*.grd")
 #define FSTRING_STM		_T("STM Files (*.stm)|*.stm")
 #define FSTRING_TER		_T("Terragen terrain (*.ter)|*.ter")

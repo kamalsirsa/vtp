@@ -2980,7 +2980,7 @@ void MainFrame::OnVegExportSHP(wxCommandEvent& event)
 
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T(""),
-		_("Vegetation Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		_("Shape Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString strPathName = saveFile.GetPath();
@@ -2996,7 +2996,7 @@ void MainFrame::OnVegHTML(wxCommandEvent& event)
 
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T("plant_list.html"),
-		_("Vegetation Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		_("Shape Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString strPathName = saveFile.GetPath();
@@ -3422,7 +3422,7 @@ void MainFrame::OnStructureExportFootprints(wxCommandEvent& event)
 {
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, _("Export footprints to SHP"), _T(""), _T(""),
-		_("SHP Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+		_("Shape Files (*.shp)|*.shp"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;

@@ -678,7 +678,7 @@ bool SaveAbstractLayer(vtAbstractLayer *alay, bool bAskFilename)
 
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save Abstract Data"), default_dir,
-			default_file, _("GIS Files (*.shp)|*.shp"), wxFD_SAVE);
+			default_file, _("Shape Files (*.shp)|*.shp"), wxFD_SAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);
 		if (!bResult)
@@ -706,13 +706,13 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 
 	bool bTerrain = (g_App.m_state == AS_Terrain);
 
-	wxString filter = _("GIS Files (*.shp)|*.shp");
+	wxString filter = _("Shape Files (*.shp)|*.shp");
 	if (bTerrain)
 	{
 		filter += _T("|");
 		filter += _("Structure Files (*.vtst)|*.vtst");
 		filter += _T("|");
-		filter += _("All supported layer formats (*.shp;*.vtst)|*.shp;*.vtst");
+		filter += _("All supported layer formats (*.shp;*.vtst;*.vf)|*.shp;*.vtst");
 	}
 
 	wxFileDialog loadFile(NULL, _("Load Layer"), _T(""), _T(""), filter, wxFD_OPEN);

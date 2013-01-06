@@ -176,8 +176,8 @@ void MatchDlg::OnMatchLayer( wxCommandEvent &event )
 void MatchDlg::OnSpinUp( wxSpinEvent &event )
 {
 	m_iTileSize <<= 1;
-	if (m_iTileSize > 2048)
-		m_iTileSize = 2048;
+	if (m_iTileSize > 4096)
+		m_iTileSize = 4096;
 	UpdateGuess();
 	UpdateValues();
 	TransferDataToWindow();
