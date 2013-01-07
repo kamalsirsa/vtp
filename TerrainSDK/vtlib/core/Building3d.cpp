@@ -4,7 +4,7 @@
 // The vtBuilding3d class extends vtBuilding with the ability to procedurally
 // create 3D geometry of the buildings.
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -384,16 +384,14 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, const FPolygon3 &polygon1,
 		dir2.Normalize();
 
 	if (bShowEdge)
-	{
 		AddHighlightSection(pEdge, quad);
-	}
 
 	// How wide should each feature be?
 	// Determine how much space we have for the proportional features after
 	// accounting for the fixed-width features
-	float fixed_width = pEdge->FixedFeaturesWidth();
-	float total_prop = pEdge->ProportionTotal();
-	float dyn_width = total_length1 - fixed_width;
+	const float fixed_width = pEdge->FixedFeaturesWidth();
+	const float total_prop = pEdge->ProportionTotal();
+	const float dyn_width = total_length1 - fixed_width;
 
 	if (pEdge->m_Facade != "")
 	{

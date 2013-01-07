@@ -5,7 +5,7 @@
 // This is can be a single building, or any single artificial structure
 // such as a wall or fence.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -57,10 +57,6 @@ vtEdge::vtEdge()
 	m_iSlope = 90;		// vertical
 	m_fEaveLength = 0.0f;
 	m_pMaterial = GetGlobalMaterials()->FindName(BMAT_NAME_PLAIN);
-}
-
-vtEdge::~vtEdge()
-{
 }
 
 vtEdge::vtEdge(const vtEdge &lhs)
@@ -128,7 +124,7 @@ void vtEdge::AddFeature(int code, float width, float vf1, float vf2)
 	m_Features.push_back(vtEdgeFeature(code, width, vf1, vf2));
 }
 
-int vtEdge::NumFeaturesOfCode(int code)
+int vtEdge::NumFeaturesOfCode(int code) const
 {
 	int i, count = 0, size = m_Features.size();
 	for (i = 0; i < size; i++)
@@ -139,30 +135,44 @@ int vtEdge::NumFeaturesOfCode(int code)
 	return count;
 }
 
-float vtEdge::FixedFeaturesWidth()
+float vtEdge::FixedFeaturesWidth() const
 {
-	float width = 0.0f, fwidth;
-	int size = m_Features.size();
-	for (int i = 0; i < size; i++)
+	float width = 0.0f;
+	for (uint i = 0; i < m_Features.size(); i++)
 	{
-		fwidth = m_Features[i].m_width;
+		const float fwidth = m_Features[i].m_width;
 		if (fwidth > 0)
 			width += fwidth;
 	}
 	return width;
 }
 
-float vtEdge::ProportionTotal()
+float vtEdge::ProportionTotal() const
 {
-	float width = 0.0f, fwidth;
-	int size = m_Features.size();
-	for (int i = 0; i < size; i++)
+	float width = 0.0f;
+	for (uint i = 0; i < m_Features.size(); i++)
 	{
-		fwidth = m_Features[i].m_width;
+		const float fwidth = m_Features[i].m_width;
 		if (fwidth < 0)
 			width += fwidth;
 	}
 	return width;
+}
+
+bool vtEdge::IsUniform() const
+{
+	const int windows = NumFeaturesOfCode(WFC_WINDOW);
+	const int doors = NumFeaturesOfCode(WFC_DOOR);
+	const int walls = NumFeaturesOfCode(WFC_WALL);
+	if (doors > 0)
+		return false;
+	if (walls != (windows + 1))
+		return false;
+	if (m_iSlope != 90)
+		return false;
+	if (m_pMaterial != NULL && *m_pMaterial != BMAT_NAME_SIDING)
+		return false;
+	return true;
 }
 
 /////////////////////////////////////
@@ -279,15 +289,23 @@ vtEdge *vtLevel::GetEdge(uint i) const
 float vtLevel::GetEdgeLength(uint iIndex) const
 {
 	int i = iIndex;
-	int ring = m_Foot.WhichRing(i);
+	const int ring = m_Foot.WhichRing(i);
 	if (ring == -1)
 		return 0.0f;
 	const DLine2 &dline = m_Foot[ring];
-	int edges = dline.GetSize();
-	int j = i+1;
-	if (j == edges)
-		j = 0;
+	const int j = i+1 == dline.GetSize() ? 0 : i+1;
 	return (float) (dline[j] - dline[i]).Length();
+}
+
+float vtLevel::GetLocalEdgeLength(uint iIndex) const
+{
+	int i = iIndex;
+	const int ring = m_LocalFootprint.WhichRing(i);
+	if (ring == -1)
+		return 0.0f;
+	const FLine3 &fline = m_LocalFootprint[ring];
+	const int j = i+1 == fline.GetSize() ? 0 : i+1;
+	return (float) (fline[j] - fline[i]).Length();
 }
 
 void vtLevel::RebuildEdges(uint n)
@@ -454,22 +472,9 @@ bool vtLevel::IsCornerConvex(int i)
  */
 bool vtLevel::IsUniform() const
 {
-	int i, edges = NumEdges();
-	for (i = 0; i < edges; i++)
+	for (uint i = 0; i < m_Edges.GetSize(); i++)
 	{
-		vtEdge *edge = m_Edges[i];
-		int windows = edge->NumFeaturesOfCode(WFC_WINDOW);
-		int doors = edge->NumFeaturesOfCode(WFC_DOOR);
-		int walls = edge->NumFeaturesOfCode(WFC_WALL);
-		if (doors > 0)
-			return false;
-		if (walls != (windows + 1))
-			return false;
-		if (edge->m_iSlope != 90)
-			return false;
-//		if (edge->m_Color != RGBi(255, 255, 255))
-//			return false;
-		if (edge->m_pMaterial != NULL && *edge->m_pMaterial != BMAT_NAME_SIDING)
+		if (m_Edges[i]->IsUniform() == false)
 			return false;
 	}
 	return true;
@@ -707,6 +712,9 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 	DeleteLevels();
 	for (uint i = 0; i < v.m_Levels.GetSize(); i++)
 		m_Levels.Append(new vtLevel(* v.m_Levels[i]));
+
+	m_pCRS = v.m_pCRS;
+
 	return *this;
 }
 
@@ -801,7 +809,7 @@ void vtBuilding::SetCircle(const DPoint2 &center, float fRad)
  *			or BLD_ROOF (the overall color of the roof).
  * \param col The color to set.
  */
-void vtBuilding::SetColor(BldColor which, RGBi col)
+void vtBuilding::SetColor(BldColor which, const RGBi &color)
 {
 	int i, levs = m_Levels.GetSize();
 	for (i = 0; i < levs; i++)
@@ -814,12 +822,12 @@ void vtBuilding::SetColor(BldColor which, RGBi col)
 			if (edge->m_iSlope < 90)
 			{
 				if (which == BLD_ROOF)
-					edge->m_Color = col;
+					edge->m_Color = color;
 			}
 			else
 			{
 				if (which == BLD_BASIC)
-					edge->m_Color = col;
+					edge->m_Color = color;
 			}
 		}
 	}
@@ -1359,32 +1367,29 @@ void vtBuilding::AddDefaultDetails()
 	}
 
 	// add some default windows/doors
-	vtLevel *lev;
-	vtEdge *edge;
-	int i, j;
-	for (i = 0; i < numlevels - 1; i++)
+	for (int i = 0; i < numlevels - 1; i++)
 	{
-		lev = m_Levels[i];
-		int edges = lev->NumEdges();
-		for (j = 0; j < edges; j++)
+		vtLevel *lev = m_Levels[i];
+		const int edges = lev->NumEdges();
+		for (int j = 0; j < edges; j++)
 		{
-			edge = lev->GetEdge(j);
-			int doors = 0;
-			int windows = (int) (lev->GetEdgeLength(j) / 6.0f);
+			vtEdge *edge = lev->GetEdge(j);
+			const int doors = 0;
+			const int windows = (int) (lev->GetLocalEdgeLength(j) / 6.0f);
 			edge->Set(doors, windows, BMAT_NAME_SIDING);
 		}
 	}
 
 	// process roof level
-	vtLevel *roof = m_Levels[i];
+	vtLevel *roof = m_Levels[numlevels - 1];
 	int edges = roof->NumEdges();
 	if (0 == edges)
 		roof->SetFootprint(m_Levels[0]->GetFootprint());
 	edges = roof->NumEdges();
 
-	for (j = 0; j < edges; j++)
+	for (int j = 0; j < edges; j++)
 	{
-		edge = roof->GetEdge(j);
+		vtEdge *edge = roof->GetEdge(j);
 		edge->m_iSlope = 0;		// flat roof
 	}
 	DetermineLocalFootprints();
@@ -1512,8 +1517,44 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 
 		for (int j = 0; j < to_edges; j++)
 		{
-			pLevel->GetEdge(j)->m_Color = pFromLevel->GetEdge(j % from_edges)->m_Color;
-			pLevel->GetEdge(j)->m_pMaterial = pFromLevel->GetEdge(j % from_edges)->m_pMaterial;
+			const int k = j % from_edges;
+
+			vtEdge *from_edge = pFromLevel->GetEdge(k);
+			vtEdge *to_edge = pLevel->GetEdge(j);
+
+			to_edge->m_Color = from_edge->m_Color;
+			to_edge->m_pMaterial = from_edge->m_pMaterial;
+
+			// Try to create similar edge features (walls, windows, doors)
+			if (from_edge->IsUniform())
+			{
+				const int doors = 0;
+				int windows = (int) (pLevel->GetLocalEdgeLength(j) / 6.0f);
+				if (windows < 1)
+					windows = 1;
+				to_edge->Set(doors, windows, BMAT_NAME_SIDING);
+			}
+			else if (from_edge->NumFeatures() == 1)
+			{
+				to_edge->m_Features.clear();
+				to_edge->m_Features.push_back(from_edge->m_Features[0]);
+			}
+			else
+			{
+				// General case: not uniform, more than one feature
+				const int num_features1 = from_edge->NumFeatures();
+				const float length1 = pFromLevel->GetLocalEdgeLength(k);
+				float features_per_meter = (float) num_features1 / length1;
+
+				const float length2 = pLevel->GetLocalEdgeLength(j);
+				int num_features2 = features_per_meter * length2;
+				if (num_features2 < 1)
+					num_features2 = 1;
+
+				to_edge->m_Features.clear();
+				for (int m = 0; m < num_features2; m++)
+					to_edge->m_Features.push_back(from_edge->m_Features[m % num_features1]);
+			}
 		}
 	}
 	SetRoofType(pDefBld->GetRoofType());

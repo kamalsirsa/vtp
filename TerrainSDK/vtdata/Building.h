@@ -3,7 +3,7 @@
 //
 // Implements the vtBuilding class which represents a single built structure.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -81,14 +81,14 @@ class vtEdge
 public:
 	vtEdge();
 	vtEdge(const vtEdge &lhs);
-	~vtEdge();
 
 	void Set(int doors, int windows, const char *material);
 	void AddFeature(int code, float width = -1.0f, float vf1 = 0.0f, float vf2 = 1.0f);
 	size_t NumFeatures() const { return m_Features.size(); }
-	int NumFeaturesOfCode(int code);
-	float FixedFeaturesWidth();
-	float ProportionTotal();
+	int NumFeaturesOfCode(int code) const;
+	float FixedFeaturesWidth() const;
+	float ProportionTotal() const;
+	bool IsUniform() const;
 
 	// color
 	RGBi	m_Color;	// overall edge color
@@ -139,6 +139,7 @@ public:
 	int NumEdges() const { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(uint i) const;
 	float GetEdgeLength(uint i) const;
+	float GetLocalEdgeLength(uint i) const;
 	const vtString GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
 	RoofType GuessRoofType();
@@ -226,7 +227,7 @@ public:
 	void SetRoofType(RoofType rt, int iSlope = -1, int iLev = -1);
 	RoofType GetRoofType();
 
-	void SetColor(BldColor which, RGBi col);
+	void SetColor(BldColor which, const RGBi &color);
 	RGBi GetColor(BldColor which) const;
 
 	void SetStories(int i);
