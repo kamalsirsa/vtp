@@ -395,11 +395,13 @@ protected:
 
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to
+	FPoint3		m_SpaceTrackballState[3];
+
+	// Animated fly-in from space
 	bool		m_bFlyIn;
 	int			m_iFlightStage;		// 1, 2
 	int			m_iFlightStep;		// 0-100
 	FPoint3		m_TrackStart[3], m_TrackPosDiff;
-	FPoint3		m_SpaceTrackballState[3];
 	vtAnimPath	m_FlyInAnim;
 	DPoint2		m_FlyInCenter;
 	float		m_fTransitionHeight;	// in meters

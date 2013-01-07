@@ -91,6 +91,7 @@
 #  include "building.xpm"
 #  include "camera.xpm"
 #  include "distance.xpm"
+#  include "ephemeris.xpm"
 #  include "faster.xpm"
 #  include "fence.xpm"
 #  include "instances.xpm"
@@ -914,7 +915,11 @@ void EnviroFrame::RefreshToolbar()
 	if (m_bEnableEarth)
 	{
 		m_pToolbar->AddSeparator();
-		if (bTerr) AddTool(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
+		if (bTerr)
+		{
+			AddTool(ID_SCENE_EPHEMERIS, wxBITMAP(ephemeris), _("Ephemeris"), false);
+			AddTool(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
+		}
 		AddTool(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
 		if (bEarth)
 		{

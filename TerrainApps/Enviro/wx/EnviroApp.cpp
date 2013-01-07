@@ -376,13 +376,6 @@ wxString EnviroApp::MakeFrameTitle(vtTerrain *terrain)
 {
 	wxString title(STRING_APPORG, wxConvUTF8);
 
-	// If we are building the standard VTP, instead of some other flavor, then
-	//  put the name of the scene graph library in the title.
-	if (!strcmp(STRING_ORGNAME, "VTP"))
-	{
-		title += _T(" OSG");
-	}
-
 	if (terrain)
 	{
 		title += _T(" - ");
