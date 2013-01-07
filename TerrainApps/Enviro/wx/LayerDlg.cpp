@@ -926,6 +926,8 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 
 	if (g_App.m_state == AS_Terrain)
 	{
+		// Structure layers are special because they have items which can be
+		// individually shown/hidden:
 		vtStructureLayer *slay = GetStructureLayerFromItem(m_item);
 		osg::Node *pThing = GetNodeFromItem(m_item);
 		if (pThing && slay != NULL)
@@ -933,6 +935,8 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 			SetEnabled(pThing, bVis);
 			return;
 		}
+
+		// General case is to show/hide the whole layer.
 		vtLayer *lay = GetLayerFromItem(m_item);
 		if (lay)
 			lay->SetVisible(bVis);

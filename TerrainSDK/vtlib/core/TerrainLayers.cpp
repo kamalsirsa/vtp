@@ -75,10 +75,6 @@ void vtImageLayer::SetVisible(bool vis)
 {
 	if (m_pMultiTexture)
 		EnableMultiTexture(m_pMultiTexture->m_pNode, m_pMultiTexture, vis);
+	vtLayerBase::SetVisible(vis);
 }
-bool vtImageLayer::GetVisible()
-{
-	if (m_pMultiTexture)
-		return MultiTextureIsEnabled(m_pMultiTexture->m_pNode, m_pMultiTexture);
-	return false;
-}
+

@@ -60,17 +60,8 @@ void vtAbstractLayer::SetVisible(bool bVis)
 
 	if (pMultiTexture)
 		EnableMultiTexture(pMultiTexture->m_pNode, pMultiTexture, bVis);
-}
 
-bool vtAbstractLayer::GetVisible()
-{
-	if (pContainer != NULL)
-		return pContainer->GetEnabled();
-
-	else if (pMultiTexture)
-		return MultiTextureIsEnabled(pMultiTexture->m_pNode, pMultiTexture);
-
-	return false;
+	vtLayerBase::SetVisible(bVis);
 }
 
 void vtAbstractLayer::SetFeatureSet(vtFeatureSet *pFeatureSet)

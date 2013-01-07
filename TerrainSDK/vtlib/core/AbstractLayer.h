@@ -78,7 +78,6 @@ public:
 	void SetLayerName(const vtString &fname);
 	vtString GetLayerName();
 	void SetVisible(bool vis);
-	bool GetVisible();
 
 	void SetFeatureSet(vtFeatureSet *pSet);
 	vtFeatureSet *GetFeatureSet() const { return pSet; }
