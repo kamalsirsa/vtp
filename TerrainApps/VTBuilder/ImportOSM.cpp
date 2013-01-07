@@ -68,6 +68,7 @@ private:
 
 	LayerType	m_WayType;
 	bool		m_bIsArea;
+	int			m_id;
 
 	int			m_iRoadLanes;
 	SurfaceType m_eSurfaceType;
@@ -141,6 +142,11 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 		{
 			m_refs.clear();
 			m_state = PS_WAY;
+			val = atts.getValue("id");
+			if (val)
+				m_id = atoi(val);
+			else
+				m_id = -1;	// Shouldn't happen.
 
 			// Defaults
 			m_WayType = LT_UNKNOWN;
@@ -412,6 +418,12 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 		if (value == "unpaved")
 			m_eSurfaceType = SURFT_GRAVEL;	// or SURFT_DIRT
 	}
+	if (key == "tunnel")
+	{
+		// We can't do tunnels, so ignore them for now.
+		if (value == "yes")
+			m_WayType = LT_UNKNOWN;
+	}
 	if (key == "waterway")
 		m_WayType = LT_WATER;
 }
@@ -546,14 +558,18 @@ void VisitorOSM::MakeStructure()
 
 void VisitorOSM::MakeBuilding()
 {
-	vtBuilding *bld = m_struct_layer->AddNewBuilding();
-
 	// We expect the building to be closed, which means the last node should
 	// be the same as the first.  If not, something is wrong.
 	if (m_refs.size() < 4)
+	{
+		VTLOG("Bad building, id %d, only %d nodes\n", m_id, m_refs.size());
 		return;
+	}
 	if (m_refs[0] != m_refs[m_refs.size()-1])
+	{
+		VTLOG("Bad building, id %d, not closed\n", m_id);
 		return;
+	}
 
 	// Our polylines are implicitly closed so we don't need redundancy.
 	m_refs.erase(m_refs.end() - 1);
@@ -571,6 +587,7 @@ void VisitorOSM::MakeBuilding()
 	if (pc.IsClockwisePolygon(foot))
 		foot.ReverseOrder();
 
+	vtBuilding *bld = m_struct_layer->AddNewBuilding();
 	bld->SetFootprint(0, foot);
 
 	// Apply a default style of building
@@ -584,16 +601,34 @@ void VisitorOSM::MakeBuilding()
 	}
 
 	// Apply other building info, if we have it.
-	if (m_fHeight != -1)
-		bld->GetLevel(0)->m_fStoryHeight = m_fHeight;
-	if (m_iNumStories != -1)
+	// Do we have both a height and a number of stories?
+	if (m_fHeight != -1 && m_iNumStories != -1 && m_iNumStories != 0)
+	{
 		bld->SetStories(m_iNumStories);
+		bld->GetLevel(0)->m_fStoryHeight = m_fHeight / m_iNumStories;
+	}
+	else if (m_fHeight != -1)
+	{
+		// We have height, but not number of stories. Estimate it.
+		int num = (int) (m_fHeight / 3.65);
+		if (num < 1)
+			num = 1;
+		bld->SetStories(num);
+		bld->GetLevel(0)->m_fStoryHeight = m_fHeight / num;
+	}
+	else if (m_iNumStories != -1)
+		bld->SetStories(m_iNumStories);
+
 	if (m_RoofType != NUM_ROOFTYPES)
 		bld->SetRoofType(m_RoofType);
 }
 
 void VisitorOSM::MakeLinear()
 {
+	// We expect a linear feature to have at least 2 points.
+	if (m_refs.size() < 2)
+		return;
+
 	vtFence *ls = m_struct_layer->AddNewFence();
 
 	// Apply footprint
