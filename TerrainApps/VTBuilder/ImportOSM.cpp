@@ -305,9 +305,9 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 			m_eLinearStyle = FS_PRIVET;
 		}
 	}
-	if (key == "building")
+	if (key == "building" || key == "building:part")
 	{
-		// Values may be "yes" (94%), "house", "residential", "hut", "garage"..
+		// Values for "building" may be "yes" (94%), "house", "residential", "hut", "garage"..
 		m_WayType = LT_STRUCTURE;
 		m_eStructureType = ST_BUILDING;
 	}
