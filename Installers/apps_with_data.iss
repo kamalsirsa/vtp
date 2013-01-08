@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 1.42 (2013.01.05)
+AppVerName=VTP Software 1.44 (2013.01.07)
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
