@@ -387,7 +387,7 @@ void vtGeomFactory::PrimStart()
 {
 	if (!m_pMesh)
 		NewMesh();
-	m_iPrimStart = m_pMesh->GetNumVertices();
+	m_iPrimStart = m_pMesh->NumVertices();
 	m_iPrimVerts = 0;
 }
 
@@ -396,7 +396,7 @@ void vtGeomFactory::AddVertex(const FPoint3 &p)
 {
 	if (!m_bSimple)
 	{
-		int count = m_pMesh->GetNumVertices();
+		int count = m_pMesh->NumVertices();
 		if (count == m_iMaxVertsPerMesh)
 		{
 			// repeat vertex; it needs to appear in both meshes
@@ -574,7 +574,7 @@ vtOBJFile *OBJFileBegin(vtGeode *geode, const char *filename)
 void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geode)
 {
 	uint i, j, k;
-	uint num_mesh = geode->GetNumMeshes();
+	uint num_mesh = geode->NumMeshes();
 	for (i = 0; i < num_mesh; i++)
 	{
 		vtMesh *mesh = geode->GetMesh(i);
@@ -591,7 +591,7 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geode)
 		// First write the vertices
 		int base_vert = file->verts_written;
 
-		uint num_vert = mesh->GetNumVertices();
+		uint num_vert = mesh->NumVertices();
 		fprintf(file->fp, "# %d vertices\n", num_vert);
 		for (j = 0; j < num_vert; j++)
 		{
@@ -620,7 +620,7 @@ void OBJFileWriteGeom(vtOBJFile *file, vtGeode *geode)
 		matname.Format("mat%03d", matidx);
 		fprintf(file->fp, "usemtl %s\n", (const char *) matname);
 
-		uint num_prims = mesh->GetNumPrims();
+		uint num_prims = mesh->NumPrims();
 		int idx0, idx1, idx2;
 		if (ptype == osg::PrimitiveSet::TRIANGLES)
 		{

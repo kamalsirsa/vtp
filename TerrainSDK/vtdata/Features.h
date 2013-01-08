@@ -122,7 +122,7 @@ public:
 	vtString GetFilename() const { return m_strFilename; }
 
 	// feature (entity) operations
-	virtual uint GetNumEntities() const = 0;
+	virtual uint NumEntities() const = 0;
 	void SetNumEntities(int iNum);
 	void AllocateFeatures();
 	OGRwkbGeometryType GetGeomType() const;
@@ -241,7 +241,7 @@ class vtFeatureSetPoint2D : public vtFeatureSet
 public:
 	vtFeatureSetPoint2D();
 
-	uint GetNumEntities() const;
+	uint NumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
@@ -276,7 +276,7 @@ class vtFeatureSetPoint3D : public vtFeatureSet
 public:
 	vtFeatureSetPoint3D();
 
-	uint GetNumEntities() const;
+	uint NumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
@@ -311,7 +311,7 @@ class vtFeatureSetLineString : public vtFeatureSet
 public:
 	vtFeatureSetLineString();
 
-	uint GetNumEntities() const;
+	uint NumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
@@ -347,7 +347,7 @@ class vtFeatureSetLineString3D : public vtFeatureSet
 public:
 	vtFeatureSetLineString3D();
 
-	uint GetNumEntities() const;
+	uint NumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
@@ -405,7 +405,7 @@ class vtFeatureSetPolygon : public vtFeatureSet
 public:
 	vtFeatureSetPolygon();
 
-	uint GetNumEntities() const;
+	uint NumEntities() const;
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;

@@ -250,7 +250,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 				bTiled = m_surftype_tiled[surftype];
 			}
 
-			int vert_base = pMesh->GetNumVertices();
+			int vert_base = pMesh->NumVertices();
 			for (k = 0; k < 3; k++)
 			{
 				vidx = m_tri[tribase + k];
@@ -418,7 +418,7 @@ bool vtTin3d::FindAltitudeAtPoint(const FPoint3 &input, float &fAltitude,
 	for (uint m = 0; m < m_Meshes.GetSize(); m++)
 	{
 		vtMesh *mesh = m_Meshes[m];
-		int tris = mesh->GetNumVertices() / 3;
+		int tris = mesh->NumVertices() / 3;
 		for (int i = 0; i < tris; i++)
 		{
 			// get world points
@@ -529,7 +529,7 @@ bool vtTin3d::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 			continue;
 		}
 
-		int tris = mesh->GetNumVertices() / 3;
+		int tris = mesh->NumVertices() / 3;
 		for (i = 0; i < tris; i++)
 		{
 			// get world points
@@ -558,7 +558,7 @@ FPoint3 vtTin3d::FindVectorToClosestVertex(const FPoint3 &pos)
 	for (uint m = 0; m < m_Meshes.GetSize(); m++)
 	{
 		vtMesh *mesh = m_Meshes[m];
-		int points = mesh->GetNumVertices();
+		int points = mesh->NumVertices();
 		for (int i = 0; i < points; i++)
 		{
 			vert = mesh->GetVtxPos(i);

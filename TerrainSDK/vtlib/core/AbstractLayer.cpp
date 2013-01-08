@@ -110,7 +110,7 @@ void vtAbstractLayer::CreateStyledFeatures()
 	if (!pContainer)
 		CreateContainer();
 
-	uint entities = pSet->GetNumEntities();
+	uint entities = pSet->NumEntities();
 	VTLOG("  Creating %d entities.. ", entities);
 
 	for (uint i = 0; i < entities; i++)
@@ -293,7 +293,7 @@ void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 		hf->m_Conversion.ConvertFromEarth(epos, p3);
 
 		// If a large number of entities, make as simple geometry as possible
-		bool bTetrahedra = (pSet->GetNumEntities() > 10000);
+		bool bTetrahedra = (pSet->NumEntities() > 10000);
 
 		bool bShaded = true;
 		vtMesh *mesh;
@@ -693,7 +693,7 @@ bool vtAbstractLayer::CreateTextureOverlay()
 	double DeltaX = DataExtents.Width() / (double)ALPD_RESOLUTION;
 	double DeltaY = DataExtents.Height() / (double)ALPD_RESOLUTION;
 
-	int iNumFeatures = pSetPoly->GetNumEntities();
+	int iNumFeatures = pSetPoly->NumEntities();
 	RGBAi LayerColour = m_StyleProps.GetValueRGBi("GeomColor");
 	LayerColour.a = 255;
 
@@ -728,7 +728,7 @@ bool vtAbstractLayer::CreateTextureOverlay()
  */
 void vtAbstractLayer::ReleaseGeometry()
 {
-	for (int i = pSet->GetNumEntities()-1; i >= 0; i--)
+	for (int i = pSet->NumEntities()-1; i >= 0; i--)
 	{
 		vtFeature *f = pSet->GetFeature(i);
 		ReleaseFeatureGeometry(f);
@@ -820,7 +820,7 @@ void vtAbstractLayer::RebuildFeature(uint iIndex)
 void vtAbstractLayer::UpdateVisualSelection()
 {
 	// use SetMeshMatIndex to make the meshes of selected features yellow
-	for (uint j = 0; j < pSet->GetNumEntities(); j++)
+	for (uint j = 0; j < pSet->NumEntities(); j++)
 	{
 		vtFeature *feat = pSet->GetFeature(j);
 		vtVisual *viz = GetViz(feat);

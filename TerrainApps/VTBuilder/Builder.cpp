@@ -1591,7 +1591,7 @@ void Builder::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	for (i = 0; i < x_trees; i ++)
 	{
 		wxString str;
-		str.Printf(_("column %d/%d, plants: %d"), i, x_trees, pia.GetNumEntities());
+		str.Printf(_("column %d/%d, plants: %d"), i, x_trees, pia.NumEntities());
 		if (UpdateProgressDialog(i * 100 / x_trees, str))
 		{
 			// user cancel
@@ -1718,7 +1718,7 @@ void Builder::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 		else
 			msg += _(": None.\n");
 	}
-	str.Printf(_("  Total: %d\n"), pia.GetNumEntities());
+	str.Printf(_("  Total: %d\n"), pia.NumEntities());
 	msg += str;
 
 	DisplayAndLog(msg);

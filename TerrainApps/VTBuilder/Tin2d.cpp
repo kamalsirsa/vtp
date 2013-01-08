@@ -77,7 +77,7 @@ vtTin2d::vtTin2d(vtFeatureSetPoint3D *set)
 	DPoint3 p3;
 
 	// point list
-	in.numberofpoints = set->GetNumEntities();
+	in.numberofpoints = set->NumEntities();
 	in.pointlist = (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
 	in.numberofpointattributes = 1;
 	in.pointattributelist = (REAL *) malloc(in.numberofpoints * sizeof(REAL));
@@ -169,7 +169,7 @@ vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum, float fHeight)
 	m_fEdgeLen = NULL;
 	m_bConstrain = false;
 
-	int num = set->GetNumEntities();
+	int num = set->NumEntities();
 	for (int i = 0; i < num; ++i)
 	{
 		DPolygon2 &dpoly = set->GetPolygon(i);

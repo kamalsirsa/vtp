@@ -113,7 +113,7 @@ public:
 		const FPoint2 &min1, const FPoint2 &max1, float fLevel, float fTiling);
 
 	// Access vertex properties
-	uint GetNumVertices() const;
+	uint NumVertices() const;
 
 	void SetVtxPos(uint, const FPoint3&);
 	FPoint3 GetVtxPos(uint i) const;

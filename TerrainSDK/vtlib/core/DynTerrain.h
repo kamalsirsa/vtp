@@ -48,7 +48,7 @@ public:
 	virtual void SetPolygonTarget(int iPolygonCount);
 	int GetPolygonTarget() const;
 
-	int GetNumDrawnTriangles() const;
+	int NumDrawnTriangles() const;
 
 	void SetDetailMaterial(vtMaterial *pApp, float fTiling, float fDistance);
 	void EnableDetail(bool bOn);

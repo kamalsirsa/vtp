@@ -154,7 +154,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 		float z1, z2;
 		FPoint3 pos, sideways, normal;
 
-		int start = pMesh->GetNumVertices();
+		int start = pMesh->NumVertices();
 		for (j = 0; j < npoints; j++)
 		{
 			// determine side-pointing vector
@@ -370,7 +370,7 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 		z2 = m_Profile[i+1].x;
 
 		u = 0.0f;
-		int start = pMesh->GetNumVertices();
+		int start = pMesh->NumVertices();
 		for (j = 0; j < npoints; j++)
 		{
 			// determine vertex normal (for shading)

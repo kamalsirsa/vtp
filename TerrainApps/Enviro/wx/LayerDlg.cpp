@@ -304,7 +304,7 @@ wxString MakeVegLayerString(vtPlantInstanceArray3d &pia)
 {
 	wxString str(pia.GetFilename(), wxConvUTF8);
 	wxString str2;
-	str2.Printf(_(" (Plants: %d)"), pia.GetNumEntities());
+	str2.Printf(_(" (Plants: %d)"), pia.NumEntities());
 	str += str2;
 	return str;
 }
@@ -322,7 +322,7 @@ void MakeAbsLayerString(vtAbstractLayer *alay, wxString &str,
 	str += wxString(OGRGeometryTypeToName(fset->GetGeomType()), wxConvLibc);
 
 	str += _(", Features: ");
-	vs.Format("%d", fset->GetNumEntities());
+	vs.Format("%d", fset->NumEntities());
 	str += wxString(vs, wxConvLibc);
 
 	selected = fset->NumSelected();
@@ -586,7 +586,7 @@ void LayerDlg::RefreshTreeSpace()
 		m_pTree->SetItemData(hItem, new LayerItemData(glay));
 
 		OGRwkbGeometryType type = feat->GetGeomType();
-		int num = feat->GetNumEntities();
+		int num = feat->NumEntities();
 		str.Printf(_T("%d "), num);
 		if (type == wkbPoint)
 			str += _T("Point");

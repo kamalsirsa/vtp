@@ -1186,7 +1186,7 @@ void Builder::ImportFromMapSource(const char *fname)
 			str.Printf(_T("zone %d, "), proj.GetUTMZone());
 			choices[i] += str;
 		}
-		str.Printf(_T("points %d"), layers[i]->GetFeatureSet()->GetNumEntities());
+		str.Printf(_T("points %d"), layers[i]->GetFeatureSet()->NumEntities());
 		choices[i] += str;
 		choices[i] += _T(")");
 	}
@@ -2439,7 +2439,7 @@ bool Builder::ImportDataFromDXF(const char *filename)
 		}
 	}
 
-	if (fs_points->GetNumEntities() > 0)
+	if (fs_points->NumEntities() > 0)
 	{
 		vtRawLayer *pRL = new vtRawLayer;
 		pRL->SetFeatureSet(fs_points);
@@ -2453,7 +2453,7 @@ bool Builder::ImportDataFromDXF(const char *filename)
 	else
 		delete fs_points;
 
-	if (fs_polylines->GetNumEntities() > 0)
+	if (fs_polylines->NumEntities() > 0)
 	{
 		vtRawLayer *pRL = new vtRawLayer;
 		pRL->SetFeatureSet(fs_polylines);

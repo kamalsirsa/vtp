@@ -747,7 +747,7 @@ vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(uint i) const
 
 int vtPlantInstanceArray3d::CreatePlantNodes(bool progress_dialog(int))
 {
-	uint i, size = GetNumEntities();
+	uint i, size = NumEntities();
 	int created = 0;
 	m_iOffTerrain = 0;
 
@@ -906,7 +906,7 @@ int vtPlantInstanceArray3d::CreatePlantShaderNodes(bool progress_dialog(int))
 	VTLOG1(" Creating OpenGL shader based vegetation...\n");
 
 	FPoint3 p3;
-	uint num_plants = GetNumEntities();
+	uint num_plants = NumEntities();
 
 	// Create cell subdivision
 	osg::ref_ptr<PlantCell> cell = new PlantCell;
@@ -933,7 +933,7 @@ int vtPlantInstanceArray3d::CreatePlantShaderNodes(bool progress_dialog(int))
 	m_group->setName("VegGroup");
 	m_group->addChild(cell->m_group);
 
-	return GetNumEntities();
+	return NumEntities();
 }
 
 bool vtPlantInstanceArray3d::CreatePlantNode(uint i)
@@ -1046,7 +1046,7 @@ vtTransform *vtPlantInstanceArray3d::GetPlantNode(uint i) const
 
 void vtPlantInstanceArray3d::VisualDeselectAll()
 {
-	uint size = GetNumEntities();
+	uint size = NumEntities();
 
 	for (uint i = 0; i < size; i++)
 	{
@@ -1071,7 +1071,7 @@ void vtPlantInstanceArray3d::VisualSelect(uint i)
 
 void vtPlantInstanceArray3d::OffsetSelectedPlants(const DPoint2 &offset)
 {
-	uint size = GetNumEntities();
+	uint size = NumEntities();
 	for (uint i = 0; i < size; i++)
 	{
 		if (!IsSelected(i))

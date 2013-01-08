@@ -83,7 +83,7 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 		}
 
 		// Write DBF Attributes, one record per entity
-		uint entities = GetNumEntities();
+		uint entities = NumEntities();
 		for (uint i = 0; i < entities; i++)
 		{
 			if (progress_callback && ((i%16)==0))
@@ -978,8 +978,8 @@ void vtFeatureSet::ParseDBFRecords(DBFHandle db, bool progress_callback(int))
 
 	// safety check
 	// i have seen some DBF to have more records than the SHP has entities
-	if ((uint) iRecords > GetNumEntities())
-		iRecords = GetNumEntities();
+	if ((uint) iRecords > NumEntities())
+		iRecords = NumEntities();
 
 	for (int i = 0; i < iRecords; i++)
 	{
@@ -1184,7 +1184,7 @@ bool vtFeatureSet::SaveToKML(const char *filename, bool progress_callback(int)) 
 		// Write entities
 		DPoint2 p2;
 		DPoint3 p3;
-		uint entities = GetNumEntities();
+		uint entities = NumEntities();
 		for (uint i = 0; i < entities; i++)
 		{
 			if (progress_callback && ((i%16)==0))
@@ -1233,7 +1233,7 @@ bool vtFeatureSet::SaveToKML(const char *filename, bool progress_callback(int)) 
  */
 void vtFeatureSet::SetNumEntities(int iNum)
 {
-	int previous = GetNumEntities();
+	int previous = NumEntities();
 
 	// First set the number of geometries
 	SetNumGeometries(iNum);
@@ -1255,7 +1255,7 @@ void vtFeatureSet::SetNumEntities(int iNum)
 void vtFeatureSet::AllocateFeatures()
 {
 	// Set up Features array
-	for (uint i = 0; i < GetNumEntities(); i++)
+	for (uint i = 0; i < NumEntities(); i++)
 	{
 		vtFeature *f = new vtFeature;
 		f->flags = 0;
@@ -1305,7 +1305,7 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 	if (pFromSet->GetGeomType() != GetGeomType())
 		return false;
 
-	int first_appended_ent = GetNumEntities();
+	int first_appended_ent = NumEntities();
 
 	// copy geometry
 	if (!AppendGeometryFrom(pFromSet))
@@ -1313,7 +1313,7 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 
 	// copy entities
 	vtString str;
-	uint i, num = pFromSet->GetNumEntities();
+	uint i, num = pFromSet->NumEntities();
 	for (i = 0; i < num; i++)
 	{
 		// copy record data for all field names which match
@@ -1367,7 +1367,7 @@ void vtFeatureSet::InvertSelection()
 int vtFeatureSet::DoBoxSelect(const DRECT &rect, SelectionType st)
 {
 	int affected = 0;
-	int entities = GetNumEntities();
+	int entities = NumEntities();
 
 	bool bIn;
 	bool bWas;
@@ -1411,7 +1411,7 @@ int vtFeatureSet::SelectByCondition(int iField, int iCondition,
 	int i, ival, itest;
 	short sval;
 	double dval, dtest=0;
-	int entities = GetNumEntities(), selected = 0;
+	int entities = NumEntities(), selected = 0;
 	int con = iCondition;
 	bool result=false;
 	DPoint2 p2;
@@ -1555,7 +1555,7 @@ int vtFeatureSet::SelectByCondition(int iField, int iCondition,
 
 void vtFeatureSet::DeleteSelected()
 {
-	int i, entities = GetNumEntities();
+	int i, entities = NumEntities();
 	for (i = 0; i < entities; i++)
 	{
 		if (IsSelected(i))
@@ -1574,7 +1574,7 @@ void vtFeatureSet::SetToDelete(int iFeature)
 
 void vtFeatureSet::ApplyDeletion()
 {
-	int i, entities = GetNumEntities();
+	int i, entities = NumEntities();
 
 	int target = 0;
 	int newtotal = entities;
@@ -1610,7 +1610,7 @@ void vtFeatureSet::CopyEntity(uint from, uint to)
 
 void vtFeatureSet::DePickAll()
 {
-	int i, entities = GetNumEntities();
+	int i, entities = NumEntities();
 	for (i = 0; i < entities; i++)
 		m_Features[i]->flags &= ~FF_PICKED;
 }
@@ -1700,7 +1700,7 @@ int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 	int field_index = m_fields.Append(f);
 
 	// The new field should match the number of records
-	f->SetNumRecords(GetNumEntities());
+	f->SetNumRecords(NumEntities());
 
 	return field_index;
 }

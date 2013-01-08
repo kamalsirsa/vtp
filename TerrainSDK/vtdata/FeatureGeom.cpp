@@ -21,7 +21,7 @@ vtFeatureSetPoint2D::vtFeatureSetPoint2D() : vtFeatureSet()
 	m_eGeomType = wkbPoint;
 }
 
-uint vtFeatureSetPoint2D::GetNumEntities() const
+uint vtFeatureSetPoint2D::NumEntities() const
 {
 	return m_Point2.GetSize();
 }
@@ -38,7 +38,7 @@ void vtFeatureSetPoint2D::Reserve(int iNum)
 
 bool vtFeatureSetPoint2D::ComputeExtent(DRECT &rect) const
 {
-	int i, entities = GetNumEntities();
+	int i, entities = NumEntities();
 
 	if (!entities)
 		return false;
@@ -83,7 +83,7 @@ bool vtFeatureSetPoint2D::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->NumEntities(); i++)
 		m_Point2.Append(pFrom->m_Point2[i]);
 	return true;
 }
@@ -108,7 +108,7 @@ void vtFeatureSetPoint2D::GetPoint(uint num, DPoint2 &p) const
 
 int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon, double *distance)
 {
-	uint entities = GetNumEntities();
+	uint entities = NumEntities();
 	double dist, closest = 1E9;
 	int found = -1;
 
@@ -128,7 +128,7 @@ int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon, doub
 
 void vtFeatureSetPoint2D::FindAllPointsAtLocation(const DPoint2 &loc, std::vector<int> &found)
 {
-	for (uint i = 0; i < GetNumEntities(); i++)
+	for (uint i = 0; i < NumEntities(); i++)
 	{
 		if (loc == m_Point2[i])
 			found.push_back(i);
@@ -208,7 +208,7 @@ vtFeatureSetPoint3D::vtFeatureSetPoint3D() : vtFeatureSet()
 	m_eGeomType = wkbPoint25D;
 }
 
-uint vtFeatureSetPoint3D::GetNumEntities() const
+uint vtFeatureSetPoint3D::NumEntities() const
 {
 	return m_Point3.GetSize();
 }
@@ -225,7 +225,7 @@ void vtFeatureSetPoint3D::Reserve(int iNum)
 
 bool vtFeatureSetPoint3D::ComputeExtent(DRECT &rect) const
 {
-	int i, entities = GetNumEntities();
+	int i, entities = NumEntities();
 
 	if (!entities)
 		return false;
@@ -274,7 +274,7 @@ bool vtFeatureSetPoint3D::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->NumEntities(); i++)
 		m_Point3.Append(pFrom->m_Point3[i]);
 	return true;
 }
@@ -377,7 +377,7 @@ vtFeatureSetLineString::vtFeatureSetLineString() : vtFeatureSet()
 	m_eGeomType = wkbLineString;
 }
 
-uint vtFeatureSetLineString::GetNumEntities() const
+uint vtFeatureSetLineString::NumEntities() const
 {
 	return m_Line.size();
 }
@@ -394,7 +394,7 @@ void vtFeatureSetLineString::Reserve(int iNum)
 
 bool vtFeatureSetLineString::ComputeExtent(DRECT &rect) const
 {
-	int i, entities = GetNumEntities();
+	int i, entities = NumEntities();
 
 	if (!entities)
 		return false;
@@ -445,7 +445,7 @@ bool vtFeatureSetLineString::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->NumEntities(); i++)
 		m_Line.push_back(pFrom->m_Line[i]);
 	return true;
 }
@@ -608,7 +608,7 @@ vtFeatureSetLineString3D::vtFeatureSetLineString3D() : vtFeatureSet()
 	m_eGeomType = wkbLineString25D;
 }
 
-uint vtFeatureSetLineString3D::GetNumEntities() const
+uint vtFeatureSetLineString3D::NumEntities() const
 {
 	return m_Line.size();
 }
@@ -625,7 +625,7 @@ void vtFeatureSetLineString3D::Reserve(int iNum)
 
 bool vtFeatureSetLineString3D::ComputeExtent(DRECT &rect) const
 {
-	int i, entities = GetNumEntities();
+	int i, entities = NumEntities();
 
 	if (!entities)
 		return false;
@@ -676,7 +676,7 @@ bool vtFeatureSetLineString3D::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->NumEntities(); i++)
 		m_Line.push_back(pFrom->m_Line[i]);
 	return true;
 }
@@ -837,7 +837,7 @@ vtFeatureSetPolygon::vtFeatureSetPolygon() : vtFeatureSet()
 	m_pIndex = NULL;
 }
 
-uint vtFeatureSetPolygon::GetNumEntities() const
+uint vtFeatureSetPolygon::NumEntities() const
 {
 	return m_Poly.size();
 }
@@ -854,7 +854,7 @@ void vtFeatureSetPolygon::Reserve(int iNum)
 
 bool vtFeatureSetPolygon::ComputeExtent(DRECT &rect) const
 {
-	int i, entities = GetNumEntities();
+	int i, entities = NumEntities();
 
 	if (!entities)
 		return false;
@@ -916,7 +916,7 @@ bool vtFeatureSetPolygon::AppendGeometryFrom(vtFeatureSet *pFromSet)
 	if (!pFrom)
 		return false;
 
-	for (uint i = 0; i < pFrom->GetNumEntities(); i++)
+	for (uint i = 0; i < pFrom->NumEntities(); i++)
 	{
 		switch (m_eGeomType) {
 		case wkbPolygon:
@@ -978,7 +978,7 @@ void SpatialIndex::GenerateIndices(const class vtFeatureSetPolygon *feat)
 	uint e;
 	int i, j;
 
-	for (e = 0; e < feat->GetNumEntities(); e++)
+	for (e = 0; e < feat->NumEntities(); e++)
 	{
 		const DPolygon2 &poly = feat->GetPolygon(e);
 		poly.ComputeExtents(ext);

@@ -305,7 +305,7 @@ void LogToDot(osg::Group *pParent, osg::Node *pNode, int depth, FILE *fp, std::v
 	osg::Geode *geode = dynamic_cast<osg::Geode*>(pNode);
 	if (pGeode)
 	{
-		int num_mesh = pGeode->GetNumMeshes();
+		int num_mesh = pGeode->NumMeshes();
 
 		for (int i = 0; i < num_mesh; i++)
 		{
@@ -326,8 +326,8 @@ void LogToDot(osg::Group *pParent, osg::Node *pNode, int depth, FILE *fp, std::v
 
 			if (pMesh)
 			{
-				int iNumPrim = pMesh->GetNumPrims();
-				int iNumVert = pMesh->GetNumVertices();
+				int iNumPrim = pMesh->NumPrims();
+				int iNumVert = pMesh->NumVertices();
 
 				vtMesh::PrimType ptype = pMesh->getPrimType();
 				const char *mtype="";

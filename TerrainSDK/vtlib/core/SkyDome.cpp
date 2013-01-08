@@ -171,7 +171,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	CreateMarkers();
 	ShowMarkers(false);
 
-	NumVertices = m_pDomeMesh->GetNumVertices();
+	NumVertices = m_pDomeMesh->NumVertices();
 	SphVertices = new FPoint3[NumVertices];
 	ConvertVertices();
 
@@ -480,7 +480,7 @@ void vtSkyDome::ConvertVertices()
 {
 	FPoint3 p, psph;
 
-	int num = m_pDomeMesh->GetNumVertices();
+	int num = m_pDomeMesh->NumVertices();
 	for (int i = 0; i < num; i++)
 	{
 		p = m_pDomeMesh->GetVtxPos(i);
@@ -562,7 +562,7 @@ bool vtSkyDome::SetTexture(const char *filename)
 	m_pTextureMat = m_pMats->at(index);
 
 	// set the vertices to initially white
-	int verts = m_pDomeMesh->GetNumVertices();
+	int verts = m_pDomeMesh->NumVertices();
 	for (int i = 0; i < verts; i++)
 		m_pDomeMesh->SetVtxColor(i, RGBf(1,1,1));	// all white vertices
 
@@ -601,7 +601,7 @@ void vtSkyDome::ApplyDomeColors()
 		return;
 
 	// Set day colors
-	for (uint i = 0; i < mesh->GetNumVertices(); i++)
+	for (uint i = 0; i < mesh->NumVertices(); i++)
 	{
 		FPoint3 p = mesh->GetVtxPos(i);
 		psph = SphVertices[i];

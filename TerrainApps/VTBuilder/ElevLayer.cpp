@@ -1075,7 +1075,7 @@ bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, const IPoint2 &size,
 	DRECT extent;
 	fsp3->ComputeExtent(extent);
 
-	int iMaxSize = fsp3->GetNumEntities();
+	int iMaxSize = fsp3->NumEntities();
 	ScatData sdata(iMaxSize);
 	DPoint3 p;
 	for (int i = 0; i < iMaxSize; i++)

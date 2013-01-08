@@ -334,7 +334,7 @@ void Enviro::MakeDemoGlobe()
 		vtFeatureSet *feat1 = loader.LoadFromSHP(users);
 		vtFeatureSetPoint2D *ft = (vtFeatureSetPoint2D *) feat1;
 
-		int half = ft->GetNumEntities() / 2;
+		int half = ft->NumEntities() / 2;
 		int foo = 0;
 		for (i = 0; i < half; i++)
 		{

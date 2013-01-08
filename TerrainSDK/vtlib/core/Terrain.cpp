@@ -3048,7 +3048,7 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 	}
 	else if (vlay)
 	{
-		for (uint i = 0; i < vlay->GetNumEntities(); i++)
+		for (uint i = 0; i < vlay->NumEntities(); i++)
 			vlay->Select(i, true);
 		DeleteSelectedPlants(vlay);
 	}
@@ -3130,7 +3130,7 @@ vtVegLayer *vtTerrain::LoadVegetation(const vtString &fname)
 		success = v_layer->ReadVF(fname);
 	if (success)
 	{
-		VTLOG("\tLoaded plants file, %d plants.\n", v_layer->GetNumEntities());
+		VTLOG("\tLoaded plants file, %d plants.\n", v_layer->NumEntities());
 		v_layer->SetFilename(fname);
 	}
 	else
@@ -3152,11 +3152,11 @@ vtVegLayer *vtTerrain::LoadVegetation(const vtString &fname)
 	else
 	{
 		int created = v_layer->CreatePlantNodes(m_progress_callback);
-		VTLOG("\tCreated: %d of %d plants\n", created, v_layer->GetNumEntities());
+		VTLOG("\tCreated: %d of %d plants\n", created, v_layer->NumEntities());
 		if (v_layer->NumOffTerrain())
 			VTLOG("\t%d were off the terrain.\n", v_layer->NumOffTerrain());
 
-		for (uint i = 0; i < v_layer->GetNumEntities(); i++)
+		for (uint i = 0; i < v_layer->NumEntities(); i++)
 		{
 			vtTransform *pTrans = v_layer->GetPlantNode(i);
 
@@ -3196,7 +3196,7 @@ bool vtTerrain::AddPlant(vtVegLayer *v_layer, const DPoint2 &pos, int iSpecies, 
 int vtTerrain::DeleteSelectedPlants(vtVegLayer *v_layer)
 {
 	int num_deleted = 0;
-	for (int i = v_layer->GetNumEntities() - 1; i >= 0; i--)
+	for (int i = v_layer->NumEntities() - 1; i >= 0; i--)
 	{
 		if (v_layer->IsSelected(i))
 		{
@@ -3410,7 +3410,7 @@ int vtTerrain::DeleteSelectedFeatures(vtAbstractLayer *alay)
 
 	int NumToDelete = 0;
 	vtFeatureSet *fset = alay->GetFeatureSet();
-	for (uint j = 0; j < fset->GetNumEntities(); j++)
+	for (uint j = 0; j < fset->NumEntities(); j++)
 	{
 		if (fset->IsSelected(j))
 		{
@@ -3423,7 +3423,7 @@ int vtTerrain::DeleteSelectedFeatures(vtAbstractLayer *alay)
 		VTLOG("Set %d items to delete, removing visuals..\n", NumToDelete);
 
 		// Delete high-level features first
-		for (uint j = 0; j < fset->GetNumEntities(); j++)
+		for (uint j = 0; j < fset->NumEntities(); j++)
 		{
 			if (fset->IsDeleted(j))
 			{
@@ -3531,7 +3531,7 @@ void vtTerrain::RedrapeCulture(const DRECT &area)
 		vtVegLayer *vlay = dynamic_cast<vtVegLayer *>(m_Layers[i].get());
 		if (vlay)
 		{
-			for (uint i = 0; i < vlay->GetNumEntities(); i++)
+			for (uint i = 0; i < vlay->NumEntities(); i++)
 			{
 				vlay->UpdateTransform(i);
 			}

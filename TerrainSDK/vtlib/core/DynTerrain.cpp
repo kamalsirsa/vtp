@@ -262,7 +262,7 @@ void vtDynTerrainGeom::EnableDetail(bool bOn)
  * Return the number of triangles that were rendered by this dynamic terrain
  * last frame.
  */
-int vtDynTerrainGeom::GetNumDrawnTriangles() const
+int vtDynTerrainGeom::NumDrawnTriangles() const
 {
 	return m_iDrawnTriangles;
 }

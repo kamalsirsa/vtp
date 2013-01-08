@@ -753,7 +753,7 @@ void vtPlantInstanceArray::GetPlant(int iNum, float &size, short &species_id) co
  */
 uint vtPlantInstanceArray::InstancesOfSpecies(short species_id)
 {
-	uint i, count = 0, numinstances = GetNumEntities();
+	uint i, count = 0, numinstances = NumEntities();
 	float size;
 	short species;
 	for (i = 0; i < numinstances; i++)
@@ -970,7 +970,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 
 bool vtPlantInstanceArray::WriteVF(const char *fname) const
 {
-	int i, numinstances = GetNumEntities();
+	int i, numinstances = NumEntities();
 	if (numinstances == 0)
 		return false;	// empty files not allowed
 	if (!m_pSpeciesList)

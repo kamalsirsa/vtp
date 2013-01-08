@@ -175,14 +175,14 @@ void MainFrame::DoGeocode()
 		if (success)
 		{
 			// ensure the points are initialized to zero
-			for (uint i = 0; i < feat.GetNumEntities(); i++)
+			for (uint i = 0; i < feat.NumEntities(); i++)
 				feat.SetPoint(i, zero);
 		}
 	}
 
 	if (!success)
 		return;
-	int iRecords = feat.GetNumEntities();
+	int iRecords = feat.NumEntities();
 	vtString strStreet;
 	vtString strCity;
 	vtString strState;

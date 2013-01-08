@@ -148,7 +148,7 @@ void FeatureTableDlg::ShowSelected()
 	bool bProgress = (selected > 500);
 	if (bProgress)
 		OpenProgressDialog(_("Populating table"), false, this);
-	int i, num = m_pFeatures->GetNumEntities();
+	int i, num = m_pFeatures->NumEntities();
 	for (i = 0; i < num; i++)
 	{
 		if (bProgress && (i%20)==0)
@@ -169,7 +169,7 @@ void FeatureTableDlg::ShowPicked()
 	TransferDataToWindow();
 	Clear();
 
-	int i, num = m_pFeatures->GetNumEntities();
+	int i, num = m_pFeatures->NumEntities();
 
 	for (i = 0; i < num; i++)
 	{
@@ -187,7 +187,7 @@ void FeatureTableDlg::ShowAll()
 	TransferDataToWindow();
 	Clear();
 
-	int i, num = m_pFeatures->GetNumEntities();
+	int i, num = m_pFeatures->NumEntities();
 	if (num > 2000)
 	{
 		wxString msg;
@@ -349,7 +349,7 @@ void FeatureTableDlg::OnDeleteHighlighted( wxCommandEvent &event )
 		VTLOG("Set %d items to delete, removing visuals..\n", iDeleted);
 
 		// Delete high-level features first
-		for (uint i = 0; i < m_pFeatures->GetNumEntities(); i++)
+		for (uint i = 0; i < m_pFeatures->NumEntities(); i++)
 		{
 			if (m_pFeatures->IsDeleted(i))
 			{

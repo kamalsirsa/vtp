@@ -455,7 +455,7 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 	}
 
 	FPoint3 pos;
-//	for (uint i = 0; i < GetNumEntities(); i++)
+//	for (uint i = 0; i < NumEntities(); i++)
 	uint i = 0, j;	// only first entity
 
 	FLine3 fline;

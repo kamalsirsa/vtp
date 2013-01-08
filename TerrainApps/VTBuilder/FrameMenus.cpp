@@ -2954,7 +2954,7 @@ void MainFrame::OnVegRemap(wxCommandEvent& event)
 	float size;
 	short species_id;
 	int count = 0;
-	for (i = 0; i < pPIA->GetNumEntities(); i++)
+	for (i = 0; i < pPIA->NumEntities(); i++)
 	{
 		pPIA->GetPlant(i, size, species_id);
 		if (species_id == species_from)
@@ -3049,7 +3049,7 @@ void MainFrame::OnAreaVegDensity(wxCommandEvent& event)
 	if (!vlay) return;
 	vtPlantInstanceArray *pia = vlay->GetPIA();
 	if (!pia) return;
-	uint ent = pia->GetNumEntities();
+	uint ent = pia->NumEntities();
 	vtSpeciesList *list = GetMainFrame()->GetSpeciesList();
 
 	// Put the results in a biotype as well
@@ -3278,7 +3278,7 @@ void MainFrame::OnStructureSelectUsingPolygons(wxCommandEvent &event)
 			vtFeatureSetPolygon *pFeatureSetPolygon = dynamic_cast<vtFeatureSetPolygon*>(pRawLayer->GetFeatureSet());
 			if (NULL != pFeatureSetPolygon)
 			{
-				uint iNumEntities = pFeatureSetPolygon->GetNumEntities();
+				uint iNumEntities = pFeatureSetPolygon->NumEntities();
 				uint iIndex;
 				for (iIndex = 0; iIndex < iNumEntities; iIndex++)
 				{
@@ -3722,7 +3722,7 @@ void MainFrame::OnRawConvertToPolygons(wxCommandEvent& event)
 	{
 		vtFeatureSetPolygon *polys = new vtFeatureSetPolygon;
 
-		for (uint i = 0; i < setls2->GetNumEntities(); i++)
+		for (uint i = 0; i < setls2->NumEntities(); i++)
 		{
 			const DLine2 &polyline = setls2->GetPolyLine(i);
 			int npoints = polyline.GetSize();
@@ -3737,7 +3737,7 @@ void MainFrame::OnRawConvertToPolygons(wxCommandEvent& event)
 				polys->AddPolygon(dpoly);
 			}
 		}
-		if (polys->GetNumEntities() == 0)
+		if (polys->NumEntities() == 0)
 		{
 			DisplayAndLog("Didn't find any closed polylines");
 			delete polys;
@@ -3853,7 +3853,7 @@ void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 	fprintf(fp, "<map name=\"ImageMap\">\n");
 
 	vtFeatureSetPolygon *polyset = (vtFeatureSetPolygon *) fset;
-	uint i, num = polyset->GetNumEntities();
+	uint i, num = polyset->NumEntities();
 	wxPoint sp;		// screen point
 
 	for (i = 0; i < num; i++)

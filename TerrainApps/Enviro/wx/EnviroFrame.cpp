@@ -1302,7 +1302,7 @@ void EnviroFrame::DoTestCode()
 			while (fgets(buf, 80, fp) != NULL)
 			{
 				sscanf(buf, "%f\t%f\t%f", &depth, &x, &y);
-				int idx = mesh->GetNumVertices();
+				int idx = mesh->NumVertices();
 				for (int i = 0; i < 20; i++)
 				{
 					double angle = (double)i / 20.0 * PI2d;
@@ -3414,14 +3414,14 @@ void EnviroFrame::UpdateLODInfo()
 			m_pLODDlg->Refresh(log(sr->m_fLResolution)*17,
 				log(sr->m_fResolution)*17,
 				log(sr->m_fHResolution)*17,
-				sr->GetPolygonTarget(), sr->GetNumDrawnTriangles(),	-1);
+				sr->GetPolygonTarget(), sr->NumDrawnTriangles(),	-1);
 		}
 		SMTerrain *sm = dynamic_cast<SMTerrain*>(dyn);
 		if (sm)
 		{
 			m_pLODDlg->Refresh(-1,
 				log((sm->GetQualityConstant()-0.002f)*10000)*40, -1,
-				sm->GetPolygonTarget(), sm->GetNumDrawnTriangles(),	-1);
+				sm->GetPolygonTarget(), sm->NumDrawnTriangles(),	-1);
 		}
 	}
 	vtPagedStructureLodGrid *pPSLG = terr->GetStructureLodGrid();
@@ -3689,7 +3689,7 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 	if (vlay && vlay->NumSelected() != 0)
 	{
 		int found = -1;
-		uint count = vlay->GetNumEntities();
+		uint count = vlay->NumEntities();
 		for (uint i = 0; i < count; i++)
 		{
 			if (vlay->IsSelected(i))

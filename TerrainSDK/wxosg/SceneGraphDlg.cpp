@@ -261,7 +261,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	osg::Geode *geode = dynamic_cast<osg::Geode*>(pNode);
 	if (pGeode)
 	{
-		int num_mesh = pGeode->GetNumMeshes();
+		int num_mesh = pGeode->NumMeshes();
 		wxTreeItemId	hGeomItem;
 
 		for (int i = 0; i < num_mesh; i++)
@@ -273,8 +273,8 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 
 			if (pMesh)
 			{
-				int iNumPrim = pMesh->GetNumPrims();
-				int iNumVert = pMesh->GetNumVertices();
+				int iNumPrim = pMesh->NumPrims();
+				int iNumVert = pMesh->NumVertices();
 
 				vtMesh::PrimType ptype = pMesh->getPrimType();
 				const char *mtype="";

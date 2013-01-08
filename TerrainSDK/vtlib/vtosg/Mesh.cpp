@@ -213,7 +213,7 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
  */
 int vtMesh::AddVertex(float x, float y, float z)
 {
-	int i = GetNumVertices();
+	int i = NumVertices();
 	SetVtxPos(i, FPoint3(x, y, z));
 	return i;
 }
@@ -225,7 +225,7 @@ int vtMesh::AddVertex(float x, float y, float z)
  */
 int vtMesh::AddVertexN(float x, float y, float z, float nx, float ny, float nz)
 {
-	int i = GetNumVertices();
+	int i = NumVertices();
 	SetVtxPos(i, FPoint3(x, y, z));
 	SetVtxNormal(i, FPoint3(nx, ny, nz));
 	return i;
@@ -238,7 +238,7 @@ int vtMesh::AddVertexN(float x, float y, float z, float nx, float ny, float nz)
  */
 int vtMesh::AddVertexUV(float x, float y, float z, float u, float v)
 {
-	int i = GetNumVertices();
+	int i = NumVertices();
 	SetVtxPos(i, FPoint3(x, y, z));
 	SetVtxTexCoord(i, FPoint2(u, v));
 	return i;
@@ -251,7 +251,7 @@ int vtMesh::AddVertexUV(float x, float y, float z, float u, float v)
  */
 int vtMesh::AddVertex(const FPoint3 &p)
 {
-	int i = GetNumVertices();
+	int i = NumVertices();
 	SetVtxPos(i, p);
 	return i;
 }
@@ -263,7 +263,7 @@ int vtMesh::AddVertex(const FPoint3 &p)
  */
 int vtMesh::AddVertexN(const FPoint3 &p, const FPoint3 &n)
 {
-	int i = GetNumVertices();
+	int i = NumVertices();
 	SetVtxPos(i, p);
 	SetVtxNormal(i, n);
 	return i;
@@ -276,7 +276,7 @@ int vtMesh::AddVertexN(const FPoint3 &p, const FPoint3 &n)
  */
 int vtMesh::AddVertexUV(const FPoint3 &p, float u, float v)
 {
-	int i = GetNumVertices();
+	int i = NumVertices();
 	SetVtxPos(i, p);
 	SetVtxTexCoord(i, FPoint2(u, v));
 	return i;
@@ -289,7 +289,7 @@ int vtMesh::AddVertexUV(const FPoint3 &p, float u, float v)
  */
 int vtMesh::AddVertexUV(const FPoint3 &p, const FPoint2 &uv)
 {
-	int i = GetNumVertices();
+	int i = NumVertices();
 	SetVtxPos(i, p);
 	SetVtxTexCoord(i, uv);
 	return i;
@@ -302,7 +302,7 @@ int vtMesh::AddVertexUV(const FPoint3 &p, const FPoint2 &uv)
  */
 int vtMesh::AddVertexNUV(const FPoint3 &p, const FPoint3 &n, const FPoint2 &uv)
 {
-	int i = GetNumVertices();
+	int i = NumVertices();
 	SetVtxPos(i, p);
 	SetVtxNormal(i, n);
 	SetVtxTexCoord(i, uv);
@@ -423,7 +423,7 @@ void vtMesh::CreatePrism(const FPoint3 &base, const FPoint3 &vector_up,
 		}
 	}
 
-	int vidx = GetNumVertices();
+	int vidx = NumVertices();
 	for (i = 0; i < 5; i++)
 	{
 		int start = vidx;
@@ -870,7 +870,7 @@ void vtMesh::CreateRectangle(int iQuads1, int iQuads2,
  */
 void vtMesh::TransformVertices(const FMatrix4 &mat)
 {
-	int i, num = GetNumVertices();
+	int i, num = NumVertices();
 	FPoint3 p, p2;
 
 	for (i = 0; i < num; i++)
@@ -906,7 +906,7 @@ void vtMesh::GetBoundBox(FBox3 &box) const
  */
 void vtMesh::GetBoundBox(FBox3 &box) const
 {
-	int num = GetNumVertices();
+	int num = NumVertices();
 	if (num == 0)
 		return;
 
@@ -1140,7 +1140,7 @@ void vtMesh::AddQuad(int p0, int p1, int p2, int p3)
 #endif
 }
 
-uint vtMesh::GetNumVertices() const
+uint vtMesh::NumVertices() const
 {
 	return getVerts()->size();
 }

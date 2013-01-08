@@ -1896,7 +1896,7 @@ void Enviro::OnMouseLeftUpBox(vtMouseEvent &event)
 		if (pset2 || pset3)
 		{
 			FBox3 bbox;
-			for (uint j = 0; j < fset->GetNumEntities(); j++)
+			for (uint j = 0; j < fset->NumEntities(); j++)
 			{
 				vtFeature *feat = fset->GetFeature(j);
 				vtVisual *viz = alay->GetViz(feat);
@@ -2551,7 +2551,7 @@ void Enviro::SetPlantOptions(const PlantingOptions &opt)
 		vtVegLayer *vlay = GetCurrentTerrain()->GetVegLayer();
 		if (vlay)
 		{
-			for (uint i = 0; i < vlay->GetNumEntities(); i++)
+			for (uint i = 0; i < vlay->NumEntities(); i++)
 			{
 				if (vlay->IsSelected(i))
 				{
@@ -2585,7 +2585,7 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 	if (!vlay)
 		return false;
 
-	const int size = vlay->GetNumEntities();
+	const int size = vlay->NumEntities();
 	double len, closest = 1E8;
 
 	bool bValidLocation = true;

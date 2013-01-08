@@ -118,7 +118,7 @@ void SelectDlg::FillValuesControl()
 	}
 
 	vtFeatureSet *pSet = m_pLayer->GetFeatureSet();
-	for (uint i = 0; i < pSet->GetNumEntities(); i++)
+	for (uint i = 0; i < pSet->NumEntities(); i++)
 	{
 		pSet->GetValueAsString(i, m_iField, str);
 		if (str == "")

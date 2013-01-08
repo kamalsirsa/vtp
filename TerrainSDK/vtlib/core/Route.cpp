@@ -95,7 +95,7 @@ void vtRoute::BuildGeometry(vtHeightField3d *pHeightField)
 void vtRoute::DestroyGeometry()
 {
 	// Destroy the meshes so they can be re-made
-	while (m_pWireGeom->GetNumMeshes())
+	while (m_pWireGeom->NumMeshes())
 	{
 		vtMesh *pMesh = m_pWireGeom->GetMesh(0);
 		m_pWireGeom->RemoveMesh(pMesh);
