@@ -285,7 +285,7 @@ void vtScaledView::DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill)
 		for (uint ring = 0; ring < poly.size(); ring++)
 			DrawPolyLine(pDC, poly[ring], true);
 #else
-		// Draw outer ring solid
+		// Draw outer ring
 		DrawPolyLine(pDC, poly[0], true);
 		if (poly.size() > 0)
 		{
@@ -347,6 +347,8 @@ void vtScaledView::DrawOGRPolygon(wxDC *pDC, const OGRPolygon &poly, bool bFill,
 void vtScaledView::DrawDPolygon2(wxDC *pDC, const DPolygon2 &poly, bool bFill,
 								  bool bCircles)
 {
+	static wxPoint s_box[5];
+
 	if (bFill)
 	{
 		// tessellate.  we could also draw these as solid triangles.
@@ -373,7 +375,29 @@ void vtScaledView::DrawDPolygon2(wxDC *pDC, const DPolygon2 &poly, bool bFill,
 			{
 				int size = poly[ring].GetSize();
 				for (int j = 0; j < size; j++)
+				{
+#if 0
 					pDC->DrawCircle(g_screenbuf[j], 3);
+#else
+					// A box is a little faster
+					s_box[0].x = g_screenbuf[j].x - 2;
+					s_box[0].y = g_screenbuf[j].y - 2;
+
+					s_box[1].x = g_screenbuf[j].x + 2;
+					s_box[1].y = g_screenbuf[j].y - 2;
+
+					s_box[2].x = g_screenbuf[j].x + 2;
+					s_box[2].y = g_screenbuf[j].y + 2;
+
+					s_box[3].x = g_screenbuf[j].x - 2;
+					s_box[3].y = g_screenbuf[j].y + 2;
+
+					s_box[4].x = g_screenbuf[j].x - 2;
+					s_box[4].y = g_screenbuf[j].y - 2;
+
+					pDC->DrawLines(5, s_box);
+#endif
+				}
 			}
 		}
 	}
