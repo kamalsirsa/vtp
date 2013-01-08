@@ -1550,7 +1550,7 @@ float AngleSideVector(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2,
 	const FPoint3 v1 = (p2-p1).Normalize();
 
 	// we flip axes to turn the path vector 90 degrees (normal to path)
-	FPoint3 bisector(-(v0.z + v1.z), 0, v0.x + v1.x);
+	FPoint3 bisector(v0.z + v1.z, 0, -(v0.x + v1.x));
 	bisector.Normalize();
 
 	float wider;

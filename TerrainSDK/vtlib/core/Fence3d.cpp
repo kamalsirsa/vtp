@@ -161,7 +161,10 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 			if (j == 0)
 				sideways = SidewaysVector(p3[j], p3[j+1]);
 			else if (j > 0 && j < npoints-1)
+			{
 				AngleSideVector(p3[j-1], p3[j], p3[j+1], sideways);
+				sideways = -sideways;	// We want a vector pointing left, not right
+			}
 			else if (j == npoints-1)
 				sideways = SidewaysVector(p3[j-1], p3[j]);
 
@@ -325,7 +328,10 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 		if (j == 0)
 			sideways[j] = SidewaysVector(p3[j], p3[j+1]);
 		else if (j > 0 && j < npoints-1)
+		{
 			AngleSideVector(p3[j-1], p3[j], p3[j+1], sideways[j]);
+			sideways[j] = -sideways[j];	// We want a vector pointing left, not right
+		}
 		else if (j == npoints-1)
 			sideways[j] = SidewaysVector(p3[j-1], p3[j]);
 
@@ -508,7 +514,10 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 		if (i == 0)
 			sideways = SidewaysVector(p3[i], p3[i+1]);
 		else if (i > 0 && i < npoints-1)
+		{
 			AngleSideVector(p3[i-1], p3[i], p3[i+1], sideways);
+			sideways = -sideways;	// We want a vector pointing left, not right
+		}
 		else if (i == npoints-1)
 			sideways = SidewaysVector(p3[i-1], p3[i]);
 
@@ -761,7 +770,10 @@ void vtFence3d::ShowBounds(bool bShow)
 			if (i == 0)
 				sideways = SidewaysVector(m_Posts3d[i], m_Posts3d[i+1]);
 			else if (i > 0 && i < npoints-1)
+			{
 				AngleSideVector(m_Posts3d[i-1], m_Posts3d[i], m_Posts3d[i+1], sideways);
+				sideways = -sideways;	// We want a vector pointing left, not right
+			}
 			else if (i == npoints-1)
 				sideways = SidewaysVector(m_Posts3d[i-1], m_Posts3d[i]);
 

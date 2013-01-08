@@ -135,7 +135,7 @@ public:
 	FPoint3 operator *(float s) const { return FPoint3(x*s, y*s, z*s); }
 	FPoint3 operator *(double s) const { return FPoint3((float)(x*s), (float)(y*s), (float)(z*s)); }
 	FPoint3 operator /(float s) const { return FPoint3(x/s, y/s, z/s); }
-	FPoint3 operator -() { return FPoint3(-x, -y, -z); }
+	FPoint3 operator -() const { return FPoint3(-x, -y, -z); }
 	bool operator==(const FPoint3 &v2) const
 	{ return (x == v2.x && y == v2.y && z == v2.z); }
 	bool operator!=(const FPoint3 &v2) const
@@ -145,7 +145,6 @@ public:
 	void operator -=(const FPoint3 &v) { x-=v.x; y-=v.y; z-=v.z; }
 	void operator *=(float s) { x*=s; y*=s; z*=s; }
 	void operator /=(float s) { x/=s; y/=s; z/=s; }
-	FPoint3 operator -() const { return FPoint3 (-x, -y, -z); }
 
 	// also allow array-like access, such that x,y,z components are 0,1,2
 	float &operator[](int nIndex) { return *(&x+nIndex); }

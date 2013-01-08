@@ -113,6 +113,7 @@ void NodeGeom::BuildIntersection()
 	FPoint3 v, v_next, v_prev;
 	FPoint3 pn0, pn1;
 	float w;				// link width
+	const FPoint3 up(0, ROAD_HEIGHT, 0);
 
 	SortLinksByAngle();
 
@@ -239,8 +240,6 @@ void NodeGeom::BuildIntersection()
 			norm.Normalize();
 			norm *= (pL->m_fWidth / 2);
 
-			FPoint3 up(0, ROAD_HEIGHT, 0);
-
 			float dist = distance_to_intersection[i].z;
 			m_v[i * 2 + 0] = m_p3 + norm + (v * dist) + up;
 			m_v[i * 2 + 1] = m_p3 - norm + (v * dist) + up;
@@ -358,6 +357,7 @@ LinkGeom::~LinkGeom()
 void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 {
 	float length = 0.0f;
+	const FPoint3 up(0, ROAD_HEIGHT, 0);
 
 	//  for each point in the link, determine coordinates
 	uint j, size = GetSize();
@@ -394,8 +394,6 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 			wider = AngleSideVector(m_centerline[j-1], m_centerline[j], m_centerline[j+1], bisector);
 
 			// and elevate the link above the terrain
-			FPoint3 up(0, ROAD_HEIGHT, 0);
-
 			left = m_centerline[j] - bisector + up;
 			right = m_centerline[j] + bisector + up;
 		}
