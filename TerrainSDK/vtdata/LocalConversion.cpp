@@ -16,11 +16,6 @@
 #include "Projections.h"
 #include "LocalConversion.h"
 
-//
-// The global current projection for the current terrain is stored here.
-//
-vtLocalConversion g_Conv;
-
 ////////////////////////////////////////////////////////////////////////////
 
 vtLocalConversion::vtLocalConversion()

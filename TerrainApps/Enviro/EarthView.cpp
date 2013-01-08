@@ -971,14 +971,14 @@ void Enviro::FlyInStage1()
 		DPoint3 earth_geo(m_FlyInCenter.x, m_FlyInCenter.y,
 			m_fTransitionHeight);
 
-		vtProjection &tproj = m_pTargetTerrain->GetProjection();
+		const vtProjection &tproj = m_pTargetTerrain->GetProjection();
 		vtProjection gproj;
 		CreateSimilarGeographicProjection(tproj, gproj);
 		OCT *trans = CreateCoordTransform(&gproj, &tproj);
 		DPoint3 earth_local = earth_geo;
 		trans->Transform(1, &earth_local.x, &earth_local.y);
 
-		vtLocalConversion &conv = m_pTargetTerrain->GetHeightField()->m_Conversion;
+		const vtLocalConversion &conv = m_pTargetTerrain->GetLocalConversion();
 		FPoint3 world;
 		conv.ConvertFromEarth(earth_local, world);
 

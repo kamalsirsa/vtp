@@ -1081,9 +1081,7 @@ bool vtBuilding::GetBaseLevelCenter(DPoint2 &p) const
 
 void vtBuilding::Offset(const DPoint2 &p)
 {
-	uint i;
-
-	for (i = 0; i < m_Levels.GetSize(); i++)
+	for (uint i = 0; i < m_Levels.GetSize(); i++)
 	{
 		vtLevel *lev = m_Levels[i];
 		DPolygon2 &foot = lev->GetFootprint();
@@ -1100,21 +1098,16 @@ void vtBuilding::Offset(const DPoint2 &p)
 //
 bool vtBuilding::GetExtents(DRECT &rect) const
 {
-	uint i, j;
 	uint levs = m_Levels.GetSize();
 	if (levs == 0)
 		return false;
 
 	rect.SetRect(1E9, -1E9, -1E9, 1E9);
-	for (i = 0; i < levs; i++)
+	for (uint i = 0; i < levs; i++)
 	{
 		vtLevel *lev = m_Levels[i];
 		if (lev->GetFootprint().size() != 0)	// safety check
-		{
-			const DLine2 &outer = lev->GetOuterFootprint();
-			for (j = 0; j < outer.GetSize(); j++)
-				rect.GrowToContainPoint(outer[j]);
-		}
+			rect.GrowToContainLine(lev->GetOuterFootprint());
 	}
 	return true;
 }

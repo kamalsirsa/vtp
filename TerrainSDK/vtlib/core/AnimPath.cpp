@@ -9,7 +9,6 @@
 
 #include "vtlib/vtlib.h"
 #include "AnimPath.h"
-#include "vtdata/LocalConversion.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
 
@@ -66,9 +65,10 @@ vtAnimPath::~vtAnimPath()
 	delete m_pConvertFromWGS;
 }
 
-bool vtAnimPath::SetProjection(const vtProjection &proj)
+bool vtAnimPath::SetProjection(const vtProjection &proj, const vtLocalConversion &conv)
 {
 	m_proj = proj;
+	m_conv = conv;
 
 	// convert from projected to global CS
 	vtProjection global_proj;
@@ -324,8 +324,8 @@ bool vtAnimPath::Write(const char *fname)
 
 		world_p1 = point.m_Position;
 		world_p2 = world_p1 + vector;
-		g_Conv.ConvertToEarth(world_p1, earth_p1);
-		g_Conv.ConvertToEarth(world_p2, earth_p2);
+		m_conv.ConvertToEarth(world_p1, earth_p1);
+		m_conv.ConvertToEarth(world_p2, earth_p2);
 
 		int result = 0;
 		result += m_pConvertToWGS->Transform(1, &earth_p1.x, &earth_p1.y);
@@ -365,6 +365,7 @@ public:
 	void startElement(const char *name, const XMLAttributes &atts);
 	void endElement(const char *name) {}
 	void data(const char *s, int length) {}
+	vtLocalConversion m_conv;
 private:
 	vtAnimPath *m_path;
 };
@@ -393,8 +394,8 @@ void AnimPathVisitor::startElement(const char *name, const XMLAttributes &atts)
 		result += m_path->m_pConvertFromWGS->Transform(1, &earth_p1.x, &earth_p1.y);
 		result += m_path->m_pConvertFromWGS->Transform(1, &earth_p2.x, &earth_p2.y);
 
-		g_Conv.ConvertFromEarth(earth_p1, world_p1);
-		g_Conv.ConvertFromEarth(earth_p2, world_p2);
+		m_conv.ConvertFromEarth(earth_p1, world_p1);
+		m_conv.ConvertFromEarth(earth_p2, world_p2);
 
 		ControlPoint point;
 		point.m_Position = world_p1;
@@ -419,6 +420,7 @@ bool vtAnimPath::Read(const char *fname)
 	Clear();
 
 	AnimPathVisitor visitor(this);
+	visitor.m_conv = m_conv;
 	try
 	{
 		readXML(fname, visitor);
@@ -476,7 +478,7 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 				trans->Transform(1, &current.x, &current.y);
 
 			// Transform 2: earth CRS to world CRS
-			g_Conv.convert_earth_to_local_xz(current.x, current.y, pos.x, pos.z);
+			m_conv.convert_earth_to_local_xz(current.x, current.y, pos.x, pos.z);
 			pos.y = 0;
 
 			fline.Append(pos);
@@ -500,7 +502,7 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 				trans->Transform(1, &current.x, &current.y);
 
 			// Transform 2: earth CRS to world CRS
-			g_Conv.convert_earth_to_local_xz(current.x, current.y, pos.x, pos.z);
+			m_conv.convert_earth_to_local_xz(current.x, current.y, pos.x, pos.z);
 			pos.y = (float) current.z;
 
 			fline.Append(pos);

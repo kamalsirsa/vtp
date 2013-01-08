@@ -24,8 +24,8 @@ public:
 	void IgnoreElapsedTime();
 
 	FPoint3 GetCurPos() { return m_vCurPos; }
-	void SetEarthPos(const DPoint2 &pos);
-	DPoint2 GetEarthPos();
+	void SetEarthPos(const vtLocalConversion &conv, const DPoint2 &pos);
+	DPoint2 GetEarthPos(const vtLocalConversion &conv);
 
 	void SetSpeed(float fMeterPerSec);
 

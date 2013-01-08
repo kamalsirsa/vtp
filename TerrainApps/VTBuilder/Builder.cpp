@@ -1036,11 +1036,10 @@ void Builder::CarveWithCulture(vtElevLayer *pElev, float margin)
 
 			if (bld && bld->GetLevel(0))
 			{
-				const DPolygon2 &dpoly = bld->GetLevel(0)->GetFootprint();
-				building_extents[i].SetRect(1E9,-1E9,-1E9,1E9);
-				building_extents[i].GrowToContainLine(dpoly[0]);
+				bld->GetExtents(building_extents[i]);
 				building_extents[i].Grow(margin, margin);
 
+				const DPolygon2 &dpoly = bld->GetLevel(0)->GetFootprint();
 				const DPoint2 center = dpoly[0].Centroid();
 				if (grid->FindAltitudeOnEarth(center, elev, true))
 					building_heights[i] = elev;

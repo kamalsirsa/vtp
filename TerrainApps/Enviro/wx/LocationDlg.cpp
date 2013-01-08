@@ -270,8 +270,7 @@ vtAnimPath *LocationDlg::CreateAnimPath()
 	vtAnimPath *anim = new vtAnimPath;
 
 	// Ensure that anim knows the projection
-	const vtProjection &proj = m_pSaver->GetAtProjection();
-	anim->SetProjection(proj);
+	anim->SetProjection(m_pSaver->GetAtProjection(), m_pSaver->GetConversion());
 
 	return anim;
 }

@@ -897,21 +897,12 @@ void vtTerrain::CreateWaterHeightfield(const vtString &fname)
 	DRECT ext2 = m_pWaterTin3d->GetEarthExtents();
 	DPoint2 offset = ext2.LowerLeft() - ext1.LowerLeft();
 	float x, z;
-	g_Conv.ConvertVectorFromEarth(offset, x, z);
+	GetLocalConversion().ConvertVectorFromEarth(offset, x, z);
 	vtTransform *xform = new vtTransform;
 	xform->Translate(FPoint3(x, 0, z));
 
 	xform->addChild(wsgeom);
 	m_pTerrainGroup->addChild(xform);
-}
-
-//
-// set global projection based on this terrain's heightfield
-//
-void vtTerrain::SetGlobalProjection()
-{
-	if (m_pHeightField)
-		g_Conv = m_pHeightField->m_Conversion;
 }
 
 /**
@@ -1707,7 +1698,7 @@ vtMultiTexture *vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &
 	else	// might be a TiledGeom, or a TIN
 	{
 		FRECT worldExtents;
-		g_Conv.ConvertFromEarth(extents, worldExtents);
+		GetLocalConversion().ConvertFromEarth(extents, worldExtents);
 
 		// Map input values (0-terrain size in world coords) to 0-1
 		scale.Set(1.0/worldExtents.Width(), 1.0/worldExtents.Height());
@@ -2048,8 +2039,6 @@ bool vtTerrain::CreateStep2()
 		m_pElevGrid->SetupConversion(m_Params.GetValueFloat(STR_VERTICALEXAG));
 		m_pHeightField = m_pElevGrid.get();
 		m_proj = m_pElevGrid->GetProjection();
-		// set global projection based on this terrain
-		g_Conv = m_pElevGrid->m_Conversion;
 		m_bIsCreated = true;
 		return true;
 	}
@@ -2059,8 +2048,6 @@ bool vtTerrain::CreateStep2()
 		VTLOG1("Using supplied TIN.\n");
 		m_pHeightField = m_pTin;
 		m_proj = m_pTin->m_proj;
-		// set global projection based on this terrain
-		g_Conv = m_pTin->m_Conversion;
 		m_bIsCreated = true;
 		return true;
 	}
@@ -2135,8 +2122,6 @@ bool vtTerrain::CreateStep2()
 		VTLOG("\t\tVertical exaggeration: %g\n", exag);
 		m_pElevGrid->SetupConversion(exag);
 
-		g_Conv = m_pElevGrid->m_Conversion;
-
 		FRECT frect = m_pElevGrid->m_WorldExtents;
 		VTLOG("\t\tWorld Extents LRTB: %g %g %g %g\n",
 			frect.left, frect.right, frect.top, frect.bottom);
@@ -2167,8 +2152,6 @@ bool vtTerrain::CreateStep2()
 			VTLOG("\tTIN load succeeded.\n");
 
 			m_proj = m_pTin->m_proj;
-			g_Conv = m_pTin->m_Conversion;
-
 			m_pHeightField = m_pTin;
 		}
 	}
@@ -2216,7 +2199,6 @@ bool vtTerrain::CreateStep2()
 		}
 		m_pTiledGeom->SetTexLODFactor(m_Params.GetValueFloat(STR_TEXURE_LOD_FACTOR));
 		m_pHeightField = m_pTiledGeom;
-		g_Conv = m_pHeightField->m_Conversion;
 		m_proj = m_pTiledGeom->m_proj;
 
 		// The tiled geometry base texture will always use texture unit 0
@@ -2232,7 +2214,6 @@ bool vtTerrain::CreateStep2()
 			return false;
 		}
 		m_pHeightField = m_pExternalHeightField;
-		g_Conv = m_pExternalHeightField->m_Conversion;
 		m_proj = m_pExternalHeightField->GetProjection();
 	}
 	char type[10], value[2048];
@@ -2460,7 +2441,7 @@ void vtTerrain::CreateStep9()
 		VTLOG("Reading animpath: %s.\n", (const char *) path);
 		vtAnimPath *anim = new vtAnimPath;
 		// Ensure that anim knows the projection
-		if (!anim->SetProjection(GetProjection()))
+		if (!anim->SetProjection(GetProjection(), GetLocalConversion()))
 		{
 			// no projection, no functionality
 			delete anim;
@@ -2695,7 +2676,7 @@ float vtTerrain::GetLODDistance(TFType ftype)
  * If you know that your data is a grid, you can use GetHeightFieldGrid3d()
  * to get that specifically.
  */
-vtHeightField3d *vtTerrain::GetHeightField()
+vtHeightField3d *vtTerrain::GetHeightField() const
 {
 	return m_pHeightField;
 }

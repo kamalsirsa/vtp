@@ -127,6 +127,7 @@ public:
 protected:
 	vtGeode		*m_pHighlight;	// The wireframe highlight
 	osg::ref_ptr<osg::Node> m_pModel; // the contained model
+	double		m_RadiusInEarthCoords;
 };
 
 

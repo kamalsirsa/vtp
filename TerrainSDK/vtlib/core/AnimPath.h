@@ -13,6 +13,7 @@
 #include "Engine.h"
 #include "vtdata/CubicSpline.h"
 #include "vtdata/Features.h"
+#include "vtdata/LocalConversion.h"
 
 /** \addtogroup nav */
 /*@{*/
@@ -61,7 +62,7 @@ public:
 	virtual ~vtAnimPath();
 
 	/// Must tell the AnimPath what projection its points are in, for serialization.
-	bool SetProjection(const vtProjection &proj);
+	bool SetProjection(const vtProjection &proj, const vtLocalConversion &conv);
 
 	/// Get the transformation matrix for a point in time.
 	bool GetMatrix(double time, FMatrix4 &matrix, bool bPosOnly) const
@@ -147,6 +148,7 @@ protected:
 	vtProjection	m_proj;
 	OCT			*m_pConvertToWGS;
 	OCT			*m_pConvertFromWGS;
+	vtLocalConversion m_conv;
 	friend class AnimPathVisitor;
 };
 typedef osg::ref_ptr<vtAnimPath> vtAnimPathPtr;

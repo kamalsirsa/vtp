@@ -4,7 +4,7 @@
 // This library has a concept of current conversion from earth to world
 // coordinates which is represented by the vtLocalConversion class.
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -50,8 +50,6 @@ protected:
 	DPoint2	m_EarthOrigin;
 	DPoint2	m_scale;
 };
-
-extern vtLocalConversion g_Conv;
 
 #endif // VTLIB_LOCALCONVERSIONH
 

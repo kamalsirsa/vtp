@@ -55,7 +55,7 @@ enum AirportCodes {ITO, KOA, MUE, UPP};
 class PlaneEngine : public vtEngine
 {
 public:
-	PlaneEngine(float fSpeedExag, AirportCodes code);
+	PlaneEngine(const vtLocalConversion &conv, float fSpeedExag, AirportCodes code);
 	void Eval();
 	void SetHoop(int i);
 

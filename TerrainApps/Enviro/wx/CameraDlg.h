@@ -44,6 +44,7 @@ public:
 	void SetSliderControls();
 
 	void CameraChanged();
+	void SetLocalConversion(const vtLocalConversion &conv) { m_Conv = conv; }
 	void CheckAndUpdatePos();
 
 private:
@@ -76,7 +77,8 @@ private:
 	float m_fDistRoad;
 
 	bool m_bSet;
-	DPoint3 m_pos;
+	DPoint3 m_EarthPos;
+	vtLocalConversion m_Conv;
 	bool m_bOrtho;
 
 private:

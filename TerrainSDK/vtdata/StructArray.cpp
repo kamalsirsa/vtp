@@ -22,7 +22,6 @@
 #include "Building.h"
 #include "Fence.h"
 #include "FilePath.h"
-#include "LocalConversion.h"
 #include "MaterialDescriptor.h"
 #include "PolyChecker.h"
 #include "StructArray.h"

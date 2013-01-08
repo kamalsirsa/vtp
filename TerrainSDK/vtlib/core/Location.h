@@ -103,6 +103,7 @@ public:
 
 	/// Define the conversion between this saver and terrain coordinates
 	void SetConversion(const vtLocalConversion &conv) { m_conv = conv; }
+	const vtLocalConversion &GetConversion() { return m_conv; }
 
 	/// Define the projection of the object attached to this LocationSaver
 	void SetProjection(const vtProjection &proj);

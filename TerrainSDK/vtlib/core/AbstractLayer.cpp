@@ -374,7 +374,7 @@ void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 	// We may need to convert from the CRS of the featureset to the CRS of the
 	//  terrain (before converting from terrain to world coordinates)
 	vtProjection &proj_feat = pSet->GetAtProjection();
-	vtProjection &proj_terr = m_pTerr->GetProjection();
+	const vtProjection &proj_terr = m_pTerr->GetProjection();
 	auto_ptr<OCT> octransform;
 	if (proj_feat.GetRoot() && proj_terr.GetRoot() && !proj_feat.IsSame(&proj_terr))
 	{

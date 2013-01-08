@@ -3302,6 +3302,8 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 {
 	if (pTerrain)
 	{
+		m_pCameraDlg->SetLocalConversion(pTerrain->GetLocalConversion());
+
 		m_pLocationDlg->SetLocSaver(pTerrain->GetLocSaver());
 		m_pLocationDlg->SetAnimContainer(pTerrain->GetAnimContainer());
 

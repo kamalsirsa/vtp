@@ -186,6 +186,14 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		pTerr->ExtendStructure(this);
 
 	UpdateTransform(pTerr->GetHeightField());
+
+	// Remember the radius for later
+	FSphere sphere;
+	s2v(m_pModel->getBound(), sphere);
+	DPoint2 evector;
+	pTerr->GetLocalConversion().ConvertVectorToEarth(sphere.radius, 0, evector);
+	m_RadiusInEarthCoords = evector.x;
+
 	return true;
 }
 
@@ -223,19 +231,11 @@ double vtStructInstance3d::DistanceToPoint(const DPoint2 &p, float fMaxRadius) c
 		//  from the given point to the edge of the bounding sphere.  This
 		//  makes objects easier to select, because their selectable zone
 		//  is larger for larger objects.  This is a little messy, because
-		//  it's a world-coord operation applied to a earth-coord result.
-		FSphere sphere;
-		s2v(m_pModel->getBound(), sphere);
-		FPoint3 trans = m_pContainer->GetTrans();
-		sphere.center += trans;
-		if (sphere.radius < fMaxRadius)
+		//  it's a world-coord operation applied to a earth-coord value.
+		if (m_RadiusInEarthCoords < fMaxRadius)
 		{
-			DPoint2 ecenter;
-			DPoint2 evector;
-			g_Conv.ConvertToEarth(sphere.center.x, sphere.center.z, ecenter);
-			g_Conv.ConvertVectorToEarth(sphere.radius, 0, evector);
-			double dist = (ecenter - p).Length();
-			return (dist - evector.x);
+			double dist_to_center = vtStructInstance::DistanceToPoint(p, fMaxRadius);
+			return dist_to_center - m_RadiusInEarthCoords;
 		}
 		else
 			return 1E9;	// Ignore instances with such a large radius

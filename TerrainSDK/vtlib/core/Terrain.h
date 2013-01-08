@@ -201,9 +201,6 @@ public:
 	/// Test whether a given point is within the current terrain.
 	bool PointIsInTerrain(const DPoint2 &p);
 
-	// set global projection based on this terrain
-	void SetGlobalProjection();
-
 	// Route
 	void AddRoute(vtRoute *f);
 	void add_routepoint_earth(vtRoute *f, const DPoint2 &epos, const char *structname);
@@ -309,9 +306,10 @@ public:
 	vtTiledGeom *GetTiledGeom() { return m_pTiledGeom.get(); }
 	vtGroup *GetTopGroup() { return m_pContainerGroup; }
 	vtGroup *GetTerrainGroup() { return m_pTerrainGroup; }
-	vtHeightField3d *GetHeightField();
+	vtHeightField3d *GetHeightField() const;
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
-	vtProjection &GetProjection() { return m_proj; }
+	const vtLocalConversion &GetLocalConversion() const { return GetHeightField()->m_Conversion; }
+	const vtProjection &GetProjection() const { return m_proj; }
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, bool bTrue, int iCultureFlags) const;
 	int GetShadowTextureUnit();
 

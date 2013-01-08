@@ -315,9 +315,6 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 
 	TParams &param = m_pCurrentTerrain->GetParams();
 
-	// switch to the projection of this terrain
-	m_pCurrentTerrain->SetGlobalProjection();
-
 	// Set background color to match the ocean
 	vtGetScene()->SetBgColor(m_pCurrentTerrain->GetBgColor());
 

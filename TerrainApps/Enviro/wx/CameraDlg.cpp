@@ -279,14 +279,14 @@ void CameraDlg::CameraChanged()
 void CameraDlg::CheckAndUpdatePos()
 {
 	vtCamera *cam = vtGetScene()->GetCamera();
-	FPoint3 fpos = cam->GetTrans();
-	g_Conv.ConvertToEarth(fpos, m_pos);
+	const FPoint3 WorldPos = cam->GetTrans();
+	m_Conv.ConvertToEarth(WorldPos, m_EarthPos);
 
 	bool bTransfer = false;
 	wxString newx, newy, newz;
-	newx.Printf(_T("%.7g"), m_pos.x);
-	newy.Printf(_T("%.7g"), m_pos.y);
-	newz.Printf(_T("%.7g"), m_pos.z);
+	newx.Printf(_T("%.7g"), m_EarthPos.x);
+	newy.Printf(_T("%.7g"), m_EarthPos.y);
+	newz.Printf(_T("%.7g"), m_EarthPos.z);
 	if (newx != m_camX || newy != m_camY || newz != m_camZ)
 	{
 		// new to refresh values
@@ -469,12 +469,12 @@ void CameraDlg::OnTextEnter( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
-	m_pos.x = atof(m_camX.mb_str(wxConvUTF8));
-	m_pos.y = atof(m_camY.mb_str(wxConvUTF8));
-	m_pos.z = atof(m_camZ.mb_str(wxConvUTF8));
+	m_EarthPos.x = atof(m_camX.mb_str(wxConvUTF8));
+	m_EarthPos.y = atof(m_camY.mb_str(wxConvUTF8));
+	m_EarthPos.z = atof(m_camZ.mb_str(wxConvUTF8));
 
-	FPoint3 fpos;
-	g_Conv.ConvertFromEarth(m_pos, fpos);
-	vtGetScene()->GetCamera()->SetTrans(fpos);
+	FPoint3 WorldPos;
+	m_Conv.ConvertFromEarth(m_EarthPos, WorldPos);
+	vtGetScene()->GetCamera()->SetTrans(WorldPos);
 }
 

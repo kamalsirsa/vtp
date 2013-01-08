@@ -195,7 +195,7 @@ vtPagedStructureLOD *vtPagedStructureLodGrid::FindPagedCellParent(const FPoint3 
 	if (a < 0 || a >= m_dim || b < 0 || b >= m_dim)
 		return NULL;
 
-	int i = CellIndex(a, b);
+	const int i = CellIndex(a, b);
 	if (!m_pCells[i])
 		AllocateCell(a, b);
 
@@ -232,10 +232,10 @@ vtPagedStructureLOD *vtPagedStructureLodGrid::FindGroup(vtStructure *str)
 	if (str->GetExtents(rect))
 	{
 		float xmin, xmax, zmin, zmax;
-		g_Conv.convert_earth_to_local_xz(rect.left, rect.bottom, xmin, zmin);
-		g_Conv.convert_earth_to_local_xz(rect.right, rect.top, xmax, zmax);
+		m_pHeightField->m_Conversion.convert_earth_to_local_xz(rect.left, rect.bottom, xmin, zmin);
+		m_pHeightField->m_Conversion.convert_earth_to_local_xz(rect.right, rect.top, xmax, zmax);
 
-		FPoint3 mid((xmin+xmax) / 2, 0.0f, (zmin+zmax)/2);
+		const FPoint3 mid((xmin+xmax) / 2, 0.0f, (zmin+zmax)/2);
 
 		return FindPagedCellParent(mid);
 	}
@@ -379,8 +379,8 @@ void vtPagedStructureLodGrid::SortQueue()
 	// Prioritization is by distance.
 	// We can measure horizontal distance, which is faster.
 	DPoint3 cam_epos, cam_epos2;
-	g_Conv.ConvertToEarth(CamPos, cam_epos);
-	g_Conv.ConvertToEarth(CamPos+CamDir, cam_epos2);
+	m_pHeightField->m_Conversion.ConvertToEarth(CamPos, cam_epos);
+	m_pHeightField->m_Conversion.ConvertToEarth(CamPos+CamDir, cam_epos2);
 	DPoint2 cam_pos(cam_epos.x, cam_epos.y);
 	DPoint2 cam_dir(cam_epos2.x - cam_epos.x, cam_epos2.y - cam_epos.y);
 	cam_dir.Normalize();
