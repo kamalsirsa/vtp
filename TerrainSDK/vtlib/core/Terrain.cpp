@@ -3048,7 +3048,7 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 	}
 	else if (vlay)
 	{
-		for (int i = 0; i < vlay->GetNumEntities(); i++)
+		for (uint i = 0; i < vlay->GetNumEntities(); i++)
 			vlay->Select(i, true);
 		DeleteSelectedPlants(vlay);
 	}

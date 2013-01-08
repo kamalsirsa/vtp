@@ -608,8 +608,8 @@ void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	const FLine3 &quad)
 {
-	float vf1 = pFeat->m_vf1;
-	float vf2 = pFeat->m_vf2;
+	const float vf1 = pFeat->m_vf1;
+	const float vf2 = pFeat->m_vf2;
 
 	// build wall to base of window.
 	AddWallSection(pEdge, false, quad, 0, vf1);
@@ -618,20 +618,19 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	AddWallSection(pEdge, false, quad, vf2, 1.0f);
 
 	// determine 4 points at corners of section
-	FPoint3 up1 = (quad[2] - quad[0]);
-	FPoint3 up2 = (quad[3] - quad[1]);
-	FPoint3 p0 = quad[0] + (up1 * vf1);
-	FPoint3 p1 = quad[1] + (up2 * vf1);
-	FPoint3 p3 = quad[0] + (up1 * vf2);
-	FPoint3 p2 = quad[1] + (up2 * vf2);
+	const FPoint3 up1 = (quad[2] - quad[0]);
+	const FPoint3 up2 = (quad[3] - quad[1]);
+	const FPoint3 p0 = quad[0] + (up1 * vf1);
+	const FPoint3 p1 = quad[1] + (up2 * vf1);
+	const FPoint3 p3 = quad[0] + (up1 * vf2);
+	const FPoint3 p2 = quad[1] + (up2 * vf2);
 
 	vtMesh *mesh = FindMatMesh(BMAT_NAME_WINDOW, pEdge->m_Color, osg::PrimitiveSet::TRIANGLE_FAN);
 
 	// determine normal (flat shading, all vertices have the same normal)
-	FPoint3 norm = Normal(p0,p1,p2);
+	const FPoint3 norm = Normal(p0,p1,p2);
 
-	int start =
-		mesh->AddVertexNUV(p0, norm, FPoint2(0.0f, 0.0f));
+	const int start = mesh->AddVertexNUV(p0, norm, FPoint2(0.0f, 0.0f));
 	mesh->AddVertexNUV(p1, norm, FPoint2(1.0f, 0.0f));
 	mesh->AddVertexNUV(p2, norm, FPoint2(1.0f, 1.0f));
 	mesh->AddVertexNUV(p3, norm, FPoint2(0.0f, 1.0f));
@@ -639,13 +638,11 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	mesh->AddFan(start, start+1, start+2, start+3);
 }
 
-
 void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 {
 	FPoint3 up(0.0f, 1.0f, 0.0f);	// vector pointing up
-	int rings = pp.size();
+	const int rings = pp.size();
 	int outer_corners = pp[0].GetSize();
-	int i, j;
 	FPoint2 uv;
 
 	vtEdge *pEdge = pLev->GetEdge(0);
@@ -694,9 +691,9 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 		FPoint2 gp;
 		FPoint3 p;
 
-		for (i=0; i<tcount; i++)
+		for (int i=0; i<tcount; i++)
 		{
-			for (j = 0; j < 3; j++)
+			for (int j = 0; j < 3; j++)
 			{
 				p = result[i*3+j];
 				uv.Set(p.x, p.z);
@@ -710,7 +707,7 @@ void vtBuilding3d::AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev)
 	else
 	{
 		int idx[MAX_WALLS];
-		for (i = 0; i < outer_corners; i++)
+		for (int i = 0; i < outer_corners; i++)
 		{
 			FPoint3 p = pp[0][i];
 			uv.Set(p.x, p.z);

@@ -288,6 +288,7 @@ protected:
 	void OnPopupCopyStyle(wxCommandEvent& event);
 	void OnPopupPasteStyle(wxCommandEvent& event);
 	void OnPopupFlip(wxCommandEvent& event);
+	void OnPopupSetEaves(wxCommandEvent& event);
 	void OnPopupReload(wxCommandEvent& event);
 	void OnPopupShadow(wxCommandEvent& event);
 	void OnPopupAdjust(wxCommandEvent& event);

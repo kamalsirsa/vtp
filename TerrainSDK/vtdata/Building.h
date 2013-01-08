@@ -89,15 +89,13 @@ public:
 	float FixedFeaturesWidth() const;
 	float ProportionTotal() const;
 	bool IsUniform() const;
+	float SlopeRadians() const { return m_iSlope / 180.0f * PIf; }
 
 	// color
 	RGBi	m_Color;	// overall edge color
 
 	// slope in degrees: 90 is vertical, 0 is horizontal
 	int	m_iSlope;
-
-	// eave_length
-	float m_fEaveLength;
 
 	// members
 	const vtString		*m_pMaterial;
@@ -257,6 +255,9 @@ public:
 
 	bool IsContainedBy(const DRECT &rect) const;
 	void SwapLevels(int lev1, int lev2);
+	void SetEaves(float fLength);
+	void SetEavesSimple(float fLength);
+	void SetEavesFelkel(float fLength);
 	void CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight);
 
 	void SetCRS(vtProjection *proj) { m_pCRS = proj; }

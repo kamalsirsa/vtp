@@ -56,35 +56,6 @@ FPoint3 SidewaysVector(const FPoint3 &p0, const FPoint3 &p1)
 	return cross;
 }
 
-float SidewaysVector(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2,
-					FPoint3 &sideways)
-{
-	// Look at vectors to previous and next points
-	FPoint3 v0 = (p1-p0).Normalize();
-	FPoint3 v1 = (p2-p1).Normalize();
-
-	// we flip axes to turn the path vector 90 degrees (normal to path)
-	FPoint3 bisector(-(v0.z + v1.z), 0, v0.x + v1.x);
-	bisector.Normalize();
-
-	float wider;
-	float dot = v0.Dot(-v1);
-	if (dot <= -0.97 || dot >= 0.97)
-	{
-		// close enough to colinear, no need to widen
-		wider = 1.0f;
-	}
-	else
-	{
-		// factor to widen this corner is proportional to the angle
-		float angle = acos(dot);
-		wider = (float) (1.0 / sin(angle / 2));
-		bisector *= wider;
-	}
-	sideways = bisector;
-	return wider;
-}
-
 void vtFence3d::AddWireMeshes(const FLine3 &p3)
 {
 	// special connector type, consisting of 3 wires
@@ -190,7 +161,7 @@ void vtFence3d::AddThickConnectionMesh(const FLine3 &p3)
 			if (j == 0)
 				sideways = SidewaysVector(p3[j], p3[j+1]);
 			else if (j > 0 && j < npoints-1)
-				SidewaysVector(p3[j-1], p3[j], p3[j+1], sideways);
+				AngleSideVector(p3[j-1], p3[j], p3[j+1], sideways);
 			else if (j == npoints-1)
 				sideways = SidewaysVector(p3[j-1], p3[j]);
 
@@ -354,7 +325,7 @@ void vtFence3d::AddProfileConnectionMesh(const FLine3 &p3)
 		if (j == 0)
 			sideways[j] = SidewaysVector(p3[j], p3[j+1]);
 		else if (j > 0 && j < npoints-1)
-			SidewaysVector(p3[j-1], p3[j], p3[j+1], sideways[j]);
+			AngleSideVector(p3[j-1], p3[j], p3[j+1], sideways[j]);
 		else if (j == npoints-1)
 			sideways[j] = SidewaysVector(p3[j-1], p3[j]);
 
@@ -537,7 +508,7 @@ void vtFence3d::AddPostExtensions(const FLine3 &p3)
 		if (i == 0)
 			sideways = SidewaysVector(p3[i], p3[i+1]);
 		else if (i > 0 && i < npoints-1)
-			SidewaysVector(p3[i-1], p3[i], p3[i+1], sideways);
+			AngleSideVector(p3[i-1], p3[i], p3[i+1], sideways);
 		else if (i == npoints-1)
 			sideways = SidewaysVector(p3[i-1], p3[i]);
 
@@ -790,7 +761,7 @@ void vtFence3d::ShowBounds(bool bShow)
 			if (i == 0)
 				sideways = SidewaysVector(m_Posts3d[i], m_Posts3d[i+1]);
 			else if (i > 0 && i < npoints-1)
-				SidewaysVector(m_Posts3d[i-1], m_Posts3d[i], m_Posts3d[i+1], sideways);
+				AngleSideVector(m_Posts3d[i-1], m_Posts3d[i], m_Posts3d[i+1], sideways);
 			else if (i == npoints-1)
 				sideways = SidewaysVector(m_Posts3d[i-1], m_Posts3d[i]);
 

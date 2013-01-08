@@ -1063,9 +1063,6 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 				attval = atts.getValue("Slope");
 				if (attval)
 					m_pEdge->m_iSlope = atoi(attval);
-				attval = atts.getValue("EaveLength");
-				if (attval)
-					m_pEdge->m_fEaveLength = (float) atof(attval);
 				attval = atts.getValue("Facade");
 				if (attval)
 					m_pEdge->m_Facade = attval;

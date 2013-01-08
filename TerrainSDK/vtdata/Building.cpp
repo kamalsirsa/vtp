@@ -55,7 +55,6 @@ vtEdge::vtEdge()
 {
 	m_Color.Set(255,0,0);		// default color: red
 	m_iSlope = 90;		// vertical
-	m_fEaveLength = 0.0f;
 	m_pMaterial = GetGlobalMaterials()->FindName(BMAT_NAME_PLAIN);
 }
 
@@ -63,7 +62,6 @@ vtEdge::vtEdge(const vtEdge &lhs)
 {
 	m_Color = lhs.m_Color;
 	m_iSlope = lhs.m_iSlope;
-	m_fEaveLength = lhs.m_fEaveLength;
 	for (uint i = 0; i < lhs.m_Features.size(); i++)
 		m_Features.push_back(lhs.m_Features[i]);
 	m_pMaterial = lhs.m_pMaterial;
@@ -1321,9 +1319,6 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 			if (edge->m_iSlope != 90)
 				gfprintf(out, " Slope=\"%d\"", edge->m_iSlope);
 
-			if (edge->m_fEaveLength != 0.0f)
-				gfprintf(out, " EaveLength=\"%f\"", edge->m_fEaveLength);
-
 			if (!edge->m_Facade.IsEmpty())
 				gfprintf(out, " Facade=\"%s\"", (pcchar)edge->m_Facade);
 
@@ -1445,10 +1440,7 @@ int vtBuilding::GetEdgeFeatureValue(const char *value)
 
 bool vtBuilding::IsContainedBy(const DRECT &rect) const
 {
-	// I find that it's easier to select building using their centers
-//	DRECT r;
-//	GetExtents(r);
-//	return rect.ContainsRect(r);
+	// It's easier to select buildings using their centers, than using their extents.
 	DPoint2 center;
 	GetBaseLevelCenter(center);
 	return rect.ContainsPoint(center);
@@ -1460,7 +1452,68 @@ void vtBuilding::SwapLevels(int lev1, int lev2)
 	m_Levels[lev1] = m_Levels[lev2];
 	m_Levels[lev2] = pTemp;
 
-	// keep 2d and 3d in synch
+	// keep 2d and 3d in sync
+	DetermineLocalFootprints();
+}
+
+void vtBuilding::SetEaves(float fLength)
+{
+	// Assume that the top level is the roof
+	vtLevel *roof = m_Levels[m_Levels.GetSize()-1];
+	if (roof->NumEdges() <= 4)
+		SetEavesSimple(fLength);
+	else
+		SetEavesFelkel(fLength);
+}
+
+void vtBuilding::SetEavesSimple(float fLength)
+{
+	// Assume that the top level is the roof
+	vtLevel *roof = m_Levels[m_Levels.GetSize()-1];
+	float height = roof->m_fStoryHeight;
+
+	for (int i = 0; i < roof->NumEdges(); i++)
+	{
+		vtEdge *edge = roof->GetEdge(i);
+
+		// Ignore vertical walls and flat roofs
+		if (edge->m_iSlope == 90 || edge->m_iSlope == 0)
+			continue;
+
+		// Assume only one edge feature on each edge of a roof.
+		if (edge->NumFeatures() != 1)
+			continue;
+
+		// Simple trigonometry to convert the height, angle and length of the
+		// eave (in meters) to produce the length as a fraction.
+		float angle = edge->SlopeRadians();
+		float fraction = fLength / (height / sin(angle));
+
+		edge->m_Features[0].m_vf1 = -fraction;
+	}
+}
+
+void vtBuilding::SetEavesFelkel(float fLength)
+{
+	// Assume that the top level is the roof
+	vtLevel *roof = m_Levels[m_Levels.GetSize()-1];
+
+	// Convert meters to local units
+	DPolygon2 &foot = roof->GetFootprint();
+	DLine2 &line = foot[0];
+	DLine2 offset(line.GetSize());
+	for (int i = 0; i < (int) line.GetSize(); i++)
+	{
+		AngleSideVector(line.GetSafePoint(i-1), line[i], line.GetSafePoint(i+1), offset[i]);
+	}
+	for (int i = 0; i < (int) line.GetSize(); i++)
+	{
+		// Offset points to the left, subtract it to go to the right, which on a
+		// counter-clockwise polygon, expands the polygon.
+		line[i] -= (offset[i] * fLength);
+	}
+
+	// keep 2d and 3d in sync
 	DetermineLocalFootprints();
 }
 
@@ -1547,7 +1600,7 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 				float features_per_meter = (float) num_features1 / length1;
 
 				const float length2 = pLevel->GetLocalEdgeLength(j);
-				int num_features2 = features_per_meter * length2;
+				int num_features2 = (int) (features_per_meter * length2);
 				if (num_features2 < 1)
 					num_features2 = 1;
 

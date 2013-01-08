@@ -196,6 +196,7 @@ public:
 	// building methods
 	void FinishBuilding();
 	void FlipBuildingFooprints();
+	void SetBuildingEaves(float fLength);
 	void CopyBuildingStyle();
 	void PasteBuildingStyle();
 	bool HaveBuildingStyle();

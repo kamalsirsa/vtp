@@ -2434,7 +2434,7 @@ void Enviro::FinishBuilding()
 void Enviro::FlipBuildingFooprints()
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+	vtStructureLayer *structures = pTerr->GetStructureLayer();
 
 	vtStructure *str;
 	vtBuilding3d *bld;
@@ -2452,19 +2452,38 @@ void Enviro::FlipBuildingFooprints()
 	}
 }
 
+void Enviro::SetBuildingEaves(float fLength)
+{
+	vtStructureLayer *structures = GetCurrentTerrain()->GetStructureLayer();
+
+	for (uint i = 0; i < structures->size(); i++)
+	{
+		if (structures->at(i)->IsSelected())
+		{
+			vtBuilding3d *bld = structures->GetBuilding(i);
+			if (bld)
+			{
+				bld->SetEaves(fLength);
+				structures->ConstructStructure(structures->GetStructure3d(i));
+			}
+		}
+	}
+}
+
 void Enviro::CopyBuildingStyle()
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructureLayer();
 	vtBuilding *bld = sa->GetFirstSelectedStructure()->GetBuilding();
 
+	// Make a copy of the building
 	m_BuildingStyle = *bld;
 }
 
 void Enviro::PasteBuildingStyle()
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+	vtStructureLayer *structures = pTerr->GetStructureLayer();
 
 	int count = structures->size();
 	vtStructure *str;

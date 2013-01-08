@@ -309,6 +309,7 @@ EVT_MENU(ID_HELP_DOC_ONLINE, EnviroFrame::OnHelpDocOnline)
 // Popup
 EVT_MENU(ID_POPUP_PROPERTIES, EnviroFrame::OnPopupProperties)
 EVT_MENU(ID_POPUP_FLIP, EnviroFrame::OnPopupFlip)
+EVT_MENU(ID_POPUP_SET_EAVES, EnviroFrame::OnPopupSetEaves)
 EVT_MENU(ID_POPUP_COPY_STYLE, EnviroFrame::OnPopupCopyStyle)
 EVT_MENU(ID_POPUP_PASTE_STYLE, EnviroFrame::OnPopupPasteStyle)
 EVT_MENU(ID_POPUP_RELOAD, EnviroFrame::OnPopupReload)
@@ -3598,6 +3599,7 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 		if (g_App.HaveBuildingStyle())
 			popmenu->Append(ID_POPUP_PASTE_STYLE, _("Paste Style"));
 		popmenu->Append(ID_POPUP_FLIP, _("Flip Footprint Direction"));
+		popmenu->Append(ID_POPUP_SET_EAVES, _("Set Eaves"));
 	}
 
 	if (instances_selected > 0)
@@ -3729,37 +3731,43 @@ void EnviroFrame::OnPopupFlip(wxCommandEvent& event)
 	g_App.FlipBuildingFooprints();
 }
 
+void EnviroFrame::OnPopupSetEaves(wxCommandEvent& event)
+{
+	static float fLength = 1.0f;
+
+	wxString str;
+	str.Printf(_T("%g"), fLength);
+	str = wxGetTextFromUser(_("Eave length in meters"), _("Set Eaves"), str, this);
+	if (str != _T(""))
+	{
+		fLength = atof(str.mb_str(wxConvUTF8));
+		g_App.SetBuildingEaves(fLength);
+	}
+}
+
 void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+	vtStructureLayer *structures = GetCurrentTerrain()->GetStructureLayer();
 
-	int count = structures->size();
-	vtStructure *str;
-	vtStructInstance3d *inst;
-	for (int i = 0; i < count; i++)
+	for (uint i = 0; i < structures->size(); i++)
 	{
-		str = structures->at(i);
-		if (!str->IsSelected())
-			continue;
-
-		inst = structures->GetInstance(i);
-		if (!inst)
-			continue;
-		structures->ConstructStructure(structures->GetStructure3d(i));
+		if (structures->at(i)->IsSelected())
+		{
+			vtStructInstance3d *inst = structures->GetInstance(i);
+			if (inst)
+				structures->ConstructStructure(structures->GetStructure3d(i));
+		}
 	}
 }
 
 void EnviroFrame::OnPopupShadow(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+	vtStructureLayer *structures = pTerr->GetStructureLayer();
 
-	int count = structures->size();
-	vtStructure *str;
-	for (int i = 0; i < count; i++)
+	for (uint i = 0; i < structures->size(); i++)
 	{
-		str = structures->at(i);
+		vtStructure *str = structures->at(i);
 		if (!str->IsSelected())
 			continue;
 
@@ -3792,6 +3800,8 @@ void EnviroFrame::CarveTerrainToFitNode(osg::Node *node)
 	int changed = 0;
 	int cols, rows;
 	dyn->GetDimensions(cols, rows);
+	const FPoint3 yvec(0,100,0);
+
 	for (int c = 0; c < cols; c++)
 	{
 		for (int r = 0; r < rows; r++)
@@ -3807,8 +3817,6 @@ void EnviroFrame::CarveTerrainToFitNode(osg::Node *node)
 				continue;
 			if (wpos.z > (sph.center.z + sph.radius))
 				continue;
-
-			FPoint3 yvec(0,100,0);
 
 			// Shoot a ray upwards through the terrain surface point
 			vtHitList HitList;
@@ -3847,20 +3855,15 @@ void EnviroFrame::CarveTerrainToFitNode(osg::Node *node)
 
 void EnviroFrame::OnPopupAdjust(wxCommandEvent& event)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructureLayer();
+	vtStructureLayer *structures = GetCurrentTerrain()->GetStructureLayer();
 
-	int count = structures->size();
-	for (int i = 0; i < count; i++)
+	for (uint i = 0; i < structures->size(); i++)
 	{
-		vtStructure *str = structures->at(i);
-		if (str->IsSelected())
+		if (structures->at(i)->IsSelected())
 		{
 			vtStructInstance3d *inst = structures->GetInstance(i);
 			if (inst)
-			{
 				CarveTerrainToFitNode(inst->GetContainer());
-			}
 		}
 	}
 }

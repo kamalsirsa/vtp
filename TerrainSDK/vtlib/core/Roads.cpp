@@ -357,7 +357,6 @@ LinkGeom::~LinkGeom()
 
 void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 {
-	FPoint3 pn0, pn1, pn2;
 	float length = 0.0f;
 
 	//  for each point in the link, determine coordinates
@@ -385,49 +384,25 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 		if (j == 0)
 		{
 			// add 2 vertices at this point, copied from the start node
-			NodeGeom *pN = GetNode(0);
-			pN->FindVerticesForLink(this, true, right, left);	// true means start
+			GetNode(0)->FindVerticesForLink(this, true, right, left);	// true means start
 			wider = (right-left).Length() / m_fWidth;
 		}
 		if (j > 0 && j < size-1)
 		{
 			// add 2 vertices at this point, directed at the previous and next points
-			pn0 = m_centerline[j-1];
-			pn1 = m_centerline[j];
-			pn2 = m_centerline[j+1];
-
-			// Look at vectors to previous and next points
-			FPoint3 v0 = (pn1-pn0).Normalize();
-			FPoint3 v1 = (pn2-pn1).Normalize();
-
-			// we flip axes to turn the link vector 90 degrees (normal to link)
-			FPoint3 bisector(v0.z + v1.z, 0, -(v0.x + v1.x));
-			bisector.Normalize();
-
-			float dot = v0.Dot(-v1);
-			if (dot <= -0.97 || dot >= 0.97)
-			{
-				// close enough to colinear, no need to widen
-			}
-			else
-			{
-				// factor to widen this corner is proportional to the angle
-				float angle = acos(dot);
-				wider = (float) (1.0 / sin(angle / 2));
-				bisector *= wider;
-			}
+			FPoint3 bisector;
+			wider = AngleSideVector(m_centerline[j-1], m_centerline[j], m_centerline[j+1], bisector);
 
 			// and elevate the link above the terrain
 			FPoint3 up(0, ROAD_HEIGHT, 0);
 
-			left = pn1 - bisector + up;
-			right = pn1 + bisector + up;
+			left = m_centerline[j] - bisector + up;
+			right = m_centerline[j] + bisector + up;
 		}
 		if (j == size-1)
 		{
 			// add 2 vertices at this point, copied from the end node
-			NodeGeom *pN = GetNode(1);
-			pN->FindVerticesForLink(this, false, left, right);	// false means end
+			GetNode(1)->FindVerticesForLink(this, false, left, right);	// false means end
 			wider = (right-left).Length() / m_fWidth;
 		}
 		bi.crossvector[j] = right - left;
