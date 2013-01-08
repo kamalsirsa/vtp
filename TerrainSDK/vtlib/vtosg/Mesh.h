@@ -145,7 +145,7 @@ public:
 	void AllowOptimize(bool bAllow);
 
 	// Access values
-	int GetNumPrims() const;
+	int NumPrims() const;
 	int GetNumIndices() const { return getVertexIndices()->getNumElements(); }
 	short GetIndex(int i) const { return getIndices()->at(i); }
 	int GetPrimLen(int i) const { return dynamic_cast<const osg::DrawArrayLengths*>(getPrimitiveSet(0))->at(i); }

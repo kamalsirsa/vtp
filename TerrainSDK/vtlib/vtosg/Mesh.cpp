@@ -1301,7 +1301,7 @@ FPoint2 vtMesh::GetVtxTexCoord(uint i) const
 	return FPoint2(0,0);
 }
 
-int vtMesh::GetNumPrims() const
+int vtMesh::NumPrims() const
 {
 	return getPrimSet()->getNumPrimitives();
 }
@@ -1414,7 +1414,7 @@ void vtMesh::_AddStripNormals()
 	}
 #else
 	osg::DrawArrayLengths *dal = getDrawArrayLengths();
-	int prims = GetNumPrims();
+	int prims = NumPrims();
 	int i, j, len, idx;
 	unsigned short v0 = 0, v1 = 0, v2 = 0;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
@@ -1493,7 +1493,7 @@ void vtMesh::_AddPolyNormals()
 	if (!dal)
 		return;
 
-	int prims = GetNumPrims();
+	int prims = NumPrims();
 	int i, j, len, idx;
 	unsigned short v0 = 0, v1 = 0, v2 = 0;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
@@ -1535,7 +1535,7 @@ void vtMesh::_AddPolyNormals()
 void vtMesh::_AddTriangleNormals()
 {
 #ifdef AVOID_OSG_INDICES
-	int tris = GetNumPrims();
+	int tris = NumPrims();
 	unsigned short v0, v1, v2;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
 
@@ -1562,7 +1562,7 @@ void vtMesh::_AddTriangleNormals()
 		getNormals()->at(v2) += norm;
 	}
 #else
-	int tris = GetNumPrims();
+	int tris = NumPrims();
 	unsigned short v0, v1, v2;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
 
@@ -1594,7 +1594,7 @@ void vtMesh::_AddTriangleNormals()
 void vtMesh::_AddQuadNormals()
 {
 #ifdef AVOID_OSG_INDICES
-	int quads = GetNumPrims();
+	int quads = NumPrims();
 	unsigned short v0, v1, v2, v3;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
 
@@ -1625,7 +1625,7 @@ void vtMesh::_AddQuadNormals()
 		norms->at(v3) += norm;
 	}
 #else
-	int quads = GetNumPrims();
+	int quads = NumPrims();
 	unsigned short v0, v1, v2, v3;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
 

@@ -1447,7 +1447,7 @@ void vtGeode::CloneFromGeode(const vtGeode *rhs)
 	//  geometry that we are copying from.
 	SetMaterials(rhs->GetMaterials());
 	int idx;
-	for (uint i = 0; i < rhs->GetNumMeshes(); i++)
+	for (uint i = 0; i < rhs->NumMeshes(); i++)
 	{
 		vtMesh *mesh = rhs->GetMesh(i);
 		if (mesh)
@@ -1555,7 +1555,7 @@ void vtGeode::RemoveMesh(vtMesh *pMesh)
 	removeDrawable(pMesh);
 }
 
-uint vtGeode::GetNumMeshes() const
+uint vtGeode::NumMeshes() const
 {
 	return getNumDrawables();
 }

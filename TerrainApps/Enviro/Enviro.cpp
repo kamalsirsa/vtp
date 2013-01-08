@@ -2197,7 +2197,7 @@ void Enviro::FreeArcMesh()
 {
 	if (m_pArc)
 	{
-		for (int i = m_pArc->GetNumMeshes()-1; i >= 0; i--)
+		for (int i = m_pArc->NumMeshes()-1; i >= 0; i--)
 			m_pArc->RemoveMesh(m_pArc->GetMesh(i));
 	}
 }
@@ -2720,7 +2720,7 @@ void Enviro::DescribeCLOD(vtString &str)
 	if (method == LM_MCNALLY || method == LM_ROETTGER)
 	{
 		str.Format("CLOD: target %d, drawn %d ", dtg->GetPolygonTarget(),
-			dtg->GetNumDrawnTriangles());
+			dtg->NumDrawnTriangles());
 	}
 }
 
