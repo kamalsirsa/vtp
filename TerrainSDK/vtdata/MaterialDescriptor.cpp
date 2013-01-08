@@ -3,7 +3,7 @@
 //
 // Higher-level material descriptions for use in built structures.
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -48,7 +48,7 @@ void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAtt
 			vtMaterialDescriptor *pDescriptor = new vtMaterialDescriptor;
 			attval = atts.getValue("Name");
 			if (attval)
-				pDescriptor->SetName(*(new vtString(attval)));
+				pDescriptor->SetName(attval);
 
 			pDescriptor->SetColorable(VT_MATERIAL_SELFCOLOURED_TEXTURE);
 			attval = atts.getValue("Colorable");
