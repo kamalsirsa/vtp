@@ -4,7 +4,7 @@ set(ENVIRO_SOURCE_FILES
 	EarthView.cpp Engines.cpp Enviro.cpp Hawaii.cpp Nevada.cpp Options.cpp)
 
 set(ENVIRO_SOURCE_FILES_WX
-	wx/EnviroCanvas.cpp wx/EnviroApp.cpp wx/EnviroFrame.cpp wx/EnviroGUI.cpp wx/StatusBar.cpp)
+	wx/EnviroCanvas.cpp wx/EnviroApp.cpp wx/EnviroFrame.cpp wx/EnviroGUI.cpp wx/EnviroMenus.cpp wx/StatusBar.cpp)
 
 set(ENVIRO_HEADER_FILES
 	Engines.h Enviro.h EnviroEnum.h Hawaii.h Nevada.h Options.h PlantingOptions.h)
