@@ -28,8 +28,8 @@
 		<td class="c1">The BT file to use for elevation.</td>
 	</tr>
 	<tr>
-		<th class="c2" nowrap="" rowspan="2" valign="top">Terrain LOD</th>
-		<td class="c2" nowrap="" valign="top">Method</td>
+		<th class="c2" nowrap="" rowspan="2" valign="top">&nbsp;</th>
+		<td class="c2" nowrap="" valign="top">LOD Method</td>
 		<td class="c2">Choose from several implementations of published Continuous 
 		LOD algorithms.&nbsp; Unless you are an expert user, it is recommended to 
 		use only <em><strong>Roettger</strong></em>.&nbsp; The others are historical 
@@ -47,7 +47,7 @@
 		grid.</td>
 	</tr>
 	<tr>
-		<th class="c2" nowrap="" rowspan="4" valign="top">Grid Tiles</th>
+		<th class="c2" nowrap="" rowspan="3" valign="top">Grid Tiles</th>
 		<td class="c2" nowrap="" valign="top">Tileset .ini file</td>
 		<td class="c2">The .ini file which describes a set of elevation grid tiles.&nbsp; 
 		See <a href="tilesets.html">tileset documentation</a>.</td>
@@ -56,13 +56,6 @@
 		<td class="c2" nowrap="" valign="top">Vertex count target</td>
 		<td class="c2">Rendering will adaptively adjust detail to approach this 
 		vertex count.</td>
-	</tr>
-	<tr>
-		<td class="c2" nowrap="" valign="top">RAM cache size</td>
-		<td class="c2">When tiles are loaded from disk, they are stored in a cache 
-		in RAM.&nbsp; As the camera moves around, tiles which are not needed remain 
-		in this cache, which avoids loading them from disk again while the program 
-		is running.</td>
 	</tr>
 	<tr>
 		<td class="c2" nowrap="" valign="top">Use multithreading</td>
@@ -146,17 +139,22 @@
 		viewer.&nbsp; Currently this can only be a single texture.</td>
 	</tr>
 </table>
-<h3>Culture</h3>
+<h3>Plants and Roads</h3>
 <table border="1" cellpadding="3" cellspacing="0">
 	<tr>
-		<th class="c2" nowrap="" rowspan="2" valign="top">Plants</th>
-		<td class="c2" nowrap="" valign="top">Source file</td>
-		<td class="c2">The name of a VF (Vegetation Format) file which contains 
+		<th class="c2" nowrap="" rowspan="3" valign="top">Plant Layers</th>
+		<td class="c2" nowrap="" valign="top">(Source files)</td>
+		<td class="c2">Any number of VF (Vegetation Format) files which contains 
 		the plant instances for this terrain.</td>
 	</tr>
 	<tr>
 		<td class="c2" nowrap="" valign="top">Visibility distance</td>
 		<td class="c2">Distance at which plants are visible.</td>
+	</tr>
+	<tr>
+		<td class="c2" nowrap="" valign="top">Use Shaders for Plants</td>
+		<td class="c2">This option is around 5x faster, but you won't be able to 
+		edit the trees, and some other small limitations.</td>
 	</tr>
 	<tr>
 		<th class="c1" nowrap="" rowspan="6" valign="top">Roads</th>
@@ -188,8 +186,21 @@
 		<td class="c1">You can use these options to indicate a subset of the roads 
 		to create, e.g. only Paved roads.</td>
 	</tr>
+	</table>
+	<h4>Structures</h4>
+<table border="1" cellpadding="3" cellspacing="0">
 	<tr>
-		<th class="c2" nowrap="" valign="top">&nbsp;</th>
+		<th class="c2" nowrap="" rowspan="3" valign="top">Structure Files</th>
+		<td class="c2" nowrap="" valign="top">(Source files)</td>
+		<td class="c2">Any number of VTST (.vtst, Built Structures) files, containing 
+		the Buildings, Instances, and Fences for this terrain.</td>
+	</tr>
+	<tr>
+		<td class="c2" nowrap="" valign="top">Visibility distance</td>
+		<td class="c2">Distance at which structures are visible.&nbsp; Structures 
+		further than this distance from the camera will not be rendered.</td>
+	</tr>
+	<tr>
 		<td class="c2" nowrap="" valign="top">Terrain-specific<br />
 &nbsp;Content</td>
 		<td class="c2">A content file (.vtco) which contains additional content 
@@ -197,18 +208,8 @@
 		Australia, you might have a set of Australian content items specific here, &quot;Australia.vtco&quot;.</td>
 	</tr>
 	<tr>
-		<th class="c1" nowrap="" rowspan="11" valign="top">Structure Files</th>
-		<td class="c1" nowrap="" valign="top">(Source files)</td>
-		<td class="c1">Any number of VTST (.vtst, Built Structures) files, containing 
-		the Buildings, Instances, and Fences for this terrain.</td>
-	</tr>
-	<tr>
-		<td class="c1" nowrap="" valign="top">Visibility distance</td>
-		<td class="c1">Distance at which structures are visible.&nbsp; Structures 
-		further than this distance from the camera will not be rendered.</td>
-	</tr>
-	<tr>
-		<td class="c1" nowrap="" valign="top"><strong>Shadows</strong></td>
+		<th class="c1" nowrap="" rowspan="6" valign="top"><strong>Shadows</strong></th>
+		<td class="c1" nowrap="" valign="top">(on)</td>
 		<td class="c1">Dynamic shadows will be cast from the structures onto the 
 		terrain (and other structures).</td>
 	</tr>
@@ -247,28 +248,29 @@
 		where the camera is looking.</td>
 	</tr>
 	<tr>
-		<td class="c1" nowrap="" valign="top"><strong>Paging</strong></td>
-		<td class="c1">Instead of all structures being created when the terrain 
+		<th class="c2" nowrap="" valign="top" rowspan="3"><strong>Paging</strong></th>
+		<td class="c2" nowrap="" valign="top">(on)</td>
+		<td class="c2">Instead of all structures being created when the terrain 
 		loads, structures are loaded and unloaded dynamically (&quot;paging&quot;) 
 		as the camera moves around.&nbsp; This allows you to quickly load terrains 
 		with huge numbers of buildings, and fly around without using too much memory</td>
 	</tr>
 	<tr>
-		<td class="c1" nowrap="" valign="top">Maximum structures</td>
-		<td class="c1">When the number of loaded structures exceeds this number, 
+		<td class="c2" nowrap="" valign="top">Maximum structures</td>
+		<td class="c2">When the number of loaded structures exceeds this number, 
 		far-away structures will be unloaded (&quot;paged out&quot;) to conserve 
 		memory.&nbsp; A typical value is 2000.</td>
 	</tr>
 	<tr>
-		<td class="c1" nowrap="" valign="top">Page-out-distance</td>
-		<td class="c1">This distance indicates when a structure is far away, so 
+		<td class="c2" nowrap="" valign="top">Page-out-distance</td>
+		<td class="c2">This distance indicates when a structure is far away, so 
 		that it can be paged out.</td>
 	</tr>
 </table>
 <h3>Ephemeris</h3>
 <table border="1" cellpadding="3" cellspacing="0">
 	<tr>
-		<th class="c1" nowrap="" rowspan="8" valign="top">Sky &amp; Water</th>
+		<th class="c1" nowrap="" rowspan="7" valign="top">Sky &amp; Water</th>
 		<td class="c1" nowrap="" valign="top">Ocean Plane</td>
 		<td class="c1">Set this option to create a single, large, flat &quot;ocean&quot; 
 		surface which intersects the terrain.</td>
@@ -305,11 +307,6 @@
 		folders on the data path are available for you on the drop-down control.&nbsp; 
 		If the filename is blank, then sky will be drawn using vertex colors, using 
 		time of day (blue during day, orange during sunset, black at night, etc.)</td>
-	</tr>
-	<tr>
-		<td class="c1" nowrap="" valign="top">Artificial Horizon</td>
-		<td class="c1">If true, a flat &quot;horizon&quot; object will be placed 
-		between the edge of your terrain and the base of the sky.</td>
 	</tr>
 	<tr>
 		<td class="c1" nowrap="" style="height: 44px" valign="top">Fog</td>
@@ -371,6 +368,7 @@ tracks, etc.</p>
 		<td class="c2">
 		<p>You can have one or more images, loaded and draped on the terrain, in 
 		addition to the base ground texture.&nbsp; Each should be a GeoTIFF file 
+		(or other format, with a World file) 
 		in a <em>GeoSpecific</em> data folder, with the same CRS as the terrain.<br />
 		<br />
 		To add files, double-click.<br />
@@ -431,6 +429,11 @@ tracks, etc.</p>
 		Terrain View is running.</td>
 	</tr>
 	<tr>
+		<td class="c1" nowrap="" valign="top">Velocity Damping</td>
+		<td class="c1">For the <em>Terrain Flyer with Velocity</em>, this sets 
+		how much damping your motion has, from 1 to 10.</td>
+	</tr>
+	<tr>
 		<td class="c1" nowrap="" valign="top">Default locations file</td>
 		<td class="c1">You can load and save any number of Locations to a file.&nbsp; 
 		This option lets you associate a specific file with a terrain.</td>
@@ -450,8 +453,9 @@ tracks, etc.</p>
 		make the change permanent using this startup property.</td>
 	</tr>
 	<tr>
-		<td class="c1" nowrap="" valign="top">Animation Paths</td>
-		<td class="c1">Any number of .vtap files which will be available during 
+		<th class="c2" nowrap="" valign="top">Animation Paths</th>
+		<td class="c2" nowrap="" valign="top">(VTAP files)</td>
+		<td class="c2">Any number of .vtap files which will be available during 
 		runtime.</td>
 	</tr>
 </table>
