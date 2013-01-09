@@ -129,6 +129,7 @@ public:
 	vtString GetParamFile()  { return m_strParamFile; }
 	void SetParams(const TParams &Params);
 	TParams &GetParams();
+	const TParams &GetParams() const { return m_Params; }
 
 	// each terrain can have a long descriptive name
 	void SetName(const vtString &str) { m_Params.SetValueString(STR_NAME, str); }
@@ -205,10 +206,12 @@ public:
 	// Layers
 	/// Get at the container for all the layers
 	LayerSet &GetLayers() { return m_Layers; }
+	const LayerSet &GetLayers() const { return m_Layers; }
 	void RemoveLayer(vtLayer *lay, bool progress_callback(int) = NULL);
 	vtLayer *LoadLayer(const char *fname);
 	void SetActiveLayer(vtLayer *lay) { m_pActiveLayer = lay; }
 	vtLayer *GetActiveLayer() { return m_pActiveLayer; }
+	vtLayer *GetOrCreateLayerOfType(LayerType type);
 
 	// plants
 	vtVegLayer *GetVegLayer();
@@ -227,9 +230,8 @@ public:
 	void DeselectAllPlants();
 
 	// structures
-	vtStructureLayer *GetStructureLayer();
+	vtStructureLayer *GetStructureLayer() const;
 	vtStructureLayer *NewStructureLayer();
-	vtLayer *GetOrCreateLayerOfType(LayerType type);
 	vtStructureLayer *LoadStructuresFromXML(const vtString &strFilename);
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
@@ -296,13 +298,14 @@ public:
 	// query
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
 	const vtDynTerrainGeom *GetDynTerrain() const { return m_pDynGeom; }
-	vtTiledGeom *GetTiledGeom() { return m_pTiledGeom.get(); }
+	vtTiledGeom *GetTiledGeom() const { return m_pTiledGeom.get(); }
 	vtGroup *GetTopGroup() { return m_pContainerGroup; }
 	vtGroup *GetTerrainGroup() { return m_pTerrainGroup; }
 	vtHeightField3d *GetHeightField() const;
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
 	const vtLocalConversion &GetLocalConversion() const { return GetHeightField()->m_Conversion; }
 	const vtProjection &GetProjection() const { return m_proj; }
+	bool IsGeographicCRS() const { return (m_proj.IsGeographic() == 1); }
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, bool bTrue, int iCultureFlags) const;
 	int GetShadowTextureUnit();
 

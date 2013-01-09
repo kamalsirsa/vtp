@@ -1065,7 +1065,7 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 /**
  * Get the currently active structure layer for this terrain.
  */
-vtStructureLayer *vtTerrain::GetStructureLayer()
+vtStructureLayer *vtTerrain::GetStructureLayer() const
 {
 	return dynamic_cast<vtStructureLayer *>(m_pActiveLayer);
 }
@@ -1083,36 +1083,6 @@ vtStructureLayer *vtTerrain::NewStructureLayer()
 
 	m_Layers.push_back(slay);
 	return slay;
-}
-
-vtLayer *vtTerrain::GetOrCreateLayerOfType(LayerType type)
-{
-	vtLayer *layer = GetActiveLayer();
-	if (layer->GetType() == type)
-		return layer;		// We already have one active.
-
-	// Look for one
-	for (uint i = 0; i < m_Layers.size(); i++)
-	{
-		if (m_Layers[i]->GetType() == type)
-			return m_Layers[i];
-	}
-	// else, create one.
-	switch (type)
-	{
-	case LT_IMAGE:
-		// TODO maybe
-		break;
-	case LT_STRUCTURE:
-		layer = NewStructureLayer();
-		layer->SetLayerName("Untitled.vtst");
-		break;
-	case LT_VEG:
-		layer = NewVegLayer();
-		layer->SetLayerName("Untitled.vf");
-		break;
-	}
-	return layer;
 }
 
 /**
@@ -3059,6 +3029,36 @@ vtLayer *vtTerrain::LoadLayer(const char *fname)
 		return alay;
 	}
 	return NULL;
+}
+
+vtLayer *vtTerrain::GetOrCreateLayerOfType(LayerType type)
+{
+	vtLayer *layer = GetActiveLayer();
+	if (layer->GetType() == type)
+		return layer;		// We already have one active.
+
+	// Look for one
+	for (uint i = 0; i < m_Layers.size(); i++)
+	{
+		if (m_Layers[i]->GetType() == type)
+			return m_Layers[i];
+	}
+	// else, create one.
+	switch (type)
+	{
+	case LT_IMAGE:
+		// TODO maybe
+		break;
+	case LT_STRUCTURE:
+		layer = NewStructureLayer();
+		layer->SetLayerName("Untitled.vtst");
+		break;
+	case LT_VEG:
+		layer = NewVegLayer();
+		layer->SetLayerName("Untitled.vf");
+		break;
+	}
+	return layer;
 }
 
 

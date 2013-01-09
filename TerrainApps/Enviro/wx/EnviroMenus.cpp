@@ -491,7 +491,7 @@ void EnviroFrame::OnSaveTerrain(wxCommandEvent& event)
 	// Copy as much state as possible from the active terrain to its parameters
 	g_App.StoreTerrainParameters();
 
-	vtTerrain *terr = GetCurrentTerrain();
+	vtTerrain *terr = g_App.GetCurrentTerrain();
 	TParams &par = terr->GetParams();
 	vtString fname = terr->GetParamFile();
 	if (!par.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
@@ -503,7 +503,7 @@ void EnviroFrame::OnSaveTerrainAs(wxCommandEvent& event)
 	// Copy as much state as possible from the active terrain to its parameters
 	g_App.StoreTerrainParameters();
 
-	vtTerrain *terr = GetCurrentTerrain();
+	vtTerrain *terr = g_App.GetCurrentTerrain();
 	TParams &par = terr->GetParams();
 	vtString pfile = terr->GetParamFile();
 
@@ -650,7 +650,7 @@ void EnviroFrame::OnUpdateViewElevLegend(wxUpdateUIEvent& event)
 {
 	// enable only for derived-color textured terrain
 	bool bEnable = false;
-	vtTerrain *curr = GetCurrentTerrain();
+	vtTerrain *curr = g_App.GetCurrentTerrain();
 	if (curr)
 		bEnable = (curr->GetParams().GetValueInt(STR_TEXTURE) == 3);
 	event.Enable(g_App.m_state == AS_Terrain && bEnable);
@@ -678,7 +678,7 @@ void EnviroFrame::OnUpdateViewMapOverView(wxUpdateUIEvent& event)
 {
 	// Only supported in Terrain View for certain texture types
 	bool bEnable = false;
-	vtTerrain *curr = GetCurrentTerrain();
+	vtTerrain *curr = g_App.GetCurrentTerrain();
 	if (curr)
 	{
 		TextureEnum eTex = curr->GetParams().GetTextureEnum();
@@ -942,7 +942,7 @@ void EnviroFrame::OnToolsPoints(wxCommandEvent& event)
 {
 	vtAbstractLayer *alay = g_App.GetLabelLayer();
 	if (!alay)
-		alay = CreateNewAbstractPointLayer(GetCurrentTerrain());
+		alay = CreateNewAbstractPointLayer(g_App.GetCurrentTerrain());
 	if (!alay)
 		return;
 	SetMode(MM_ADDPOINTS);
@@ -1040,7 +1040,7 @@ void EnviroFrame::OnVIACalculate(wxCommandEvent& event)
 void EnviroFrame::OnUpdateVIACalculate(wxUpdateUIEvent& event)
 {
 	bool bFound = false;
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (NULL != pTerr)
 	{
 		LayerSet& Layers = pTerr->GetLayers();
@@ -1213,7 +1213,7 @@ void EnviroFrame::OnUpdateVIAPlot(wxUpdateUIEvent& event)
 {
 	bool bFoundContributor = false;
 	bool bFoundTarget = false;
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (NULL != pTerr)
 	{
 		LayerSet &Layers = pTerr->GetLayers();
@@ -1241,7 +1241,7 @@ void EnviroFrame::OnUpdateVIAPlot(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnVIAClear(wxCommandEvent& event)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (NULL != pTerr)
 	{
 		LayerSet &Layers = pTerr->GetLayers();
@@ -1268,7 +1268,7 @@ void EnviroFrame::OnUpdateVIAClear(wxUpdateUIEvent& event)
 {
 	bool bFoundContributor = false;
 	bool bFoundTarget = false;
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (NULL != pTerr)
 	{
 		LayerSet &Layers = pTerr->GetLayers();
@@ -1315,7 +1315,7 @@ void EnviroFrame::OnSceneTerrain(wxCommandEvent& event)
 	wxString str;
 
 	// When switching terrains, highlight the current on
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 
 	// Or, if in Earth view, highlight a terrain that's already been created
 	if (!pTerr && g_App.m_state == AS_Orbit)
@@ -1368,7 +1368,7 @@ void EnviroFrame::OnSceneSave(wxCommandEvent& event)
 void EnviroFrame::OnSceneEphemeris(wxCommandEvent& event)
 {
 	vtTerrainScene *ts = vtGetTS();
-	vtTerrain *terr = GetCurrentTerrain();
+	vtTerrain *terr = g_App.GetCurrentTerrain();
 	TParams &param = terr->GetParams();
 	vtSkyDome *sky = ts->GetSkyDome();
 
@@ -1437,7 +1437,7 @@ void EnviroFrame::OnTimeFaster(wxCommandEvent& event)
 
 void EnviroFrame::OnDynamic(wxCommandEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	if (!t) return;
 	bool on = t->GetFeatureVisible(TFT_TERRAINSURFACE);
 
@@ -1446,14 +1446,14 @@ void EnviroFrame::OnDynamic(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdateDynamic(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	event.Check(t && t->GetFeatureVisible(TFT_TERRAINSURFACE));
 	event.Enable(t != NULL);
 }
 
 void EnviroFrame::OnCullEvery(wxCommandEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	if (!t) return;
 
 	m_bCulleveryframe = !m_bCulleveryframe;
@@ -1462,14 +1462,14 @@ void EnviroFrame::OnCullEvery(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdateCullEvery(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	event.Enable(t && t->GetDynTerrain());
 	event.Check(m_bCulleveryframe);
 }
 
 void EnviroFrame::OnCullOnce(wxCommandEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	if (!t) return;
 	vtDynTerrainGeom *pTerr = t->GetDynTerrain();
 	if (!pTerr) return;
@@ -1491,18 +1491,18 @@ void EnviroFrame::OnUpdateSky(wxUpdateUIEvent& event)
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	event.Check(on);
-	event.Enable(GetCurrentTerrain() != NULL);
+	event.Enable(g_App.GetCurrentTerrain() != NULL);
 }
 
 void EnviroFrame::OnOcean(wxCommandEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_OCEAN, !t->GetFeatureVisible(TFT_OCEAN));
 }
 
 void EnviroFrame::OnUpdateOcean(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	bool on = false;
 	if (t)
 		on = t->GetFeatureVisible(TFT_OCEAN);
@@ -1512,13 +1512,13 @@ void EnviroFrame::OnUpdateOcean(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnPlants(wxCommandEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_VEGETATION, !t->GetFeatureVisible(TFT_VEGETATION));
 }
 
 void EnviroFrame::OnUpdatePlants(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	bool on = false;
 	if (t)
 		on = t->GetFeatureVisible(TFT_VEGETATION);
@@ -1528,13 +1528,13 @@ void EnviroFrame::OnUpdatePlants(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnStructures(wxCommandEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_STRUCTURES, !t->GetFeatureVisible(TFT_STRUCTURES));
 }
 
 void EnviroFrame::OnUpdateStructures(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	bool on = false;
 	if (t)
 		on = t->GetFeatureVisible(TFT_STRUCTURES);
@@ -1544,19 +1544,19 @@ void EnviroFrame::OnUpdateStructures(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnRoads(wxCommandEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_ROADS, !t->GetFeatureVisible(TFT_ROADS));
 }
 
 void EnviroFrame::OnFog(wxCommandEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	if (t) t->SetFog(!t->GetFog());
 }
 
 void EnviroFrame::OnUpdateRoads(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	bool on = false;
 	if (t)
 		on = t->GetFeatureVisible(TFT_ROADS);
@@ -1566,7 +1566,7 @@ void EnviroFrame::OnUpdateRoads(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnUpdateFog(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	event.Check(t && t->GetFog());
 	event.Enable(t != NULL);
 }
@@ -1588,7 +1588,7 @@ void EnviroFrame::OnLOD(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdateLOD(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	event.Enable(t &&
 		(t->GetDynTerrain() != NULL || t->GetTiledGeom() != NULL));
 }
@@ -1599,7 +1599,7 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 {
 	s_bBuilt = !s_bBuilt;
 
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructureLayer();
 
 	if (s_bBuilt)
@@ -1629,7 +1629,7 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	event.Enable(t && t->GetStructureLayer() && t->GetStructureLayer()->size() > 0);
 	event.Check(s_bBuilt);
 }
@@ -1638,7 +1638,7 @@ void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 {
 	VTLOG1("EnviroFrame::OnTerrainReshade\n");
 
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (!pTerr)
 		return;
 
@@ -1657,7 +1657,7 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 {
 	VTLOG1("EnviroFrame::OnTerrainChangeTexture\n");
 
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (!pTerr)
 		return;
 
@@ -1683,13 +1683,13 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdateIsTerrainView(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	event.Enable(t && g_App.m_state == AS_Terrain);
 }
 
 void EnviroFrame::OnTerrainDistribVehicles(wxCommandEvent& event)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (!pTerr)
 		return;
 
@@ -1726,7 +1726,7 @@ void EnviroFrame::OnTerrainDistribVehicles(wxCommandEvent& event)
 
 void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (!pTerr)
 		return;
 
@@ -1772,7 +1772,7 @@ void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)
 void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 {
 #if SUPPORT_QUIKGRID
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (!pTerr)
 		return;
 
@@ -1833,7 +1833,7 @@ void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdateIsDynTerrain(wxUpdateUIEvent& event)
 {
-	vtTerrain *t = GetCurrentTerrain();
+	vtTerrain *t = g_App.GetCurrentTerrain();
 	event.Enable(t && t->GetDynTerrain());
 }
 
@@ -2027,7 +2027,7 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 	//  a single plant.  If both are selected, the structure is used.
 	VTLOG1("Creating popup, ");
 
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	vtStructureLayer *slay = pTerr->GetStructureLayer();
 	vtVegLayer *vlay = pTerr->GetVegLayer();
 
@@ -2107,7 +2107,7 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 	//  a single plant.  If both are selected, the structure is used.
 
 	VTLOG1("OnPopupProperties.\n");
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructureLayer();
 	if (sa)
 	{
@@ -2200,7 +2200,7 @@ void EnviroFrame::OnPopupSetEaves(wxCommandEvent& event)
 
 void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 {
-	vtStructureLayer *structures = GetCurrentTerrain()->GetStructureLayer();
+	vtStructureLayer *structures = g_App.GetCurrentTerrain()->GetStructureLayer();
 
 	for (uint i = 0; i < structures->size(); i++)
 	{
@@ -2215,7 +2215,7 @@ void EnviroFrame::OnPopupReload(wxCommandEvent& event)
 
 void EnviroFrame::OnPopupShadow(wxCommandEvent& event)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	vtStructureLayer *structures = pTerr->GetStructureLayer();
 
 	for (uint i = 0; i < structures->size(); i++)
@@ -2240,7 +2240,7 @@ void EnviroFrame::OnPopupShadow(wxCommandEvent& event)
 
 void EnviroFrame::OnPopupAdjust(wxCommandEvent& event)
 {
-	vtStructureLayer *structures = GetCurrentTerrain()->GetStructureLayer();
+	vtStructureLayer *structures = g_App.GetCurrentTerrain()->GetStructureLayer();
 
 	for (uint i = 0; i < structures->size(); i++)
 	{
@@ -2265,7 +2265,7 @@ void EnviroFrame::OnPopupDelete(wxCommandEvent& event)
 
 void EnviroFrame::OnPopupURL(wxCommandEvent& event)
 {
-	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructureLayer();
+	vtStructureArray3d *sa = g_App.GetCurrentTerrain()->GetStructureLayer();
 	vtStructure *struc = sa->at(sa->GetFirstSelected());
 	wxLaunchDefaultBrowser(wxString(struc->GetValueString("url"), wxConvUTF8));
 }
@@ -2273,7 +2273,7 @@ void EnviroFrame::OnPopupURL(wxCommandEvent& event)
 void EnviroFrame::OnPopupVIA(wxCommandEvent& event)
 {
 #if VISUAL_IMPACT_CALCULATOR
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
 	vtStructure3d *pStructure3d;
 
@@ -2299,7 +2299,7 @@ void EnviroFrame::OnPopupVIA(wxCommandEvent& event)
 void EnviroFrame::OnUpdatePopupVIA(wxUpdateUIEvent& event)
 {
 #if VISUAL_IMPACT_CALCULATOR
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 
 	if (NULL == pTerr)
 		event.Enable(false);
@@ -2337,7 +2337,7 @@ void EnviroFrame::OnUpdatePopupVIA(wxUpdateUIEvent& event)
 void EnviroFrame::OnPopupVIATarget(wxCommandEvent& event)
 {
 #if VISUAL_IMPACT_CALCULATOR
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
 	int count = pStructures->GetSize();
 	vtStructure3d *pStructure3d;
@@ -2379,7 +2379,7 @@ void EnviroFrame::OnPopupVIATarget(wxCommandEvent& event)
 void EnviroFrame::OnUpdatePopupVIATarget(wxUpdateUIEvent& event)
 {
 #if VISUAL_IMPACT_CALCULATOR
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 
 	if (NULL == pTerr)
 		event.Enable(false);

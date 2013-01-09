@@ -77,10 +77,10 @@ public:
 
 	/// Access the terrains in the list.
 	uint NumTerrains() { return m_Terrains.size(); }
-	vtTerrain *GetTerrain(uint i) { return m_Terrains[i]; }
+	vtTerrain *GetTerrain(uint i) const { return m_Terrains[i]; }
 
 	/// Get the terrain currently being shown.
-	vtTerrain *GetCurrentTerrain() { return m_pCurrentTerrain; }
+	vtTerrain *GetCurrentTerrain() const { return m_pCurrentTerrain; }
 
 	/// Find a terrain by its name.
 	vtTerrain *FindTerrainByName(const char *name);

@@ -1,7 +1,7 @@
 //
 // vtTiledGeom: Renders tiled heightfields using Roettger's libMini library
 //
-// Copyright (c) 2005-2009 Virtual Terrain Project
+// Copyright (c) 2005-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1186,7 +1186,7 @@ bool vtTiledGeom::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 	return true;
 }
 
-FPoint2 vtTiledGeom::GetWorldSpacingAtPoint(const DPoint2 &p)
+FPoint2 vtTiledGeom::GetWorldSpacingAtPoint(const DPoint2 &p) const
 {
 	float x, z;
 	m_Conversion.ConvertFromEarth(p, x, z);

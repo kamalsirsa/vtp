@@ -131,7 +131,11 @@ LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	wxPanel( parent, id, position, size, style )
 {
-	long tbstyle = wxTB_FLAT | wxTB_NODIVIDER;
+	m_pTerrain = NULL;
+	m_bShowAll = false;
+	m_imageListNormal = NULL;
+
+	const long tbstyle = wxTB_FLAT | wxTB_NODIVIDER;
 	//tbstyle |= wxTB_HORZ_TEXT;
 	m_pToolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, tbstyle);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
@@ -164,9 +168,6 @@ LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	wxSizer *top = item0;
 
 	m_main->SetSizer( item0 );
-
-	m_bShowAll = false;
-	m_imageListNormal = NULL;
 
 	CreateImageList(16);
 
@@ -338,8 +339,7 @@ void MakeAbsLayerString(vtAbstractLayer *alay, wxString &str,
 
 void LayerDlg::RefreshTreeTerrain()
 {
-	vtTerrain *terr = GetCurrentTerrain();
-	if (!terr)
+	if (!m_pTerrain)
 		return;
 
 	m_root = m_pTree->AddRoot(_("Layers"), ICON_TOP, ICON_TOP);
@@ -347,7 +347,7 @@ void LayerDlg::RefreshTreeTerrain()
 	wxString str;
 	vtString vs;
 	uint i, j;
-	LayerSet &layers = terr->GetLayers();
+	LayerSet &layers = m_pTerrain->GetLayers();
 	for (i = 0; i < layers.size(); i++)
 	{
 		vtLayer *layer = layers[i].get();
@@ -361,7 +361,7 @@ void LayerDlg::RefreshTreeTerrain()
 			str = wxString(slay->GetFilename(), wxConvUTF8);
 			icon = ICON_BUILDING;
 			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, icon, icon);
-			if (slay == terr->GetStructureLayer())
+			if (slay == m_pTerrain->GetStructureLayer())
 				m_pTree->SetItemBold(hLayer, true);
 			lid = new LayerItemData(slay, i, -1);
 			lid->m_text = str;
@@ -501,8 +501,7 @@ void LayerDlg::RefreshTreeTerrain()
 //
 void LayerDlg::UpdateTreeTerrain()
 {
-	vtTerrain *terr = GetCurrentTerrain();
-	if (!terr)
+	if (!m_pTerrain)
 		return;
 
 	if (!m_root.IsOk())
@@ -521,7 +520,7 @@ void LayerDlg::UpdateTreeTerrain()
 			wxString str;
 
 			// Hightlight the active layer in Bold
-			if (data->m_layer && data->m_layer == terr->GetActiveLayer())
+			if (data->m_layer && data->m_layer == m_pTerrain->GetActiveLayer())
 			{
 				if (!m_pTree->IsBold(id))
 					m_pTree->SetItemBold(id, true);
@@ -620,7 +619,7 @@ void LayerDlg::OnLayerRemove( wxCommandEvent &event )
 			g_App.OnSetDelete(data->m_alay->GetFeatureSet());
 
 		OpenProgressDialog(_T("Deleting layer"), false, this);
-		GetCurrentTerrain()->RemoveLayer(data->m_layer, progress_callback);
+		m_pTerrain->RemoveLayer(data->m_layer, progress_callback);
 		CloseProgressDialog();
 	}
 	else if (data->m_glay != NULL)
@@ -632,8 +631,7 @@ void LayerDlg::OnLayerRemove( wxCommandEvent &event )
 
 void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
-	if (!pTerr)
+	if (!m_pTerrain)
 		return;
 
 	wxArrayString choices;
@@ -643,23 +641,23 @@ void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 	int index = wxGetSingleChoiceIndex(_("Layer type:"), _("Create new layer"), choices, this);
 	if (index == 0)
 	{
-		if (CreateNewAbstractPointLayer(pTerr))
+		if (CreateNewAbstractPointLayer(m_pTerrain))
 			RefreshTreeContents();
 	}
 	else if (index == 1)
 	{
 		// make a new structure layer
-		vtStructureLayer *slay = pTerr->NewStructureLayer();
+		vtStructureLayer *slay = m_pTerrain->NewStructureLayer();
 		slay->SetFilename("Untitled.vtst");
-		pTerr->SetActiveLayer(slay);
+		m_pTerrain->SetActiveLayer(slay);
 		RefreshTreeContents();
 	}
 	else if (index == 2)
 	{
 		// make a new veg layer
-		vtVegLayer *vlay = pTerr->NewVegLayer();
+		vtVegLayer *vlay = m_pTerrain->NewVegLayer();
 		vlay->SetFilename("Untitled.vf");
-		pTerr->SetActiveLayer(vlay);
+		m_pTerrain->SetActiveLayer(vlay);
 		RefreshTreeContents();
 	}
 }
@@ -729,8 +727,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 
 	if (bTerrain)
 	{
-		vtTerrain *terr = GetCurrentTerrain();
-		vtLayer *lay = terr->LoadLayer(fname);
+		vtLayer *lay = m_pTerrain->LoadLayer(fname);
 
 		if (!lay)
 		{
@@ -742,7 +739,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
 
 		if (slay)
-			terr->CreateStructures(slay);
+			m_pTerrain->CreateStructures(slay);
 
 		if (alay)
 		{
@@ -756,7 +753,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 			if (dlg.ShowModal() != wxID_OK)
 			{
 				// The layer is reference-counted, so it will be freed when we remove it
-				terr->GetLayers().Remove(alay);
+				m_pTerrain->GetLayers().Remove(alay);
 				return;
 			}
 			// Copy all the style attributes to the new featureset
@@ -1038,10 +1035,9 @@ void LayerDlg::OnShowAll( wxCommandEvent &event )
 	{
 		// Count all the structures in all the layers
 		int total = 0;
-		vtTerrain *terr = GetCurrentTerrain();
-		if (!terr)
+		if (!m_pTerrain)
 			return;
-		LayerSet &layers = terr->GetLayers();
+		LayerSet &layers = m_pTerrain->GetLayers();
 		for (uint i = 0; i < layers.size(); i++)
 		{
 			vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(layers[i].get());
@@ -1076,10 +1072,10 @@ void LayerDlg::OnSelChanged( wxTreeEvent &event )
 	if (data && data->m_layer != NULL)
 	{
 		vtLayer *newlay = data->m_layer;
-		vtLayer *oldlay = GetCurrentTerrain()->GetActiveLayer();
+		vtLayer *oldlay = m_pTerrain->GetActiveLayer();
 		if (newlay != oldlay)
 		{
-			GetCurrentTerrain()->SetActiveLayer(newlay);
+			m_pTerrain->SetActiveLayer(newlay);
 			UpdateTreeTerrain();
 		}
 	}

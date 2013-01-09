@@ -79,7 +79,7 @@ public:
 
 	int GetFirstSelected();
 	int GetNextSelected();
-	vtStructure *GetFirstSelectedStructure();
+	vtStructure *GetFirstSelectedStructure() const;
 	int DeleteSelected();
 	virtual void DestroyStructure(int i) {}
 

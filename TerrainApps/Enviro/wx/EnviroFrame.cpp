@@ -503,7 +503,7 @@ void EnviroFrame::AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, 
 void EnviroFrame::OnChar(wxKeyEvent& event)
 {
 	static NavType prev = NT_Normal;
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	long key = event.GetKeyCode();
 
 	// Keyboard shortcuts ("accelerators")
@@ -588,7 +588,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		// Example code: modify the terrain by using the (slow) approach of using
 		//  vtTerrain methods GetInitialGrid and UpdateElevation.
 		{
-			vtTerrain *pTerr = GetCurrentTerrain();
+			vtTerrain *pTerr = g_App.GetCurrentTerrain();
 			if (pTerr && pTerr->GetParams().GetValueBool(STR_ALLOW_GRID_SCULPTING))
 			{
 				vtElevationGrid	*grid = pTerr->GetInitialGrid();
@@ -620,7 +620,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 		// Example code: modify the terrain by using the (fast) approach of using
 		//  vtDynTerrainGeom::SetElevation.
 		{
-			vtTerrain *pTerr = GetCurrentTerrain();
+			vtTerrain *pTerr = g_App.GetCurrentTerrain();
 			if (pTerr)
 			{
 				vtDynTerrainGeom *dyn = pTerr->GetDynTerrain();
@@ -650,7 +650,7 @@ void EnviroFrame::OnChar(wxKeyEvent& event)
 	case 'u':
 		// Example code: modify a small area of terrain around the mouse pointer.
 		{
-			vtTerrain *pTerr = GetCurrentTerrain();
+			vtTerrain *pTerr = g_App.GetCurrentTerrain();
 			if (pTerr)
 			{
 				vtDynTerrainGeom *dyn = pTerr->GetDynTerrain();
@@ -711,7 +711,7 @@ void EnviroFrame::OnClose(wxCloseEvent &event)
 	bool bReally = true;
 
 	bool bUnsavedChanges = false;
-	vtTerrain *terr = GetCurrentTerrain();
+	vtTerrain *terr = g_App.GetCurrentTerrain();
 	if (terr)
 	{
 		LayerSet &set = terr->GetLayers();
@@ -811,7 +811,7 @@ void EnviroFrame::SetMode(MouseMode mode)
 
 		// Make sure the species file and appearances are available
 		g_App.LoadSpeciesList();
-		GetCurrentTerrain()->SetSpeciesList(g_App.GetSpeciesList());
+		g_App.GetCurrentTerrain()->SetSpeciesList(g_App.GetSpeciesList());
 		g_App.ActivateAVegetationLayer();
 
 		m_pPlantDlg->SetSpeciesList(g_App.GetSpeciesList());
@@ -896,7 +896,7 @@ void EnviroFrame::ChangeFlightSpeed(float factor)
 
 void EnviroFrame::SetTerrainDetail(int iMetric)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (!pTerr)
 		return;
 
@@ -911,15 +911,15 @@ void EnviroFrame::SetTerrainDetail(int iMetric)
 
 int EnviroFrame::GetTerrainDetail()
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
+	const vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (!pTerr)
 		return 0;
 
-	vtDynTerrainGeom *pDyn = pTerr->GetDynTerrain();
+	const vtDynTerrainGeom *pDyn = pTerr->GetDynTerrain();
 	if (pDyn)
 		return pDyn->GetPolygonTarget();
 
-	vtTiledGeom *pTiled = pTerr->GetTiledGeom();
+	const vtTiledGeom *pTiled = pTerr->GetTiledGeom();
 	if (pTiled)
 		return pTiled->GetVertexTarget();
 
@@ -928,7 +928,7 @@ int EnviroFrame::GetTerrainDetail()
 
 void EnviroFrame::ChangePagingRange(float prange)
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	if (!pTerr) return;
 	vtTiledGeom *pTiled = pTerr->GetTiledGeom();
 	if (pTiled)
@@ -1116,10 +1116,15 @@ void EnviroFrame::ParseCommandLine(const char *cmdstart, char **argv, char *args
 //
 void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 {
+	// Some dialogs need to be informed of the current terrain (even if it is NULL)
+	m_pCameraDlg->SetTerrain(pTerrain);
+	m_pEphemDlg->SetTerrain(pTerrain);
+	m_pScenarioSelectDialog->SetTerrain(pTerrain);
+	m_pLayerDlg->SetTerrain(pTerrain);
+	m_pLODDlg->SetTerrain(pTerrain);
+
 	if (pTerrain)
 	{
-		m_pCameraDlg->SetLocalConversion(pTerrain->GetLocalConversion());
-
 		m_pLocationDlg->SetLocSaver(pTerrain->GetLocSaver());
 		m_pLocationDlg->SetAnimContainer(pTerrain->GetAnimContainer());
 
@@ -1135,7 +1140,6 @@ void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		// Also switch the time dialog to the time engine of the terrain,
 		//  not the globe.
 		SetTimeEngine(vtGetTS()->GetTimeEngine());
-		m_pScenarioSelectDialog->SetTerrain(pTerrain);
 
 		// If there is paging involved, Inform the LOD dialog
 		vtTiledGeom *geom = pTerrain->GetTiledGeom();
@@ -1292,7 +1296,7 @@ void EnviroFrame::OnSetDelete(vtFeatureSet *set)
 }
 void EnviroFrame::DeleteAllSelected()
 {
-	vtTerrain *pTerr = GetCurrentTerrain();
+	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 
 	int structs = 0, plants = 0, features = 0;
 
@@ -1334,7 +1338,7 @@ public:
 	EnviroProfileCallback() {}
 	float GetElevation(const DPoint2 &p)
 	{
-		vtTerrain *terr = GetCurrentTerrain();
+		vtTerrain *terr = g_App.GetCurrentTerrain();
 		if (terr)
 		{
 			FPoint3 w;
@@ -1346,7 +1350,7 @@ public:
 	}
 	float GetCultureHeight(const DPoint2 &p)
 	{
-		vtTerrain *terr = GetCurrentTerrain();
+		vtTerrain *terr = g_App.GetCurrentTerrain();
 		if (terr)
 		{
 			FPoint3 w;
@@ -1371,7 +1375,7 @@ ProfileDlg *EnviroFrame::ShowProfileDlg()
 		EnviroProfileCallback *callback = new EnviroProfileCallback;
 		m_pProfileDlg->SetCallback(callback);
 
-		m_pProfileDlg->SetProjection(GetCurrentTerrain()->GetProjection());
+		m_pProfileDlg->SetProjection(g_App.GetCurrentTerrain()->GetProjection());
 	}
 	m_pProfileDlg->Show(true);
 	return m_pProfileDlg;
@@ -1386,7 +1390,7 @@ void EnviroFrame::OpenFenceDialog()
 
 void EnviroFrame::CarveTerrainToFitNode(osg::Node *node)
 {
-	vtTerrain *terr = GetCurrentTerrain();
+	vtTerrain *terr = g_App.GetCurrentTerrain();
 	if (!terr)
 		return;
 	vtDynTerrainGeom *dyn = terr->GetDynTerrain();

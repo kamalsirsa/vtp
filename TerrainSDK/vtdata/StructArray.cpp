@@ -507,7 +507,7 @@ int vtStructureArray::GetNextSelected()
 	return -1;
 }
 
-vtStructure *vtStructureArray::GetFirstSelectedStructure()
+vtStructure *vtStructureArray::GetFirstSelectedStructure() const
 {
 	for (uint i = 0; i < size(); i++)
 		if (at(i)->IsSelected())

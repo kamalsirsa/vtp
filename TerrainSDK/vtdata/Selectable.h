@@ -1,7 +1,7 @@
 //
 // Simple class to represent selectability
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,7 @@ public:
 	Selectable() { m_bSelect = false; }
 
 	void Select(bool b) { m_bSelect = b; }
-	bool IsSelected() { return m_bSelect; }
+	bool IsSelected() const { return m_bSelect; }
 	void ToggleSelect() { m_bSelect = !m_bSelect; }
 
 protected:

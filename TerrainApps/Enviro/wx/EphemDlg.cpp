@@ -64,6 +64,7 @@ EphemDlg::EphemDlg(wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iWindSpeedSlider = 0;
 	m_iWindDir = 0;
 	m_fWindSpeed = 0;
+	m_pTerrain = NULL;
 
 	AddValidator(this, ID_SKY, &m_bSky);
 	AddValidator(this, ID_SKYTEXTURE, &m_strSkyTexture);
@@ -146,29 +147,28 @@ void EphemDlg::UpdateColorControl()
 void EphemDlg::SetToScene()
 {
 	vtTerrainScene *ts = vtGetTS();
-	vtTerrain *terr = GetCurrentTerrain();
-	TParams &param = terr->GetParams();
+	TParams &param = m_pTerrain->GetParams();
 	vtSkyDome *sky = ts->GetSkyDome();
 
 	param.SetValueBool(STR_SKY, m_bSky);
 	param.SetValueString(STR_SKYTEXTURE, (const char *) m_strSkyTexture.mb_str(wxConvUTF8));
-	ts->UpdateSkydomeForTerrain(terr);
-	terr->SetFeatureVisible(TFT_OCEAN, m_bOceanPlane);
-	terr->SetWaterLevel(m_fOceanPlaneLevel);
-	terr->SetFog(m_bFog);
-	terr->SetFogDistance(m_fFogDistance);
+	ts->UpdateSkydomeForTerrain(m_pTerrain);
+	m_pTerrain->SetFeatureVisible(TFT_OCEAN, m_bOceanPlane);
+	m_pTerrain->SetWaterLevel(m_fOceanPlaneLevel);
+	m_pTerrain->SetFog(m_bFog);
+	m_pTerrain->SetFogDistance(m_fFogDistance);
 	// shadows
-	terr->SetShadows(m_bShadows);
+	m_pTerrain->SetShadows(m_bShadows);
 	vtShadowOptions opt;
-	terr->GetShadowOptions(opt);
+	m_pTerrain->GetShadowOptions(opt);
 	opt.fDarkness = m_fDarkness;
 	opt.bShadowsEveryFrame = m_bShadowsEveryFrame;
 	opt.bShadowLimit = m_bShadowLimit;
 	opt.fShadowRadius = m_fShadowRadius;
-	terr->SetShadowOptions(opt);
+	m_pTerrain->SetShadowOptions(opt);
 
 	RGBi col(m_BgColor.Red(), m_BgColor.Green(), m_BgColor.Blue());
-	terr->SetBgColor(col);
+	m_pTerrain->SetBgColor(col);
 	vtGetScene()->SetBgColor(col);
 	g_App.SetWind(m_iWindDir, m_fWindSpeed);
 }

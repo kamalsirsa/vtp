@@ -70,6 +70,7 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	m_iSpeedUnits = 0;
 	m_bSet = true;
+	m_pTerrain = NULL;
 
 	AddValidator(this, ID_CAMX, &m_camX);
 	AddValidator(this, ID_CAMY, &m_camY);
@@ -198,12 +199,11 @@ void CameraDlg::GetValues()
 	m_bAccel = g_App.GetFlightAccel();
 	m_fDamping = g_App.GetNavDamping();
 
-	vtTerrain *t = GetCurrentTerrain();
-	if (t)
+	if (m_pTerrain)
 	{
-		m_fDistVeg =	t->GetLODDistance(TFT_VEGETATION);
-		m_fDistStruct = t->GetLODDistance(TFT_STRUCTURES);
-		m_fDistRoad =   t->GetLODDistance(TFT_ROADS);
+		m_fDistVeg =	m_pTerrain->GetLODDistance(TFT_VEGETATION);
+		m_fDistStruct = m_pTerrain->GetLODDistance(TFT_STRUCTURES);
+		m_fDistRoad =   m_pTerrain->GetLODDistance(TFT_ROADS);
 	}
 	if (m_bOrtho)
 	{
@@ -257,12 +257,11 @@ void CameraDlg::SetValues()
 	g_App.SetFlightAccel(m_bAccel);
 	g_App.SetNavDamping(m_fDamping);
 
-	vtTerrain *t = GetCurrentTerrain();
-	if (t)
+	if (m_pTerrain)
 	{
-		t->SetLODDistance(TFT_VEGETATION, m_fDistVeg);
-		t->SetLODDistance(TFT_STRUCTURES, m_fDistStruct);
-		t->SetLODDistance(TFT_ROADS, m_fDistRoad);
+		m_pTerrain->SetLODDistance(TFT_VEGETATION, m_fDistVeg);
+		m_pTerrain->SetLODDistance(TFT_STRUCTURES, m_fDistStruct);
+		m_pTerrain->SetLODDistance(TFT_ROADS, m_fDistRoad);
 	}
 	vtGetScene()->SetStereoSeparation(m_fEyeSep);
 	vtGetScene()->SetStereoFusionDistance(m_fFusionDist);
@@ -280,7 +279,7 @@ void CameraDlg::CheckAndUpdatePos()
 {
 	vtCamera *cam = vtGetScene()->GetCamera();
 	const FPoint3 WorldPos = cam->GetTrans();
-	m_Conv.ConvertToEarth(WorldPos, m_EarthPos);
+	m_pTerrain->GetLocalConversion().ConvertToEarth(WorldPos, m_EarthPos);
 
 	bool bTransfer = false;
 	wxString newx, newy, newz;
@@ -474,7 +473,7 @@ void CameraDlg::OnTextEnter( wxCommandEvent &event )
 	m_EarthPos.z = atof(m_camZ.mb_str(wxConvUTF8));
 
 	FPoint3 WorldPos;
-	m_Conv.ConvertFromEarth(m_EarthPos, WorldPos);
+	m_pTerrain->GetLocalConversion().ConvertFromEarth(m_EarthPos, WorldPos);
 	vtGetScene()->GetCamera()->SetTrans(WorldPos);
 }
 

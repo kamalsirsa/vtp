@@ -1,7 +1,7 @@
 //
 // vtTiledGeom : Renders tiled heightfields using Roettger's libMini library
 //
-// Copyright (c) 2005-2011 Virtual Terrain Project
+// Copyright (c) 2005-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -58,8 +58,8 @@ public:
 	void SetVerticalExag(float fExag);
 	float GetVerticalExag() const { return m_fDrawScale; }
 	void SetVertexTarget(int iVertices);
-	int GetVertexTarget() { return m_iVertexTarget; }
-	FPoint2 GetWorldSpacingAtPoint(const DPoint2 &p);
+	int GetVertexTarget() const { return m_iVertexTarget; }
+	FPoint2 GetWorldSpacingAtPoint(const DPoint2 &p) const;
 	void SetTexLODFactor(float factor);
 
 	// overrides for vtDynGeom

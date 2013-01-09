@@ -36,6 +36,7 @@ public:
 	wxCheckBox* GetFog()  { return (wxCheckBox*) FindWindow( ID_FOG ); }
 	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
 
+	void SetTerrain(class vtTerrain *pTerr) { m_pTerrain = pTerr; }
 	void UpdateEnableState();
 	void UpdateColorControl();
 	void ValuesToSliders();
@@ -69,6 +70,7 @@ private:
 	int m_iFogDistance;
 	int m_iWindDirSlider;
 	int m_iWindSpeedSlider;
+	class vtTerrain *m_pTerrain;
 
 private:
 	// WDR: handler declarations for EphemDlg

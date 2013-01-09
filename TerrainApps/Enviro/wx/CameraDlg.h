@@ -43,8 +43,8 @@ public:
 	void TransferToWindow();
 	void SetSliderControls();
 
+	void SetTerrain(class vtTerrain *pTerr) { m_pTerrain = pTerr; }
 	void CameraChanged();
-	void SetLocalConversion(const vtLocalConversion &conv) { m_Conv = conv; }
 	void CheckAndUpdatePos();
 
 private:
@@ -78,8 +78,8 @@ private:
 
 	bool m_bSet;
 	DPoint3 m_EarthPos;
-	vtLocalConversion m_Conv;
 	bool m_bOrtho;
+	class vtTerrain *m_pTerrain;
 
 private:
 	// WDR: handler declarations for CameraDlg

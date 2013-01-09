@@ -44,10 +44,11 @@ class vtSpriteSizer;
 // Plants
 class vtSpeciesList3d;
 
-class ControlEngine : public vtEngine
+struct ControlEngine : public vtEngine
 {
-public:
+	ControlEngine() : m_pEnvironment(NULL) { }
 	void Eval();
+	class Enviro *m_pEnvironment;
 };
 
 /**
@@ -228,8 +229,8 @@ public:
 	bool ImportModelFromKML(const char *kmlfile);
 
 	// abstract layers
-	vtAbstractLayer *GetLabelLayer();
-	int NumSelectedAbstractFeatures();
+	vtAbstractLayer *GetLabelLayer() const;
+	int NumSelectedAbstractFeatures() const;
 
 	// distance tool
 	void SetDistanceToolMode(bool bPath);
@@ -269,9 +270,6 @@ public:
 	IPoint2		m_MouseDown, m_MouseLast;
 	float		m_StartRotation;
 	bool		m_bConstrainAngles;
-
-	// handle to the singleton
-	static Enviro *s_pEnviro;
 
 	// The following can be overridden by GUI code, to handle situations
 	//  in which the GUI may need to be informed of what happens.
@@ -427,9 +425,6 @@ protected:
 	// mapoverviewengine
 	MapOverviewEngine *m_pMapOverview;
 };
-
-// global helper functions
-vtTerrain *GetCurrentTerrain();
 
 #endif	// ENVIROH
 

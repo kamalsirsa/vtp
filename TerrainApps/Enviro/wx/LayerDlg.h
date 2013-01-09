@@ -107,6 +107,7 @@ public:
 
 	void SetShowAll(bool bTrue);
 	void UpdateEnabling();
+	void SetTerrain(class vtTerrain *pTerr) { m_pTerrain = pTerr; }
 
 	// Public handler declarations for LayerDlg
 	void OnLayerCreate( wxCommandEvent &event );
@@ -124,6 +125,7 @@ private:
 	wxAuiManager m_mgr;
 	wxPanel *m_main;
 	wxToolBar *m_pToolbar;
+	class vtTerrain *m_pTerrain;
 
 	osg::Node *GetNodeFromItem(wxTreeItemId item, bool bContainer = false);
 	vtStructureLayer *GetStructureLayerFromItem(wxTreeItemId item);
