@@ -158,3 +158,15 @@ osg::Node *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
 	return pItem->m_pNode;
 }
 
+vtContentManager3d *vtContentManager3d::s_pContent = NULL;
+
+void vtSetGlobalContent(vtContentManager3d &cm3d)
+{
+	vtContentManager3d::s_pContent = &cm3d;
+}
+
+vtContentManager3d &vtGetContent()
+{
+	return *(vtContentManager3d::s_pContent);
+}
+

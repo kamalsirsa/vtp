@@ -14,7 +14,6 @@
 #include "Building3d.h"
 #include "Fence3d.h"
 #include "Terrain.h"
-#include "TerrainScene.h"	// For content manager
 #include "PagedLodGrid.h"
 
 // Static members
@@ -179,11 +178,6 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	float sc;
 	if (GetValueFloat("scale", sc))
 		m_fScale = sc;
-
-	// Allow the terrain to extend the structure with custom functionality
-	const char *extend = GetValueString("extend", true);
-	if (extend)
-		pTerr->ExtendStructure(this);
 
 	UpdateTransform(pTerr->GetHeightField());
 

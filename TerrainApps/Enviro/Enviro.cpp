@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -2653,10 +2653,6 @@ void Enviro::CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags)
 	inst->CopyTagsFrom(*tags);
 	inst->SetPoint(pos);
 	VTLOG("Create Instance at %.7g, %.7g: ", pos.x, pos.y);
-
-	// Allow the rest of the framework to 'ornament' this instance by
-	//  extending it as desired.
-	ExtendStructure(inst);
 
 	const int index = st_layer->size() - 1;
 	bool success = pTerr->CreateStructure(st_layer, index);

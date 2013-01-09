@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -297,7 +297,6 @@ public:
 	virtual void ShowProgress(bool bShow) {}
 	virtual void SetProgressTerrain(vtTerrain *pTerr) {}
 	virtual void UpdateProgress(const char *msg1, const char *msg2, int amount1, int amount2) {}
-	virtual void ExtendStructure(vtStructInstance *si) {}
 	virtual void AddVehicle(CarEngine *eng) {}
 	virtual void RemoveVehicle(CarEngine *eng) {}
 

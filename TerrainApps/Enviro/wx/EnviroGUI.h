@@ -57,7 +57,6 @@ public:
 	virtual void ShowProgress(bool bShow);
 	virtual void SetProgressTerrain(vtTerrain *pTerr);
 	virtual void UpdateProgress(const char *msg1, const char *msg2, int amount1, int amount2);
-	virtual void ExtendStructure(vtStructInstance *si);
 	virtual void AddVehicle(CarEngine *eng);
 	virtual void RemoveVehicle(CarEngine *eng);
 

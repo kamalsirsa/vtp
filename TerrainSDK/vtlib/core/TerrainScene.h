@@ -1,7 +1,7 @@
 //
 // TerrainScene.h
 //
-// Copyright (c) 2001-2006 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -135,7 +135,6 @@ protected:
 
 // global helper function
 vtTerrainScene *vtGetTS();
-vtContentManager3d &vtGetContent();
 
 /*@}*/	// Group terrain
 

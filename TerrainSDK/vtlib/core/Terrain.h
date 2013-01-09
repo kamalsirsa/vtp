@@ -51,13 +51,6 @@ enum TFType
 	TFT_ROADS
 };
 
-class vtStructureExtension
-{
-public:
-	virtual void OnCreate(vtTerrain *t, vtStructure *s) {}
-	virtual void OnDelete(vtTerrain *t, vtStructure *s) {}
-};
-
 struct vtShadowOptions
 {
 	float fDarkness;
@@ -241,6 +234,7 @@ public:
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
 	int DeleteSelectedStructures(vtStructureLayer *st_layer);
+	void DeleteStructureFromTerrain(vtStructureLayer *st_layer, int index);
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 							  int &structure, vtStructureLayer **st_layer,
 							  double &closest, float fMaxInstRadius,
@@ -257,9 +251,8 @@ public:
 	void SetStructurePageOutDistance(float f);
 	int GetStructurePageMax() { return m_iPagingStructureMax; }
 
-	void ExtendStructure(vtStructure *s);
-	void SetStructureExtension(vtStructureExtension *se = NULL) { m_pStructureExtension = se; }
-	vtStructureExtension *m_pStructureExtension;
+	virtual void OnCreateBehavior(vtStructure *s);
+	virtual void OnDeleteBehavior(vtStructure *s);
 
 	// abstract layers
 	vtAbstractLayer *GetAbstractLayer();

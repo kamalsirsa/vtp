@@ -89,7 +89,6 @@ public:
 	virtual void FrameArgument(int i, const char *str) { }
 	virtual void PostConstruction() { }
 	virtual void AddTool(int id, const wxBitmap &bmp, const wxString &tooltip, bool tog);
-	virtual void ExtendStructure(vtStructInstance *si) {}
 	virtual void SetScenario(int num) {}
 
 	void UpdateLODInfo();

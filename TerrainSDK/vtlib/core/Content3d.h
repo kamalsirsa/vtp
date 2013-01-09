@@ -47,7 +47,13 @@ public:
 	void ReleaseContents();
 
 	vtGroupPtr m_pGroup;
+
+	// Static: handle to the singleton
+	static vtContentManager3d *s_pContent;
 };
+
+void vtSetGlobalContent(vtContentManager3d &cm3d);
+vtContentManager3d &vtGetContent();
 
 /*@}*/	// group content
 

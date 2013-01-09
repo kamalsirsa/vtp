@@ -172,11 +172,6 @@ void EnviroGUI::UpdateProgress(const char *msg1, const char *msg2, int amount1, 
 	UpdateProgressDialog2(amount1, amount2, ws1 + ws2);
 }
 
-void EnviroGUI::ExtendStructure(vtStructInstance *si)
-{
-	GetFrame()->ExtendStructure(si);
-}
-
 void EnviroGUI::AddVehicle(CarEngine *eng)
 {
 	GetFrame()->GetDriveDlg()->SetCarEngine(eng);

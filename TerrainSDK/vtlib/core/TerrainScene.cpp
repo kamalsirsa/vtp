@@ -71,6 +71,8 @@ vtTerrainScene::vtTerrainScene()
 	m_pAtmosphereGroup = NULL;
 
 	m_fCatenaryFactor = 140.0;	// a default value
+
+	vtSetGlobalContent(m_Content);	// Singleton
 }
 
 vtTerrainScene::~vtTerrainScene()
@@ -467,10 +469,5 @@ vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
 vtTerrainScene *vtGetTS()
 {
 	return vtTerrainScene::s_pTerrainScene;
-}
-
-vtContentManager3d &vtGetContent()
-{
-	return vtTerrainScene::s_pTerrainScene->m_Content;
 }
 

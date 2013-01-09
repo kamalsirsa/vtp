@@ -6,7 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/TerrainScene.h"	// for vtGetContent
+#include "vtlib/core/Content3d.h"	// for vtGetContent
 #include "vtlib/core/GeomUtil.h"		// for CreateBoundSphereGeom
 #include "vtdata/vtLog.h"
 #include "CarEngine.h"

@@ -91,8 +91,6 @@ vtTerrain::vtTerrain()
 	m_pOverlay = NULL;
 	m_progress_callback = NULL;
 
-	m_pStructureExtension = NULL;
-
 	m_pExternalHeightField = NULL;
 }
 
@@ -1059,6 +1057,8 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 		str3d->SetCastShadow(bShow);
 	}
 
+	OnCreateBehavior(str);
+
 	return bSuccess;
 }
 
@@ -1125,31 +1125,33 @@ int vtTerrain::DeleteSelectedStructures(vtStructureLayer *st_layer)
 	// first remove them from the terrain
 	for (uint i = 0; i < st_layer->size(); i++)
 	{
-		vtStructure *str = st_layer->at(i);
-		if (str->IsSelected())
-		{
-			// notify any structure-handling extension
-			if (m_pStructureExtension)
-				m_pStructureExtension->OnDelete(this, str);
-
-			// Remove it from the paging grid
-			if (m_pPagedStructGrid)
-				m_pPagedStructGrid->RemoveFromGrid(st_layer, i);
-
-			vtStructure3d *str3d = st_layer->GetStructure3d(i);
-			osg::Node *node = str3d->GetContainer();
-			if (!node)
-				node = str3d->GetGeom();
-
-			RemoveNodeFromStructGrid(node);
-
-			// if there are any engines pointing to this node, inform them
-			vtGetScene()->TargetRemoved(node);
-		}
+		if (st_layer->at(i)->IsSelected())
+			DeleteStructureFromTerrain(st_layer, i);
 	}
-
 	// then do a normal delete-selected
 	return st_layer->DeleteSelected();
+}
+
+void vtTerrain::DeleteStructureFromTerrain(vtStructureLayer *st_layer, int index)
+{
+	// notify any structure-handling extension
+	vtStructure *str = st_layer->at(index);
+	OnDeleteBehavior(str);
+
+	// Remove it from the paging grid
+	if (m_pPagedStructGrid)
+		m_pPagedStructGrid->RemoveFromGrid(st_layer, index);
+
+	vtStructure3d *str3d = st_layer->GetStructure3d(index);
+	osg::Node *node = str3d->GetContainer();
+	if (!node)
+		node = str3d->GetGeom();
+
+	RemoveNodeFromStructGrid(node);
+	str3d->DeleteNode();
+
+	// if there are any engines pointing to this node, inform them
+	vtGetScene()->TargetRemoved(node);
 }
 
 bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
@@ -2993,31 +2995,14 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 	vtVegLayer *vlay = dynamic_cast<vtVegLayer*>(lay);
 	if (slay)
 	{
-		// first remove each structure from the terrain
+		// Remove each structure from the terrain
 		for (uint i = 0; i < slay->size(); i++)
 		{
 			if (progress_callback != NULL)
 				progress_callback(i * 99 / slay->size());
 
-			vtStructure *str = slay->at(i);
-			vtStructure3d *str3d = slay->GetStructure3d(i);
-
-			// notify any structure-handling extension
-			if (m_pStructureExtension)
-				m_pStructureExtension->OnDelete(this, str);
-
-			// Remove it from the paging grid
-			if (m_pPagedStructGrid)
-				m_pPagedStructGrid->RemoveFromGrid(slay, i);
-
-			// If it was a successfully create structure, it will have a container
-			if (str3d->GetContainer())
-			{
-				RemoveNodeFromStructGrid(str3d->GetContainer());
-				str3d->DeleteNode();
-			}
+			DeleteStructureFromTerrain(slay, i);
 		}
-
 		// Be certain we're not still trying to page it in
 		if (m_pPagedStructGrid)
 			m_pPagedStructGrid->ClearQueue(slay);
@@ -3363,11 +3348,164 @@ void vtTerrain::EnforcePageOut()
 		m_fPagingStructureDist = fStructLodDist + 50;
 }
 
-void vtTerrain::ExtendStructure(vtStructure *s)
+///////////////////////////////////////////////////////////////////////
+
+class TurbineEngine : public vtEngine
 {
-	// notify any structure-handling extension
-	if (m_pStructureExtension)
-		m_pStructureExtension->OnCreate(this, s);
+public:
+	TurbineEngine()
+	{
+		m_fLastTime = FLT_MAX;
+		m_fDir = PIf * 0.5f;
+		m_fRot = 0.0f;
+		m_fRotSpeed = 0.0f;
+	}
+	void Eval();
+
+	float m_fLastTime;
+	float m_fDir;		// radians
+	float m_fRot;		// radians
+	float m_fRotSpeed;	// radians per second
+	FPoint3 m_rotor_pivot;
+	vtStructure *m_pStructure;
+	vtTerrain *m_pTerrain;
+};
+
+void TurbineEngine::Eval()
+{
+	float fNow = vtGetTime();
+	if (m_fLastTime==FLT_MAX)
+		m_fLastTime = fNow;
+	float fElapsed = fNow - m_fLastTime;
+
+	float fWindDir = 0.0f;
+	float fWindSpeed = 0.0f;
+
+	// Get these properties from the terrain
+	TParams &params = m_pTerrain->GetParams();
+	params.GetValueFloat("WindDirection", fWindDir);
+	params.GetValueFloat("WindSpeed", fWindSpeed);
+
+	// Convert degrees to radians
+	float fTargetDir = ((180-fWindDir) / 180.0f * PIf);
+
+	// Face wind gradually
+	m_fDir += ((fTargetDir - m_fDir) * 0.05f);
+
+	// "The maximum rotor speed is about 35 rpm for the smallest windmills.
+	//  The larger windmills never go above 15-18 rpm."
+	// 35 rpm = 3.66 radians/sec
+
+	// Windspeed goes from 0-40, mapping 40->3.66 is 0.0915
+
+	// And match wind speed gradually
+	// Convert m/s to approximate radians/s
+	float fTargetSpeed = fWindSpeed * 0.0915;	// ad hoc
+	m_fRotSpeed += ((fTargetSpeed - m_fRotSpeed) * 0.05f);
+
+	for (unsigned int t = 0; t < NumTargets(); t++)
+	{
+		osg::Referenced *tar = GetTarget(t);
+		vtTransform *x1 = dynamic_cast<vtTransform*>(tar);
+		if (!x1) return;
+
+		//x1->Identity();
+		//x1->Rotate2(FPoint3(0,1,0), m_fDir);
+
+		m_fRot += (m_fRotSpeed * fElapsed);
+		if (m_fRot >= PI2f)
+			m_fRot -= PI2f;
+		x1->Identity();
+		x1->Rotate(FPoint3(0,0,1), m_fRot);
+		x1->Translate(m_rotor_pivot);
+	}
+	m_fLastTime = fNow;
+}
+
+/**
+ Extend some structures with behavior.  A developer can also subclass vtTerrain
+ to implement their own behaviors.
+ */
+void vtTerrain::OnCreateBehavior(vtStructure *str)
+{
+	vtStructInstance3d *si = dynamic_cast<vtStructInstance3d *>(str);
+	if (!si)
+		return;
+
+	vtString itemname = si->GetValueString("itemname", true);
+	if (itemname == "")
+		return;
+
+	vtItem *item = m_Content.FindItemByName(itemname);
+	// If that didn't work, also try the global content manager
+	if (!item)
+		item = vtGetContent().FindItemByName(itemname);
+	if (!item)
+		return;
+
+	vtString behavior = item->GetValueString("behavior", true);
+	if (behavior == "wind_turbine")
+	{
+		itemname += " rotor";
+
+		// Look in terrain content, and global content manager
+		osg::Node *n2 = m_Content.CreateNodeFromItemname(itemname);
+		if (!n2)
+			n2 = vtGetContent().CreateNodeFromItemname(itemname);
+
+		if (!n2)
+			return;
+
+		vtTransform *x1 = new vtTransform;
+
+		x1->setName("x1");
+
+		si->GetContainer()->addChild(x1);
+		x1->addChild(n2);
+
+		TurbineEngine *te = new TurbineEngine;
+		te->m_pStructure = str;
+		te->setName("Turbine");
+		te->m_rotor_pivot.Set(0,0,0);
+
+		// Look in terrain content, and global content manager
+		vtItem *rotor_item = m_Content.FindItemByName(itemname);
+		if (!rotor_item)
+			rotor_item = vtGetContent().FindItemByName(itemname);
+		if (rotor_item)
+		{
+			const char *pivot = rotor_item->GetValueString("rotor_pivot");
+			if (pivot)
+			{
+				// Avoid trouble with '.' and ',' in Europe
+				LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+				FPoint3 p;
+				if (sscanf(pivot, "%f, %f, %f", &p.x, &p.y, &p.z) == 3)
+					te->m_rotor_pivot = p;
+			}
+		}
+		te->AddTarget(x1);
+		te->m_pTerrain = this;
+		AddEngine(te);
+	}
+}
+
+void vtTerrain::OnDeleteBehavior(vtStructure *str)
+{
+	// Remove all engines which are associated with this structure
+	vtEngine *top = GetEngineGroup();
+	for (unsigned int i = 0; i < top->NumChildren(); i++)
+	{
+		vtEngine *eng = top->GetChild(i);
+		TurbineEngine *te = dynamic_cast<TurbineEngine*>(eng);
+		if (te && te->m_pStructure == str)
+		{
+			// remove it
+			top->RemoveChild(eng);
+			return;
+		}
+	}
 }
 
 

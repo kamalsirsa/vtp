@@ -4,13 +4,12 @@
 // Terrain implementation specific to the Big Island of Hawai'i.
 //  Actually, this is a place where a lot of test and example code lives.
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Content3d.h"
-#include "vtlib/core/TerrainScene.h"	// for vtGetContent
 #include "vtdata/Features.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
