@@ -1683,13 +1683,15 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	double epsilon = eoffset.x;
 	VTLOG("epsilon %lf, ", epsilon);
 
+	VTLOG("|XY= %lf, %lf, %lf|\n", m_EarthPos.x, m_EarthPos.y, m_EarthPos.z); // BobMaX
+
 	// We also want to use a small (2m) buffer around linear features, so they
 	//  can be picked even if they are inside/on top of a building.
 	conv.ConvertVectorToEarth(2.0f, 0, eoffset);
 	double linear_buffer = eoffset.x;
 
 	// Look at the distance to each type of object
-	double dist1, dist2, dist3;
+	double dist1 = 1E9, dist2 = 1E9, dist3 = 1E9, dist4 = 1E9;
 
 	// Check Structures
 	vtStructureLayer *st_layer;	// layer that contains the closest structure
@@ -1701,8 +1703,6 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 		VTLOG("structure at dist %lf, ", dist1);
 	m_bSelectedStruct = false;
 
-	VTLOG("|XY= %lf, %lf, %lf|\n", m_EarthPos.x, m_EarthPos.y, m_EarthPos.z); // BobMaX
-
 	// Check Plants
 	vtVegLayer *v_layer;
 	m_bSelectedPlant = false;
@@ -1713,8 +1713,6 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 		dist2 = (gpos - v_layer->GetPoint(plant_index)).Length();
 		VTLOG("plant at dist %lf, ", dist2);
 	}
-	else
-		dist2 = 1E9;
 
 	// Check Routes
 	vtRouteMap &routes = pTerr->GetRouteMap();
@@ -1724,7 +1722,6 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 
 	// Check Vehicles
 	m_bSelectedVehicle = false;
-	float dist4;
 	FPoint3 wpos;
 	conv.ConvertFromEarth(m_EarthPos, wpos);
 	m_Vehicles.VisualDeselectAll();

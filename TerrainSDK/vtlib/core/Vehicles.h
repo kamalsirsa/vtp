@@ -48,7 +48,7 @@ public:
 	VehicleSet();
 
 	void AddEngine(CarEngine *e);
-	int FindClosestVehicle(const FPoint3 &point, float &closest);
+	int FindClosestVehicle(const FPoint3 &point, double &closest);
 	void VisualSelect(int vehicle);
 	void VisualDeselectAll();
 	int GetSelected() { return m_iSelected; }

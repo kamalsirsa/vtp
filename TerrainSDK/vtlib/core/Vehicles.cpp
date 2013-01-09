@@ -201,7 +201,7 @@ void VehicleSet::AddEngine(CarEngine *e)
 	m_Engines.push_back(e);
 }
 
-int VehicleSet::FindClosestVehicle(const FPoint3 &point, float &closest)
+int VehicleSet::FindClosestVehicle(const FPoint3 &point, double &closest)
 {
 	closest = 1E9;
 	int vehicle = -1;
