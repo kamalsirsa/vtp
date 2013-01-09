@@ -203,13 +203,13 @@ TagDlgBase::TagDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, 
 	wxBoxSizer* bSizer93;
 	bSizer93 = new wxBoxSizer( wxHORIZONTAL );
 	
-	wxID_OK = new wxButton( this, wxID_ANY, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-	wxID_OK->SetDefault(); 
-	bSizer93->Add( wxID_OK, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_ok = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ok->SetDefault(); 
+	bSizer93->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxID_CANCEL = new wxButton( this, wxID_ANY, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	wxID_CANCEL->SetDefault(); 
-	bSizer93->Add( wxID_CANCEL, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cancel->SetDefault(); 
+	bSizer93->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	bSizer90->Add( bSizer93, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	

@@ -1743,11 +1743,11 @@
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden"></property>
-                                <property name="id">wxID_ANY</property>
+                                <property name="id">wxID_OK</property>
                                 <property name="label">OK</property>
                                 <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
-                                <property name="name">wxID_OK</property>
+                                <property name="name">m_ok</property>
                                 <property name="permission">protected</property>
                                 <property name="pos"></property>
                                 <property name="size"></property>
@@ -1800,11 +1800,11 @@
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden"></property>
-                                <property name="id">wxID_ANY</property>
+                                <property name="id">wxID_CANCEL</property>
                                 <property name="label">Cancel</property>
                                 <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
-                                <property name="name">wxID_CANCEL</property>
+                                <property name="name">m_cancel</property>
                                 <property name="permission">protected</property>
                                 <property name="pos"></property>
                                 <property name="size"></property>
@@ -1848,7 +1848,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="1">
+        <object class="Dialog" expanded="0">
             <property name="bg"></property>
             <property name="center">wxBOTH</property>
             <property name="context_help"></property>

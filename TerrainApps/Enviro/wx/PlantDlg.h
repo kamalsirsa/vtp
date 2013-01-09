@@ -30,7 +30,6 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	~PlantDlg();
 
 	void SetSpeciesList(vtSpeciesList3d *plants);
 	void SetDlgPlantOptions(PlantingOptions &opt);

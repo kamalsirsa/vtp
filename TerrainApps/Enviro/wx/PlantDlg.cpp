@@ -84,10 +84,6 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetSizer()->SetSizeHints(this);
 }
 
-PlantDlg::~PlantDlg()
-{
-}
-
 void PlantDlg::SetLang(const wxString &strTwoLetterLangCode)
 {
 	m_strLang = strTwoLetterLangCode.Left(2);

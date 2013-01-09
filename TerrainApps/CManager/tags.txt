@@ -8,3 +8,4 @@ url
 wire_info
 num_wheels
 colorable
+behavior
