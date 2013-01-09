@@ -115,9 +115,9 @@ void LayerToolBarFunc(wxToolBar *bar)
     bar->AddTool( ID_LAYER_SAVE_AS, _("Save As"), wxBITMAP(save_as),	  wxNullBitmap, wxITEM_NORMAL, _("Save Layer As...") );
     bar->AddTool( ID_LAYER_DELETE, _("Delete"),	  wxBITMAP(delete1),	  wxNullBitmap, wxITEM_NORMAL, _("Delete Layer") );
     bar->AddSeparator();
-    bar->AddTool( ID_LAYER_ZOOM_TO, _("Zoom"),	  wxBITMAP(zoom_to),	  wxNullBitmap, wxITEM_NORMAL, _("Zoom to Layer") );
+    bar->AddTool( ID_LAYER_ZOOM_TO, _("Zoom"),	  wxBITMAP(zoom_to),	  wxNullBitmap, wxITEM_NORMAL, _("Zoom To") );
     bar->AddTool( ID_LAYER_VISIBLE, _("Visible"), wxBITMAP(eye),		  wxNullBitmap, wxITEM_CHECK, _("Toggle Layer Visibility") );
-    bar->AddTool( ID_LAYER_TABLE, wxT(""),		  wxBITMAP(grid),		  wxNullBitmap, wxITEM_NORMAL, _("Table of Attributes") );
+    bar->AddTool( ID_LAYER_TABLE, wxT(""),		  wxBITMAP(grid),		  wxNullBitmap, wxITEM_NORMAL, _("Table of Features") );
     bar->AddTool( ID_LAYER_SHADOW, _("Shadow"),	  wxBITMAP(shadow),		  wxNullBitmap, wxITEM_CHECK, _("Toggle Structure Shadow") );
     bar->AddTool( ID_LAYER_REFRESH, _("Refresh"), wxBITMAP(refresh),	  wxNullBitmap, wxITEM_NORMAL, _("Refresh") );
     bar->AddSeparator();

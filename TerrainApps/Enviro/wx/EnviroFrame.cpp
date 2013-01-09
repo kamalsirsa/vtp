@@ -995,7 +995,7 @@ void EnviroFrame::SetMode(MouseMode mode)
 	}
 	m_pPlantDlg->Show(mode == MM_PLANTS);
 
-	if (mode == MM_LINEARS || mode == MM_BUILDINGS)
+	if (mode == MM_LINEARS || mode == MM_BUILDINGS || mode == MM_INSTANCES)
 	{
 		g_App.ActivateAStructureLayer();
 	}
