@@ -346,22 +346,24 @@ void StyleDlg::RefreshFields()
 
 void StyleDlg::UpdateEnabling()
 {
+	bool bIs3D = GeometryTypeIs3D(m_type);
+
 	// Object Geometry
 	GetRadio1()->Enable(m_bObjectGeometry);
 	GetObjectGeomColor()->Enable(m_bObjectGeometry && !m_bRadioUseObjectColorField);
 	GetRadioUseObjectColorField()->Enable(m_bObjectGeometry);
 	GetObjectColorField()->Enable(m_bRadioUseObjectColorField);
 	GetObjectGeomSize()->Enable(m_bObjectGeometry);
-	GetObjectGeomHeight()->Enable(m_bObjectGeometry && !GeometryTypeIs3D(m_type));
+	GetObjectGeomHeight()->Enable(m_bObjectGeometry && !bIs3D);
 
 	// Line Geometry
 	GetRadio2()->Enable(m_bLineGeometry);
 	GetLineGeomColor()->Enable(m_bLineGeometry && !m_bRadioUseLineColorField);
 	GetRadioUseLineColorField()->Enable(m_bLineGeometry);
 	GetLineColorField()->Enable(m_bRadioUseLineColorField);
-	GetLineGeomHeight()->Enable(m_bLineGeometry && !GeometryTypeIs3D(m_type));
+	GetLineGeomHeight()->Enable(m_bLineGeometry && !bIs3D);
 	GetLineWidth()->Enable(m_bLineGeometry);
-	GetTessellate()->Enable(m_bLineGeometry && !GeometryTypeIs3D(m_type));
+	GetTessellate()->Enable(m_bLineGeometry && !bIs3D);
 
 	// Text Labels
 	GetRadio3()->Enable(m_bTextLabels);
@@ -369,7 +371,7 @@ void StyleDlg::UpdateEnabling()
 	GetRadioUseTextColorField()->Enable(m_bTextLabels);
 	GetTextColorField()->Enable(m_bRadioUseTextColorField);
 	GetTextField()->Enable(m_bTextLabels);
-	GetLabelHeight()->Enable(m_bTextLabels && !GeometryTypeIs3D(m_type));
+	GetLabelHeight()->Enable(m_bTextLabels && !bIs3D);
 	GetLabelSize()->Enable(m_bTextLabels);
 	GetFont()->Enable(m_bTextLabels);
 

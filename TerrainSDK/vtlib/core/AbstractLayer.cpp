@@ -604,7 +604,7 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 	// If we have a 3D point, we can use the Z component of the point
 	//  to further affect the elevation.
 	if (pSetP3)
-		fp3.y += label_elevation;
+		fp3.y += p3.z;
 
 	float label_size;
 	if (!m_StyleProps.GetValueFloat("LabelSize", label_size))
@@ -637,7 +637,7 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 	// Determine feature color
 	bool bGotColor = false;
 	int color_field_index;
-	if (m_StyleProps.GetValueInt("ColorFieldIndex", color_field_index))
+	if (m_StyleProps.GetValueInt("TextColorFieldIndex", color_field_index))
 	{
 		RGBAf rgba;
 		if (GetColorField(*pSet, iIndex, color_field_index, rgba))
