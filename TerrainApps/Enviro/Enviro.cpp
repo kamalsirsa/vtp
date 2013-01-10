@@ -2727,6 +2727,8 @@ void Enviro::DescribeCLOD(vtString &str)
  \param which 0 for the "fps" field,
 			  1 for the "cursor" field (location of the cursor),
 			  2 for the "cursor val" (value under the cursor).
+ \param str1 The first part of the string (translated).
+ \param str2 The seconds part of the string (untranslated).
  */
 void Enviro::GetStatusString(int which, vtString &str1, vtString &str2)
 {

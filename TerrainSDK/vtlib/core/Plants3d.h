@@ -35,7 +35,7 @@ public:
 						const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY) :
 		osg::Drawable(PlantShaderDrawable,copyop) {}
 
-	META_Object(osg,PlantShaderDrawable)
+	META_Object(osg,PlantShaderDrawable);
 
 	typedef std::vector<osg::Vec4> VecVec4;
 

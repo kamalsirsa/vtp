@@ -33,7 +33,7 @@ public:
 	~ContourConverter();
 
 	/// Setup to generate line features
-	bool Setup(vtHeightFieldGrid3d *pHGGrid, vtFeatureSetLineString *fset);
+	bool Setup(vtHeightFieldGrid3d *pHFGrid, vtFeatureSetLineString *fset);
 
 	void GenerateContour(float fAlt);
 	void GenerateContours(float fAInterval);

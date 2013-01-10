@@ -154,8 +154,7 @@ vtElevationGrid::~vtElevationGrid()
  * Create a grid of given size.
  *
  * \param area the coordinate extents of the grid (rectangular area)
- * \param iColumns number of columns in the grid (east-west)
- * \param iRows number of rows (north-south)
+ * \param size Number of columns and rows in the grid.
  * \param bFloat data size: \c true to use floating-point, \c false for shorts.
  * \param proj the geographical projection to use.
  *

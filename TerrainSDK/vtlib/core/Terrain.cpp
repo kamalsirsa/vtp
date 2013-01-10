@@ -3136,6 +3136,8 @@ vtVegLayer *vtTerrain::LoadVegetation(const vtString &fname)
 
 /**
  * Create a new plant instance at a given location and add it to the terrain.
+ *
+ * \param v_layer The vegetation layer to add to.
  * \param pos The 2D earth position of the new plant.
  * \param iSpecies Index of the species in the terrain's plant list.
  *		If you don't know the index, you can find it with

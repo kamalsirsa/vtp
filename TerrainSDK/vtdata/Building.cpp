@@ -805,7 +805,7 @@ void vtBuilding::SetCircle(const DPoint2 &center, float fRad)
  *
  * \param which Can be either BLD_BASIC (the overall color of the building)
  *			or BLD_ROOF (the overall color of the roof).
- * \param col The color to set.
+ * \param color The color to set.
  */
 void vtBuilding::SetColor(BldColor which, const RGBi &color)
 {

@@ -102,6 +102,7 @@ void DLine2::ReverseOrder()
  *  produce A B D.  Points are identical if they are within dEpsilon
  *  of each other.
  *
+ * \param dEpsilon Distance.
  * \param bClosed If true, treat this as a closed polyline (a simple
  *  polygon) by wrapping around from the last to the first point.
  */
@@ -134,6 +135,7 @@ int DLine2::RemoveDegeneratePoints(double dEpsilon, bool bClosed)
  We could use another measure of linearity, the angle between (B-A)
  and (C-A), but didn't do that.
  
+ \param dEpsilon Distance.
  \param bClosed If true, treat this as a closed polyline (a simple
    polygon) by wrapping around from the last to the first point.
  */
