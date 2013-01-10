@@ -66,6 +66,7 @@ private:
 
 	vtProjection m_proj;
 
+	vtString	m_Name, m_URL;
 	LayerType	m_WayType;
 	bool		m_bIsArea;
 	int			m_id;
@@ -149,6 +150,8 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 				m_id = -1;	// Shouldn't happen.
 
 			// Defaults
+			m_Name = "";
+			m_URL = "";
 			m_WayType = LT_UNKNOWN;
 			m_bIsArea = false;
 			m_iRoadLanes = 2;
@@ -366,6 +369,9 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 	if (key == "man_made")
 		m_WayType = LT_UNKNOWN;		// Piers, towers, windmills, etc.
 
+	if (key == "name")
+		m_Name = value;
+
 	if (key == "power")
 		m_WayType = LT_UNKNOWN;
 
@@ -424,8 +430,14 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 		if (value == "yes")
 			m_WayType = LT_UNKNOWN;
 	}
+	if (key == "url")
+		m_URL = value;
+
 	if (key == "waterway")
 		m_WayType = LT_WATER;
+
+	if (key == "website")
+		m_URL = value;
 }
 
 void VisitorOSM::MakeRoad()
@@ -621,6 +633,11 @@ void VisitorOSM::MakeBuilding()
 
 	if (m_RoofType != NUM_ROOFTYPES)
 		bld->SetRoofType(m_RoofType);
+
+	if (m_Name != "")
+		bld->AddTag("name", m_Name);
+	if (m_URL != "")
+		bld->AddTag("url", m_URL);
 }
 
 void VisitorOSM::MakeLinear()
