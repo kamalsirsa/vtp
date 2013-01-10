@@ -1051,6 +1051,10 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 			case 6:
 				pL->m_vti = two_way ? VTI_4LANE2WAY : VTI_4LANE1WAY;
 				break;
+			default:
+				// Catch any freakish roads with >6 lanes.
+				pL->m_vti = two_way ? VTI_4LANE2WAY : VTI_4LANE1WAY;
+				break;
 			}
 			break;
 		case SURFT_RAILROAD:

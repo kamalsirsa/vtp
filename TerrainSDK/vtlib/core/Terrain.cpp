@@ -980,8 +980,8 @@ vtStructureLayer *vtTerrain::LoadStructuresFromXML(const vtString &strFilename)
 	if (!st_layer->ReadXML(strFilename, m_progress_callback))
 	{
 		VTLOG("\tCouldn't load file.\n");
+		// Removing the layer deletes it, by dereference.
 		m_Layers.Remove(st_layer);
-		delete st_layer;
 		return NULL;
 	}
 	SetActiveLayer(st_layer);

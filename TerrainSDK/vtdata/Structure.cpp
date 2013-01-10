@@ -130,6 +130,6 @@ void vtStructure::WriteTags(GZOutput &out) const
 	{
 		const vtTag *tag = GetTag(i);
 		gfprintf(out, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
-			(const char *)tag->value, (const char *)tag->name);
+			(const char *) EscapeStringForXML(tag->value), (const char *)tag->name);
 	}
 }
