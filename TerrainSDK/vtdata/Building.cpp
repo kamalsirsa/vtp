@@ -872,11 +872,11 @@ RGBi vtBuilding::GetColor(BldColor which) const
  *
  * \param iStories Number of stories to set.
  */
-void vtBuilding::SetStories(int iStories)
+void vtBuilding::SetNumStories(int iStories)
 {
 	vtLevel *pLev;
 
-	int previous = GetStories();
+	int previous = NumStories();
 	if (previous == iStories)
 		return;
 
@@ -896,7 +896,7 @@ void vtBuilding::SetStories(int iStories)
 		pLev->SetRoofType(ROOF_FLAT, 0);
 		levels++;
 	}
-	previous = GetStories(); // Just in case it changed
+	previous = NumStories(); // Just in case it changed
 
 	// increase if necessary
 	if (iStories > previous)
@@ -907,7 +907,7 @@ void vtBuilding::SetStories(int iStories)
 		pLev->m_iStories += (iStories - previous);
 	}
 	// decrease if necessary
-	while (GetStories() > iStories)
+	while (NumStories() > iStories)
 	{
 		// get top non-roof level
 		pLev = m_Levels[levels-2];
@@ -928,7 +928,7 @@ void vtBuilding::SetStories(int iStories)
  * Get the total number of stories of this building.  The top level is assumed
  *  to be a roof and does not count toward the total.
  */
-int vtBuilding::GetStories() const
+int vtBuilding::NumStories() const
 {
 	// this method assume each building must have at least two levels: one
 	// for the walls and one for the roof.
@@ -961,7 +961,7 @@ float vtBuilding::GetTotalHeight() const
  */
 void vtBuilding::SetFootprint(int lev, const DLine2 &foot)
 {
-	int levs = GetNumLevels();
+	int levs = NumLevels();
 	if (lev >= levs)
 		CreateLevel();
 
@@ -979,7 +979,7 @@ void vtBuilding::SetFootprint(int lev, const DLine2 &foot)
  */
 void vtBuilding::SetFootprint(int lev, const DPolygon2 &poly)
 {
-	int levs = GetNumLevels();
+	int levs = NumLevels();
 	if (lev >= levs)
 		CreateLevel();
 
@@ -1008,7 +1008,7 @@ void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 {
 	int i, edges;
 
-	if (GetNumLevels() < 2)
+	if (NumLevels() < 2)
 	{
 		// should not occur - this method is intended for buildings with roofs
 		return;
@@ -1019,8 +1019,8 @@ void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 	vtLevel *pLev, *below;
 	if (iLev == -1)
 	{
-		pLev = GetLevel(GetNumLevels()-1);
-		below = GetLevel(GetNumLevels()-2);
+		pLev = GetLevel(NumLevels()-1);
+		below = GetLevel(NumLevels()-2);
 	}
 	else
 	{
@@ -1065,7 +1065,7 @@ RoofType vtBuilding::GetRoofType()
 {
 	// try to guess type of roof from looking at slopes of edges of
 	// the top level
-	vtLevel *pLev = GetLevel(GetNumLevels()-1);
+	vtLevel *pLev = GetLevel(NumLevels()-1);
 
 	return pLev->GuessRoofType();
 }
@@ -1136,7 +1136,7 @@ vtLevel *vtBuilding::CreateLevel(const DPolygon2 &footprint)
 
 void vtBuilding::InsertLevel(int iLev, vtLevel *pLev)
 {
-	int levels = GetNumLevels();
+	int levels = NumLevels();
 	m_Levels.SetSize(levels+1);
 	for (int i = levels; i > iLev; i--)
 	{
@@ -1150,7 +1150,7 @@ void vtBuilding::InsertLevel(int iLev, vtLevel *pLev)
 
 void vtBuilding::DeleteLevel(int iLev)
 {
-	int levels = GetNumLevels();
+	int levels = NumLevels();
 	for (int i = iLev; i < levels-1; i++)
 	{
 		m_Levels[i] = m_Levels[i+1];
@@ -1239,7 +1239,7 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 	gfprintf(out, ">\n");
 
 	int i, j, k;
-	int levels = GetNumLevels();
+	int levels = NumLevels();
 	for (i = 0; i < levels; i++)
 	{
 		const vtLevel *lev = GetLevel(i);
@@ -1347,11 +1347,11 @@ void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 void vtBuilding::AddDefaultDetails()
 {
 	// requires at least 2 levels to operate
-	int numlevels = GetNumLevels();
+	int numlevels = NumLevels();
 	while (numlevels < 2)
 	{
 		CreateLevel();
-		numlevels = GetNumLevels();
+		numlevels = NumLevels();
 	}
 
 	// add some default windows/doors
@@ -1516,12 +1516,12 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 
 	DPolygon2 foot;
 
-	uint from_levels = pDefBld->GetNumLevels();
+	uint from_levels = pDefBld->NumLevels();
 	uint copy_levels;
 	if (bDoHeight)
 		copy_levels = from_levels;
 	else
-		copy_levels = GetNumLevels();
+		copy_levels = NumLevels();
 
 	for (uint i = 0; i < copy_levels; i++)
 	{

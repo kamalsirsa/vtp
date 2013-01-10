@@ -185,7 +185,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 
 	// create the edges (walls and roof)
 	float fHeight = 0.0f;
-	int iLevels = GetNumLevels();
+	int iLevels = NumLevels();
 
 	int level_show = -1, edge_show = -1;
 	GetValueInt("level", level_show);

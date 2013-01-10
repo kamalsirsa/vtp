@@ -457,7 +457,7 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 		}
 	}
 
-	int num_fields = m_pSet->GetNumFields();
+	int num_fields = m_pSet->NumFields();
 	if (num_fields)
 	{
 		strIn += _("Fields:\n");

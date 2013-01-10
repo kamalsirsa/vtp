@@ -8,13 +8,13 @@
 #ifndef VTDATA_FEATURES
 #define VTDATA_FEATURES
 
-#include "shapelib/shapefil.h"
-#include "ogrsf_frmts.h"
-
 #include "MathTypes.h"
 #include "vtString.h"
 #include "Projections.h"
 #include "Content.h"
+
+#include "shapelib/shapefil.h"
+#include "ogrsf_frmts.h"
 
 enum SelectionType
 {
@@ -181,7 +181,7 @@ public:
 	void DePickAll();
 
 	// attribute (field) operations
-	uint GetNumFields() const { return m_fields.GetSize(); }
+	uint NumFields() const { return m_fields.GetSize(); }
 	Field *GetField(int i) { return m_fields[i]; }
 	const Field *GetField(int i) const { return m_fields[i]; }
 	Field *GetField(const char *name);

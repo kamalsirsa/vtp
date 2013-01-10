@@ -55,7 +55,7 @@ void StatePlaneDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	// update state plane control
 	m_iStatePlane = 1;
-	int num_planes = GetNumStatePlanes();
+	int num_planes = NumStatePlanes();
 	StatePlaneInfo *plane_info = GetStatePlaneTable();
 	for (int i = 0; i < num_planes; i++)
 	{

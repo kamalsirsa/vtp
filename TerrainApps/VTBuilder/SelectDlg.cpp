@@ -87,7 +87,7 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 		m_iFauxFields = 3;
 	}
 
-	for (uint i = 0; i < pSet->GetNumFields(); i++)
+	for (uint i = 0; i < pSet->NumFields(); i++)
 	{
 		Field *field = pSet->GetField(i);
 		wxString str(field->m_name, wxConvUTF8);

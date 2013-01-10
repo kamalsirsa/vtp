@@ -986,7 +986,7 @@ void vtFeatureSet::ParseDBFRecords(DBFHandle db, bool progress_callback(int))
 		if (progress_callback && ((i%16)==0))
 			progress_callback(i*100/iRecords);
 		uint iField;
-		for (iField = 0; iField < GetNumFields(); iField++)
+		for (iField = 0; iField < NumFields(); iField++)
 		{
 			Field *field = m_fields[iField];
 			switch (field->m_type)
@@ -1239,7 +1239,7 @@ void vtFeatureSet::SetNumEntities(int iNum)
 	SetNumGeometries(iNum);
 
 	// Then set the number of records for each field
-	for (uint iField = 0; iField < GetNumFields(); iField++)
+	for (uint iField = 0; iField < NumFields(); iField++)
 		m_fields[iField]->SetNumRecords(iNum);
 
 	// Also keep size of flag array in synch
@@ -1317,7 +1317,7 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 	for (i = 0; i < num; i++)
 	{
 		// copy record data for all field names which match
-		for (uint f = 0; f < pFromSet->GetNumFields(); f++)
+		for (uint f = 0; f < pFromSet->NumFields(); f++)
 		{
 			Field *field1 = pFromSet->GetField(f);
 			Field *field2 = GetField((const char *) field1->m_name);

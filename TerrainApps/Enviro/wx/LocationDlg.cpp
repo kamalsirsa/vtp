@@ -149,7 +149,7 @@ void LocationDlg::RefreshList()
 		return;
 
 	wxString str;
-	int num = m_pSaver->GetNumLocations();
+	int num = m_pSaver->NumLocations();
 	for (int i = 0; i < num; i++)
 	{
 		vtLocation *loc = m_pSaver->GetLocation(i);
@@ -211,7 +211,7 @@ void LocationDlg::RefreshAnimsText()
 		wxString str(entry.m_Name, wxConvUTF8);
 		wxString str2;
 		str2.Printf(_T(" (%.1f/%.1f, %d)"), eng->GetTime(),
-			(float) anim->GetLastTime(), anim->GetNumPoints());
+			(float) anim->GetLastTime(), anim->NumPoints());
 		str += str2;
 		GetAnimTree()->SetItemText(id, str);
 	}
@@ -241,7 +241,7 @@ void LocationDlg::UpdateEnabling()
 	GetStop()->Enable(m_iAnim != -1);
 	GetLoop()->Enable(m_iAnim != -1);
 	GetContinuous()->Enable(m_iAnim != -1);
-	GetSmooth()->Enable(m_iAnim != -1 && GetAnim(m_iAnim)->GetNumPoints() > 2);
+	GetSmooth()->Enable(m_iAnim != -1 && GetAnim(m_iAnim)->NumPoints() > 2);
 	GetPosOnly()->Enable(m_iAnim != -1);
 
 	GetRecordInterval()->Enable(m_iAnim != -1);
@@ -494,7 +494,7 @@ void LocationDlg::OnRecord1( wxCommandEvent &event )
 	ControlPoint cp(pos, rot);
 
 	float fTime;
-	if (path->GetNumPoints() == 0)
+	if (path->NumPoints() == 0)
 		fTime = 0;
 	else
 	{
@@ -520,7 +520,7 @@ void LocationDlg::OnRecord1( wxCommandEvent &event )
 	path->ProcessPoints();
 
 	wxString str;
-	str.Printf(_("%d: time %lf"), path->GetNumPoints()-1, fTime);
+	str.Printf(_("%d: time %lf"), path->NumPoints()-1, fTime);
 
 	// Find the current animation
 	wxTreeItemId CurrentAnimation = GetAnimTree()->GetItemParent(m_current);
@@ -709,7 +709,7 @@ void LocationDlg::OnSaveAnim( wxCommandEvent &event )
 void LocationDlg::OnRemove( wxCommandEvent &event )
 {
 	int num = m_pLocList->GetSelection();
-	if (num >= 0 && num < m_pSaver->GetNumLocations())
+	if (num >= 0 && num < m_pSaver->NumLocations())
 	   m_pSaver->Remove(num);
 	RefreshList();
 	RefreshButtons();
@@ -718,7 +718,7 @@ void LocationDlg::OnRemove( wxCommandEvent &event )
 void LocationDlg::OnListDblClick( wxCommandEvent &event )
 {
 	int num = m_pLocList->GetSelection();
-	if (num >= 0 && num < m_pSaver->GetNumLocations())
+	if (num >= 0 && num < m_pSaver->NumLocations())
 	{
 		bool success = m_pSaver->RecallFrom(num);
 		if (!success)
@@ -770,7 +770,7 @@ void LocationDlg::OnSave( wxCommandEvent &event )
 
 void LocationDlg::OnStoreAs( wxCommandEvent &event )
 {
-	int num = m_pSaver->GetNumLocations();
+	int num = m_pSaver->NumLocations();
 
 	wxString str;
 	str.Printf(_("Location %d"), num+1);
@@ -798,7 +798,7 @@ void LocationDlg::OnStoreAs( wxCommandEvent &event )
 void LocationDlg::OnStore( wxCommandEvent &event )
 {
 	int num = m_pLocList->GetSelection();
-	if (num >= 0 && num < m_pSaver->GetNumLocations())
+	if (num >= 0 && num < m_pSaver->NumLocations())
 	{
 		bool success = m_pSaver->StoreTo(num);
 		if (!success)
@@ -809,7 +809,7 @@ void LocationDlg::OnStore( wxCommandEvent &event )
 void LocationDlg::OnRecall( wxCommandEvent &event )
 {
 	int num = m_pLocList->GetSelection();
-	if (num >= 0 && num < m_pSaver->GetNumLocations())
+	if (num >= 0 && num < m_pSaver->NumLocations())
 	{
 		bool success = m_pSaver->RecallFrom(num);
 		if (!success)

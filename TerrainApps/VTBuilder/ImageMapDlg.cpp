@@ -40,7 +40,7 @@ ImageMapDlg::ImageMapDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 void ImageMapDlg::SetFields(vtFeatureSet *pSet)
 {
-	for (uint i = 0; i < pSet->GetNumFields(); i++)
+	for (uint i = 0; i < pSet->NumFields(); i++)
 	{
 		wxString str(pSet->GetField(i)->m_name, wxConvUTF8);
 		GetLinkField()->Append(str);

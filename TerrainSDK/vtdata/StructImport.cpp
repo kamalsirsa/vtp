@@ -5,9 +5,6 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include "shapelib/shapefil.h"
-#include "ogrsf_frmts.h"
-
 #include "Building.h"
 #include "Features.h"
 #include "Fence.h"
@@ -15,6 +12,9 @@
 #include "PolyChecker.h"
 #include "StructArray.h"
 #include "vtLog.h"
+
+#include "shapelib/shapefil.h"
+#include "ogrsf_frmts.h"
 
 //
 // Helper: find the index of a field in a DBF file, given the name of the field.
@@ -120,7 +120,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 
 				// Fix bad values that might be encountered
 				if (stories < 1 || stories > 20) stories = 1;
-				bld->SetStories(stories);
+				bld->SetNumStories(stories);
 			}
 			else if (!strcmp(key, "color"))
 			{
@@ -334,7 +334,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 				case StructImportOptions::STORIES:
 					stories = (int) height;
 					if (stories >= 1)
-						bld->SetStories(stories);
+						bld->SetNumStories(stories);
 					break;
 				case StructImportOptions::FEET:
 					height = height * 0.3048;
@@ -342,7 +342,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 					stories = (int) (height / 3.2);
 					if (stories < 1)
 						stories = 1;
-					bld->SetStories((int) stories);
+					bld->SetNumStories((int) stories);
 					bld->GetLevel(0)->m_fStoryHeight = (float) (height / stories);
 					break;
 				case StructImportOptions::FEETNOSTORIES:
@@ -351,7 +351,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 					stories = (int) (height / 3.2);
 					if (stories < 1)
 						stories = 1;
-					bld->SetStories(1);
+					bld->SetNumStories(1);
 					bld->GetLevel(0)->m_fStoryHeight = (float) (height);
 					break;
 				}
@@ -512,7 +512,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 				point.x = pPoint->getX();
 				point.y = pPoint->getY();
 				pBld->SetRectangle(point, 10, 10);
-				pBld->SetStories(1);
+				pBld->SetNumStories(1);
 
 				count++;
 			}
@@ -591,7 +591,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 				if (pDefBld)
 					pBld->CopyFromDefault(pDefBld, true);
 				else
-					pBld->SetStories(1);
+					pBld->SetNumStories(1);
 			}
 		}
 	}
@@ -797,10 +797,10 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		if (pDefBld)
 			pBld->CopyFromDefault(pDefBld, true);
 		else
-			pBld->SetStories(1);
+			pBld->SetNumStories(1);
 
 		// Set the correct height for the roof level if neccessary
-		vtLevel *pLevel = pBld->GetLevel(pBld->GetNumLevels() - 1);
+		vtLevel *pLevel = pBld->GetLevel(pBld->NumLevels() - 1);
 		pBld->SetRoofType(pLevel->GuessRoofType(), pLevel->GetEdge(0)->m_iSlope);
 
 		// Modify the height of the building if neccessary
@@ -808,7 +808,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		{
 			float fTotalHeight = 0;
 			float fScaleFactor;
-			uint iNumLevels = pBld->GetNumLevels();
+			uint iNumLevels = pBld->NumLevels();
 			RoofType eRoofType = pBld->GetRoofType();
 			float fRoofHeight = pBld->GetLevel(iNumLevels - 1)->m_fStoryHeight;
 

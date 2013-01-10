@@ -682,7 +682,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 				// height in stories ("floors")
 				int stories = atoi(attval);
 				if (bld)
-					bld->SetStories(stories);
+					bld->SetNumStories(stories);
 			}
 		}
 		if (string(name) == (string)"walls")

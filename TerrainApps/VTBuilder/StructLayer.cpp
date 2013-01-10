@@ -178,7 +178,7 @@ void vtStructureLayer::DrawBuilding(wxDC *pDC, vtScaledView *pView,
 	pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
 
 	// draw building footprint for all levels
-	int levs = bld->GetNumLevels();
+	int levs = bld->NumLevels();
 
 	// unless we're XORing, in which case multiple overlapping level would
 	// cancel each other out
@@ -267,7 +267,7 @@ void vtStructureLayer::CleanFootprints(double epsilon, int &degenerate, int &ove
 		vtBuilding *bld = pStructure->GetBuilding();
 		if (!bld)
 			continue;
-		for (uint j = 0; j < bld->GetNumLevels(); j++)
+		for (uint j = 0; j < bld->NumLevels(); j++)
 		{
 			vtLevel *lev = bld->GetLevel(j);
 			DPolygon2 &dp = lev->GetFootprint();
@@ -599,7 +599,7 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 	if (-1 == iLevel)
 	{
 		// Add in all levels
-		iNumLevels = pBuilding->GetNumLevels();
+		iNumLevels = pBuilding->NumLevels();
 		for (i = 0; i < iNumLevels; i++)
 		{
 			pLevel = pBuilding->GetLevel(i);
@@ -653,7 +653,7 @@ void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &
 	if (-1 == iLevel)
 	{
 		// Remove in all levels
-		iNumLevels = pBuilding->GetNumLevels();
+		iNumLevels = pBuilding->NumLevels();
 		for (i = 0; i <iNumLevels; i++)
 		{
 			pLevel = pBuilding->GetLevel(i);
@@ -770,7 +770,7 @@ void vtStructureLayer::UpdateMove(UIContext &ui)
 	DPoint2 p;
 	DPoint2 moved_by = ui.m_CurLocation - ui.m_DownLocation;
 
-	int i, levs = ui.m_pCurBuilding->GetNumLevels();
+	int i, levs = ui.m_pCurBuilding->NumLevels();
 	for (i = 0; i < levs; i++)
 	{
 		DPolygon2 dl = ui.m_pCurBuilding->GetFootprint(i);
@@ -793,7 +793,7 @@ void vtStructureLayer::UpdateRotate(UIContext &ui)
 	double angle_diff = angle2 - angle1;
 
 	DPoint2 p;
-	uint i, j, r, levs = ui.m_pCurBuilding->GetNumLevels();
+	uint i, j, r, levs = ui.m_pCurBuilding->NumLevels();
 	for (i = 0; i < levs; i++)
 	{
 		DPolygon2 foot = ui.m_pCurBuilding->GetFootprint(i);
@@ -829,7 +829,7 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 	if (ui.m_bShift)
 	{
 		// Scale evenly
-		uint levs = ui.m_pCurBuilding->GetNumLevels();
+		uint levs = ui.m_pCurBuilding->NumLevels();
 		for (i = 0; i < levs; i++)
 		{
 			DPolygon2 foot = ui.m_pCurBuilding->GetFootprint(i);
@@ -888,7 +888,7 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 		// Changing only the lowest level is near useless.  For the great
 		//  majority of cases, the user will want the footprints for all
 		//  levels to remain in sync.
-		for (i = 0; i < ui.m_EditBuilding.GetNumLevels(); i++)
+		for (i = 0; i < ui.m_EditBuilding.NumLevels(); i++)
 			ui.m_EditBuilding.SetFootprint(i, footprint);
 
 		// A better guess might be to offset the footprint points of each

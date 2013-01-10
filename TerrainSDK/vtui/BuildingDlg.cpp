@@ -153,7 +153,10 @@ void BuildingDlg::EditColor()
 		if (m_bEdges)
 			m_pEdge->m_Color = result;
 		else
+		{
+			// If it's a roof, treat it specially: TODO
 			m_pLevel->SetEdgeColor(result);
+		}
 
 		UpdateColorControl();
 	}
@@ -252,7 +255,7 @@ void BuildingDlg::OnLevelUp( wxCommandEvent &event )
 
 void BuildingDlg::OnLevelDown( wxCommandEvent &event )
 {
-	if (m_iLevel < (int) m_pBuilding->GetNumLevels() - 1)
+	if (m_iLevel < (int) m_pBuilding->NumLevels() - 1)
 	{
 		m_pBuilding->SwapLevels(m_iLevel, m_iLevel+1);
 		RefreshLevelsBox();
@@ -280,7 +283,7 @@ void BuildingDlg::OnLevelCopy( wxCommandEvent &event )
 void BuildingDlg::DeleteCurrentLevel()
 {
 	m_pBuilding->DeleteLevel(m_iLevel);
-	if (m_iLevel == m_pBuilding->GetNumLevels())
+	if (m_iLevel == m_pBuilding->NumLevels())
 		m_iLevel--;
 	RefreshLevelsBox();
 	SetLevel(m_iLevel);
@@ -391,7 +394,7 @@ void BuildingDlg::RefreshLevelsBox()
 {
 	m_pLevelListBox->Clear();
 	wxString str;
-	int i, levels = m_pBuilding->GetNumLevels();
+	int i, levels = m_pBuilding->NumLevels();
 	for (i = 0; i < levels; i++)
 	{
 		vtLevel *pLev = m_pBuilding->GetLevel(i);
@@ -489,8 +492,8 @@ void BuildingDlg::SetLevel(int iLev)
 
 	// enable up/down
 	GetLevelUp()->Enable(m_iLevel > 0);
-	GetLevelDown()->Enable(m_iLevel < (int) m_pBuilding->GetNumLevels()-1);
-	GetLevelDel()->Enable(m_pBuilding->GetNumLevels() > 1);
+	GetLevelDown()->Enable(m_iLevel < (int) m_pBuilding->NumLevels()-1);
+	GetLevelDel()->Enable(m_pBuilding->NumLevels() > 1);
 	GetLevelCopy()->Enable(true);
 }
 

@@ -282,7 +282,7 @@ vtGeode* GeometryBuilder::Generate()
 
 	int i;
 	uint j, k;
-	int iLevels = m_Building.GetNumLevels();
+	int iLevels = m_Building.NumLevels();
 
 	// create the edges (walls and roof)
 	float fHeight = 0.0f;

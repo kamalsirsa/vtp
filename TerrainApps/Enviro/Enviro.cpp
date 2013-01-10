@@ -2420,7 +2420,7 @@ void Enviro::FinishBuilding()
 	pbuilding->SetFootprint(0, line);
 
 	// Describe the appearance of the new building
-	pbuilding->SetStories(2);
+	pbuilding->SetNumStories(2);
 	pbuilding->SetRoofType(ROOF_HIP);
 	pbuilding->SetColor(BLD_BASIC, RGBi(255,255,255));
 	pbuilding->SetColor(BLD_ROOF, RGBi(230,200,170));
@@ -2501,7 +2501,7 @@ void Enviro::PasteBuildingStyle()
 
 bool Enviro::HaveBuildingStyle()
 {
-	return (m_BuildingStyle.GetNumLevels() != 0);
+	return (m_BuildingStyle.NumLevels() != 0);
 }
 
 

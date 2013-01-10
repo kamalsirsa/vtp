@@ -71,5 +71,12 @@
 typedef unsigned int uint;
 typedef unsigned char uchar;
 
+// Because vtdata (and the apps which use it) tend to make heavy use of GDAL,
+// this seems an appropriate place to disable one of the most irritating
+// MSVC/GDAL warnings.
+#ifdef _MSC_VER
+#pragma warning( disable : 4251 )
+#endif
+
 #endif // CONFIG_VTDATA_H
 

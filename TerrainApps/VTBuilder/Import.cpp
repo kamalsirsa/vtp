@@ -1993,7 +1993,7 @@ void Builder::ImportDataFromNTF(const wxString &strFileName, LayerArray &layers)
 							bld->CopyFromDefault(pDefBld, true);
 						else
 						{
-							bld->SetStories(1);
+							bld->SetNumStories(1);
 							bld->SetRoofType(ROOF_FLAT);
 						}
 					}

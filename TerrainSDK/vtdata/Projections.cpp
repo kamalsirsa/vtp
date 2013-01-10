@@ -731,7 +731,7 @@ StatePlaneInfo *GetStatePlaneTable()
 	return g_StatePlaneInfo;
 }
 
-int GetNumStatePlanes()
+int NumStatePlanes()
 {
 	return sizeof(g_StatePlaneInfo) /  sizeof(StatePlaneInfo);
 }

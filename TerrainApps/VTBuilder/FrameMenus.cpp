@@ -3347,7 +3347,7 @@ void MainFrame::OnStructureColourSelectedRoofs(wxCommandEvent& event)
 
 			vtBuilding* pBuilding = pStructure->GetBuilding();
 			if (pBuilding)
-				pBuilding->GetLevel(pBuilding->GetNumLevels() - 1)->SetEdgeColor(RoofColour);
+				pBuilding->GetLevel(pBuilding->NumLevels() - 1)->SetEdgeColor(RoofColour);
 		}
 	}
 }
@@ -3624,7 +3624,7 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 	vtRawLayer *pRL = GetActiveRawLayer();
 	vtFeatureSet *pFS = pRL->GetFeatureSet();
 
-	if (!pFS || pFS->GetNumFields() == 0)
+	if (!pFS || pFS->NumFields() == 0)
 	{
 		DisplayAndLog("Can't select by condition because the current\n"
 					  "layer has no fields defined.");
@@ -3666,7 +3666,7 @@ void MainFrame::OnRawConvertToTIN(wxCommandEvent& event)
 		tin = new vtTin2d(setpo3);
 	else if (setpg)
 	{
-		uint n = setpg->GetNumFields();
+		uint n = setpg->NumFields();
 
 		int field_num = -1;
 		float height = 0.0f;

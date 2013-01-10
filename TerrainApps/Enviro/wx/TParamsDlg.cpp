@@ -733,7 +733,7 @@ void TParamsDlg::RefreshLocationFields()
 	if (!saver.Read(path))
 		return;
 
-	int i, num = saver.GetNumLocations();
+	int i, num = saver.NumLocations();
 	for (i = 0; i < num; i++)
 	{
 		vtLocation *loc = saver.GetLocation(i);

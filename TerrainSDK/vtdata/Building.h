@@ -228,11 +228,11 @@ public:
 	void SetColor(BldColor which, const RGBi &color);
 	RGBi GetColor(BldColor which) const;
 
-	void SetStories(int i);
-	int GetStories() const;
+	void SetNumStories(int i);
+	int NumStories() const;
 	float GetTotalHeight() const;
 
-	uint GetNumLevels() const { return m_Levels.GetSize(); }
+	uint NumLevels() const { return m_Levels.GetSize(); }
 	vtLevel *GetLevel(int i) { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }
 	const vtLevel *GetLevel(int i) const { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }
 	vtLevel *CreateLevel(const DPolygon2 &footprint);

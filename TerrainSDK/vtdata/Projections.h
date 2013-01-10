@@ -136,7 +136,7 @@ extern std::vector<EPSGDatum> g_EPSGDatums;
 void SetupEPSGDatums();
 
 StatePlaneInfo *GetStatePlaneTable();
-int GetNumStatePlanes();
+int NumStatePlanes();
 void CreateSimilarGeographicProjection(const vtProjection &source, vtProjection &geo);
 OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget);
 OCT *CreateCoordTransform(const vtProjection *pSource,

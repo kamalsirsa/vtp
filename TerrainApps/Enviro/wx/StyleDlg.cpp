@@ -324,7 +324,7 @@ void StyleDlg::RefreshFields()
 		return;
 
 	m_strFeatureType = wxString(OGRGeometryTypeToName(m_type), wxConvUTF8);
-	int i, num = m_pFeatureSet->GetNumFields();
+	int i, num = m_pFeatureSet->NumFields();
 	for (i = 0; i < num; i++)
 	{
 		const Field *field = m_pFeatureSet->GetField(i);

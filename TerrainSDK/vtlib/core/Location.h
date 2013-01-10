@@ -85,7 +85,7 @@ public:
 	void Remove(int num);
 
 	/// Return number of locations
-	int GetNumLocations() { return m_loc.GetSize(); }
+	int NumLocations() { return m_loc.GetSize(); }
 
 	/// Get a location by index
 	vtLocation *GetLocation(int num) const { return m_loc[num]; }

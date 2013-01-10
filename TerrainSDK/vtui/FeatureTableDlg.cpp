@@ -96,7 +96,7 @@ void FeatureTableDlg::SetFeatureSet(vtFeatureSet *pFeatures)
 	GetChoiceVertical()->Enable(type == SHPT_POINTZ);
 
 	uint i;
-	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
+	for (i = 0; i < m_pFeatures->NumFields(); i++)
 	{
 		Field *pField = m_pFeatures->GetField(i);
 		wxString name(pField->m_name, wxConvUTF8);
@@ -254,7 +254,7 @@ void FeatureTableDlg::UpdateFeatureText(int iItem, int iFeat)
 		GetList()->SetItem(iItem, field++, str);
 	}
 
-	for (uint i = 0; i < m_pFeatures->GetNumFields(); i++)
+	for (uint i = 0; i < m_pFeatures->NumFields(); i++)
 	{
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeat, i, vs);
@@ -392,7 +392,7 @@ void FeatureTableDlg::OnListRightClick( wxListEvent &event )
 		return; */
 	int iItem = event.GetIndex();
 	int iFeat = (int) GetList()->GetItemData(iItem);
-/*	for (int i = 0; i < m_pFeatures->GetNumFields(); i++)
+/*	for (int i = 0; i < m_pFeatures->NumFields(); i++)
 	{
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeat, i, vs);

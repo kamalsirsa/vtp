@@ -613,7 +613,7 @@ void VisitorOSM::MakeBuilding()
 		bld->CopyFromDefault(pDefBld, true);
 	else
 	{
-		bld->SetStories(1);
+		bld->SetNumStories(1);
 		bld->SetRoofType(ROOF_FLAT);
 	}
 
@@ -621,7 +621,7 @@ void VisitorOSM::MakeBuilding()
 	// Do we have both a height and a number of stories?
 	if (m_fHeight != -1 && m_iNumStories != -1 && m_iNumStories != 0)
 	{
-		bld->SetStories(m_iNumStories);
+		bld->SetNumStories(m_iNumStories);
 		bld->GetLevel(0)->m_fStoryHeight = m_fHeight / m_iNumStories;
 	}
 	else if (m_fHeight != -1)
@@ -630,11 +630,11 @@ void VisitorOSM::MakeBuilding()
 		int num = (int) (m_fHeight / 3.65);
 		if (num < 1)
 			num = 1;
-		bld->SetStories(num);
+		bld->SetNumStories(num);
 		bld->GetLevel(0)->m_fStoryHeight = m_fHeight / num;
 	}
 	else if (m_iNumStories != -1)
-		bld->SetStories(m_iNumStories);
+		bld->SetNumStories(m_iNumStories);
 
 	if (m_RoofType != NUM_ROOFTYPES)
 		bld->SetRoofType(m_RoofType);

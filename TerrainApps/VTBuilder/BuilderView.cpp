@@ -2062,7 +2062,7 @@ void BuilderView::RunTest()
 	vtStructureArray str;
 	vtBuilding *bld = str.NewBuilding();
 	bld->SetFootprint(0, dline);
-	bld->SetStories(2);
+	bld->SetNumStories(2);
 	bld->SetRoofType(RT_HIP);
 	bld->SetColor(BLD_BASIC, RGBi(255,0,0))
 		bld->SetColor(BLD_ROOF, RGBi(255,255,255))
