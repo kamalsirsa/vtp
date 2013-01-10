@@ -330,6 +330,11 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 		// Look for values that do.
 		if (value == "bridleway")
 			m_eSurfaceType = SURFT_GRAVEL;
+		if (value == "cycleway")
+		{
+			m_iRoadLanes = 1;
+			m_eSurfaceType = SURFT_PAVED;
+		}
 		if (value == "footway")
 		{
 			m_iRoadLanes = 1;
