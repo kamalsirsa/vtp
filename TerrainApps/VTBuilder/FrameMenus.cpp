@@ -289,36 +289,36 @@ EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
 EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 EVT_MENU(ID_RAW_ADDFEATURE_WKT,		MainFrame::OnRawAddFeatureWKT)
-EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
-EVT_MENU(ID_RAW_CONVERT_TOTIN,		MainFrame::OnRawConvertToTIN)
-EVT_MENU(ID_RAW_CONVERT_TOPOLYS,	MainFrame::OnRawConvertToPolygons)
-EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
-EVT_MENU(ID_RAW_EXPORT_KML,			MainFrame::OnRawExportKML)
-EVT_MENU(ID_RAW_GENERATE_ELEVATION,	MainFrame::OnRawGenElevation)
 EVT_MENU(ID_RAW_STYLE,				MainFrame::OnRawStyle)
 EVT_MENU(ID_RAW_SCALE_H,			MainFrame::OnRawScaleH)
 EVT_MENU(ID_RAW_SCALE_V,			MainFrame::OnRawScaleV)
 EVT_MENU(ID_RAW_OFFSET_V,			MainFrame::OnRawOffsetV)
 EVT_MENU(ID_RAW_CLEAN,				MainFrame::OnRawClean)
 EVT_MENU(ID_RAW_SELECT_BAD,			MainFrame::OnRawSelectBad)
+EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
+EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
+EVT_MENU(ID_RAW_EXPORT_KML,			MainFrame::OnRawExportKML)
+EVT_MENU(ID_RAW_GENERATE_ELEVATION,	MainFrame::OnRawGenElevation)
+EVT_MENU(ID_RAW_CONVERT_TOTIN,		MainFrame::OnRawConvertToTIN)
+EVT_MENU(ID_RAW_CONVERT_TOPOLYS,	MainFrame::OnRawConvertToPolygons)
 
 EVT_UPDATE_UI(ID_RAW_SETTYPE,			MainFrame::OnUpdateRawSetType)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS,			MainFrame::OnUpdateRawAddPoints)
 EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnUpdateRawAddPointText)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
 EVT_UPDATE_UI(ID_RAW_ADDFEATURE_WKT,	MainFrame::OnUpdateRawIsActive)
-EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
-EVT_UPDATE_UI(ID_RAW_CONVERT_TOTIN,		MainFrame::OnUpdateRawIsActive)
-EVT_UPDATE_UI(ID_RAW_CONVERT_TOPOLYS,	MainFrame::OnUpdateRawIsActive)
-EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsActive)
-EVT_UPDATE_UI(ID_RAW_EXPORT_KML,		MainFrame::OnUpdateRawIsActive)
-EVT_UPDATE_UI(ID_RAW_GENERATE_ELEVATION,MainFrame::OnUpdateRawGenElevation)
 EVT_UPDATE_UI(ID_RAW_STYLE,				MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_SCALE_H,			MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_SCALE_V,			MainFrame::OnUpdateRawIsActive3D)
 EVT_UPDATE_UI(ID_RAW_OFFSET_V,			MainFrame::OnUpdateRawIsActive3D)
-EVT_UPDATE_UI(ID_RAW_CLEAN,				MainFrame::OnUpdateRawIsPolygon)
+EVT_UPDATE_UI(ID_RAW_CLEAN,				MainFrame::OnUpdateRawHasPolylines)
 EVT_UPDATE_UI(ID_RAW_SELECT_BAD,		MainFrame::OnUpdateRawIsPolygon)
+EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsPolygon)
+EVT_UPDATE_UI(ID_RAW_EXPORT_KML,		MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_GENERATE_ELEVATION,MainFrame::OnUpdateRawGenElevation)
+EVT_UPDATE_UI(ID_RAW_CONVERT_TOTIN,		MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_CONVERT_TOPOLYS,	MainFrame::OnUpdateRawIsActive)
 
 EVT_MENU(ID_AREA_CLEAR,				MainFrame::OnAreaClear)
 EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
@@ -3483,6 +3483,13 @@ void MainFrame::OnUpdateRawIsPolygon(wxUpdateUIEvent& event)
 	// if the current layer is polygon
 	vtRawLayer *pRL = GetActiveRawLayer();
 	event.Enable(pRL != NULL && pRL->GetGeomType() == wkbPolygon);
+}
+
+void MainFrame::OnUpdateRawHasPolylines(wxUpdateUIEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	event.Enable(pRL != NULL && (pRL->GetGeomType() == wkbPolygon ||
+		pRL->GetGeomType() == wkbLineString));
 }
 
 void MainFrame::OnRawSetType(wxCommandEvent& event)

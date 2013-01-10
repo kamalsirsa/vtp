@@ -285,6 +285,7 @@ protected:
 	void OnUpdateRawIsActive(wxUpdateUIEvent& event);
 	void OnUpdateRawIsActive3D(wxUpdateUIEvent& event);
 	void OnUpdateRawIsPolygon(wxUpdateUIEvent& event);
+	void OnUpdateRawHasPolylines(wxUpdateUIEvent& event);
 	void OnUpdateRawGenElevation(wxUpdateUIEvent& event);
 
 	void OnAreaClear(wxCommandEvent& event);
