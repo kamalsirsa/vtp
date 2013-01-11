@@ -150,6 +150,7 @@ public:
 	bool IsUniform() const;
 
 	void SetEdgeMaterial(const char *matname);
+	void SetEdgeMaterial(const vtString *matname);
 	void SetEdgeColor(RGBi color);
 	void SetRoofType(RoofType rt, int iSlopeDegrees);
 	void SetEaveLength(float fMeters);

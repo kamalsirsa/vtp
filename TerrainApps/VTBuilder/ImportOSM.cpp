@@ -318,6 +318,29 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 	{
 		m_iNumStories = atoi(value);
 	}
+	if (key == "fence_type")
+	{
+		if (value == "chain")
+			m_eLinearStyle = FS_CHAINLINK;
+
+		if (value == "split_rail")
+			m_eLinearStyle = FS_WOOD_POSTS_WIRE;	// We don't do wooden fences yet.
+
+		if (value == "wood")
+			m_eLinearStyle = FS_WOOD_POSTS_WIRE;	// We don't do wooden fences yet.
+
+		if (value == "barbed_wire")
+			m_eLinearStyle = FS_WOOD_POSTS_WIRE;
+
+		if (value == "wire")
+			m_eLinearStyle = FS_METAL_POSTS_WIRE;
+
+		if (value == "pole")
+			m_eLinearStyle = FS_WOOD_POSTS_WIRE;	// We don't do wooden fences yet.
+
+		if (value == "hedge")
+			m_eLinearStyle = FS_PRIVET;
+	}
 	if (key == "height")
 	{
 		m_fHeight = atof((const char *)value);
@@ -605,17 +628,17 @@ void VisitorOSM::MakeBuilding()
 		foot.ReverseOrder();
 
 	vtBuilding *bld = m_struct_layer->AddNewBuilding();
+
+	// Make two levels: walls and a roof.
 	bld->SetFootprint(0, foot);
+	bld->SetFootprint(1, foot);
 
 	// Apply a default style of building
 	vtBuilding *pDefBld = GetClosestDefault(bld);
 	if (pDefBld)
 		bld->CopyStyleFrom(pDefBld, true);
 	else
-	{
-		bld->SetNumStories(1);
 		bld->SetRoofType(ROOF_FLAT);
-	}
 
 	// Apply other building info, if we have it.
 	// Do we have both a height and a number of stories?

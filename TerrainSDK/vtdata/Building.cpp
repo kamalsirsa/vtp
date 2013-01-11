@@ -270,6 +270,12 @@ void vtLevel::SetEdgeMaterial(const char *matname)
 		m_Edges[i]->m_pMaterial = str;
 }
 
+void vtLevel::SetEdgeMaterial(const vtString *matname)
+{
+	for (uint i = 0; i < m_Edges.GetSize(); i++)
+		m_Edges[i]->m_pMaterial = matname;
+}
+
 void vtLevel::SetEdgeColor(RGBi color)
 {
 	for (uint i = 0; i < m_Edges.GetSize(); i++)
@@ -1589,10 +1595,10 @@ void vtBuilding::CopyStyleFrom(vtBuilding *pSource, bool bDoHeight)
 		int to_edges = pLevel->NumEdges();
 
 		// Now that we have a source and target level, iterate through the edges.
-		if (i == copy_levels - 1 && from_level > 0)
+		if (i == copy_levels - 1 && i > 0)
 		{
 			// Handle roof specially: do the sloped edges.
-			vtLevel *below = pSource->GetLevel(from_level - 1);
+			vtLevel *below = GetLevel(i - 1);
 			RGBi color;
 			const vtString *material;
 			float vf1;		// Used for roof overhang / eaves.

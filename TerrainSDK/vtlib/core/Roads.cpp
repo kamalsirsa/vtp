@@ -3,7 +3,7 @@
 //
 // also shorelines and rivers
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -29,6 +29,7 @@
 
 #define ROADTEXTURE_4WD		"GeoTypical/road_4wd2.png"
 #define ROADTEXTURE_TRAIL	"GeoTypical/trail2.png"
+#define ROADTEXTURE_GRAVEL	"GeoTypical/gravel1.png"
 #define ROAD_FILENAME		"GeoTypical/roadset_2k.jpg"
 #define ROAD_REZ 2048
 
@@ -883,6 +884,9 @@ void vtRoadMap3d::_CreateMaterials(bool do_texture)
 		path = FindFileOnPaths(paths, ROADTEXTURE_TRAIL);
 		m_mi_trail = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
 
+		path = FindFileOnPaths(paths, ROADTEXTURE_GRAVEL);
+		m_mi_gravel = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
+
 		m_vt[VTI_MARGIN].m_idx = m_mi_roads;
 		m_vt[VTI_MARGIN].m_rect.SetRect(960.0f/ROAD_REZ, 1, 992.0f/ROAD_REZ, 0);
 
@@ -921,6 +925,9 @@ void vtRoadMap3d::_CreateMaterials(bool do_texture)
 
 		m_vt[VTI_TRAIL].m_idx = m_mi_trail;
 		m_vt[VTI_TRAIL].m_rect.SetRect(0, 0, 1, 1);
+
+		m_vt[VTI_GRAVEL].m_idx = m_mi_gravel;
+		m_vt[VTI_GRAVEL].m_rect.SetRect(0, 0, 1, 1);
 	}
 	else
 	{
@@ -1024,8 +1031,7 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 			pL->m_vti = 0;
 			break;
 		case SURFT_GRAVEL:
-//			pL->m_vti = MATIDX_GRAVEL;
-			pL->m_vti = 0;
+			pL->m_vti = VTI_GRAVEL;
 			break;
 		case SURFT_TRAIL:
 			pL->m_vti = VTI_TRAIL;

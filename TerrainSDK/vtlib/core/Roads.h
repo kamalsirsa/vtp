@@ -1,7 +1,7 @@
 //
 // Roads.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -113,6 +113,7 @@ enum RoadVTIndices
 	VTI_RAIL,
 	VTI_4WD,
 	VTI_TRAIL,
+	VTI_GRAVEL,
 	VTI_STONE,
 	VTI_TOTAL
 };
@@ -206,6 +207,7 @@ public:
 	int		m_mi_roads;
 	int		m_mi_4wd;
 	int		m_mi_trail;
+	int		m_mi_gravel;
 	int		m_mi_red;
 
 protected:
