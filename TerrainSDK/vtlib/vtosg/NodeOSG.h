@@ -517,7 +517,7 @@ public:
 				  const FPoint3 &point1,
 				  const FPoint3 &point2,
 				  const float fTolerance = 0.0f) const;
-	int IsVisible(const FPoint3 &point, float radius);
+	int IsVisible(const FPoint3 &point, float radius) const;
 
 	// Tests a single point, returns true if in view
 	bool IsVisible(const FPoint3 &point) const;

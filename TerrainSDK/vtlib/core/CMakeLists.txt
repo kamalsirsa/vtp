@@ -37,7 +37,6 @@ set(VTLIB_CORE_SOURCE_FILES
 		../core/TiledGeom.cpp
 		../core/TimeEngines.cpp
 		../core/TParams.cpp
-		../core/TVTerrain.cpp 
 		../core/Vehicles.cpp
 		../core/vtTin3d.cpp
 		PARENT_SCOPE)
@@ -94,7 +93,6 @@ set(VTLIB_CORE_HEADER_FILES
 		../core/TiledGeom.h
 		../core/TimeEngines.h
 		../core/TParams.h
-		../core/TVTerrain.h
 		../core/Vehicles.h
 		../vtlib.h
 		../core/vtTin3d.h

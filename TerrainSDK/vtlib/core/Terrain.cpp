@@ -21,7 +21,6 @@
 #include "PagedLodGrid.h"
 #include "vtTin3d.h"
 
-#include "TVTerrain.h"
 #include "SMTerrain.h"
 #include "BruteTerrain.h"
 #include "SRTerrain.h"
@@ -634,8 +633,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 
 	if (method == LM_TOPOVISTA)
 	{
-		m_pDynGeom = new TVTerrain;
-		m_pDynGeom->setName("TV Geom");
+		// Obsolete, removed.
 	}
 	else if (method == LM_MCNALLY)
 	{
@@ -644,6 +642,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	}
 	else if (method == LM_DEMETER)
 	{
+		// Obsolete, removed.
 	}
 	else if (method == LM_BRUTE)
 	{

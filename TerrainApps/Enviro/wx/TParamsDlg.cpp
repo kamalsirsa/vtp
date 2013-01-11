@@ -639,7 +639,7 @@ void TParamsDlg::UpdateEnableState()
 	GetFilenameTileset()->Enable(m_bTileset);
 
 	FindWindow(ID_LODMETHOD)->Enable(m_bGrid);
-	FindWindow(ID_TRI_COUNT)->Enable(m_bGrid && m_iLodMethod != LM_TOPOVISTA);
+	FindWindow(ID_TRI_COUNT)->Enable(m_bGrid);
 	FindWindow(ID_VTX_COUNT)->Enable(m_bTileset);
 	FindWindow(ID_TILE_CACHE_SIZE)->Enable(false);
 	FindWindow(ID_TILE_THREADING)->Enable(m_bTileset);
@@ -923,12 +923,13 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	UpdateColorMapChoice();
 
+	// The following must match the ordering in the enum LodMethodEnum:
 	m_pLodMethod->Clear();
 	m_pLodMethod->Append(_T("Roettger"));
-	m_pLodMethod->Append(_T("TopoVista"));
+	m_pLodMethod->Append(_T("---"));
 	m_pLodMethod->Append(_T("McNally"));
 	m_pLodMethod->Append(_T("---"));
-	m_pLodMethod->Append(_T("Custom"));
+	m_pLodMethod->Append(_("Custom"));
 	// add your own LOD method here!
 
 	m_pLodMethod->SetSelection(m_iLodMethod);

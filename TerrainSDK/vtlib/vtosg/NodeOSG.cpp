@@ -1755,24 +1755,7 @@ vtDynGeom::vtDynGeom() : vtGeode()
  */
 int vtDynGeom::IsVisible(const FSphere &sphere) const
 {
-	uint vis = 0;
-
-	// cull against standard frustum
-	for (int i = 0; i < 4; i++)
-	{
-		float dist = m_cullPlanes[i].Distance(sphere.center);
-		if (dist >= sphere.radius)
-			return 0;
-		if ((dist < 0) &&
-			(dist <= sphere.radius))
-			vis = (vis << 1) | 1;
-	}
-
-	// Notify renderer that object is entirely within standard frustum, so
-	// no clipping is necessary.
-	if (vis == 0x0F)
-		return VT_AllVisible;
-	return VT_Visible;
+	return IsVisible(sphere.center, sphere.radius);
 }
 
 
@@ -1848,7 +1831,7 @@ int vtDynGeom::IsVisible(const FPoint3& point0,
  *			VT_Visible if partly intersecting,
  *			otherwise 0.
  */
-int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
+int vtDynGeom::IsVisible(const FPoint3 &point, float radius) const
 {
 	uint incode = 0;
 
