@@ -124,13 +124,13 @@
 #define ID_STEREO2 1077
 #define ID_STEREO3 1078
 #define ID_STEREO4 1079
-#define ID_WINX 1080
-#define ID_WINY 1081
-#define ID_WIN_XSIZE 1082
-#define ID_WIN_YSIZE 1083
-#define ID_SIZE_INSIDE 1084
-#define ID_TEXTURE_COMPRESSION 1085
-#define ID_DISABLE_MIPMAPS 1086
+#define ID_TEXTURE_COMPRESSION 1080
+#define ID_DISABLE_MIPMAPS 1081
+#define ID_WINX 1082
+#define ID_WINY 1083
+#define ID_WIN_XSIZE 1084
+#define ID_WIN_YSIZE 1085
+#define ID_SIZE_INSIDE 1086
 #define ID_DIRECT_PICKING 1087
 #define ID_SELECTION_CUTOFF 1088
 #define ID_SELECTION_RADIUS 1089
@@ -541,6 +541,8 @@ class OptionsDlgBase : public wxDialog
 		wxRadioButton* m_samples4;
 		wxRadioButton* m_samples8;
 		wxRadioButton* m_samples16;
+		wxCheckBox* m_texture_compression;
+		wxCheckBox* m_disable_mipmaps;
 		wxStaticText* m_text118;
 		wxTextCtrl* m_winx;
 		wxStaticText* m_text119;
@@ -550,8 +552,6 @@ class OptionsDlgBase : public wxDialog
 		wxStaticText* m_text121;
 		wxTextCtrl* m_win_ysize;
 		wxCheckBox* m_size_inside;
-		wxCheckBox* m_texture_compression;
-		wxCheckBox* m_disable_mipmaps;
 		wxCheckBox* m_direct_picking;
 		wxStaticText* m_text122;
 		wxTextCtrl* m_selection_cutoff;
@@ -568,6 +568,7 @@ class OptionsDlgBase : public wxDialog
 		wxCheckBox* m_fly_in;
 		wxCheckBox* m_fly_in1;
 		wxCheckBox* m_fly_in2;
+		
 		wxButton* m_ok;
 		wxButton* m_cancel;
 	

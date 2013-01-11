@@ -790,7 +790,7 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 	
 	wxBoxSizer* bSizer189;
-	bSizer189 = new wxBoxSizer( wxVERTICAL );
+	bSizer189 = new wxBoxSizer( wxHORIZONTAL );
 	
 	wxBoxSizer* bSizer190;
 	bSizer190 = new wxBoxSizer( wxVERTICAL );
@@ -862,6 +862,14 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	sbSizer36->Add( bSizer202, 1, 0, 5 );
 	
+	m_texture_compression = new wxCheckBox( this, ID_TEXTURE_COMPRESSION, _("Texture compression"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_texture_compression->SetValue(true); 
+	sbSizer36->Add( m_texture_compression, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	m_disable_mipmaps = new wxCheckBox( this, ID_DISABLE_MIPMAPS, _("Disable model mipmaps"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_disable_mipmaps->SetValue(true); 
+	sbSizer36->Add( m_disable_mipmaps, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
 	bSizer190->Add( sbSizer36, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxStaticBoxSizer* sbSizer37;
@@ -908,13 +916,10 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	bSizer190->Add( sbSizer37, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_texture_compression = new wxCheckBox( this, ID_TEXTURE_COMPRESSION, _("Texture compression"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_texture_compression->SetValue(true); 
-	bSizer190->Add( m_texture_compression, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	bSizer189->Add( bSizer190, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_disable_mipmaps = new wxCheckBox( this, ID_DISABLE_MIPMAPS, _("Disable model mipmaps"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_disable_mipmaps->SetValue(true); 
-	bSizer190->Add( m_disable_mipmaps, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	wxBoxSizer* bSizer208;
+	bSizer208 = new wxBoxSizer( wxVERTICAL );
 	
 	wxStaticBoxSizer* sbSizer38;
 	sbSizer38 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Selection") ), wxVERTICAL );
@@ -955,7 +960,7 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	sbSizer38->Add( bSizer192, 0, wxALIGN_CENTER_VERTICAL, 0 );
 	
-	bSizer190->Add( sbSizer38, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer208->Add( sbSizer38, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	wxBoxSizer* bSizer193;
 	bSizer193 = new wxBoxSizer( wxHORIZONTAL );
@@ -967,11 +972,11 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_plantsize = new wxTextCtrl( this, ID_PLANTSIZE, wxEmptyString, wxDefaultPosition, wxSize( 50,-1 ), 0 );
 	bSizer193->Add( m_plantsize, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	bSizer190->Add( bSizer193, 0, wxALIGN_CENTER_VERTICAL, 0 );
+	bSizer208->Add( bSizer193, 0, wxALIGN_CENTER_VERTICAL, 0 );
 	
 	m_only_available_species = new wxCheckBox( this, ID_ONLY_AVAILABLE_SPECIES, _("Show only species with available appearances"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_only_available_species->SetValue(true); 
-	bSizer190->Add( m_only_available_species, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	bSizer208->Add( m_only_available_species, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer194;
 	bSizer194 = new wxBoxSizer( wxHORIZONTAL );
@@ -986,22 +991,25 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_choice_content->SetSelection( 0 );
 	bSizer194->Add( m_choice_content, 1, wxALIGN_CENTER|wxALL, 5 );
 	
-	bSizer190->Add( bSizer194, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	bSizer208->Add( bSizer194, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	m_terrain_progress = new wxCheckBox( this, ID_TERRAIN_PROGRESS, _("Show progress dialog during terrain creation"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_terrain_progress->SetValue(true); 
-	bSizer190->Add( m_terrain_progress, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	bSizer208->Add( m_terrain_progress, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	m_fly_in = new wxCheckBox( this, ID_FLY_IN, _("Fly in gradually from earth view"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fly_in->SetValue(true); 
-	bSizer190->Add( m_fly_in, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	bSizer208->Add( m_fly_in, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	m_fly_in1 = new wxCheckBox( this, ID_ENABLE_JOYSTICK, _("Enable joystick navigation"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fly_in1->SetValue(true); 
-	bSizer190->Add( m_fly_in1, 0, wxALL, 5 );
+	bSizer208->Add( m_fly_in1, 0, wxALL, 5 );
 	
 	m_fly_in2 = new wxCheckBox( this, ID_ENABLE_SPACENAV, _("Enable SpaceNavigator"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer190->Add( m_fly_in2, 0, wxALL, 5 );
+	bSizer208->Add( m_fly_in2, 0, wxALL, 5 );
+	
+	
+	bSizer208->Add( 0, 0, 1, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer195;
 	bSizer195 = new wxBoxSizer( wxHORIZONTAL );
@@ -1013,9 +1021,9 @@ OptionsDlgBase::OptionsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer195->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	bSizer190->Add( bSizer195, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer208->Add( bSizer195, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	bSizer189->Add( bSizer190, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer189->Add( bSizer208, 1, wxEXPAND, 5 );
 	
 	this->SetSizer( bSizer189 );
 	this->Layout();
