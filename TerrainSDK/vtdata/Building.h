@@ -224,6 +224,8 @@ public:
 	// roof methods
 	void SetRoofType(RoofType rt, int iSlope = -1, int iLev = -1);
 	RoofType GetRoofType();
+	RGBi GuessRoofColor() const;
+	void SetRoofColor(const RGBi &rgb);
 
 	void SetColor(BldColor which, const RGBi &color);
 	RGBi GetColor(BldColor which) const;
@@ -258,7 +260,7 @@ public:
 	void SetEaves(float fLength);
 	void SetEavesSimple(float fLength);
 	void SetEavesFelkel(float fLength);
-	void CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight);
+	void CopyStyleFrom(vtBuilding *pDefBld, bool bDoHeight);
 
 	void SetCRS(vtProjection *proj) { m_pCRS = proj; }
 

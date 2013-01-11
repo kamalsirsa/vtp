@@ -610,7 +610,7 @@ void VisitorOSM::MakeBuilding()
 	// Apply a default style of building
 	vtBuilding *pDefBld = GetClosestDefault(bld);
 	if (pDefBld)
-		bld->CopyFromDefault(pDefBld, true);
+		bld->CopyStyleFrom(pDefBld, true);
 	else
 	{
 		bld->SetNumStories(1);

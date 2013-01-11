@@ -154,8 +154,33 @@ void BuildingDlg::EditColor()
 			m_pEdge->m_Color = result;
 		else
 		{
-			// If it's a roof, treat it specially: TODO
-			m_pLevel->SetEdgeColor(result);
+			// Handle roofs specially.
+			int num_levels = m_pBuilding->NumLevels();
+			if (m_iLevel == num_levels - 1)
+			{
+				// It's a roof.  Only set non-vertical edges.
+				for (int i = 0; i < m_pLevel->NumEdges(); i++)
+				{
+					if (m_pLevel->GetEdge(i)->m_iSlope != 90)
+						m_pLevel->GetEdge(i)->m_Color = result;
+				}
+			}
+			else
+			{
+				m_pLevel->SetEdgeColor(result);
+
+				if (m_iLevel == num_levels - 2)
+				{
+					// It's the level below the roof. Extend the color up to the
+					// vertical edges of the roof above it.
+					vtLevel *roof = m_pBuilding->GetLevel(num_levels - 1);
+					for (int i = 0; i < m_pLevel->NumEdges() && i < roof->NumEdges(); i++)
+					{
+						if (roof->GetEdge(i)->m_iSlope == 90)
+							roof->GetEdge(i)->m_Color = result;
+					}
+				}
+			}
 		}
 
 		UpdateColorControl();

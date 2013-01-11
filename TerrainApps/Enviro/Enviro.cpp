@@ -2492,7 +2492,7 @@ void Enviro::PasteBuildingStyle()
 			if (bld)
 			{
 				bool do_height = false;
-				bld->CopyFromDefault(&m_BuildingStyle, do_height);
+				bld->CopyStyleFrom(&m_BuildingStyle, do_height);
 				structures->ConstructStructure(structures->GetStructure3d(i));
 			}
 		}

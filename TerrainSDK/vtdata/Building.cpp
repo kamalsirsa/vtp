@@ -1070,6 +1070,27 @@ RoofType vtBuilding::GetRoofType()
 	return pLev->GuessRoofType();
 }
 
+RGBi vtBuilding::GuessRoofColor() const
+{
+	const vtLevel *pRoof = GetLevel(NumLevels()-1);
+	for (int i = 0; i < pRoof->NumEdges(); i++)
+	{
+		if (pRoof->GetEdge(i)->m_iSlope != 90)
+			return pRoof->GetEdge(i)->m_Color;
+	}
+	return RGBi(255, 255, 255);
+}
+
+void vtBuilding::SetRoofColor(const RGBi &rgb)
+{
+	vtLevel *pRoof = GetLevel(NumLevels()-1);
+	for (int i = 0; i < pRoof->NumEdges(); i++)
+	{
+		if (pRoof->GetEdge(i)->m_iSlope != 90)
+			pRoof->GetEdge(i)->m_Color = rgb;
+	}
+}
+
 bool vtBuilding::GetBaseLevelCenter(DPoint2 &p) const
 {
 	DRECT rect;
@@ -1510,18 +1531,23 @@ void vtBuilding::SetEavesFelkel(float fLength)
 	DetermineLocalFootprints();
 }
 
-void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
+void vtBuilding::CopyStyleFrom(vtBuilding *pSource, bool bDoHeight)
 {
-	SetElevationOffset(pDefBld->GetElevationOffset());
+	SetElevationOffset(pSource->GetElevationOffset());
 
 	DPolygon2 foot;
 
-	uint from_levels = pDefBld->NumLevels();
+	// If we will copy height information, then we will make as many levels as
+	// needed to match the source.
+	uint from_levels = pSource->NumLevels();
 	uint copy_levels;
 	if (bDoHeight)
 		copy_levels = from_levels;
 	else
 		copy_levels = NumLevels();
+
+	// Copy the roof angles first.
+	SetRoofType(pSource->GetRoofType());
 
 	for (uint i = 0; i < copy_levels; i++)
 	{
@@ -1531,10 +1557,12 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 		else
 			pLevel = CreateLevel(foot);
 
+		int from_level;
 		vtLevel *pFromLevel;
 		if (bDoHeight)
 		{
-			pFromLevel = pDefBld->GetLevel(i);
+			from_level = i;
+			pFromLevel = pSource->GetLevel(i);
 
 			pLevel->m_iStories = pFromLevel->m_iStories;
 			pLevel->m_fStoryHeight = pFromLevel->m_fStoryHeight;
@@ -1543,7 +1571,6 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 		{
 			// The target building may have more more levels than the default.
 			//  Try to guess an appropriate corresponding level.
-			int from_level;
 			if (i == 0)
 				from_level = 0;
 			else if (i == copy_levels-1)
@@ -1556,11 +1583,47 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 				else
 					from_level = 0;
 			}
-			pFromLevel = pDefBld->GetLevel(from_level);
+			pFromLevel = pSource->GetLevel(from_level);
 		}
 		int from_edges = pFromLevel->NumEdges();
 		int to_edges = pLevel->NumEdges();
 
+		// Now that we have a source and target level, iterate through the edges.
+		if (i == copy_levels - 1 && from_level > 0)
+		{
+			// Handle roof specially: do the sloped edges.
+			vtLevel *below = pSource->GetLevel(from_level - 1);
+			RGBi color;
+			const vtString *material;
+			float vf1;		// Used for roof overhang / eaves.
+			for (int j = 0; j < from_edges; j++)
+			{
+				vtEdge *from_edge = pFromLevel->GetEdge(j);
+				if (from_edge->m_iSlope != 90)
+				{
+					color = from_edge->m_Color;
+					material = from_edge->m_pMaterial;
+					vf1 = from_edge->m_Features[0].m_vf1;
+				}
+			}
+			for (int j = 0; j < to_edges; j++)
+			{
+				vtEdge *to_edge = pLevel->GetEdge(j);
+				if (to_edge->m_iSlope != 90)
+				{
+					to_edge->m_Color = color;
+					to_edge->m_pMaterial = material;
+					to_edge->m_Features[0].m_vf1 = vf1;
+				}
+				else
+				{
+					to_edge->m_Color = below->GetEdge(j)->m_Color;
+					to_edge->m_pMaterial = below->GetEdge(j)->m_pMaterial;
+				}
+			}
+			continue;
+		}
+		// The non-roof case:
 		for (int j = 0; j < to_edges; j++)
 		{
 			const int k = j % from_edges;
@@ -1603,6 +1666,5 @@ void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
 			}
 		}
 	}
-	SetRoofType(pDefBld->GetRoofType());
 }
 

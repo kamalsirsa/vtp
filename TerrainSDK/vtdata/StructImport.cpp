@@ -363,7 +363,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			//  building, if there is one.
 			vtBuilding *pDefBld = GetClosestDefault(bld);
 			if (pDefBld)
-				bld->CopyFromDefault(pDefBld, bDoHeight);
+				bld->CopyStyleFrom(pDefBld, bDoHeight);
 
 			// Apply explicit colors, if they were specified.
 			if (opt.m_bFixedColor)
@@ -589,7 +589,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 
 				vtBuilding *pDefBld = GetClosestDefault(pBld);
 				if (pDefBld)
-					pBld->CopyFromDefault(pDefBld, true);
+					pBld->CopyStyleFrom(pDefBld, true);
 				else
 					pBld->SetNumStories(1);
 			}
@@ -795,7 +795,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 
 		vtBuilding *pDefBld = GetClosestDefault(pBld);
 		if (pDefBld)
-			pBld->CopyFromDefault(pDefBld, true);
+			pBld->CopyStyleFrom(pDefBld, true);
 		else
 			pBld->SetNumStories(1);
 
