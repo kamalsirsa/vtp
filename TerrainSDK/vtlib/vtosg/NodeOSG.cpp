@@ -1750,16 +1750,15 @@ vtDynGeom::vtDynGeom() : vtGeode()
  * Test a sphere against the view volume.
  *
  * \return VT_AllVisible if entirely inside the volume,
- *			VT_Visible if partly inside,
- *			otherwise 0.
+ *		   VT_Visible if partly inside,
+ *		   otherwise 0.
  */
 int vtDynGeom::IsVisible(const FSphere &sphere) const
 {
 	uint vis = 0;
 
 	// cull against standard frustum
-	int i;
-	for (i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		float dist = m_cullPlanes[i].Distance(sphere.center);
 		if (dist >= sphere.radius)
@@ -1803,9 +1802,9 @@ bool vtDynGeom::IsVisible(const FPoint3& point) const
  *			otherwise 0.
  */
 int vtDynGeom::IsVisible(const FPoint3& point0,
-							const FPoint3& point1,
-							const FPoint3& point2,
-							const float fTolerance) const
+						 const FPoint3& point1,
+						 const FPoint3& point2,
+						 const float fTolerance) const
 {
 	uint outcode0 = 0, outcode1 = 0, outcode2 = 0;
 	register float dist;

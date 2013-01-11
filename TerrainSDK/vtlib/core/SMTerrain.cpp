@@ -645,18 +645,16 @@ void SMTerrain::SplitIfNeeded(int num, BinTri *tri,
 {
 /*
 	Cull against view volume.
-	Seumas says:
-	"For each bin tri I first use a
-	recursive function which tests whether the tri is in the frustum.
-	Totally out tris are dropped, totally in tris switch over to a
-	culling-free recursive function, and partway tris continue with
-	the frustum testing function."
+	Seumas says: "For each bin tri I first use a recursive function which tests
+	whether the tri is in the frustum.  Totally out tris are dropped, totally
+	in tris switch over to a culling-free recursive function, and partway tris
+	continue with the frustum testing function."
 */
 	int vc = (v0 + v1) >> 1;
 
 	if (!bEntirelyInFrustum)
 	{
-		FPoint3 p1(MAKE_XYZ(vc));
+		const FPoint3 p1(MAKE_XYZ(vc));
 		int ret = IsVisible(p1, m_HypoLength[level]/2.0f);
 		if (ret == VT_AllVisible)
 		{

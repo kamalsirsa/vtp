@@ -468,7 +468,7 @@ public:
 	virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const OsgDynMesh*>(obj)!=NULL; }
 	virtual const char* className() const { return "OsgDynMesh"; }
 
-	// As of OSG 0.9.9, computeBound returns a BoundingBox
+	// Implement OSG::Drawable's computeBound.
 	virtual osg::BoundingBox computeBound() const;
 	virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
 
