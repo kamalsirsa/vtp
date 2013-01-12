@@ -61,7 +61,7 @@ vtGeode *Create3DCursor(float fSize, float fSmall, float fAlpha)
  * Create a wireframe sphere which is very useful for visually representing
  * the bounding sphere of an object in the scene.
  */
-vtGeode *CreateBoundSphereGeom(const FSphere &sphere, int res)
+vtGeode *CreateBoundSphereGeode(const FSphere &sphere, int res)
 {
 	vtGeode *pGeode = new vtGeode;
 	vtMaterialArrayPtr pMats = new vtMaterialArray;

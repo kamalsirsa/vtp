@@ -54,6 +54,7 @@ public:
 	void DestroyGeometry();
 	bool CreateGeometry(vtHeightField3d *pHeightField);
 	void AdjustHeight(vtHeightField3d *pHeightField);
+	vtGeode *CreateHighlight();
 
 	// randomize building properties
 	void Randomize(int iStories);
@@ -62,7 +63,6 @@ protected:
 	bool MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories);
 
 protected:
-
 	// the geometry is composed of several meshes, one for each potential material used
 	std::vector<MatMesh>	m_Mesh;
 
@@ -74,9 +74,9 @@ protected:
 	// internal methods
 	void UpdateWorldLocation(vtHeightField3d *pHeightField);
 	float GetHeightOfStories();
-	void CreateUpperPolygon(vtLevel *lev, FPolygon3 &poly, FPolygon3 &poly2);
+	void CreateUpperPolygon(const vtLevel *lev, FPolygon3 &poly, FPolygon3 &poly2);
 
-	void CreateEdgeGeometry(vtLevel *pLev, const FPolygon3 &polygon1,
+	void CreateEdgeGeometry(const vtLevel *pLev, const FPolygon3 &polygon1,
 		const FPolygon3 &polygon2, int iEdge, bool bShowEdge);
 
 	// create special, simple geometry for a level which is uniform
@@ -100,11 +100,11 @@ protected:
 	void AddWallNormal(vtEdge *pWall, vtEdgeFeature *pFeat,
 			const FLine3 &quad);
 
-	void AddFlatRoof(const FPolygon3 &pp, vtLevel *pLev);
+	void AddFlatRoof(const FPolygon3 &pp, const vtLevel *pLev);
 	FPoint3	Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2);
 
 	// Felkel straight skeleton
-	float MakeFelkelRoof(const FPolygon3 &pp, vtLevel *pLev);
+	float MakeFelkelRoof(const FPolygon3 &pp, const vtLevel *pLev);
 	bool Collinear2d(const FPoint3& p1, const FPoint3& p2, const FPoint3& p3);
 	int FindVertex(const FPoint3 &Point, const FLine3 &RoofSection3D, const std::vector<int> &iaVertices);
 

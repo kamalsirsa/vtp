@@ -7,7 +7,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Content3d.h"	// for vtGetContent
-#include "vtlib/core/GeomUtil.h"		// for CreateBoundSphereGeom
+#include "vtlib/core/GeomUtil.h"		// for CreateBoundSphereGeode
 #include "vtdata/vtLog.h"
 #include "CarEngine.h"
 #include "Vehicles.h"
@@ -175,7 +175,7 @@ void Vehicle::ShowBounds(bool bShow)
 				GetBoundSphere(sphere);
 				sphere.center.Set(0,0,0);
 
-				m_pHighlight = CreateBoundSphereGeom(sphere);
+				m_pHighlight = CreateBoundSphereGeode(sphere);
 				addChild(m_pHighlight);
 			}
 		}

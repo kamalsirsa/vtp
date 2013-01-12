@@ -22,7 +22,7 @@
 #include "vtdata/HeightField.h"
 #include "Plants3d.h"
 #include "Light.h"
-#include "GeomUtil.h"	// for CreateBoundSphereGeom
+#include "GeomUtil.h"	// for CreateBoundSphereGeode
 
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters
 
@@ -547,7 +547,7 @@ void vtPlantInstance3d::ShowBounds(bool bShow)
 				FSphere sphere;
 				GetBoundSphere(contents, sphere);
 
-				m_pHighlight = CreateBoundSphereGeom(sphere);
+				m_pHighlight = CreateBoundSphereGeode(sphere);
 				m_pContainer->addChild(m_pHighlight);
 			}
 		}

@@ -11,7 +11,7 @@
 #include "vtdata/SPA.h"
 #include "vtdata/FilePath.h"
 #include "SkyDome.h"
-#include "GeomUtil.h"	// for CreateBoundSphereGeom
+#include "GeomUtil.h"	// for CreateBoundSphereGeode
 
 // minimum and maximum ambient light values
 const float MIN_AMB = 0.0f;
@@ -276,7 +276,7 @@ void vtSkyDome::CreateMarkers()
 
 	// Create celestial sphere wifreframe, to aid in development and testing
 	FSphere sph(FPoint3(0,0,0), 0.99);
-	m_pWireSphere = CreateBoundSphereGeom(sph, 60);
+	m_pWireSphere = CreateBoundSphereGeode(sph, 60);
 	m_pWireSphere->setName("Celestial Sphere wireframe");
 	m_pCelestial->addChild(m_pWireSphere);
 }

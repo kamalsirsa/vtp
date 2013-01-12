@@ -175,7 +175,7 @@ protected:
 /**
  Calculates the bounding box of the geometry contained in and under this node
  in the scene graph.  Note that unlike the bounding sphere which is cached,
- this value is calculated every time.
+ this value is calculated each time this method is called.
 
  \param node The node to visit.
  \param box Will receive the bounding box.

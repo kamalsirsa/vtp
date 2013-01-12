@@ -94,7 +94,7 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 				FSphere sphere;
 				s2v(m_pModel->getBound(), sphere);
 
-				m_pHighlight = CreateBoundSphereGeom(sphere);
+				m_pHighlight = CreateBoundSphereGeode(sphere);
 				m_pHighlight->SetCastShadow(false);		// no shadow
 				m_pContainer->addChild(m_pHighlight);
 			}

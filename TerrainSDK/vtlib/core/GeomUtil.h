@@ -93,7 +93,7 @@ public:
 
 // helper functions
 vtGeode *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
-vtGeode *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
+vtGeode *CreateBoundSphereGeode(const FSphere &sphere, int res = 24);
 vtMesh *CreateSphereMesh(const FSphere &sphere, int res = 24);
 vtGeode *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						int Axis1, int Axis2, int Axis3,
