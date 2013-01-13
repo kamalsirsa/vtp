@@ -666,6 +666,12 @@ void VisitorOSM::MakeBuilding()
 		bld->AddTag("name", m_Name);
 	if (m_URL != "")
 		bld->AddTag("url", m_URL);
+	if (m_id != -1)
+	{
+		char id_string[40];
+		sprintf(id_string, "%d", m_id);
+		bld->AddTag("id", id_string);
+	}
 }
 
 void VisitorOSM::MakeLinear()
@@ -687,6 +693,13 @@ void VisitorOSM::MakeLinear()
 
 	// Apply style;
 	ls->ApplyStyle(m_eLinearStyle);
+
+	if (m_id != -1)
+	{
+		char id_string[40];
+		sprintf(id_string, "%d", m_id);
+		ls->AddTag("id", id_string);
+	}
 }
 
 

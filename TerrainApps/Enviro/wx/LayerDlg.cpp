@@ -15,6 +15,7 @@
 #include "vtdata/vtLog.h"
 #include "vtdata/FileFilters.h"
 #include "vtlib/vtlib.h"
+#include "vtlib/core/Building3d.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/Globe.h"
 #include "vtui/Helper.h"	// for progress dialog
@@ -79,7 +80,7 @@
 BEGIN_EVENT_TABLE(LayerDlg,wxPanel)
 	EVT_INIT_DIALOG (LayerDlg::OnInitDialog)
 	EVT_TREE_SEL_CHANGED( ID_LAYER_TREE, LayerDlg::OnSelChanged )
-
+	EVT_TREE_ITEM_ACTIVATED( ID_LAYER_TREE, LayerDlg::OnItemActived )
 	EVT_CHECKBOX( ID_SHOW_ALL, LayerDlg::OnShowAll )
 	EVT_CHECKBOX( ID_LAYER_VISIBLE, LayerDlg::OnVisible )
 	EVT_CHECKBOX( ID_LAYER_SHADOW, LayerDlg::OnShadowVisible )
@@ -373,10 +374,30 @@ void LayerDlg::RefreshTreeTerrain()
 			{
 				for (j = 0; j < slay->size(); j++)
 				{
-					if (slay->GetBuilding(j))
+					vtBuilding *bld = slay->GetBuilding(j);
+					if (bld)
 					{
+						vtString value;
+						wxString label;
+						if (bld->GetValueString("id", value))
+						{
+							label += _("id: ");
+							label += wxString::FromUTF8(value);
+						}
+						if (bld->GetValueString("name", value))
+						{
+							if (label != _T(""))
+								label += _T(", ");
+							label += _("name: ");
+							label += _T("'");
+							label += wxString::FromUTF8(value);
+							label += _T("'");
+						}
+						if (label == _T(""))
+							label = _("Building");
+
 						icon = ICON_BUILDING;
-						hItem = m_pTree->AppendItem(hLayer, _("Building"), icon, icon);
+						hItem = m_pTree->AppendItem(hLayer, label, icon, icon);
 					}
 					if (slay->GetFence(j))
 					{
@@ -1081,6 +1102,12 @@ void LayerDlg::OnSelChanged( wxTreeEvent &event )
 	}
 
 	UpdateEnabling();
+}
+
+void LayerDlg::OnItemActived( wxTreeEvent &event )
+{
+	// The item was activated (double click, enter, space)
+	OnZoomTo(event);
 }
 
 void LayerDlg::UpdateEnabling()
