@@ -312,13 +312,13 @@ vtGeode *vtBuilding3d::CreateHighlight()
 
 		const int outer_corners = foot[0].GetSize();
 
-		for (int j = 0; j < outer_corners; j++)
+		for (int j = 0; j <= outer_corners; j++)
 		{
-			FPoint3 p = foot[0][j];
-			p *= 1.01f;
+			FPoint3 p = foot[0][j % outer_corners];
+			p *= 1.01f;		// Slightly larger to not intersect the building
 			idx[j] = mesh->AddVertex(p);
 		}
-		mesh->AddStrip(outer_corners, idx);
+		mesh->AddStrip(outer_corners + 1, idx);
 	}
 	// Center of top level
 	const FLine3 &top_foot = GetLocalFootprint(NumLevels()-1).at(0);
