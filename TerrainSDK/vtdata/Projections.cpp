@@ -930,7 +930,7 @@ void SetupEPSGDatums()
 		g_EPSGDatums.push_back(dat);
 	}
 	// sort them
-	qsort(g_EPSGDatums.data(), count, sizeof(EPSGDatum), compare_datum);
+	qsort(&g_EPSGDatums.front(), count, sizeof(EPSGDatum), compare_datum);
 }
 
 void CleanupEPSGDatums()

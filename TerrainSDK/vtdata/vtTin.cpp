@@ -1447,10 +1447,10 @@ int vtTin::RemoveUnusedVertices()
  This is a simple join.  No attempt is made to share vertices or any other integration.
  It is further assumed that the two TINs have compatible coordinate systems.
  */
-void vtTin::AppendFrom(vtTin *pTin)
+void vtTin::AppendFrom(const vtTin *pTin)
 {
-	size_t verts = pTin->NumVerts();
-	size_t tris = pTin->NumTris();
+	const size_t verts = pTin->NumVerts();
+	const size_t tris = pTin->NumTris();
 
 	// Preallocate (for efficiency)
 	m_vert.SetMaxSize(m_vert.GetSize() + verts + 1);
@@ -1458,7 +1458,7 @@ void vtTin::AppendFrom(vtTin *pTin)
 	m_tri.reserve(m_tri.size() + (tris*3) + 1);
 
 	// Remember the starting point for vertex indices
-	int base = NumVerts();
+	const int base = NumVerts();
 
 	// Simple, naive copy of vertices and triangles
 	DPoint2 p;
