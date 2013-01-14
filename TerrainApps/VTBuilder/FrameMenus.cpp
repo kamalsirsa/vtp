@@ -299,7 +299,7 @@ EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
 EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
 EVT_MENU(ID_RAW_EXPORT_KML,			MainFrame::OnRawExportKML)
 EVT_MENU(ID_RAW_GENERATE_ELEVATION,	MainFrame::OnRawGenElevation)
-EVT_MENU(ID_RAW_CONVERT_TOTIN,		MainFrame::OnRawConvertToTIN)
+EVT_MENU(ID_RAW_GENERATE_TIN,		MainFrame::OnRawGenerateTIN)
 EVT_MENU(ID_RAW_CONVERT_TOPOLYS,	MainFrame::OnRawConvertToPolygons)
 
 EVT_UPDATE_UI(ID_RAW_SETTYPE,			MainFrame::OnUpdateRawSetType)
@@ -315,9 +315,9 @@ EVT_UPDATE_UI(ID_RAW_CLEAN,				MainFrame::OnUpdateRawHasPolylines)
 EVT_UPDATE_UI(ID_RAW_SELECT_BAD,		MainFrame::OnUpdateRawIsPolygon)
 EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsPolygon)
-EVT_UPDATE_UI(ID_RAW_EXPORT_KML,		MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_EXPORT_KML,		MainFrame::OnUpdateRawIsPoint)
 EVT_UPDATE_UI(ID_RAW_GENERATE_ELEVATION,MainFrame::OnUpdateRawGenElevation)
-EVT_UPDATE_UI(ID_RAW_CONVERT_TOTIN,		MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_GENERATE_TIN,		MainFrame::OnUpdateRawIsActive)
 EVT_UPDATE_UI(ID_RAW_CONVERT_TOPOLYS,	MainFrame::OnUpdateRawIsActive)
 
 EVT_MENU(ID_AREA_CLEAR,				MainFrame::OnAreaClear)
@@ -614,7 +614,7 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
 	rawMenu->Append(ID_RAW_EXPORT_KML, _("Export as KML"));
 	rawMenu->Append(ID_RAW_GENERATE_ELEVATION, _("Generate Grid from 3D Points"));
-	rawMenu->Append(ID_RAW_CONVERT_TOTIN, _("Generate TIN"));
+	rawMenu->Append(ID_RAW_GENERATE_TIN, _("Generate TIN"));
 	rawMenu->Append(ID_RAW_CONVERT_TOPOLYS, _("Generate Polygons from Polylines"));
 	m_pMenuBar->Append(rawMenu, _("Ra&w"));
 	m_iLayerMenu[LT_RAW] = menu_num;
@@ -3485,6 +3485,14 @@ void MainFrame::OnUpdateRawIsPolygon(wxUpdateUIEvent& event)
 	event.Enable(pRL != NULL && pRL->GetGeomType() == wkbPolygon);
 }
 
+void MainFrame::OnUpdateRawIsPoint(wxUpdateUIEvent& event)
+{
+	// if the current layer is polygon
+	vtRawLayer *pRL = GetActiveRawLayer();
+	event.Enable(pRL != NULL && (pRL->GetGeomType() == wkbPoint ||
+								 pRL->GetGeomType() == wkbPoint25D));
+}
+
 void MainFrame::OnUpdateRawHasPolylines(wxUpdateUIEvent& event)
 {
 	vtRawLayer *pRL = GetActiveRawLayer();
@@ -3655,8 +3663,10 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 	}
 }
 
-void MainFrame::OnRawConvertToTIN(wxCommandEvent& event)
+void MainFrame::OnRawGenerateTIN(wxCommandEvent& event)
 {
+	VTLOG1("OnRawGenerateTIN\n");
+
 	vtRawLayer *pRaw = GetActiveRawLayer();
 	vtFeatureSet *pSet = pRaw->GetFeatureSet();
 	vtTin2d *tin;

@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2009 Virtual Terrain Project
+// Copyright (c) 2002-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1572,18 +1572,20 @@ void vtFeatureSet::SetToDelete(int iFeature)
 	m_Features[iFeature]->flags |= FF_DELETE;
 }
 
-void vtFeatureSet::ApplyDeletion()
+int vtFeatureSet::ApplyDeletion()
 {
-	int i, entities = NumEntities();
+	int entities = NumEntities();
 
 	int target = 0;
+	int deleted = 0;
 	int newtotal = entities;
-	for (i = 0; i < entities; i++)
+	for (int i = 0; i < entities; i++)
 	{
 		if ((m_Features[i]->flags & FF_DELETE))
 		{
 			delete m_Features[i];
 			newtotal--;
+			deleted++;
 		}
 		else
 		{
@@ -1596,6 +1598,7 @@ void vtFeatureSet::ApplyDeletion()
 		}
 	}
 	SetNumEntities(newtotal);
+	return deleted;
 }
 
 void vtFeatureSet::CopyEntity(uint from, uint to)

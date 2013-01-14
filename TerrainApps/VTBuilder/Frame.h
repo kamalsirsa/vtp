@@ -266,7 +266,7 @@ protected:
 	void OnRawAddPointsGPS(wxCommandEvent& event);
 	void OnRawAddFeatureWKT(wxCommandEvent& event);
 	void OnRawSelectCondition(wxCommandEvent& event);
-	void OnRawConvertToTIN(wxCommandEvent& event);
+	void OnRawGenerateTIN(wxCommandEvent& event);
 	void OnRawConvertToPolygons(wxCommandEvent& event);
 	void OnRawExportImageMap(wxCommandEvent& event);
 	void OnRawExportKML(wxCommandEvent& event);
@@ -285,6 +285,7 @@ protected:
 	void OnUpdateRawIsActive(wxUpdateUIEvent& event);
 	void OnUpdateRawIsActive3D(wxUpdateUIEvent& event);
 	void OnUpdateRawIsPolygon(wxUpdateUIEvent& event);
+	void OnUpdateRawIsPoint(wxUpdateUIEvent& event);
 	void OnUpdateRawHasPolylines(wxUpdateUIEvent& event);
 	void OnUpdateRawGenElevation(wxUpdateUIEvent& event);
 

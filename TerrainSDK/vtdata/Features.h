@@ -1,7 +1,7 @@
 //
 // Features.h
 //
-// Copyright (c) 2002-2012 Virtual Terrain Project
+// Copyright (c) 2002-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -141,7 +141,7 @@ public:
 
 	// deletion
 	void SetToDelete(int iFeature);
-	void ApplyDeletion();
+	int ApplyDeletion();
 
 	// selection
 	void Select(uint iEnt, bool set = true)

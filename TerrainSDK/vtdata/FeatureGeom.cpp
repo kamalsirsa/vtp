@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2012 Virtual Terrain Project
+// Copyright (c) 2002-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -507,7 +507,15 @@ int vtFeatureSetLineString::FixGeometry(double dEpsilon)
 
 		// and colinear. The epsilon here is far more sensitive.
 		removed += m_Line[i].RemoveColinearPoints(dEpsilon / 10.0, false);
+
+		// Remove any "polylines" with less than 2 points
+		if (m_Line[i].GetSize() < 2)
+			SetToDelete(i);
 	}
+	int deleted = ApplyDeletion();
+	if (deleted > 0)
+		VTLOG("Deleted %d bad polylines\n", deleted);
+
 	return removed;
 }
 
@@ -1063,7 +1071,7 @@ int vtFeatureSetPolygon::FixGeometry(double dEpsilon)
 	PolyChecker PolyChecker;
 
 	int removed = 0;
-	int num = m_Poly.size();
+	const int num = m_Poly.size();
 
 	for (int i = 0; i < num; i++)
 	{
@@ -1074,6 +1082,21 @@ int vtFeatureSetPolygon::FixGeometry(double dEpsilon)
 
 		// and colinear. The epsilon here is far more sensitive.
 		removed += dpoly.RemoveColinearPoints(dEpsilon / 10);
+
+		// Remove any "polygons" with less than 3 points
+		bool bad = false;
+		for (uint j = 0; j < dpoly.size(); j++)
+		{
+			const DLine2 &dline = dpoly[j];
+			if (dline.GetSize() < 3)
+				bad = true;
+		}
+		if (bad)
+		{
+			// Flag for deletion
+			SetToDelete(i);
+			break;
+		}
 
 		DLine2 &outer = dpoly[0];
 		if (PolyChecker.IsClockwisePolygon(outer) == false)
@@ -1090,10 +1113,12 @@ int vtFeatureSetPolygon::FixGeometry(double dEpsilon)
 				// Incorrect winding
 				inner.ReverseOrder();
 			}
-
 		}
 	}
-	// potential TODO: remove too-small rings (with less than 3 points)
+	int deleted = ApplyDeletion();
+	if (deleted > 0)
+		VTLOG("Deleted %d bad polygons\n", deleted);
+
 	return removed;
 }
 

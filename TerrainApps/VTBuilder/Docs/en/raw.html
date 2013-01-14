@@ -100,7 +100,10 @@
 			each other)</li>
 			<li>Remove colinear points (two points in sequence, almost exactly 
 			on the same line)</li>
-			<li>Fixes the winding (clockwise-ness) of polygons. </li>
+			<li>For polygons, fixes the winding (clockwise-ness). </li>
+			<li>For polygons, removes any polygons that have rings with less 
+			than 3 vertices.</li>
+			<li>For polylines, removes any polylines with less than 2 vertices.</li>
 		</ol>
 		</li>
 	</ul>

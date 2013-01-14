@@ -17,6 +17,7 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/Features.h"
 #include "vtdata/Triangulate.h"
+#include "vtdata/vtLog.h"
 
 ////////////////////////////////////////////////////////////////////
 
@@ -166,6 +167,8 @@ vtTin2d::vtTin2d(vtFeatureSetPoint3D *set)
  */
 vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum, float fHeight)
 {
+	VTLOG1("Construct TIN from Polygons\n");
+
 	m_fEdgeLen = NULL;
 	m_bConstrain = false;
 
@@ -182,6 +185,10 @@ vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum, float fHeight)
 			z = set->GetFloatValue(i, iFieldNum);
 
 		DLine2 result;
+#if VTDEBUG
+	VTLOG(" Polygon %d/%d: %d rings, first ring %d points\n",
+		i, num, dpoly.size(), dpoly[0].GetSize());
+#endif
 		CallTriangle(dpoly, result);
 //		CallPoly2Tri(dpoly, result);	// TEST
 		int res = result.GetSize();
@@ -198,6 +205,8 @@ vtTin2d::vtTin2d(vtFeatureSetPolygon *set, int iFieldNum, float fHeight)
 	ComputeExtents();
 	// Adopt CRS from the featureset
 	m_proj = set->GetAtProjection();
+
+	VTLOG1("Construct TIN from Polygons: done\n");
 }
 
 void vtTin2d::MakeOutline()
