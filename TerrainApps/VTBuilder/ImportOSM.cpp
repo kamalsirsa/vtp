@@ -72,6 +72,7 @@ private:
 	int			m_id;
 
 	int			m_iRoadLanes;
+	int			m_iRoadFlags;
 	SurfaceType m_eSurfaceType;
 
 	vtStructureType m_eStructureType;
@@ -155,6 +156,7 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 			m_WayType = LT_UNKNOWN;
 			m_bIsArea = false;
 			m_iRoadLanes = 2;
+			m_iRoadFlags = RF_FORWARD | RF_REVERSE;	// bidrectional traffic
 			m_eSurfaceType = SURFT_PAVED;
 			m_eStructureType = ST_NONE;
 			m_iNumStories = -1;
@@ -400,6 +402,25 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 	if (key == "name")
 		m_Name = value;
 
+	if (key == "oneway")
+	{
+		if (value == "yes")
+			m_iRoadFlags &= (~RF_REVERSE);
+		if (value == "-1")
+			m_iRoadFlags &= (~RF_FORWARD);
+	}
+
+	if (key.Left(13) == "parking:lane:")
+	{
+		vtString after = key.Mid(13);
+		if (after == "left")
+			m_iRoadFlags |= RF_PARKING_LEFT;
+		if (after == "right")
+			m_iRoadFlags |= RF_PARKING_RIGHT;
+		if (after == "both")
+			m_iRoadFlags |= (RF_PARKING_LEFT | RF_PARKING_RIGHT);
+	}
+
 	if (key == "power")
 		m_WayType = LT_UNKNOWN;
 
@@ -420,6 +441,16 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 
 	if (key == "route" && value == "ferry")
 		m_WayType = LT_UNKNOWN;
+
+	if (key == "sidewalk")
+	{
+		if (value == "left")
+			m_iRoadFlags |= RF_SIDEWALK_LEFT;
+		if (value == "right")
+			m_iRoadFlags |= RF_SIDEWALK_RIGHT;
+		if (value == "both")
+			m_iRoadFlags |= (RF_SIDEWALK_LEFT | RF_SIDEWALK_RIGHT);
+	}
 
 	if (key == "shop")
 	{
@@ -479,6 +510,7 @@ void VisitorOSM::MakeRoad()
 	LinkEdit *link = m_road_layer->AddNewLink();
 
 	link->m_iLanes = m_iRoadLanes;
+	link->m_iFlags = m_iRoadFlags;
 	link->m_Surface = m_eSurfaceType;
 
 	int ref_first = m_refs[0];

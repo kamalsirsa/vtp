@@ -47,13 +47,17 @@ RoadDlg::RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetSurfType()->Append(_("(multiple types)"));
 	GetSurfType()->SetSelection(0);
 
-	GetSidewalk()->Append(_("No"));
-	GetSidewalk()->Append(_("Yes"));
+	GetSidewalk()->Append(_("None"));
+	GetSidewalk()->Append(_("Left"));
+	GetSidewalk()->Append(_("Right"));
+	GetSidewalk()->Append(_("Both"));
 	GetSidewalk()->Append(_("(multiple)"));
 	GetSidewalk()->SetSelection(0);
 
-	GetParking()->Append(_("No"));
-	GetParking()->Append(_("Yes"));
+	GetParking()->Append(_("None"));
+	GetParking()->Append(_("Left"));
+	GetParking()->Append(_("Right"));
+	GetParking()->Append(_("Both"));
 	GetParking()->Append(_("(multiple)"));
 	GetParking()->SetSelection(0);
 
@@ -99,13 +103,13 @@ void RoadDlg::AccumulateState(LinkEdit *pRoad)
 		m_iHwy = MULTIPLE;
 
 	if (m_iSidewalk == -1)
-		m_iSidewalk = pRoad->GetFlag(RF_SIDEWALK);
-	if (pRoad->GetFlag(RF_SIDEWALK) != m_iSidewalk)
+		m_iSidewalk = pRoad->GetSidewalk();
+	if (pRoad->GetSidewalk() != m_iSidewalk)
 		m_iSidewalk = MULTIPLE;
 
 	if (m_iParking == -1)
-		m_iParking = pRoad->GetFlag(RF_PARKING);
-	if (pRoad->GetFlag(RF_PARKING) != m_iParking)
+		m_iParking = pRoad->GetParking();
+	if (pRoad->GetParking() != m_iParking)
 		m_iParking = MULTIPLE;
 
 	if (m_iMargin == -1)
@@ -161,12 +165,12 @@ void RoadDlg::TransferStateToControls()
 	GetHwyName()->SetValue(str);
 
 	if (m_iSidewalk == MULTIPLE)
-		GetSidewalk()->SetSelection(2);
+		GetSidewalk()->SetSelection(4);
 	else
 		GetSidewalk()->SetSelection(m_iSidewalk);
 
 	if (m_iParking == MULTIPLE)
-		GetParking()->SetSelection(2);
+		GetParking()->SetSelection(4);
 	else
 		GetParking()->SetSelection(m_iParking);
 
@@ -264,12 +268,18 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 		pRoad->m_iHwy = val;
 
 	val = GetSidewalk()->GetSelection();
-	if (val != 2)
-		pRoad->SetFlag(RF_SIDEWALK, (val != 0));
+	if (val != 4)
+	{
+		pRoad->SetFlag(RF_SIDEWALK_LEFT, (val & 1) != 0);
+		pRoad->SetFlag(RF_SIDEWALK_RIGHT, (val & 2) != 0);
+	}
 
 	val = GetParking()->GetSelection();
-	if (val != 2)
-		pRoad->SetFlag(RF_PARKING, (val != 0));
+	if (val != 4)
+	{
+		pRoad->SetFlag(RF_PARKING_LEFT, (val & 1) != 0);
+		pRoad->SetFlag(RF_PARKING_RIGHT, (val & 2) != 0);
+	}
 
 	val = GetMargin()->GetSelection();
 	if (val != 2)

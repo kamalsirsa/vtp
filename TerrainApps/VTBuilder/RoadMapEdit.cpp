@@ -402,12 +402,14 @@ bool LinkEdit::EditProperties(vtRoadLayer *pLayer)
 	return (dlg.ShowModal() == wxID_OK);
 }
 
-	// override because we need to update width when flags change
+// override because we need to update width when flags change
 void LinkEdit::SetFlag(int flag, bool value)
 {
-	int before = m_iFlags & (RF_SIDEWALK | RF_PARKING | RF_MARGIN);
+	const int flags = RF_SIDEWALK_LEFT | RF_SIDEWALK_RIGHT |
+					  RF_PARKING_LEFT | RF_PARKING_RIGHT | RF_MARGIN;
+	const int before = m_iFlags & flags;
 	TLink::SetFlag(flag, value);
-	int after = m_iFlags & (RF_SIDEWALK | RF_PARKING | RF_MARGIN);
+	const int after = m_iFlags & flags;
 	if (before != after)
 		m_bSidesComputed = false;
 }

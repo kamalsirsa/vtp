@@ -22107,7 +22107,7 @@
                                         <property name="font"></property>
                                         <property name="hidden"></property>
                                         <property name="id">ID_TEXT</property>
-                                        <property name="label">Hard Shoulder Width</property>
+                                        <property name="label">Margin Width</property>
                                         <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_text34</property>

@@ -352,6 +352,22 @@ int TLink::GetFlag(int flag)
 	return (m_iFlags & flag) != 0;
 }
 
+int TLink::GetSidewalk()
+{
+	int value = 0;
+	if (m_iFlags & RF_SIDEWALK_LEFT) value |= 1;
+	if (m_iFlags & RF_SIDEWALK_RIGHT) value |= 2;
+	return value;
+}
+
+int TLink::GetParking()
+{
+	int value = 0;
+	if (m_iFlags & RF_PARKING_LEFT) value |= 1;
+	if (m_iFlags & RF_PARKING_RIGHT) value |= 2;
+	return value;
+}
+
 /**
  * Find closest lateral distance from a given point to the link.
  */
@@ -454,12 +470,22 @@ float TLink::Length()
 float TLink::EstimateWidth(bool bIncludeSidewalk)
 {
 	float width = m_iLanes * m_fLaneWidth;
-	if (GetFlag(RF_PARKING))
-		width += (m_fParkingWidth * 2);
+
+	if (GetFlag(RF_PARKING_LEFT))
+		width += m_fParkingWidth;
+	if (GetFlag(RF_PARKING_RIGHT))
+		width += m_fParkingWidth;
+
 	if (GetFlag(RF_MARGIN))
 		width += (m_fMarginWidth * 2);
-	if (bIncludeSidewalk && GetFlag(RF_SIDEWALK))
-		width += (m_fSidewalkWidth * 2);
+
+	if (bIncludeSidewalk)
+	{
+		if (GetFlag(RF_SIDEWALK_LEFT))
+			width += m_fSidewalkWidth;
+		if (GetFlag(RF_SIDEWALK_RIGHT))
+			width += m_fSidewalkWidth;
+	}
 	return width;
 }
 

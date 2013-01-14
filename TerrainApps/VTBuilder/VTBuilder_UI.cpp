@@ -2426,7 +2426,7 @@ RoadDlgBase::RoadDlgBase( wxWindow* parent, wxWindowID id, const wxString& title
 	m_parking_width = new wxTextCtrl( this, ID_PARKING_WIDTH, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
 	fgSizer3->Add( m_parking_width, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
-	m_text34 = new wxStaticText( this, ID_TEXT, _("Hard Shoulder Width"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text34 = new wxStaticText( this, ID_TEXT, _("Margin Width"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text34->Wrap( -1 );
 	fgSizer3->Add( m_text34, 0, wxALIGN_CENTER|wxALL, 5 );
 	

@@ -35,11 +35,13 @@ enum IntersectionType {
 };
 
 // link flags
-#define RF_SIDEWALK	0x0800
-#define RF_PARKING	0x0400
-#define RF_MARGIN	0x0200
-#define RF_FORWARD	0x0080	// true if traffic flows from node 0 to 1
-#define RF_REVERSE	0x0040	// true if traffic flows from node 1 to 0
+#define RF_SIDEWALK_LEFT	0x1000
+#define RF_SIDEWALK_RIGHT	0x0800
+#define RF_PARKING_RIGHT	0x2000
+#define RF_PARKING_LEFT		0x0400
+#define RF_MARGIN			0x0200
+#define RF_FORWARD			0x0080	// true if traffic flows from node 0 to 1
+#define RF_REVERSE			0x0040	// true if traffic flows from node 1 to 0
 // the following are for temporary, runtime use
 #define RF_HIT		0x0001
 
@@ -161,6 +163,8 @@ public:
 	// accessors for flag properties
 	virtual void SetFlag(int flag, bool value);
 	int GetFlag(int flag);
+	int GetSidewalk();
+	int GetParking();
 
 	// Return length of link centerline.
 	float Length();

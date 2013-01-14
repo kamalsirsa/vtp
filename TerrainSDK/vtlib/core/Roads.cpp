@@ -481,10 +481,14 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	int total_vertices = GetSize() * 2;	// main surface
 	if (m_iFlags & RF_MARGIN)
 		total_vertices += (GetSize() * 2 * 2);	// 2 margin strips
-	if (m_iFlags & RF_PARKING)
-		total_vertices += (GetSize() * 2 * 2);	// 2 parking strips
-	if (m_iFlags & RF_SIDEWALK)
-		total_vertices += (GetSize() * 2 * 4);	// 4 sidewalk strips
+	if (m_iFlags & RF_PARKING_LEFT)
+		total_vertices += (GetSize() * 2 * 1);	// 1 parking strip
+	if (m_iFlags & RF_PARKING_RIGHT)
+		total_vertices += (GetSize() * 2 * 1);	// 1 parking strip
+	if (m_iFlags & RF_SIDEWALK_LEFT)
+		total_vertices += (GetSize() * 2 * 2);	// 2 sidewalk strips
+	if (m_iFlags & RF_SIDEWALK_RIGHT)
+		total_vertices += (GetSize() * 2 * 2);	// 2 sidewalk strips
 	if (do_roadside)
 		total_vertices += (GetSize() * 2 * 2);		// 2 roadside strips
 
@@ -497,9 +501,9 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	float offset = -m_fWidth/2;
 	if (m_iFlags & RF_MARGIN)
 		offset -= m_fMarginWidth;
-	if (m_iFlags & RF_PARKING)
+	if (m_iFlags & RF_PARKING_LEFT)
 		offset -= m_fParkingWidth;
-	if (m_iFlags & RF_SIDEWALK)
+	if (m_iFlags & RF_SIDEWALK_LEFT)
 		offset -= m_fSidewalkWidth;
 	if (do_roadside)
 		offset -= ROADSIDE_WIDTH;
@@ -520,7 +524,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 #endif
 
 	// create left sidwalk
-	if (m_iFlags & RF_SIDEWALK)
+	if (m_iFlags & RF_SIDEWALK_LEFT)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
@@ -539,7 +543,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 					ND_RIGHT);
 	}
 	// create left parking lane
-	if (m_iFlags & RF_PARKING)
+	if (m_iFlags & RF_PARKING_LEFT)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
@@ -585,7 +589,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 		offset += m_fMarginWidth;
 	}
 	// create left parking lane
-	if (m_iFlags & RF_PARKING)
+	if (m_iFlags & RF_PARKING_RIGHT)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
@@ -598,7 +602,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	}
 
 	// create right sidwalk
-	if (m_iFlags & RF_SIDEWALK)
+	if (m_iFlags & RF_SIDEWALK_RIGHT)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
