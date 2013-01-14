@@ -2997,7 +2997,7 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 }
 
 /**
- * Currently handled by this method: structure and abstract layers.
+ * Currently handled by this method: structure, vegetation, abstract layers.
  */
 vtLayer *vtTerrain::LoadLayer(const char *fname)
 {
@@ -3006,7 +3006,10 @@ vtLayer *vtTerrain::LoadLayer(const char *fname)
 	vtString ext = GetExtension(fname);
 	if (!ext.CompareNoCase(".vtst"))
 	{
-		return LoadStructuresFromXML(fname);
+		vtStructureLayer *st_layer = LoadStructuresFromXML(fname);
+		if (st_layer)
+			CreateStructures(st_layer);
+		return st_layer;
 	}
 	else if (!ext.CompareNoCase(".vf"))
 	{
@@ -3033,7 +3036,7 @@ vtLayer *vtTerrain::LoadLayer(const char *fname)
 vtLayer *vtTerrain::GetOrCreateLayerOfType(LayerType type)
 {
 	vtLayer *layer = GetActiveLayer();
-	if (layer->GetType() == type)
+	if (layer && layer->GetType() == type)
 		return layer;		// We already have one active.
 
 	// Look for one

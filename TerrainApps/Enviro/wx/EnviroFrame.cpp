@@ -1184,9 +1184,20 @@ void EnviroFrame::CameraChanged()
 
 void EnviroFrame::OnDrop(const wxString &str)
 {
-	if (!str.Right(3).CmpNoCase(_T("kml")))
+	vtString utf8 = (const char *) str.ToUTF8();
+
+	if (!str.Right(4).CmpNoCase(_T(".kml")))
 	{
-		g_App.ImportModelFromKML((const char *) str.ToUTF8());
+		g_App.ImportModelFromKML(utf8);
+	}
+	if (!str.Right(5).CmpNoCase(_T(".vtst")) ||
+		!str.Right(3).CmpNoCase(_T(".vf")))
+	{
+		if (g_App.GetCurrentTerrain())
+		{
+			if (g_App.GetCurrentTerrain()->LoadLayer(utf8))
+				m_pLayerDlg->RefreshTreeContents();
+		}
 	}
 }
 

@@ -756,12 +756,9 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 			return;
 		}
 
-		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
+		// Abstract layers aren't constructed yet, giving us a chance to ask
+		// for styling.
 		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
-
-		if (slay)
-			m_pTerrain->CreateStructures(slay);
-
 		if (alay)
 		{
 			// Ask style for the newly loaded layer
