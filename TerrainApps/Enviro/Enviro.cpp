@@ -3247,20 +3247,21 @@ bool Enviro::ImportModelFromKML(const char *kmlfile)
 	}
 
 	inst->SetValueString("filename", pa, true);
+	VTLOG("  Filename: '%s'\n", (const char *)pa);
 	VTLOG("  at %.7g, %.7g: ", p.x, p.y);
 
 	const int index = st_layer->size() - 1;
 	bool success = pTerr->CreateStructure(st_layer, index);
 	if (success)
 	{
-		VTLOG(" succeeded.\n");
+		VTLOG1(" succeeded.\n");
 		st_layer->SetModified();
 		RefreshLayerView();
 	}
 	else
 	{
 		// creation failed
-		VTLOG(" failed.\n");
+		VTLOG1(" failed.\n");
 		ShowMessage("Could not create instance.");
 		inst->Select(true);
 		st_layer->DeleteSelected();
