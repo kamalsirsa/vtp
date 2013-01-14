@@ -7,7 +7,7 @@ if(NOT CMAKE_BUILD_TYPE)
 		FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-option(USE_OSG_STATS "Enable the OSG stats display" OFF)
+option(USE_OSG_STATS "Enable the OSG stats display" ON)
 if(USE_OSG_STATS)
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS USE_OSG_STATS)
 endif(USE_OSG_STATS)

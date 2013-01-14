@@ -1,7 +1,7 @@
 //
 // UtilityMap.cpp
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,49 +12,33 @@
 #include "shapelib/shapefil.h"
 #include "xmlhelper/easyxml.hpp"
 
+
+void vtLine::MakePolyline(DLine2 &polyline)
+{
+	const uint num = m_poles.size();
+	polyline.SetSize(num);
+	for (uint i = 0; i < num; i++)
+		polyline[i] = m_poles[i]->m_p;
+}
+
 vtUtilityMap::vtUtilityMap()
 {
 }
 
 vtUtilityMap::~vtUtilityMap()
 {
-}
+	for (uint i = 0; i < m_Poles.size(); i++)
+		delete m_Poles[i];
+	m_Poles.clear();
 
-
-bool vtUtilityMap::ImportPolesFromSHP(const char *fname)
-{
-	SHPHandle hSHP;
-	int		nEntities, nShapeType;
-	DPoint2 point;
-
-	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
-	vtString fname_local = UTF8ToLocal(fname);
-
-	hSHP = SHPOpen(fname_local, "rb");
-	if (!hSHP)
-		return false;
-
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
-	if (nShapeType != SHPT_POINT)
-		return false;
-
-	for (int i = 0; i < nEntities; i++)
-	{
-		SHPObject *psShape = SHPReadObject(hSHP, i);
-		point.x = psShape->padfX[0];
-		point.y = psShape->padfY[0];
-		vtPole *pole = new vtPole;
-		pole->m_p = point;
-		m_Poles.Append(pole);
-		SHPDestroyObject(psShape);
-	}
-	SHPClose(hSHP);
-	return true;
+	for (uint i = 0; i < m_Lines.size(); i++)
+		delete m_Lines[i];
+	m_Lines.clear();
 }
 
 vtPole *vtUtilityMap::ClosestPole(const DPoint2 &p)
 {
-	uint npoles = m_Poles.GetSize();
+	uint npoles = m_Poles.size();
 	if (npoles == 0)
 		return NULL;
 
@@ -73,129 +57,20 @@ vtPole *vtUtilityMap::ClosestPole(const DPoint2 &p)
 	return m_Poles[ret];
 }
 
-bool vtUtilityMap::ImportLinesFromSHP(const char *fname)
-{
-	SHPHandle hSHP;
-	int		nEntities, nShapeType;
-	int		i, j, verts;
-
-	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
-	vtString fname_local = UTF8ToLocal(fname);
-
-	hSHP = SHPOpen(fname_local, "rb");
-	if (!hSHP)
-		return false;
-
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
-	if (nShapeType != SHPT_ARC)
-		return false;
-
-	for (i = 0; i < nEntities; i++)
-	{
-		SHPObject *psShape = SHPReadObject(hSHP, i);
-
-		verts = psShape->nVertices;
-		vtLine *line = new vtLine;
-		line->SetSize(verts);
-
-		// Store each SHP Poly Coord in Line
-		for (j = 0; j < verts; j++)
-		{
-			line->GetAt(j).x = psShape->padfX[j];
-			line->GetAt(j).y = psShape->padfY[j];
-		}
-		SHPDestroyObject(psShape);
-
-		// Guess source and destination poles by using location
-		line->m_src = ClosestPole(line->GetAt(0));
-		line->m_dst = ClosestPole(line->GetAt(verts-1));
-
-		// avoid degenerate lines
-		if (line->m_src == line->m_dst)
-		{
-			delete line;
-			continue;
-		}
-
-		// tweak start and end of line to match poles
-		line->SetAt(0, line->m_src->m_p);
-		line->SetAt(verts-1, line->m_dst->m_p);
-
-		m_Lines.Append(line);
-	}
-	SHPClose(hSHP);
-	return true;
-}
-
-
-bool vtUtilityMap::ImportFromSHP(const char *dirname, const vtProjection &proj)
-{
-	char	fname[256];
-
-	m_proj = proj;
-
-	// 1. Pole Positions
-	//
-	strcpy(fname, dirname);
-	strcat(fname, "/poles.shp");
-	if (!ImportPolesFromSHP(fname))
-		return false;
-
-	// 2. Fuses
-	//
-	strcpy(fname, dirname);
-	strcat(fname, "/fuses.shp");
-	if (!ImportPolesFromSHP(fname))
-		return false;
-
-	// 3. Transformers
-	//
-	strcpy(fname, dirname);
-	strcat(fname, "/transformers.shp");
-	if (!ImportPolesFromSHP(fname))
-		return false;
-
-	// 4. Servpnts
-	//
-	strcpy(fname, dirname);
-	strcat(fname, "/servpnts.shp");
-	if (!ImportPolesFromSHP(fname))
-		return false;
-
-	// Now, lines
-	//
-	// 1. Primaries
-	//
-	strcpy(fname, dirname);
-	strcat(fname, "/primaries.shp");
-	if (!ImportLinesFromSHP(fname))
-		return false;
-
-	// 2. Secondaries
-	//
-	strcpy(fname, dirname);
-	strcat(fname, "/secondaries.shp");
-	if (!ImportLinesFromSHP(fname))
-		return false;
-	return true;
-}
-
 void vtUtilityMap::GetPoleExtents(DRECT &rect)
 {
-	if (m_Poles.IsEmpty())
+	if (m_Poles.empty())
 		return;
 
 	rect.SetRect(1E9, -1E9, -1E9, 1E9);
 
-	int i, size = m_Poles.GetSize();
-	for (i = 0; i < size; i++)
+	const int size = m_Poles.size();
+	for (int i = 0; i < size; i++)
 	{
 		vtPole *pole = m_Poles[i];
 		rect.GrowToContainPoint(pole->m_p);
 	}
 }
-
-
 
 #if 0
 ////////////////////////////////////////////////////////////////////////

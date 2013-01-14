@@ -945,12 +945,6 @@ vtLayerPtr Builder::ImportFromSHP(const wxString &strFileName, LayerType ltype)
 			return NULL;
 	}
 
-	if (ltype == LT_UTILITY)
-	{
-		vtUtilityLayer *pUL = (vtUtilityLayer *)pLayer;
-		pUL->ImportFromSHP(strFileName.mb_str(wxConvUTF8), proj);
-	}
-
 	if (ltype == LT_RAW)
 	{
 		pLayer->SetLayerFilename(strFileName);

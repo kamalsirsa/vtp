@@ -106,7 +106,6 @@ EVT_MENU(ID_LAYER_IMPORT,		MainFrame::OnLayerImport)
 EVT_MENU(ID_LAYER_IMPORTTIGER,	MainFrame::OnLayerImportTIGER)
 EVT_MENU(ID_LAYER_IMPORTOSM,	MainFrame::OnLayerImportOSM)
 EVT_MENU(ID_LAYER_IMPORTNTF,	MainFrame::OnLayerImportNTF)
-EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
 EVT_MENU(ID_LAYER_IMPORT_MS,	MainFrame::OnLayerImportMapSource)
 EVT_MENU(ID_LAYER_IMPORT_POINT,	MainFrame::OnLayerImportPoint)
 EVT_MENU(ID_LAYER_IMPORT_XML,	MainFrame::OnLayerImportXML)
@@ -1300,40 +1299,6 @@ void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
 	ImportDataFromNTF(loadFile.GetPath(), layers);
 	for (uint i = 0; i < layers.size(); i++)
 		AddLayerWithCheck(layers[i], true);
-}
-
-void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
-{
-	// ask the user for a directory
-	wxDirDialog getDir(NULL, _("Import Utility Data from Directory of SHP Files"));
-	bool bResult = (getDir.ShowModal() == wxID_OK);
-	if (!bResult)
-		return;
-	wxString strDirName = getDir.GetPath();
-
-//	dlg.m_strCaption = _T("Shapefiles do not contain projection information.  ")
-//		_T("Please indicate the projection of this file:");
-	// ask user for a projection
-	ProjectionDlg dlg(NULL, -1, _("Indicate Projection"));
-	dlg.SetProjection(m_proj);
-
-	if (dlg.ShowModal() == wxID_CANCEL)
-		return;
-	vtProjection proj;
-	dlg.GetProjection(proj);
-
-	// create the new layers
-	vtUtilityLayer *pUL = new vtUtilityLayer;
-	if (pUL->ImportFromSHP(strDirName.mb_str(wxConvUTF8), proj))
-	{
-		pUL->SetLayerFilename(strDirName);
-		pUL->SetModified(true);
-
-		if (!AddLayerWithCheck(pUL, true))
-			delete pUL;
-	}
-	else
-		delete pUL;
 }
 
 //

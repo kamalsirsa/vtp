@@ -35,7 +35,7 @@ vtUtilityLayer::vtUtilityLayer() : vtLayer(LT_UTILITY)
 
 bool vtUtilityLayer::GetExtent(DRECT &rect)
 {
-	if (m_Poles.IsEmpty())
+	if (m_Poles.empty())
 		return false;
 
 	GetPoleExtents(rect);
@@ -49,8 +49,8 @@ bool vtUtilityLayer::GetExtent(DRECT &rect)
 void vtUtilityLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
 	uint i;
-	uint npoles = m_Poles.GetSize();
-	uint nlines = m_Lines.GetSize();
+	uint npoles = m_Poles.size();
+	uint nlines = m_Lines.size();
 
 	if (!npoles)
 		return;
@@ -87,10 +87,12 @@ void vtUtilityLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 		DrawPole(pDC, pView, pole);
 	}
 	pDC->SetPen(greenPen);
+	DLine2 polyline;
 	for (i = 0; i < nlines; i++)
 	{
 		vtLine *line = m_Lines[i];
-		pView->DrawPolyLine(pDC, *line, false);
+		line->MakePolyline(polyline);
+		pView->DrawPolyLine(pDC, polyline, false);
 	}
 }
 

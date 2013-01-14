@@ -101,7 +101,6 @@ protected:
 	void OnLayerImportTIGER(wxCommandEvent& event);
 	void OnLayerImportOSM(wxCommandEvent& event);
 	void OnLayerImportNTF(wxCommandEvent& event);
-	void OnLayerImportUtil(wxCommandEvent& event);
 	void OnLayerImportMapSource(wxCommandEvent& event);
 	void OnLayerImportPoint(wxCommandEvent& event);
 	void OnLayerImportXML(wxCommandEvent& event);
