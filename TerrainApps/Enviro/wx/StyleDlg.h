@@ -108,6 +108,7 @@ private:
 	float m_fLabelHeight;
 	float m_fLabelSize;
 	wxString m_strFont;
+	bool m_bLabelOutline;
 
 	// Texture Overlay
 	bool m_bTextureOverlay;

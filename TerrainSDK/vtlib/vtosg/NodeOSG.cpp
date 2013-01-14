@@ -1473,7 +1473,7 @@ void vtGeode::AddMesh(vtMesh *pMesh, int iMatIdx)
 	SetMeshMatIndex(pMesh, iMatIdx);
 }
 
-void vtGeode::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
+void vtGeode::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx, bool bOutline)
 {
 	// connect the underlying OSG objects
 	addDrawable(pTextMesh);
@@ -1502,7 +1502,8 @@ void vtGeode::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 	// A black outline around the font makes it easier to read against
 	// most backgrounds.
 	// TODO: expose a method to disable this behavior for special cases.
-	pTextMesh->setBackdropType(osgText::Text::OUTLINE);
+	if (bOutline)
+		pTextMesh->setBackdropType(osgText::Text::OUTLINE);
 
 	// In most cases, it is very helpful for text to face the user.
 	// TODO: expose a method to disable this behavior for special cases.

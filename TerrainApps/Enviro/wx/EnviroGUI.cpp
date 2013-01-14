@@ -458,6 +458,7 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr, bool bAskStyle)
 	props.SetValueRGBi("LabelColor", RGBi(255,255,0), true);
 	props.SetValueFloat("LabelHeight", 10.0f, true);
 	props.SetValueInt("TextFieldIndex", 0, true);
+	props.SetValueBool("LabelOutline", true, true);
 
 	if (bAskStyle)
 	{

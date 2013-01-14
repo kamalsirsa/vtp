@@ -114,6 +114,7 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iTextField = 0;
 	m_fLabelHeight = 0.0f;
 	m_fLabelSize = 0.0f;
+	m_bLabelOutline = true;
 
 	AddValidator(this, ID_ENABLE_TEXT_LABELS, &m_bTextLabels);
 	AddValidator(this, ID_RADIO_USE_TEXT_COLOR_FIELD, &m_bRadioUseTextColorField);
@@ -122,6 +123,7 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(this, ID_LABEL_HEIGHT, &m_fLabelHeight);
 	AddNumValidator(this, ID_LABEL_SIZE, &m_fLabelSize);
 	AddValidator(this, ID_FONT, &m_strFont);
+	AddValidator(this, ID_OUTLINE, &m_bLabelOutline);
 
 	// Texture Overlay
 	AddValidator(this, ID_ENABLE_TEXTURE_OVERLAY, &m_bTextureOverlay);
@@ -207,6 +209,7 @@ void StyleDlg::SetOptions(const vtTagArray &Layer)
 		m_strFont = wxString(font, wxConvUTF8);
 	else
 		m_strFont = _T("Arial.ttf");
+	m_bLabelOutline = Layer.GetValueBool("LabelOutline");
 
 	// Texture Overlay
 	m_bTextureOverlay = Layer.GetValueBool("TextureOverlay");
@@ -283,6 +286,7 @@ void StyleDlg::GetOptions(vtTagArray &pLayer)
 		pLayer.SetValueFloat("LabelHeight", m_fLabelHeight, true);
 		pLayer.SetValueFloat("LabelSize", m_fLabelSize, true);
 		pLayer.SetValueString("Font", (const char *) m_strFont.mb_str(wxConvUTF8), true);
+		pLayer.SetValueBool("LabelOutline", m_bLabelOutline, true);
 	}
 	else
 	{
@@ -292,6 +296,7 @@ void StyleDlg::GetOptions(vtTagArray &pLayer)
 		pLayer.RemoveTag("LabelHeight");
 		pLayer.RemoveTag("LabelSize");
 		pLayer.RemoveTag("Font");
+		pLayer.RemoveTag("LabelOutline");
 	}
 
 	if (m_bTextureOverlay)

@@ -652,9 +652,11 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 		text->SetColor(rgb);
 	}
 
+	bool bOutline = m_StyleProps.GetValueBool("LabelOutline");
+
 	// Labels will automatically turn to face the user because that's vtlib's
 	// default behavior now.
-	geode->AddTextMesh(text, -1);
+	geode->AddTextMesh(text, -1, bOutline);
 
 	// Transform to position it, add to the label group.
 	vtTransform *bb = new vtTransform;

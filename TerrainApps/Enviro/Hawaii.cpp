@@ -272,6 +272,7 @@ void IslandTerrain::create_state_park()
 #endif
 	}
 
+#if 0
 	// An example of how to add the content definitions from a content
 	//	file (vtco) to the global content manager.
 	vtContentManager3d &con = vtGetContent();
@@ -284,6 +285,7 @@ void IslandTerrain::create_state_park()
 		string str = e.getFormattedMessage();
 		VTLOG("Error: '%s'\n", str.c_str());
 	}
+#endif
 
 	// Here is an example of how to create a structure instance which
 	//	references a content item.  It is planted automatically at the

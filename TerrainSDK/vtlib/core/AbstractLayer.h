@@ -65,6 +65,8 @@ typedef std::map<vtFeature*,vtVisual*> VizMap;
 		Default is 18.
 	 - "Font": Filename (may include path) of the font to use for text labels.
 		Example: "Arial.ttf"
+	 - "LabelOutline": true to put a dark outline around the font to improve its
+		readability against most backgrounds.
 
  When a terrain description (TParams) contains an abstract layer, these same
  style properties are encoded.  On disk, they are stored as XML elements.

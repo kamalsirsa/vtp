@@ -1830,7 +1830,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel1->SetSizer( bSizer198 );
 	StylePanel1->Layout();
 	bSizer198->Fit( StylePanel1 );
-	m_notebook->AddPage( StylePanel1, _("Object Geometry"), true );
+	m_notebook->AddPage( StylePanel1, _("Object Geometry"), false );
 	StylePanel2 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer205;
 	bSizer205 = new wxBoxSizer( wxVERTICAL );
@@ -2040,6 +2040,9 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	m_font = new wxTextCtrl( StylePanel3, ID_FONT, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
 	bSizer221->Add( m_font, 1, wxALIGN_CENTER|wxALL, 5 );
 	
+	m_outline = new wxCheckBox( StylePanel3, ID_OUTLINE, _("Outline Text"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer221->Add( m_outline, 0, wxALL, 5 );
+	
 	sbSizer41->Add( bSizer221, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	bSizer213->Add( sbSizer41, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
@@ -2047,7 +2050,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel3->SetSizer( bSizer213 );
 	StylePanel3->Layout();
 	bSizer213->Fit( StylePanel3 );
-	m_notebook->AddPage( StylePanel3, _("Text Labels"), false );
+	m_notebook->AddPage( StylePanel3, _("Text Labels"), true );
 	StylePanel4 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer222;
 	bSizer222 = new wxBoxSizer( wxVERTICAL );
@@ -3088,10 +3091,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_notebook->AddPage( TParamsPanel4, _("Ephemeris"), false );
 	TParamsPanel5 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer66;
-	bSizer66 = new wxBoxSizer( wxHORIZONTAL );
-	
-	
-	bSizer66->Add( 5, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer66 = new wxBoxSizer( wxVERTICAL );
 	
 	wxStaticBoxSizer* sbSizer14;
 	sbSizer14 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel5, wxID_ANY, _("Abstract Layers") ), wxHORIZONTAL );
@@ -3117,9 +3117,6 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	sbSizer15->Add( m_imagefiles, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	bSizer66->Add( sbSizer15, 2, wxEXPAND|wxALL, 5 );
-	
-	
-	bSizer66->Add( 5, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	TParamsPanel5->SetSizer( bSizer66 );
 	TParamsPanel5->Layout();

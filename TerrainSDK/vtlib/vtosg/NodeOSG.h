@@ -325,7 +325,7 @@ public:
 		\param pMesh The mesh to add
 		\param iMatIdx The material index for this mesh, which is an index
 			into the material array of the geometry. */
-	void AddTextMesh(vtTextMesh *pMesh, int iMatIdx);
+	void AddTextMesh(vtTextMesh *pMesh, int iMatIdx, bool bOutline = true);
 
 	/** Return the number of contained meshes. */
 	uint NumMeshes() const;
