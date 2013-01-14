@@ -1278,6 +1278,7 @@ void MainFrame::OnLayerImportOSM(wxCommandEvent &event)
 	UpdateProgressDialog(0, loadFile.GetPath());
 
 	LayerArray layers;
+	layers.SetOwnership(false);
 	ImportDataFromOSM(loadFile.GetPath(), layers, progress_callback);
 
 	CloseProgressDialog();
@@ -1295,6 +1296,7 @@ void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
 		return;
 
 	LayerArray layers;
+	layers.SetOwnership(false);
 	ImportDataFromNTF(loadFile.GetPath(), layers);
 	for (uint i = 0; i < layers.size(); i++)
 		AddLayerWithCheck(layers[i], true);
