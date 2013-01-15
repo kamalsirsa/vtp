@@ -2,13 +2,13 @@
 set(VTUI_SOURCE_FILES 
 		vtui_UI.cpp AutoDialog.cpp BuildingDlg.cpp ColorMapDlg.cpp ContourDlg.cpp DistanceDlg.cpp
 		DoubleProgDlg.cpp FeatureTableDlg.cpp Helper.cpp InstanceDlg.cpp Joystick.cpp
-		LinearStructDlg.cpp ProfileDlg.cpp ProfileEditDlg.cpp ProjectionDlg.cpp
+		LinearStructDlg.cpp LocaleApp.cpp ProfileDlg.cpp ProfileEditDlg.cpp ProjectionDlg.cpp
 		SizeDlg.cpp StatePlaneDlg.cpp TagDlg.cpp)
 
 set(VTUI_HEADER_FILES 
 		vtui_UI.h AutoDialog.h BuildingDlg.h ColorMapDlg.h ContourDlg.h DistanceDlg.h
 		DoubleProgDlg.h FeatureTableDlg.h Helper.h InstanceDlg.h Joystick.h
-		LinearStructDlg.h LogCatcher.h ProfileDlg.h ProfileEditDlg.h ProjectionDlg.h
+		LinearStructDlg.h LocaleApp.h LogCatcher.h ProfileDlg.h ProfileEditDlg.h ProjectionDlg.h
 		SizeDlg.h StatePlaneDlg.h TagDlg.h)
 
 if(MSVC)

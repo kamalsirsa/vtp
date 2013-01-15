@@ -80,7 +80,7 @@ bool BuilderApp::OnInit()
 
 	Args(argc, argv);
 
-	SetupLocale();
+	SetupLocale("VTBuilder");
 
 	VTLOG1("Testing ability to allocate a frame object.\n");
 	wxFrame *frametest = new wxFrame(NULL, -1, _T("Title"));
@@ -123,75 +123,5 @@ int BuilderApp::OnExit()
 {
 	VTLOG("App Exit\n");
 	return wxApp::OnExit();
-}
-
-void BuilderApp::SetupLocale()
-{
-	VTLOG1("SetupLocale:\n");
-
-	wxLog::SetVerbose(true);
-
-	// Enable this for very detailed locale troubleshooting (in debugger only)
-//	wxLog::AddTraceMask(_T("i18n"));
-
-	// Locale stuff
-	int lang = wxLANGUAGE_DEFAULT;
-	int default_lang = m_locale.GetSystemLanguage();
-
-	const wxLanguageInfo *info = wxLocale::GetLanguageInfo(default_lang);
-	VTLOG("Default language: %d (%s)\n", default_lang,
-		(const char *) info->Description.mb_str(wxConvUTF8));
-
-	// After wx2.4.2, wxWidgets looks in the application's directory for
-	//  locale catalogs, not the current directory.  Here we force it to
-	//  look in the current directory as well.
-	wxString cwd = wxGetCwd();
-	m_locale.AddCatalogLookupPathPrefix(cwd);
-
-#if VTDEBUG
-	m_locale.AddCatalogLookupPathPrefix("../../../i18n");
-#endif
-
-	bool bSuccess=false;
-	if (m_locale_name != "")
-	{
-		VTLOG("Looking up language: %s\n", (const char *) m_locale_name);
-		lang = GetLangFromName(wxString(m_locale_name, *wxConvCurrent));
-		if (lang == wxLANGUAGE_UNKNOWN)
-		{
-			VTLOG(" Unknown, falling back on default language.\n");
-			lang = wxLANGUAGE_DEFAULT;
-		}
-		else
-		{
-			info = m_locale.GetLanguageInfo(lang);
-			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n",
-				lang,
-				(const char *) info->CanonicalName.mb_str(wxConvUTF8),
-				(const char *) info->Description.mb_str(wxConvUTF8));
-			bSuccess = m_locale.Init(lang, wxLOCALE_LOAD_DEFAULT);
-		}
-	}
-	if (lang == wxLANGUAGE_DEFAULT)
-	{
-		VTLOG("Initializing locale to default language:\n");
-		bSuccess = m_locale.Init(wxLANGUAGE_DEFAULT, wxLOCALE_LOAD_DEFAULT);
-		if (bSuccess)
-			lang = default_lang;
-	}
-	if (bSuccess)
-		VTLOG(" succeeded.\n");
-	else
-		VTLOG(" failed.\n");
-
-	VTLOG1("Attempting to load the 'VTBuilder.mo' catalog for the current locale.\n");
-	bSuccess = m_locale.AddCatalog(wxT("VTBuilder"));
-	if (bSuccess)
-		VTLOG(" succeeded.\n");
-	else
-		VTLOG(" not found.\n");
-	VTLOG1("\n");
-
-	wxLog::SetVerbose(false);
 }
 
