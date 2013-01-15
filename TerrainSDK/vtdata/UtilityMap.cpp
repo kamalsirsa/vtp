@@ -159,7 +159,7 @@ struct OSMNode {
 class UtilOSMVisitor : public XMLVisitor
 {
 public:
-	UtilOSMVisitor();
+	UtilOSMVisitor(vtUtilityMap *util);
 	void startElement(const char *name, const XMLAttributes &atts);
 	void endElement(const char *name);
 	void data(const char *s, int length) {}	// OSM doesn't use actual XML data
@@ -187,9 +187,9 @@ private:
 	int			m_id;
 };
 
-UtilOSMVisitor::UtilOSMVisitor() : m_state(PS_NONE)
+UtilOSMVisitor::UtilOSMVisitor(vtUtilityMap *util) : m_state(PS_NONE)
 {
-	m_util_layer = NULL;
+	m_util_layer = util;
 
 	// OSM is always in Geo WGS84
 	vtProjection proj;
@@ -372,8 +372,7 @@ bool vtUtilityMap::ReadOSM(const char *pathname, bool progress_callback(int))
 	//  OSM always has English punctuation
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	UtilOSMVisitor visitor;
-	visitor.m_util_layer = this;
+	UtilOSMVisitor visitor(this);
 	try
 	{
 		readXML(pathname, visitor, progress_callback);
