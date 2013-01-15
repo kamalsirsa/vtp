@@ -20,9 +20,9 @@
 #include "Builder.h"
 
 // Layers
-//#include "RawLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
+#include "UtilityLayer.h"
 #include "WaterLayer.h"
 
 ////////////////////////////////////////////////////////////////////////
@@ -32,6 +32,7 @@
 struct OSMNode {
 	DPoint2 p;
 	bool signal_lights;
+	vtPole *pole;
 };
 
 class VisitorOSM : public XMLVisitor
@@ -45,12 +46,19 @@ public:
 
 	vtRoadLayer *m_road_layer;
 	vtStructureLayer *m_struct_layer;
+	vtUtilityLayer *m_util_layer;
+
+	vtPole *m_pole;
+	vtLine *m_line;
 
 private:
 	void MakeRoad();
 	void MakeStructure();
 	void MakeBuilding();
 	void MakeLinear();
+
+	void StartPowerPole();
+	void MakePowerLine();
 	void ParseOSMTag(const vtString &key, const vtString &value);
 
 	enum ParseState {
@@ -58,7 +66,6 @@ private:
 		PS_NODE,
 		PS_WAY
 	} m_state;
-	int m_rec;
 
 	typedef std::map<int, OSMNode> NodeMap;
 	NodeMap m_nodes;
@@ -86,6 +93,7 @@ VisitorOSM::VisitorOSM() : m_state(PS_NONE)
 {
 	m_road_layer = NULL;
 	m_struct_layer = NULL;
+	m_util_layer = NULL;
 
 	// OSM is always in Geo WGS84
 	m_proj.SetWellKnownGeogCS("WGS84");
@@ -119,11 +127,12 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 		if (!strcmp(name, "node"))
 		{
 			DPoint2 p;
-			int id;
 
 			val = atts.getValue("id");
 			if (val)
-				id = atoi(val);
+				m_id = atoi(val);
+			else
+				m_id = -1;	// Shouldn't happen.
 
 			val = atts.getValue("lon");
 			if (val)
@@ -136,9 +145,11 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 			OSMNode node;
 			node.p = p;
 			node.signal_lights = false;
-			m_nodes[id] = node;
+			m_nodes[m_id] = node;
 
 			m_state = PS_NODE;
+
+			m_pole = NULL;
 		}
 		else if (!strcmp(name, "way"))
 		{
@@ -162,6 +173,7 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 			m_iNumStories = -1;
 			m_fHeight = -1;
 			m_RoofType = NUM_ROOFTYPES;
+			m_line = NULL;
 		}
 	}
 	else if (m_state == PS_NODE && !strcmp(name, "tag"))
@@ -176,13 +188,21 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 		if (val)
 			value = val;
 
+		if (key == "power" && value == "tower")
+			StartPowerPole();
+
 		// Node key/value
-		if (key == "highway")
+		else if (key == "highway")
 		{
 			if (value == "traffic_signals")
 			{
 				m_nodes[m_nodes.size()-1].signal_lights = true;
 			}
+		}
+		else if (m_pole)
+		{
+			// Add all node tags for power towers
+			m_pole->AddTag(key, value);
 		}
 	}
 	else if (m_state == PS_WAY)
@@ -208,7 +228,10 @@ void VisitorOSM::startElement(const char *name, const XMLAttributes &atts)
 			if (val)
 				value = val;
 
-			ParseOSMTag(key, value);
+			if (m_line)
+				m_line->AddTag(key, value);
+			else
+				ParseOSMTag(key, value);
 		}
 	}
 }
@@ -421,8 +444,11 @@ void VisitorOSM::ParseOSMTag(const vtString &key, const vtString &value)
 			m_iRoadFlags |= (RF_PARKING_LEFT | RF_PARKING_RIGHT);
 	}
 
-	if (key == "power")
-		m_WayType = LT_UNKNOWN;
+	if (key == "power" && value == "line")
+	{
+		m_WayType = LT_UTILITY;
+		MakePowerLine();
+	}
 
 	if (key == "natural")	// value is coastline, marsh, etc.
 		m_WayType = LT_UNKNOWN;
@@ -734,6 +760,63 @@ void VisitorOSM::MakeLinear()
 	}
 }
 
+void VisitorOSM::StartPowerPole()
+{
+	if (!m_util_layer)
+	{
+		m_util_layer = new vtUtilityLayer;
+		m_util_layer->SetProjection(m_proj);
+		m_util_layer->SetModified(true);
+	}
+
+	OSMNode &node = m_nodes[m_id];
+
+	m_pole = new vtPole;
+	m_pole->m_id = m_id;
+	m_pole->m_p = node.p;
+
+	node.pole = m_pole;
+
+	m_util_layer->AddPole(m_pole);
+}
+
+void VisitorOSM::MakePowerLine()
+{
+	m_line = new vtLine;
+
+	m_line->m_poles.resize(m_refs.size());
+	for (uint r = 0; r < m_refs.size(); r++)
+	{
+		int idx = m_refs[r];
+
+		// Look for that node by id; if we don't find it, then it wasn't a tower;
+		// it was probably a start or end point at a non-tower feature.
+		NodeMap::iterator it = m_nodes.find(m_id);
+		if (it != m_nodes.end())
+		{
+			// Connect to a known pole.
+			m_line->m_poles[r] = m_nodes[idx].pole;
+		}
+		else
+		{
+			// We need to make a new pole node.
+			OSMNode &node = m_nodes[idx];
+
+			m_pole = new vtPole;
+			m_pole->m_id = idx;
+			m_pole->m_p = node.p;
+
+			node.pole = m_pole;
+
+			m_util_layer->AddPole(m_pole);
+
+			// Then we can connect it
+			m_line->m_poles[r] = m_pole;
+		}
+	}
+
+	m_util_layer->AddLine(m_line);
+}
 
 /**
  * Import what we can from OpenStreetMap.
@@ -757,11 +840,16 @@ void Builder::ImportDataFromOSM(const wxString &strFileName, LayerArray &layers,
 		DisplayAndLog(ex.getFormattedMessage().c_str());
 		return;
 	}
-	visitor.SetSignalLights();
 
 	if (visitor.m_road_layer)
+	{
+		visitor.SetSignalLights();
 		layers.push_back(visitor.m_road_layer);
+	}
 
 	if (visitor.m_struct_layer)
 		layers.push_back(visitor.m_struct_layer);
+
+	if (visitor.m_util_layer)
+		layers.push_back(visitor.m_util_layer);
 }

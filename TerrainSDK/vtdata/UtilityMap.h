@@ -29,11 +29,11 @@ struct vtPole : public vtTagArray
 typedef std::vector<vtPole*> vtPoleArray;
 
 /**
- * vtLine represent any connection between two poles.  It does not
+ * vtLine represent any connection between two or more poles.  It does not
  * explicitly specify the numer or location of each conductor, merely
  * the high-level topology of the power network.
  */
-struct vtLine
+struct vtLine : public vtTagArray
 {
 	void MakePolyline(DLine2 &polyline);
 
@@ -50,19 +50,21 @@ public:
 	vtUtilityMap();
 	~vtUtilityMap();
 
+	void AddPole(vtPole *pole) { m_Poles.push_back(pole); }
+	void AddLine(vtLine *line) { m_Lines.push_back(line); }
+
 	void GetPoleExtents(DRECT &rect);
-//	bool ImportFromSHP(const char *filename, const vtProjection &proj);
-//	bool ReadXML(const char *pathname, bool progress_callback(int));
+	bool WriteOSM(const char *pathname);
 
 protected:
-//	bool ImportPolesFromSHP(const char *fname);
-//	bool ImportLinesFromSHP(const char *fname);
 	vtPole *ClosestPole(const DPoint2 &p);
 
 	std::vector<vtPole *> m_Poles;
 	std::vector<vtLine *> m_Lines;
 
 	vtProjection m_proj;
+
+	int	m_iNextAvailableID;
 };
 
 #endif // UTILITYH

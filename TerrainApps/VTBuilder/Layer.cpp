@@ -37,7 +37,7 @@ const wxChar *vtLayer::LayerFileExtension[LAYER_TYPES] =
 	_T(".vtst"),
 	_T(".hyd"),
 	_T(".vf"),
-	_T(".xml")
+	_T(".osm")
 };
 
 

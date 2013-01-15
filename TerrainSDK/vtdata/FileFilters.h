@@ -65,7 +65,7 @@
 #define FSTRING_TIF		_T("GeoTIFF Files (*.tif)|*.tif")
 #define FSTRING_TIN		_T("TIN Files (*.itf)|*.itf")
 #define FSTRING_TXT		_T("Text Files (*.txt)|*.txt")
-#define FSTRING_UTL		_T("Utility Files (*.utl)|*.utl")
+#define FSTRING_UTL		_T("Utility Files (*.osm)|*.osm")
 #define FSTRING_VF		_T("Vegetation Files (*.vf)|*.vf")
 #define FSTRING_VTAP	_T("AnimPath Files (*.vtap)|*.vtap")
 #define FSTRING_VTB		_T("VTBuilder Project Files (*.vtb)|*.vtb")

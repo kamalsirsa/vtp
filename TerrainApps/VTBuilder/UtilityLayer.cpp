@@ -23,7 +23,7 @@ static bool g_bInitializedPens = false;
 
 vtUtilityLayer::vtUtilityLayer() : vtLayer(LT_UTILITY)
 {
-	SetLayerFilename(_T("Untitled.utl"));
+	SetLayerFilename(_T("Untitled.osm"));
 
 	if (!g_bInitializedPens)
 	{
@@ -96,7 +96,6 @@ void vtUtilityLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 	}
 }
 
-
 void vtUtilityLayer::DrawPole(wxDC *pDC, vtScaledView *pView, vtPole *pole)
 {
 	wxPoint center;
@@ -110,8 +109,8 @@ bool vtUtilityLayer::OnSave(bool progress_callback(int))
 {
 	wxString strExt = GetLayerFilename().AfterLast('.');
 
-//	if (!strExt.CmpNoCase("utl"))
-//		return WriteUTL(m_strFilename);
+	if (!strExt.CmpNoCase("osm"))
+		return WriteOSM(GetLayerFilename().mb_str(wxConvUTF8));
 	return false;
 }
 
