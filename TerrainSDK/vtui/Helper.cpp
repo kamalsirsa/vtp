@@ -990,17 +990,21 @@ void DisplayAndLog(const wchar_t *pFormat, ...)
 	VTLOG1("\n");
 }
 
-//
-// Also a wxString-taking version of the function, to make it perfectly clear
+#if 0
+// A wxString-taking version of the function, to make it perfectly clear
 //  to the compiler which overloaded function to use.
 //
-void DisplayAndLog(const wxString &format, ...)
+// This method produces incorrect results, at least with wx2.9.4 and VC10.
+// Passing an object (like wxString) instead of a char* for the format seems to
+// confused the va_list methods.
+//
+void DisplayAndLog(const wxString &wxformat, ...)
 {
 	va_list va;
-	va_start(va, format);
+	va_start(va, wxformat);
 
 	char ach[2048];
-	vsprintf(ach, format, va);
+	vsprintf(ach, wxformat.ToUTF8(), va);
 
 	wxString msg(ach, wxConvUTF8);
 
@@ -1011,6 +1015,22 @@ void DisplayAndLog(const wxString &format, ...)
 
 	strcat(ach, "\n");
 	VTLOG1(ach);
+}
+#endif
+
+//
+// A wxString version of the function, which takes a single string.
+//
+void DisplayAndLog(const wxString &msg)
+{
+	// Careful here: Don't try to pop up a message box if called within a
+	//  wx console app.  wxMessageBox only works if it is a full wxApp.
+	if (IsGUIApp())
+		wxMessageBox(msg);
+
+	vtString msg2 = msg.ToUTF8();
+	VTLOG1(msg2);
+	VTLOG1("\n");
 }
 
 /**

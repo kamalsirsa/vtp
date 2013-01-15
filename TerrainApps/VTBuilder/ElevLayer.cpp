@@ -1252,9 +1252,9 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 	if (!bSilent)
 	{
 		if (after < before)
-			DisplayAndLog(_("Reduced vertices from %d to %d"), before, after);
+			DisplayAndLog((const wchar_t *) _("Reduced vertices from %d to %d"), before, after);
 		else
-			DisplayAndLog(_("There are %d vertices, unable to merge any."), before);
+			DisplayAndLog((const wchar_t *) _("There are %d vertices, unable to merge any."), before);
 	}
 }
 
