@@ -1,7 +1,7 @@
 //
 // Layer.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -70,8 +70,7 @@ public:
 	virtual wxString GetLayerFilename() const { return m_wsFilename; }
 	virtual void SetLayerFilename(const wxString &fname);
 	virtual bool AskForSaveFilename();
-	vtString GetExportFilename(const wxString &format_filter) const;
-	bool GetAreaExtent(DRECT &rect) { return GetExtent(rect); }
+	virtual bool GetAreaExtent(DRECT &rect) { return GetExtent(rect); }
 
 	// UI event handlers which can be implemented if desired
 	virtual void OnLeftDown(BuilderView *pView, UIContext &ui) {}
@@ -80,6 +79,8 @@ public:
 	virtual void OnRightUp(BuilderView *pView, UIContext &ui) {}
 	virtual void OnLeftDoubleClick(BuilderView *pView, UIContext &ui) {}
 	virtual void OnMouseMove(BuilderView *pView, UIContext &ui) {}
+
+	vtString GetExportFilename(const wxString &format_filter) const;
 
 	static wxArrayString LayerTypeNames;
 	static const wxChar *LayerFileExtension[];

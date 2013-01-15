@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1116,6 +1116,7 @@ void BuilderView::HighlightArea(wxDC *pDC, const DRECT &rect)
 	pDC->SetLogicalFunction(wxINVERT);
 
 	wxRect sr = WorldToCanvas(rect);
+
 	int sx = sr.width / 3;
 	int sy = sr.height / 3;
 	int left = sr.x, right = sr.x+sr.width,
@@ -1123,32 +1124,20 @@ void BuilderView::HighlightArea(wxDC *pDC, const DRECT &rect)
 	int d=2,e=4;
 
 	//
-	pDC->DrawLine(left - e, top - d,
-		left - e, top + sy);
-
-	pDC->DrawLine(left - d, top - e,
-		left + sx, top - e);
+	pDC->DrawLine(left - e, top - d, left - e,  top + sy);
+	pDC->DrawLine(left - d, top - e, left + sx, top - e);
 
 	//
-	pDC->DrawLine(right - sx, top - e,
-		right + e, top - e);
-
-	pDC->DrawLine(right + e, top - d,
-		right + e, top + sy);
+	pDC->DrawLine(right - sx, top - e, right + e, top - e);
+	pDC->DrawLine(right + e,  top - d, right + e, top + sy);
 
 	//
-	pDC->DrawLine(right + e, bottom - sy,
-		right + e, bottom + d);
-
-	pDC->DrawLine(right - sx, bottom + e,
-		right + e, bottom + e);
+	pDC->DrawLine(right + e,  bottom - sy, right + e, bottom + d);
+	pDC->DrawLine(right - sx, bottom + e,  right + e, bottom + e);
 
 	//
-	pDC->DrawLine(left - e, bottom - sy,
-		left - e, bottom + d);
-
-	pDC->DrawLine(left + sx, bottom + e,
-		left - e, bottom + e);
+	pDC->DrawLine(left - e,  bottom - sy, left - e, bottom + d);
+	pDC->DrawLine(left + sx, bottom + e,  left - e, bottom + e);
 }
 
 ////////////////////////////////////////////////////////////

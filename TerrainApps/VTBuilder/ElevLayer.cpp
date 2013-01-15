@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -369,12 +369,15 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 	int iColumns, iRows;
 	m_pGrid->GetDimensions(iColumns, iRows);
 
-	wxRect screenrect = pView->WorldToCanvas(m_pGrid->GetAreaExtents());
-	wxRect destRect = screenrect;
+	DRECT screenrect = pView->WorldToCanvasD(m_pGrid->GetAreaExtents());
+	DRECT destRect = screenrect;
 	wxRect srcRect(0, 0, m_ImageSize.x, m_ImageSize.y);
 
-	double ratio_x = (float) srcRect.GetWidth() / destRect.GetWidth();
-	double ratio_y = (float) srcRect.GetHeight() / destRect.GetHeight();
+	double destRectW = (destRect.right - destRect.left); 
+	double destRectH = (destRect.bottom - destRect.top); 
+
+	double ratio_x = (float) srcRect.GetWidth() / destRectW;
+	double ratio_y = (float) srcRect.GetHeight() / destRectH;
 
 #if 0
 	//clip stuff, so we only blit what we need
@@ -423,41 +426,54 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 
 	bool bDrawNormal = true;
 #if WIN32
-	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
+	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE);
 
 	if (!m_bHasMask)
 	{
+		// VTLOG("DrawBM %d, %d wh %d %d\n", (int) destRect.left, (int) destRect.top,
+		//		(int) destRectW, (int) destRectH);
+
 		// Using StretchBlit is much faster and has less scaling/roundoff
 		//  problems than using the wx method DrawBitmap.  However, GDI
 		//  won't stretch and mask at the same time!
 		wxDC2 *pDC2 = (wxDC2 *) pDC;
-		pDC2->StretchBlit(*m_pBitmap->m_pBitmap, destRect.x, destRect.y,
-			destRect.width, destRect.height, srcRect.x, srcRect.y,
+		pDC2->StretchBlit(*m_pBitmap->m_pBitmap, destRect.left, destRect.top,
+			destRectW, destRectH, srcRect.x, srcRect.y,
 			srcRect.width, srcRect.height);
 		bDrawNormal = false;
 	}
 #endif
 	if (bDrawNormal)
 	{
-		// scale and draw the bitmap
-		// must use SetUserScale since wxWidgets doesn't provide StretchBlt
-		double scale_x = 1.0/ratio_x;
-		double scale_y = 1.0/ratio_y;
-		pDC->SetUserScale(scale_x, scale_y);
+		if (ratio_x > 1.0 && ratio_y > 1.0)
+		{
+			// Scale and draw the bitmap
+			// Must use SetUserScale since wxWidgets doesn't provide StretchBlt?
+			double scale_x = 1.0/ratio_x;
+			double scale_y = 1.0/ratio_y;
+			pDC->SetUserScale(scale_x, scale_y);
 
-		//  On Windows, this does a BitBlt (or MaskBlt if there is a mask)
-		pDC->DrawBitmap(*m_pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
-			(int) (destRect.y/scale_y), m_bHasMask);
+			//  On Windows, this does a BitBlt (or MaskBlt if there is a mask)
+			pDC->DrawBitmap(*m_pBitmap->m_pBitmap, (int) (destRect.left/scale_x),
+				(int) (destRect.top/scale_y), m_bHasMask);
 
-		// restore
-		pDC->SetUserScale(1.0, 1.0);
+			// restore
+			pDC->SetUserScale(1.0, 1.0);
+		}
+		else
+		{
+			// Create a memory DC; seems like a lot of overhead, but it also seems fast enough.
+			wxMemoryDC temp_dc;
+			temp_dc.SelectObject(*(m_pBitmap->m_pBitmap));
+
+			// Using StretchBlit seems to cause strange dark colors when zoomed out, but
+			//  that's better than the horizontal offset problems on zoomed-in that
+			//  resulted from using SetUserScale/DrawBitmap.
+			pDC->StretchBlit(destRect.left, destRect.top, destRectW, destRectH,
+				&temp_dc, srcRect.x, srcRect.y,
+				srcRect.width, srcRect.height, wxCOPY, m_bHasMask);
+		}
 	}
-
-#if 0
-	// This is how we used to do it, with raw Win32 calls
-	t->d_pDIBSection->Draw( pDC, destRect.left, destRect.top);
-	m_bitmap.d_pDIBSection->DrawScaled( pDC, destRect, srcRect);
-#endif
 }
 
 void vtElevLayer::DrawLayerOutline(wxDC *pDC, vtScaledView *pView)
@@ -480,11 +496,6 @@ void vtElevLayer::DrawLayerOutline(wxDC *pDC, vtScaledView *pView)
 	}
 
 	pDC->SetLogicalFunction(wxCOPY);
-
-	screenrect.x++;
-	screenrect.y++;
-	screenrect.width-=2;
-	screenrect.height-=2;
 
 	DrawRectangle(pDC, screenrect, true);
 }

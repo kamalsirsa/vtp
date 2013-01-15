@@ -1,7 +1,7 @@
 //
 // ScaledView.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -26,9 +26,9 @@ vtScaledView::vtScaledView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 						 const wxSize& size, long style, const wxString& name) :
 	wxScrolledWindow(parent, id, pos, size, style, name )
 {
-	m_limits.x = m_limits.y = -200;
-	m_limits.width = m_limits.height = 100;
-	m_fScale = 1.0f;
+	m_limits.left = m_limits.top = -100;
+	m_limits.right = m_limits.bottom = 100;
+	m_dScale = 1.0f;
 }
 
 void vtScaledView::ZoomToRect(const DRECT &geo_rect, float margin)
@@ -49,8 +49,8 @@ void vtScaledView::ZoomToRect(const DRECT &geo_rect, float margin)
 	DPoint2 scale;
 	scale.x = (float) client.GetWidth() / rect.Width();
 	scale.y = (float) client.GetHeight() / rect.Height();
-	m_fScale = (scale.x < scale.y ? scale.x : scale.y);		// min
-	m_fScale *= (1.0f - margin);
+	m_dScale = (scale.x < scale.y ? scale.x : scale.y);		// min
+	m_dScale *= (1.0f - margin);
 	UpdateRanges();
 
 	DPoint2 center;
@@ -78,7 +78,7 @@ void vtScaledView::ZoomOutToRect(const DRECT &geo_rect)
 	diff = center2 - center1;
 	diff /= delta;
 
-	m_fScale *= delta;
+	m_dScale *= delta;
 	UpdateRanges();
 
 	DPoint2 new_center = center1 + diff;
@@ -101,8 +101,8 @@ void vtScaledView::ZoomToPoint(const DPoint2 &p)
 
 	// this avoids the calls to ScrollWindow which cause undesireable
 	//  extra redrawing
-	m_xScrollPosition = offset.x - m_limits.x;
-	m_yScrollPosition = offset.y - m_limits.y;
+	m_xScrollPosition = offset.x - m_limits.left;
+	m_yScrollPosition = offset.y - m_limits.top;
 	SetScrollPos( wxHORIZONTAL, m_xScrollPosition, TRUE );
 	SetScrollPos( wxVERTICAL, m_yScrollPosition, TRUE );
 	Refresh();
@@ -118,6 +118,18 @@ wxRect vtScaledView::WorldToCanvas(const DRECT &r)
 	sr.height = sy(r.bottom) - sr.y;
 
 	return sr;
+}
+
+DRECT vtScaledView::WorldToCanvasD(const DRECT &r)
+{
+	DRECT screen_rect;
+
+	screen_rect.left = sx(r.left);
+	screen_rect.top = sy(r.top);
+	screen_rect.right = sx(r.right);
+	screen_rect.bottom = sy(r.bottom);
+
+	return screen_rect;
 }
 
 wxRect vtScaledView::WorldToWindow(const DRECT &r)
@@ -165,7 +177,7 @@ void vtScaledView::SetScale(double scale)
 	CalcUnscrolledPosition(center1.x, center1.y, &center2.x, &center2.y);
 	FPoint2 midscreen_coordinate(ox(center2.x), oy(center2.y));
 
-	m_fScale = scale;
+	m_dScale = scale;
 	UpdateRanges();
 
 	ZoomToPoint(midscreen_coordinate);
@@ -173,7 +185,7 @@ void vtScaledView::SetScale(double scale)
 
 double vtScaledView::GetScale()
 {
-	return m_fScale;
+	return m_dScale;
 }
 
 DRECT vtScaledView::GetWorldRect()
@@ -196,19 +208,19 @@ void vtScaledView::UpdateRanges()
 
 	DRECT extents = g_bld->GetExtents();
 
-	m_limits.x = sdx(extents.left);
-	m_limits.width = sdx(extents.right) - m_limits.x;
-	m_limits.y = sdy(extents.top);
-	m_limits.height = sdy(extents.bottom) - m_limits.y;
+	m_limits.left = sdx(extents.left);
+	m_limits.right = sdx(extents.right);
+	m_limits.top = sdy(extents.top);
+	m_limits.bottom = sdy(extents.bottom);
 
-	m_limits.x -= (w/2);
-	m_limits.y -= (h/2);
+	m_limits.left -= (w/2);
+	m_limits.top -= (h/2);
 
-	m_limits.width += w;
-	m_limits.height += h;
+	m_limits.right += (w/2);
+	m_limits.bottom += (h/2);
 
-	int h_range = m_limits.GetWidth();
-	int v_range = m_limits.GetHeight();
+	int h_range = m_limits.right - m_limits.left;
+	int v_range = m_limits.bottom - m_limits.top;
 	SetScrollbars(1, 1, h_range, v_range, 0, 0, TRUE);
 }
 
