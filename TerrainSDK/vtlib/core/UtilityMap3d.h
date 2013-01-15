@@ -1,13 +1,12 @@
 //
-// Route.h
+// UtilityMap3d.h
 //
 // Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
-//////////////////////////////////////////////////////////////////////
 
-#ifndef ROUTEH
-#define ROUTEH
+#ifndef VTLIB_CORE_UTILITYMAP3D_H
+#define VTLIB_CORE_UTILITYMAP3D_H
 
 #include "vtdata/UtilityMap.h"
 
@@ -98,4 +97,4 @@ public:
 	bool FindPoleFromNode(osg::Node *pNode, int &iPoleIndex) const;
 };
 
-#endif //ROUTEH
+#endif  // VTLIB_CORE_UTILITYMAP3D_H

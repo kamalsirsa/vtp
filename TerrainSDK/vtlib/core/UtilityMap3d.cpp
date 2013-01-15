@@ -15,8 +15,8 @@
 
 #include "Light.h"
 #include "LodGrid.h"
-#include "Route.h"
 #include "TerrainScene.h"	// for LoadUtilStructure
+#include "UtilityMap3d.h"
 
 #define NUM_WIRE_SEGMENTS	160
 #define METERS_PER_FOOT		0.3048f	// meters per foot

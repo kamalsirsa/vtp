@@ -24,7 +24,6 @@ set(VTLIB_CORE_SOURCE_FILES
 		../core/PickEngines.cpp
 		../core/Plants3d.cpp
 		../core/Roads.cpp
-		../core/Route.cpp
 		../core/SkyDome.cpp
 		../core/SMTerrain.cpp
 		../core/SRTerrain.cpp
@@ -37,6 +36,7 @@ set(VTLIB_CORE_SOURCE_FILES
 		../core/TiledGeom.cpp
 		../core/TimeEngines.cpp
 		../core/TParams.cpp
+		../core/UtilityMap3d.cpp
 		../core/Vehicles.cpp
 		../core/vtTin3d.cpp
 		PARENT_SCOPE)
@@ -79,7 +79,6 @@ set(VTLIB_CORE_HEADER_FILES
 		../core/PickEngines.h
 		../core/Plants3d.h
 		../core/Roads.h
-		../core/Route.h
 		../core/SkyDome.h
 		../core/SMTerrain.h
 		../core/SpaceNav.h
@@ -93,6 +92,7 @@ set(VTLIB_CORE_HEADER_FILES
 		../core/TiledGeom.h
 		../core/TimeEngines.h
 		../core/TParams.h
+		../core/UtilityMap3d.h
 		../core/Vehicles.h
 		../vtlib.h
 		../core/vtTin3d.h

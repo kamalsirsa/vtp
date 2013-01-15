@@ -771,18 +771,16 @@ void VisitorOSM::StartPowerPole()
 
 	OSMNode &node = m_nodes[m_id];
 
-	m_pole = new vtPole;
+	m_pole = m_util_layer->AddNewPole();
 	m_pole->m_id = m_id;
 	m_pole->m_p = node.p;
 
 	node.pole = m_pole;
-
-	m_util_layer->AddPole(m_pole);
 }
 
 void VisitorOSM::MakePowerLine()
 {
-	m_line = new vtLine;
+	m_line = m_util_layer->AddNewLine();
 
 	m_line->m_poles.resize(m_refs.size());
 	for (uint r = 0; r < m_refs.size(); r++)
@@ -802,20 +800,16 @@ void VisitorOSM::MakePowerLine()
 			// We need to make a new pole node.
 			OSMNode &node = m_nodes[idx];
 
-			m_pole = new vtPole;
+			m_pole = m_util_layer->AddNewPole();
 			m_pole->m_id = idx;
 			m_pole->m_p = node.p;
 
 			node.pole = m_pole;
 
-			m_util_layer->AddPole(m_pole);
-
 			// Then we can connect it
 			m_line->m_poles[r] = m_pole;
 		}
 	}
-
-	m_util_layer->AddLine(m_line);
 }
 
 /**

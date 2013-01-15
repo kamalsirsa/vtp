@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,12 +17,12 @@
 #include "DynTerrain.h"
 #include "GeomUtil.h"	// for MeshFactory
 #include "Location.h"
+#include "Plants3d.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
 #include "Roads.h"
-#include "Route.h"
 #include "TextureUnitManager.h"
 #include "TiledGeom.h"
 #include "TParams.h"
-#include "Plants3d.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
+#include "UtilityMap3d.h"
 #include "vtTin3d.h"
 
 #include <memory>
