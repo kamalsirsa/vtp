@@ -32,6 +32,10 @@ vtTin2d::~vtTin2d()
 	FreeEdgeLengths();
 }
 
+/**
+ Create a TIN from a grid, by simply triangulating all the valid heixels
+ in the grid.
+ */
 vtTin2d::vtTin2d(vtElevationGrid *grid)
 {
 	m_fEdgeLen = NULL;
@@ -41,20 +45,53 @@ vtTin2d::vtTin2d(vtElevationGrid *grid)
 	grid->GetDimensions(cols, rows);
 	m_proj = grid->GetProjection();
 
+	// This isn't an optimal algorithm, but it's not a common operation, so
+	// cpu/mem efficiency isn't vital.
+	//
+	// First step: naively make vertices from every grid coordinate.
 	DPoint2 p;
 	for (int x = 0; x < cols; x++)
+	{
 		for (int y = 0; y < rows; y++)
 		{
 			grid->GetEarthPoint(x, y, p);
 			AddVert(p, grid->GetFValue(x, y));
 		}
+	}
 	for (int x = 0; x < cols-1; x++)
+	{
 		for (int y = 0; y < rows-1; y++)
 		{
 			int base = x * rows + y;
-			AddTri(base, base + rows, base+1);
-			AddTri(base+1, base + rows, base + rows+1);
+
+			// Only add triangles where the heixels have valid data.
+			const bool b1 = (grid->GetFValue(x, y) != INVALID_ELEVATION);
+			const bool b2 = (grid->GetFValue(x + 1, y) != INVALID_ELEVATION);
+			const bool b3 = (grid->GetFValue(x, y + 1) != INVALID_ELEVATION);
+			const bool b4 = (grid->GetFValue(x + 1, y + 1) != INVALID_ELEVATION);
+			const int valid = (int) b1 + b2 + b3 + b4;
+			if (valid < 3)
+				continue;
+			else if (valid == 4)
+			{
+				// Add both triangles
+				AddTri(base, base + rows, base+1);
+				AddTri(base+1, base + rows, base + rows+1);
+			}
+			else if (!b1)
+				AddTri(base + rows, base + rows + 1, base+1);
+			else if (!b2)
+				AddTri(base + rows + 1, base + 1, base);
+			else if (!b3)
+				AddTri(base, base + rows, base + rows + 1);
+			else if (!b4)
+				AddTri(base + rows, base + 1, base);
 		}
+	}
+
+	// Remove any unused vertices
+	RemoveUnusedVertices();
+
 	ComputeExtents();
 }
 

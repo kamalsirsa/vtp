@@ -488,7 +488,7 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 				return false;
 			if (i == 0)
 				VTLOG("(%f)", z);
-			if (z == nodata)
+			if (z == nodata || z > 1E6 || z < -1E6)
 				SetFValue(j, nrows-1-i, INVALID_ELEVATION);
 			else
 				SetFValue(j, nrows-1-i, z);
