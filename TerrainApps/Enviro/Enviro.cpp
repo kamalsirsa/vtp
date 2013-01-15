@@ -2043,9 +2043,8 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 			}
 			if (m_bSelectedUtil)
 			{
-				vtUtilityMap3d &routemap = pTerr->GetUtilityMap();
 				m_pSelUtilPole->Offset(ground_delta);
-				m_pSelUtilPole->CreateGeometry(pTerr->GetHeightField());
+				pTerr->RebuildUtilityGeometry();
 			}
 			if (m_bSelectedVehicle)
 			{
@@ -2504,6 +2503,7 @@ bool Enviro::HaveBuildingStyle()
 
 void Enviro::StartPowerline()
 {
+	VTLOG1("StartPowerline\n");
 	vtLine3d *line = GetCurrentTerrain()->NewLine();
 	m_pCurUtilLine = line;
 	m_bActiveUtilLine = true;
@@ -2511,6 +2511,7 @@ void Enviro::StartPowerline()
 
 void Enviro::FinishPowerline()
 {
+	VTLOG1("FinishPowerline\n");
 	m_bActiveUtilLine = false;
 }
 

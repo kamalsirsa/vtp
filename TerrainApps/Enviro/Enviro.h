@@ -349,7 +349,7 @@ protected:
 	// a visible, dynamic line for making buildings, and other uses
 	ElasticPolyline m_Elastic;
 
-	// route members
+	// utility map members
 	bool		m_bActiveUtilLine;
 	vtString	m_sStructType;
 

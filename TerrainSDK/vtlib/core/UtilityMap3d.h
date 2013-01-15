@@ -42,7 +42,7 @@ class vtLine3d : public vtLine
 public:
 	vtLine3d();
 
-	void CreateGeometry(vtHeightField3d *pHeightField);
+	void CreateGeometry(vtHeightField3d *pHeightField, int matidx);
 	void DestroyGeometry();
 
 	vtPole3d *GetPole(uint iter) const
@@ -50,26 +50,16 @@ public:
 		return (iter < m_poles.size() ? (vtPole3d*) m_poles[iter] : NULL);
 	}
 	vtGeode *GetGeom() const { return m_pWireGeom; }
+	void ComputePoleRotations();
 
 protected:
-	bool _LoadStructure(vtPole3d *node);
-	// bool _WireReader(const char *filename, vtUtilStruct *st);
-	void _ComputeStructureRotations();
-	void _CreateStruct(const vtHeightField3d *pHF, int iNode);
-	void _DeleteStruct(int iNode);
-	void _AddRouteMeshes(vtHeightField3d *pHeightField);
-	void _StringWires(int iPoleIndex, vtHeightField3d *pHeightField);
+	void CreateCatenaryWire(int iPoleIndex, vtHeightField3d *pHeightField, int matidx);
 	void _DrawCat(vtHeightField3d *pHeightField, const FPoint3 &pt0,
-	const FPoint3 &pt1, double catenary, int iNumSegs, vtMesh *pWireMesh);
+		const FPoint3 &pt1, double catenary, int iNumSegs, vtMesh *pWireMesh);
 
-	// all routes share the same set of materials
-	static vtMaterialArray *s_pUtilMaterials;
-	static void _CreateMaterials();
-	static int m_mi_wire;
+	vtGeode	*m_pWireGeom;
 
-	vtGeode		*m_pWireGeom;
-
-	bool m_bBuilt;
+	bool m_bBuilt;	// True when meshes are built.
 };
 
 /**
@@ -78,6 +68,10 @@ protected:
 class vtUtilityMap3d : public vtUtilityMap
 {
 public:
+	vtUtilityMap3d();
+
+	vtGroup *Setup();
+
 	virtual vtPole *NewPole() { return new vtPole3d; }
 	virtual vtLine *NewLine() { return new vtLine3d; }
 
@@ -90,11 +84,24 @@ public:
 		return (iter < m_Lines.size() ? (vtLine3d*) m_Lines[iter] : NULL);
 	}
 
-	void AddPole(const DPoint2 &epos, const char *structname);
+	vtPole3d *AddPole(const DPoint2 &epos, const char *structname);
+	vtLine3d *AddLine();
+
 	bool FindClosestUtilPole(const DPoint2 &point, double error,
-					   vtPole3d* &found_pole, double &closest) const;
+		vtPole3d* &found_pole, double &closest) const;
 	void BuildGeometry(vtLodGrid *pLodGrid, vtHeightField3d *pHeightField);
 	bool FindPoleFromNode(osg::Node *pNode, int &iPoleIndex) const;
+	void ComputePoleRotations();
+	void ComputePoleStructures();
+
+protected:
+	vtGroup *m_pTopGroup;
+
+	void CreateMaterials();
+
+	// all lines share the same set of materials
+	vtMaterialArray *m_pMaterials;
+	int m_mi_wire;
 };
 
 #endif  // VTLIB_CORE_UTILITYMAP3D_H

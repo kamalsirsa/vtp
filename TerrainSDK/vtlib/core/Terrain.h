@@ -196,8 +196,10 @@ public:
 	bool PointIsInTerrain(const DPoint2 &p);
 
 	// UtilityMap
+	vtPole3d *NewPole();
 	vtLine3d *NewLine();
 	void AddPoleToLine(vtLine3d *line, const DPoint2 &epos, const char *structname);
+	void RebuildUtilityGeometry();
 	vtUtilityMap3d &GetUtilityMap() { return m_UtilityMap; }
 
 	// Layers

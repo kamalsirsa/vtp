@@ -771,9 +771,14 @@ void vtTerrain::_SetErrorMessage(const vtString &msg)
 /////////////////////////////////////////////////////////////////////////////
 // Utilities
 //
+vtPole3d *vtTerrain::NewPole()
+{
+	return (vtPole3d *) m_UtilityMap.AddNewPole();
+}
+
 vtLine3d *vtTerrain::NewLine()
 {
-	return (vtLine3d *) m_UtilityMap.AddNewLine();
+	return m_UtilityMap.AddLine();
 }
 
 void vtTerrain::AddPoleToLine(vtLine3d *line, const DPoint2 &epos,
@@ -781,14 +786,18 @@ void vtTerrain::AddPoleToLine(vtLine3d *line, const DPoint2 &epos,
 {
 	VTLOG("AddPoleToLine %.1lf %.1lf\n", epos.x, epos.y);
 
-	vtPole3d *pole = (vtPole3d *) m_UtilityMap.AddNewPole();
-	pole->m_p = epos;
-	pole->m_sStructName = structname;
-
+	vtPole3d *pole = m_UtilityMap.AddPole(epos, structname);
 	line->AddPole(pole);
-	line->CreateGeometry(m_pHeightField);
+
+	line->ComputePoleRotations();
+	m_UtilityMap.BuildGeometry(m_pStructGrid, m_pHeightField);
 }
 
+void vtTerrain::RebuildUtilityGeometry()
+{
+	m_UtilityMap.ComputePoleRotations();
+	m_UtilityMap.BuildGeometry(m_pStructGrid, m_pHeightField);
+}
 
 /**
  * Create a horizontal water plane at sea level.  It can be moved up and down
@@ -1246,6 +1255,8 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 
 void vtTerrain::_CreateOtherCulture()
 {
+	m_pTerrainGroup->addChild(m_UtilityMap.Setup());
+
 	// create utility structures (routes = towers and wires)
 	vtString util_file = m_Params.GetValueString(STR_UTILITY_FILE);
 	if (util_file != "")

@@ -21,7 +21,6 @@
 #define NUM_WIRE_SEGMENTS	160
 #define METERS_PER_FOOT		0.3048f	// meters per foot
 
-vtMaterialArray *vtLine3d::s_pUtilMaterials = NULL;
 
 ///////////////////
 
@@ -34,6 +33,7 @@ vtPole3d::vtPole3d()
 
 bool vtPole3d::CreateGeometry(const vtHeightField3d *pHF)
 {
+	bool bAdd = false;
 	if (!m_pTrans)
 	{
 		if (!m_pUtilStruct)
@@ -44,6 +44,7 @@ bool vtPole3d::CreateGeometry(const vtHeightField3d *pHF)
 		{
 			m_pTrans = new vtTransform;
 			m_pTrans->addChild(tower);
+			bAdd = true;
 		}
 	}
 
@@ -55,7 +56,8 @@ bool vtPole3d::CreateGeometry(const vtHeightField3d *pHF)
 	pHF->m_Conversion.convert_earth_to_local_xz(m_p.x, m_p.y, wpos.x, wpos.z);
 	pHF->FindAltitudeAtPoint(wpos, wpos.y);
 	m_pTrans->SetTrans(wpos);
-	return true;
+
+	return bAdd;
 }
 
 void vtPole3d::DestroyGeometry()
@@ -77,23 +79,20 @@ vtLine3d::vtLine3d()
 	m_bBuilt = false;
 
 	m_pWireGeom = new vtGeode;
-	m_pWireGeom->setName("Route Wires");
-
-	if (s_pUtilMaterials == NULL)
-		_CreateMaterials();
-	m_pWireGeom->SetMaterials(s_pUtilMaterials);
+	m_pWireGeom->setName("Catenary wires");
 }
 
 //
 // Builds (or rebuilds) the geometry for a route.
 //
-void vtLine3d::CreateGeometry(vtHeightField3d *pHeightField)
+void vtLine3d::CreateGeometry(vtHeightField3d *pHeightField, int matidx)
 {
 	if (m_bBuilt)
 		DestroyGeometry();
 
 	// create surface and shape
-	_AddRouteMeshes(pHeightField);
+	for (uint i = 1; i < NumPoles(); i++)
+		CreateCatenaryWire(i, pHeightField, matidx);
 
 	m_bBuilt = true;
 }
@@ -110,7 +109,7 @@ void vtLine3d::DestroyGeometry()
 	m_bBuilt = false;
 }
 
-void vtLine3d::_ComputeStructureRotations()
+void vtLine3d::ComputePoleRotations()
 {
 	int i, poles = m_poles.size();
 	DPoint2 curr, diff_last, diff_next, diff_use;
@@ -144,31 +143,11 @@ void vtLine3d::_ComputeStructureRotations()
 	}
 }
 
-int vtLine3d::m_mi_wire;
-
-void vtLine3d::_CreateMaterials()
-{
-	s_pUtilMaterials = new vtMaterialArray;
-
-	// add wire material (0)
-	m_mi_wire = s_pUtilMaterials->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
-//		RGBf(0.5f, 0.5f, 0.5f),	// ambient grey
-		RGBf(1.5f, 1.5f, 1.5f),	// ambient bright white
-		false, true, false,		// culling, lighting, wireframe
-		1.0f);					// alpha
-}
-
-void vtLine3d::_AddRouteMeshes(vtHeightField3d *pHeightField)
-{
-	// The wires
-	for (uint i = 1; i < NumPoles(); i++)
-		_StringWires(i, pHeightField);
-}
-
 //
 // Using pole numbers i and i-1, string catenaries between them
 //
-void vtLine3d::_StringWires(int iPoleIndex, vtHeightField3d *pHeightField)
+void vtLine3d::CreateCatenaryWire(int iPoleIndex, vtHeightField3d *pHeightField,
+	int matidx)
 {
 	const int numiterations = NUM_WIRE_SEGMENTS;
 
@@ -217,7 +196,7 @@ void vtLine3d::_StringWires(int iPoleIndex, vtHeightField3d *pHeightField)
 		pWireMesh->AddVertex(wire_end);
 
 		pWireMesh->AddStrip2(numiterations+1, 0);
-		m_pWireGeom->AddMesh(pWireMesh, m_mi_wire);
+		m_pWireGeom->AddMesh(pWireMesh, matidx);
 	}
 }
 
@@ -260,7 +239,25 @@ void vtLine3d::_DrawCat(vtHeightField3d *pHeightField, const FPoint3 &pt0,
 	}
 }
 
-void vtUtilityMap3d::AddPole(const DPoint2 &epos, const char *structname)
+
+///////////////////////////////////////////////////////////////////////////////
+
+vtUtilityMap3d::vtUtilityMap3d()
+{
+	m_pTopGroup = NULL;
+}
+
+vtGroup *vtUtilityMap3d::Setup()
+{
+	m_pTopGroup = new vtGroup;
+	m_pTopGroup->setName("UtilityMap");
+
+	CreateMaterials();
+
+	return m_pTopGroup;
+}
+
+vtPole3d *vtUtilityMap3d::AddPole(const DPoint2 &epos, const char *structname)
 {
 	vtPole3d *pole = (vtPole3d *) AddNewPole();
 	pole->m_p = epos;
@@ -271,6 +268,19 @@ void vtUtilityMap3d::AddPole(const DPoint2 &epos, const char *structname)
 	vtUtilStruct *struc = vtGetTS()->LoadUtilStructure(pole->m_sStructName);
 	if (struc)
 		pole->m_pUtilStruct = struc;
+
+	return pole;
+}
+
+vtLine3d *vtUtilityMap3d::AddLine()
+{
+	vtLine3d *line = (vtLine3d *) AddNewLine();
+
+	m_pTopGroup->addChild(line->GetGeom());
+
+	line->GetGeom()->SetMaterials(m_pMaterials);
+
+	return line;
 }
 
 /**
@@ -313,7 +323,7 @@ void vtUtilityMap3d::BuildGeometry(vtLodGrid *pLodGrid, vtHeightField3d *pHeight
 
 	for (uint i = 0; i < NumLines(); i++)
 	{
-		GetLine(i)->CreateGeometry(pHeightField);
+		GetLine(i)->CreateGeometry(pHeightField, m_mi_wire);
 	}
 }
 
@@ -330,5 +340,36 @@ bool vtUtilityMap3d::FindPoleFromNode(osg::Node *pNode, int &iPoleIndex) const
 		}
 	}
 	return (iPoleIndex != -1);
+}
+
+void vtUtilityMap3d::ComputePoleRotations()
+{
+	for (uint i = 0; i < NumLines(); i++)
+	{
+		GetLine(i)->ComputePoleRotations();
+	}
+}
+
+void vtUtilityMap3d::ComputePoleStructures()
+{
+	// From the tags for each pole, try to determine an appropriate pole
+	// structure to use.
+	for (uint i = 0; i < NumPoles(); i++)
+	{
+		vtPole3d *pole = GetPole(i);
+		// TODO
+	}
+}
+
+void vtUtilityMap3d::CreateMaterials()
+{
+	m_pMaterials = new vtMaterialArray;
+
+	// add wire material (0)
+	m_mi_wire = m_pMaterials->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
+//		RGBf(0.5f, 0.5f, 0.5f),	// ambient grey
+		RGBf(1.5f, 1.5f, 1.5f),	// ambient bright white
+		false, true, false,		// culling, lighting, wireframe
+		1.0f);					// alpha
 }
 
