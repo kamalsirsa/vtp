@@ -1,7 +1,7 @@
 //
 //  The menus functions of the main Frame window of the VTBuilder application.
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -2281,6 +2281,13 @@ void MainFrame::OnElevToTin(wxCommandEvent& event)
 	vtTin2d *tin = new vtTin2d(grid);
 	vtElevLayer *pEL = new vtElevLayer;
 	pEL->SetTin(tin);
+
+	// Inherit the name
+	wxString name = pEL1->GetLayerFilename();
+	name = name.BeforeLast('.');
+	name += _T(".itf");
+	pEL->SetLayerFilename(name);
+
 	AddLayer(pEL);
 	SetActiveLayer(pEL);
 
