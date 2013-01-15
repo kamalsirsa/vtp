@@ -72,8 +72,8 @@ public:
 
 	vtGroup *Setup();
 
-	virtual vtPole *NewPole() { return new vtPole3d; }
-	virtual vtLine *NewLine() { return new vtLine3d; }
+	virtual vtPole *NewPole();
+	virtual vtLine *NewLine();
 
 	vtPole3d *GetPole(uint iter) const
 	{

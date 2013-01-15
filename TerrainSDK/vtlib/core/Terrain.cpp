@@ -1261,11 +1261,15 @@ void vtTerrain::_CreateOtherCulture()
 	vtString util_file = m_Params.GetValueString(STR_UTILITY_FILE);
 	if (util_file != "")
 	{
-		// TODO
-		// m_UtilityMap
+		if (m_UtilityMap.ReadOSM(util_file))
+		{
+			m_UtilityMap.TransformTo(m_proj);
+		}
 	}
 
 	// create any utility geometry
+	m_UtilityMap.ComputePoleStructures();
+	m_UtilityMap.ComputePoleRotations();
 	m_UtilityMap.BuildGeometry(m_pStructGrid, m_pHeightField);
 
 	// create HUD overlay geometry

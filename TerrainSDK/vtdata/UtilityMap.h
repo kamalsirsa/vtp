@@ -73,6 +73,9 @@ public:
 
 	void GetPoleExtents(DRECT &rect);
 	bool WriteOSM(const char *pathname);
+	bool ReadOSM(const char *pathname, bool progress_callback(int) = NULL);
+
+	bool TransformTo(vtProjection &proj);
 
 protected:
 	vtPole *ClosestPole(const DPoint2 &p);

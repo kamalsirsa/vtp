@@ -145,16 +145,7 @@ bool vtUtilityLayer::TransformCoords(vtProjection &proj)
 	if (!trans)
 		return false;		// inconvertible projections
 
-/*	vtTower *tower;
-	DPoint2 loc;
-	int i;
-	int count = GetSize();
-	for (i = 0; i < count; i++)
-	{
-		tower = GetAt(i);
-		trans->Transform(1, &loc.x, &loc.y);
-	}
-*/
+	// TODO
 	delete trans;
 
 	m_proj = proj;
@@ -169,13 +160,7 @@ bool vtUtilityLayer::AppendDataFrom(vtLayer *pL)
 		return false;
 
 //	vtUtilityLayer *pFrom = (vtUtilityLayer *)pL;
-
-/*	int count = pFrom->GetSize();
-	for (int i = 0; i < count; i++)
-	{
-		vtTower *tower = pFrom->GetAt(i);
-		Append(tower);
-	} */
+	// TODO
 	return true;
 }
 

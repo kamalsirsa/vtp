@@ -37,6 +37,15 @@ bool vtPole3d::CreateGeometry(const vtHeightField3d *pHF)
 	if (!m_pTrans)
 	{
 		if (!m_pUtilStruct)
+		{
+			// Load structure for the indicated node.
+			// sPath identifies the path to the Route data
+			vtUtilStruct *struc = vtGetTS()->LoadUtilStructure(m_sStructName);
+			if (struc)
+				m_pUtilStruct = struc;
+		}
+
+		if (!m_pUtilStruct)
 			return false;
 
 		osg::Node *tower = m_pUtilStruct->m_pTower;
@@ -257,30 +266,34 @@ vtGroup *vtUtilityMap3d::Setup()
 	return m_pTopGroup;
 }
 
+vtPole *vtUtilityMap3d::NewPole()
+{
+	return new vtPole3d;
+}
+
+vtLine *vtUtilityMap3d::NewLine()
+{
+	vtLine3d *line = new vtLine3d;
+
+	// Connect the line to the map
+	m_pTopGroup->addChild(line->GetGeom());
+	line->GetGeom()->SetMaterials(m_pMaterials);
+
+	return line;
+}
+
 vtPole3d *vtUtilityMap3d::AddPole(const DPoint2 &epos, const char *structname)
 {
 	vtPole3d *pole = (vtPole3d *) AddNewPole();
 	pole->m_p = epos;
 	pole->m_sStructName = structname;
 
-	// Load structure for the indicated node.
-	// sPath identifies the path to the Route data
-	vtUtilStruct *struc = vtGetTS()->LoadUtilStructure(pole->m_sStructName);
-	if (struc)
-		pole->m_pUtilStruct = struc;
-
 	return pole;
 }
 
 vtLine3d *vtUtilityMap3d::AddLine()
 {
-	vtLine3d *line = (vtLine3d *) AddNewLine();
-
-	m_pTopGroup->addChild(line->GetGeom());
-
-	line->GetGeom()->SetMaterials(m_pMaterials);
-
-	return line;
+	return (vtLine3d *) AddNewLine();
 }
 
 /**
@@ -352,12 +365,36 @@ void vtUtilityMap3d::ComputePoleRotations()
 
 void vtUtilityMap3d::ComputePoleStructures()
 {
-	// From the tags for each pole, try to determine an appropriate pole
-	// structure to use.
+	// From the OSM tags for each pole, try to determine an appropriate pole
+	// structure to use, from our limited number of tower models.
 	for (uint i = 0; i < NumPoles(); i++)
 	{
 		vtPole3d *pole = GetPole(i);
-		// TODO
+		for (uint j = 0; j < pole->NumTags(); j++)
+		{
+			vtTag *tag = pole->GetTag(j);
+
+			if (tag->name == "design" && tag->value == "barrel")
+				pole->m_sStructName = "Lattice Tower";
+
+			if (tag->name == "design" && tag->value == "h-frame")
+				pole->m_sStructName = "H-Frame Tangent";
+
+			if (tag->name == "design" && tag->value == "h-frame_one-level")
+				pole->m_sStructName = "H-Frame Tangent";
+
+			if (tag->name == "tower:type" && tag->value == "termination")
+			{
+				if (pole->m_sStructName = "Lattice Tower")
+					pole->m_sStructName = "Lattice Deadend";
+
+				if (pole->m_sStructName = "H-Frame Tangent")
+					pole->m_sStructName = "H-Frame Hold Down";
+			}
+		}
+		// If we haven't matched anything, fall back on a default.
+		if (pole->m_sStructName == "")
+			pole->m_sStructName = "Steel Poles Tangent";
 	}
 }
 
