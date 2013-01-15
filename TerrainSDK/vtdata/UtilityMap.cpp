@@ -184,7 +184,6 @@ private:
 	typedef std::map<int, OSMNode> NodeMap;
 	NodeMap m_nodes;
 	std::vector<int> m_refs;
-	vtProjection m_proj;
 	int			m_id;
 };
 
@@ -193,7 +192,9 @@ UtilOSMVisitor::UtilOSMVisitor() : m_state(PS_NONE)
 	m_util_layer = NULL;
 
 	// OSM is always in Geo WGS84
-	m_proj.SetWellKnownGeogCS("WGS84");
+	vtProjection proj;
+	proj.SetWellKnownGeogCS("WGS84");
+	m_util_layer->SetProjection(proj);
 }
 
 void UtilOSMVisitor::startElement(const char *name, const XMLAttributes &atts)
@@ -385,12 +386,15 @@ bool vtUtilityMap::ReadOSM(const char *pathname, bool progress_callback(int))
 	return true;
 }
 
+void vtUtilityMap::SetProjection(const vtProjection &proj)
+{
+	m_proj = proj;
+}
+
 bool vtUtilityMap::TransformTo(vtProjection &proj)
 {
-	// OSM only understands Geographic WGS84, so convert from that to what we need.
-	vtProjection wgs84_geo;
-	wgs84_geo.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
-	OCT *transform = CreateCoordTransform(&wgs84_geo, &proj);
+	// Convert from (usually, Wgs84 Geographic) to what we need.
+	OCT *transform = CreateCoordTransform(&m_proj, &proj);
 	if (!transform)
 	{
 		VTLOG1(" Couldn't transform coordinates\n");
@@ -402,5 +406,9 @@ bool vtUtilityMap::TransformTo(vtProjection &proj)
 		transform->Transform(1, &pole->m_p.x, &pole->m_p.y);
 	}
 	delete transform;
+
+	// Adopt new projection
+	m_proj = proj;
+
 	return true;
 }

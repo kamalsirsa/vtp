@@ -75,6 +75,7 @@ public:
 	bool WriteOSM(const char *pathname);
 	bool ReadOSM(const char *pathname, bool progress_callback(int) = NULL);
 
+	void SetProjection(const vtProjection &proj);
 	bool TransformTo(vtProjection &proj);
 
 protected:

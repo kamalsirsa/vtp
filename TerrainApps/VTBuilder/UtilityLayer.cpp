@@ -130,7 +130,7 @@ void vtUtilityLayer::GetProjection(vtProjection &proj)
 
 void vtUtilityLayer::SetProjection(const vtProjection &proj)
 {
-	m_proj = proj;
+	vtUtilityMap::SetProjection(proj);
 }
 
 bool vtUtilityLayer::TransformCoords(vtProjection &proj)
@@ -138,19 +138,7 @@ bool vtUtilityLayer::TransformCoords(vtProjection &proj)
 	if (proj == m_proj)
 		return true;
 
-	// Create conversion object
-	vtProjection Source;
-	GetProjection(Source);
-	OCT *trans = CreateCoordTransform(&Source, &proj);
-	if (!trans)
-		return false;		// inconvertible projections
-
-	// TODO
-	delete trans;
-
-	m_proj = proj;
-
-	return false;
+	return vtUtilityMap::TransformTo(proj);
 }
 
 bool vtUtilityLayer::AppendDataFrom(vtLayer *pL)

@@ -176,12 +176,6 @@ void EnviroApp::SetupLocale()
 		VTLOG(" not found.\n");
 	VTLOG("\n");
 
-	// Load any other catalogs which may be specific to this application.
-	LoadAppCatalog(m_locale);
-
-	// Test it
-//	wxString test = _("&File");
-
 	wxLog::SetVerbose(false);
 }
 
@@ -204,6 +198,9 @@ bool EnviroApp::OnInit()
 
 	Args(argc, argv);
 	SetupLocale();
+
+	// Load any other catalogs which may be specific to this application.
+	LoadAppCatalog(m_locale);
 
 	// If gdal and proj are not set with environment variables, try to set them
 	const char *gdalenv = getenv("GDAL_DATA");

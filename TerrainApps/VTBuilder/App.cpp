@@ -127,7 +127,12 @@ int BuilderApp::OnExit()
 
 void BuilderApp::SetupLocale()
 {
+	VTLOG1("SetupLocale:\n");
+
 	wxLog::SetVerbose(true);
+
+	// Enable this for very detailed locale troubleshooting (in debugger only)
+//	wxLog::AddTraceMask(_T("i18n"));
 
 	// Locale stuff
 	int lang = wxLANGUAGE_DEFAULT;
@@ -143,6 +148,10 @@ void BuilderApp::SetupLocale()
 	wxString cwd = wxGetCwd();
 	m_locale.AddCatalogLookupPathPrefix(cwd);
 
+#if VTDEBUG
+	m_locale.AddCatalogLookupPathPrefix("../../../i18n");
+#endif
+
 	bool bSuccess=false;
 	if (m_locale_name != "")
 	{
@@ -156,7 +165,8 @@ void BuilderApp::SetupLocale()
 		else
 		{
 			info = m_locale.GetLanguageInfo(lang);
-			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n", lang,
+			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n",
+				lang,
 				(const char *) info->CanonicalName.mb_str(wxConvUTF8),
 				(const char *) info->Description.mb_str(wxConvUTF8));
 			bSuccess = m_locale.Init(lang, wxLOCALE_LOAD_DEFAULT);
@@ -181,9 +191,6 @@ void BuilderApp::SetupLocale()
 	else
 		VTLOG(" not found.\n");
 	VTLOG1("\n");
-
-	// Test the local code
-//	wxString test = _("&File");
 
 	wxLog::SetVerbose(false);
 }
