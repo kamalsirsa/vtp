@@ -1,7 +1,7 @@
 //
 // Route.h
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
@@ -9,10 +9,9 @@
 #ifndef ROUTEH
 #define ROUTEH
 
-#include "vtdata/vtString.h"
+#include "vtdata/UtilityMap.h"
 
 class vtHeightField3d;
-class vtTerrain;
 class vtMesh;
 class vtUtilStruct;
 
@@ -21,89 +20,82 @@ class vtUtilStruct;
  * Generally this will have a physical structure associated with it,
  * the type of which is described by the class vtUtilStruct.
  */
-class vtUtilNode
+class vtPole3d : public vtPole
 {
 public:
-	vtUtilNode();
-	void Offset(const DPoint2 &delta);
+	vtPole3d();
+	bool CreateGeometry(const vtHeightField3d *pHF);
+	void DestroyGeometry();
 
-	DPoint2 m_dpOffsetElevations;	// x=Left, y=Right
-	DPoint2 m_dpOffsetDistances;	// x=Left, y=Right
 	double dRadAzimuth;				// azimuth (orientation to next node)
-	vtUtilStruct *m_struct;			// Object to draw.
+	vtUtilStruct *m_pUtilStruct;	// Utility Structure to use.
 	vtString m_sStructName;			// Structure Family
-
-	DPoint2 m_Point;
 
 	vtTransformPtr m_pTrans;
 };
 
 /**
- * A vtRoute is a set of nodes (vtUtilNode) describing the path of
+ * A vtRoute is a set of nodes (vtPole3d) describing the path of
  * utility components (such as a power line).
  */
-class vtRoute
+class vtLine3d : public vtLine
 {
 public:
-	vtRoute(vtTerrain* pT);
-	~vtRoute();
+	vtLine3d();
 
-	void AddPoint(const DPoint2 &epos, const char *structname);
-
-	void BuildGeometry(vtHeightField3d *pHeightField);
+	void CreateGeometry(vtHeightField3d *pHeightField);
 	void DestroyGeometry();
-	void Dirty();
 
-	vtGeode *GetGeom() { return m_pWireGeom; }
-
-	// Station set readers.
-	vtUtilNode *GetAt(uint iter)
+	vtPole3d *GetPole(uint iter) const
 	{
-		return (iter < m_Nodes.GetSize() ? m_Nodes[iter] : NULL);
+		return (iter < m_poles.size() ? (vtPole3d*) m_poles[iter] : NULL);
 	}
-	long GetSize() { return m_Nodes.GetSize(); }
+	vtGeode *GetGeom() const { return m_pWireGeom; }
 
 protected:
-	bool _LoadStructure(vtUtilNode *node);
+	bool _LoadStructure(vtPole3d *node);
 	// bool _WireReader(const char *filename, vtUtilStruct *st);
 	void _ComputeStructureRotations();
-	void _CreateStruct(int iNode);
+	void _CreateStruct(const vtHeightField3d *pHF, int iNode);
 	void _DeleteStruct(int iNode);
 	void _AddRouteMeshes(vtHeightField3d *pHeightField);
-	void _StringWires(long lTowerIndex, vtHeightField3d *pHeightField);
-	void _DrawCat(FPoint3 p0, FPoint3 p1,
-		double catenary, int iNumSegs, vtMesh *pWireMesh);
+	void _StringWires(int iPoleIndex, vtHeightField3d *pHeightField);
+	void _DrawCat(vtHeightField3d *pHeightField, const FPoint3 &pt0,
+	const FPoint3 &pt1, double catenary, int iNumSegs, vtMesh *pWireMesh);
 
 	// all routes share the same set of materials
-	static vtMaterialArray *m_pRouteMats;
+	static vtMaterialArray *s_pUtilMaterials;
 	static void _CreateMaterials();
 	static int m_mi_wire;
 
 	vtGeode		*m_pWireGeom;
-	vtTerrain	*m_pTheTerrain;
-	vtArray<vtUtilNode*>		m_Nodes;
 
 	bool m_bBuilt;
-	bool m_bDirty;
 };
 
 /**
- * vtRouteMap is a container for a set of vtRoute objects.
+ * vtUtilityMap3d is a container for a set of vtRoute objects.
  */
-class vtRouteMap : public vtArray<vtRoute *>
+class vtUtilityMap3d : public vtUtilityMap
 {
 public:
-	virtual ~vtRouteMap() { Clear(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	void DestructItems(uint first, uint last)
+	virtual vtPole *NewPole() { return new vtPole3d; }
+	virtual vtLine *NewLine() { return new vtLine3d; }
+
+	vtPole3d *GetPole(uint iter) const
 	{
-		for (uint i = first; i <= last; i++)
-			delete GetAt(i);
+		return (iter < m_Poles.size() ? (vtPole3d*) m_Poles[iter] : NULL);
+	}
+	vtLine3d *GetLine(uint iter) const
+	{
+		return (iter < m_Lines.size() ? (vtLine3d*) m_Lines[iter] : NULL);
 	}
 
-	bool FindClosestUtilNode(const DPoint2 &point, double error,
-					   vtRoute* &route, vtUtilNode* &node, double &closest);
-	void BuildGeometry(vtHeightField3d *pHeightField);
-	bool FindRouteFromNode(osg::Node *pNode, int &iOffset);
+	void AddPole(const DPoint2 &epos, const char *structname);
+	bool FindClosestUtilPole(const DPoint2 &point, double error,
+					   vtPole3d* &found_pole, double &closest) const;
+	void BuildGeometry(vtLodGrid *pLodGrid, vtHeightField3d *pHeightField);
+	bool FindPoleFromNode(osg::Node *pNode, int &iPoleIndex) const;
 };
 
 #endif //ROUTEH

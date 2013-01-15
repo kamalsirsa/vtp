@@ -195,13 +195,10 @@ public:
 	/// Test whether a given point is within the current terrain.
 	bool PointIsInTerrain(const DPoint2 &p);
 
-	// Route
-	void AddRoute(vtRoute *f);
-	void add_routepoint_earth(vtRoute *f, const DPoint2 &epos, const char *structname);
-	void RedrawRoute(vtRoute *f);
-	void SaveRoute();
-	vtRoute* GetLastRoute() { return m_Routes.GetSize()>0?m_Routes[m_Routes.GetSize()-1]:0; }
-	vtRouteMap &GetRouteMap() { return m_Routes; }
+	// UtilityMap
+	vtLine3d *NewLine();
+	void AddPoleToLine(vtLine3d *line, const DPoint2 &epos, const char *structname);
+	vtUtilityMap3d &GetUtilityMap() { return m_UtilityMap; }
 
 	// Layers
 	/// Get at the container for all the layers
@@ -477,7 +474,7 @@ protected:
 	vtSimpleLodGrid	*m_pVegGrid;
 
 	// routes
-	vtRouteMap		m_Routes;
+	vtUtilityMap3d	m_UtilityMap;
 
 	// ground texture and shadows
 	ImagePtr		m_pUnshadedImage;

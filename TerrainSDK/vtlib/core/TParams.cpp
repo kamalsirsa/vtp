@@ -147,8 +147,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_DEPRESSOCEANLEVEL, "-40");
 	AddTag(STR_BGCOLOR, "0 0 0");	// black
 
-	AddTag(STR_ROUTEENABLE, "false");	// not used yet
-	AddTag(STR_ROUTEFILE, "");			// not used yet
+	AddTag(STR_UTILITY_FILE, "");
 
 	AddTag(STR_DIST_TOOL_HEIGHT, "5");
 	AddTag(STR_HUD_OVERLAY, "");

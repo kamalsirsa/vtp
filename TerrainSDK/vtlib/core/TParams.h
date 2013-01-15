@@ -468,8 +468,7 @@ private:
 #define STR_DEPRESSOCEANLEVEL "Depress_Ocean_Level"
 #define STR_BGCOLOR "Background_Color"
 
-#define STR_ROUTEENABLE "Route_Enable"	// not used yet
-#define STR_ROUTEFILE "Route_File"		// not used yet
+#define STR_UTILITY_FILE "Utility_File"
 
 #define STR_DIST_TOOL_HEIGHT "Distance_Tool_Height"
 #define STR_HUD_OVERLAY "HUD_Overlay"

@@ -50,8 +50,7 @@ void UtilDlg::OnStructType( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	wxString val = m_pChoice->GetStringSelection();
-	g_App.SetRouteOptions((const char *) val.mb_str(wxConvUTF8));
-	g_App.start_new_route();
+	g_App.SetPowerOptions((const char *) val.mb_str(wxConvUTF8));
 }
 
 void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
@@ -79,6 +78,6 @@ void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 	VTLOG("\t%d items, %d found.\n", mng.NumItems(), found);
 
 	wxString val = m_pChoice->GetStringSelection();
-	g_App.SetRouteOptions((const char *) val.mb_str(wxConvUTF8));
+	g_App.SetPowerOptions((const char *) val.mb_str(wxConvUTF8));
 }
 

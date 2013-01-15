@@ -440,7 +440,6 @@ void Enviro::RequestTerrain(vtTerrain *pTerr)
 		FMatrix4 mat;
 		pCam->GetTransform(mat);
 		pT->SetCamLocation(mat);
-		pT->SaveRoute();
 	}
 
 	// If it's not a tileset, and we're coming in from space, fly in
@@ -606,8 +605,6 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		// ensure that sunlight is active
 		GetSunLightTransform()->SetEnabled(true);
-
-		m_pCurRoute=pTerr->GetLastRoute();	// Error checking needed here.
 
 		m_pTerrainPicker->SetEnabled(true);
 		SetMode(MM_NAVIGATE);
@@ -1296,7 +1293,7 @@ void Enviro::SetMode(MouseMode mode)
 			break;
 		case MM_LINEARS:
 		case MM_BUILDINGS:
-		case MM_ROUTES:
+		case MM_POWER:
 		case MM_PLANTS:
 		case MM_ADDPOINTS:
 		case MM_INSTANCES:
@@ -1428,14 +1425,12 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		// Add to a structure being drawn.
 		AddElasticPoint(p2);
 	}
-	if (m_mode == MM_ROUTES)
+	if (m_mode == MM_POWER)
 	{
-		if (!m_bActiveRoute)
-		{
-			start_new_route();
-			m_bActiveRoute = true;
-		}
-		pTerr->add_routepoint_earth(m_pCurRoute, p2, m_sStructType);
+		if (!m_bActiveUtilLine)
+			StartPowerline();
+
+		pTerr->AddPoleToLine(m_pCurUtilLine, p2, m_sStructType);
 	}
 	if (m_mode == MM_PLANTS)
 	{
@@ -1537,7 +1532,7 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		v_layer->VisualDeselectAll();
 	m_bSelectedPlant = false;
 
-	vtRouteMap &Routes = pTerr->GetRouteMap();
+	vtUtilityMap3d &util_map = pTerr->GetUtilityMap();
 	m_bSelectedUtil = false;
 
 	// Get ray intersection with near and far planes
@@ -1636,12 +1631,12 @@ void Enviro::OnMouseSelectRayPick(vtMouseEvent &event)
 		m_bSelectedPlant = true;
 	}
 	// Check for routes
-	else if (Routes.FindRouteFromNode(HitList.front().geode, iOffset))
+	else if (util_map.FindPoleFromNode(HitList.front().geode, iOffset))
 	{
 		VTLOG("  Found route\n");
 		m_bDragging = true;
 		m_bSelectedUtil = true;
-		m_pSelRoute = Routes[iOffset];
+		m_pSelUtilPole = util_map.GetPole(iOffset);
 	}
 	else
 		VTLOG("  Unable to identify node\n");
@@ -1709,11 +1704,10 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 		VTLOG("plant at dist %lf, ", dist2);
 	}
 
-	// Check Routes
-	vtRouteMap &routes = pTerr->GetRouteMap();
+	// Check Utilities
+	vtUtilityMap3d &util_map = pTerr->GetUtilityMap();
 	m_bSelectedUtil = false;
-	bool result3 = routes.FindClosestUtilNode(gpos, epsilon, m_pSelRoute,
-		m_pSelUtilNode, dist3);
+	bool result3 = util_map.FindClosestUtilPole(gpos, epsilon, m_pSelUtilPole, dist3);
 
 	// Check Vehicles
 	m_bSelectedVehicle = false;
@@ -1948,8 +1942,9 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 {
 	if (m_state == AS_Terrain)
 	{
-		if (m_mode == MM_ROUTES)
-			close_route();
+		if (m_mode == MM_POWER)
+			FinishPowerline();
+
 		if (m_mode == MM_SELECT || m_mode == MM_SELECTMOVE)
 		{
 			vtTerrain *terr = GetCurrentTerrain();
@@ -2048,10 +2043,9 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 			}
 			if (m_bSelectedUtil)
 			{
-				vtRouteMap &routemap = pTerr->GetRouteMap();
-				m_pSelUtilNode->Offset(ground_delta);
-				m_pSelRoute->Dirty();
-				routemap.BuildGeometry(pTerr->GetHeightField());
+				vtUtilityMap3d &routemap = pTerr->GetUtilityMap();
+				m_pSelUtilPole->Offset(ground_delta);
+				m_pSelUtilPole->CreateGeometry(pTerr->GetHeightField());
 			}
 			if (m_bSelectedVehicle)
 			{
@@ -2506,30 +2500,21 @@ bool Enviro::HaveBuildingStyle()
 
 
 ////////////////////////////////////////////////////////////////
-// Route
+// Utility Map (currently, power transmission lines)
 
-void Enviro::start_new_route()
+void Enviro::StartPowerline()
 {
-	vtRoute *route = new vtRoute(GetCurrentTerrain());
-	GetCurrentTerrain()->AddRoute(route);
-	m_pCurRoute = route;
+	vtLine3d *line = GetCurrentTerrain()->NewLine();
+	m_pCurUtilLine = line;
+	m_bActiveUtilLine = true;
 }
 
-void Enviro::finish_route()
+void Enviro::FinishPowerline()
 {
-	m_bActiveRoute = false;
+	m_bActiveUtilLine = false;
 }
 
-void Enviro::close_route()
-{
-	if (m_bActiveRoute && m_pCurRoute)
-	{
-		GetCurrentTerrain()->SaveRoute();
-	}
-	m_bActiveRoute = false;
-}
-
-void Enviro::SetRouteOptions(const vtString &sStructType)
+void Enviro::SetPowerOptions(const vtString &sStructType)
 {
 	m_sStructType = sStructType;
 }

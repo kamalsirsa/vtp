@@ -455,10 +455,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	RGBi col =			Params.GetValueRGBi(STR_BGCOLOR);
 	m_BgColor.Set(col.r, col.g, col.b);
 
-	m_bRouteEnable =	Params.GetValueBool(STR_ROUTEENABLE);
-	const char *routefile = Params.GetValueString(STR_ROUTEFILE);
-	if (routefile)
-		m_strRouteFile = wxString(routefile, wxConvUTF8);
+	m_strUtilFile = wxString(Params.GetValueString(STR_UTILITY_FILE), wxConvUTF8);
 
 	vtString fname;
 	if (Params.GetOverlay(fname, m_iOverlayX, m_iOverlayY))
@@ -618,8 +615,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	RGBi col(m_BgColor.Red(), m_BgColor.Green(), m_BgColor.Blue());
 	Params.SetValueRGBi(STR_BGCOLOR, col);
 
-	Params.SetValueBool(STR_ROUTEENABLE, m_bRouteEnable);
-	Params.SetValueString(STR_ROUTEFILE, (const char *) m_strRouteFile.mb_str(wxConvUTF8));
+	Params.SetValueString(STR_UTILITY_FILE, (const char *) m_strUtilFile.mb_str(wxConvUTF8));
 
 	// HUD
 	Params.SetOverlay((const char *) m_strOverlayFile.mb_str(wxConvUTF8), m_iOverlayX, m_iOverlayY);

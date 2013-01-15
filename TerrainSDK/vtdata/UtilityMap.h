@@ -22,6 +22,8 @@
  */
 struct vtPole : public vtTagArray
 {
+	void Offset(const DPoint2 &delta) { m_p += delta; }
+
 	int m_id;		// More efficient than storing id in the tagarray.
 	DPoint2 m_p;
 };
@@ -36,6 +38,8 @@ typedef std::vector<vtPole*> vtPoleArray;
 struct vtLine : public vtTagArray
 {
 	void MakePolyline(DLine2 &polyline);
+	uint NumPoles() const { return m_poles.size(); }
+	void AddPole(vtPole *pole) { m_poles.push_back(pole); }
 
 	int m_id;		// More efficient than storing id in the tagarray.
 	vtPoleArray m_poles;
@@ -50,8 +54,22 @@ public:
 	vtUtilityMap();
 	~vtUtilityMap();
 
-	void AddPole(vtPole *pole) { m_Poles.push_back(pole); }
-	void AddLine(vtLine *line) { m_Lines.push_back(line); }
+	virtual vtPole *NewPole() { return new vtPole; }
+	virtual vtLine *NewLine() { return new vtLine; }
+
+	vtPole *AddNewPole() {
+		vtPole *pole = NewPole();
+		m_Poles.push_back(pole);
+		return pole;
+	}
+	vtLine *AddNewLine() {
+		vtLine *line = NewLine();
+		m_Lines.push_back(line);
+		return line;
+	}
+
+	uint NumPoles() const { return m_Poles.size(); }
+	uint NumLines() const { return m_Lines.size(); }
 
 	void GetPoleExtents(DRECT &rect);
 	bool WriteOSM(const char *pathname);

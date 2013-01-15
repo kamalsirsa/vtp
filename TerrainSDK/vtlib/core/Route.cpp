@@ -4,84 +4,91 @@
 // Creates a route (a series of utility structures, e.g. an electrical
 // transmission line), creates geometry, drapes on a terrain
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
 
 #include "vtlib/vtlib.h"
+
+#include "vtdata/HeightField.h"
+
 #include "Light.h"
+#include "LodGrid.h"
 #include "Route.h"
-#include "Terrain.h"
 #include "TerrainScene.h"	// for LoadUtilStructure
 
 #define NUM_WIRE_SEGMENTS	160
 #define METERS_PER_FOOT		0.3048f	// meters per foot
 
-vtMaterialArray *vtRoute::m_pRouteMats = NULL;
+vtMaterialArray *vtLine3d::s_pUtilMaterials = NULL;
 
 ///////////////////
 
-vtUtilNode::vtUtilNode()
+vtPole3d::vtPole3d()
 {
-	m_struct = NULL;
+	m_pUtilStruct = NULL;
 	dRadAzimuth = 0.0f;
 	m_pTrans = NULL;
 }
 
-void vtUtilNode::Offset(const DPoint2 &delta)
+bool vtPole3d::CreateGeometry(const vtHeightField3d *pHF)
 {
-	m_Point += delta;
+	if (!m_pTrans)
+	{
+		if (!m_pUtilStruct)
+			return false;
+
+		osg::Node *tower = m_pUtilStruct->m_pTower;
+		if (tower)
+		{
+			m_pTrans = new vtTransform;
+			m_pTrans->addChild(tower);
+		}
+	}
+
+	// set orientation
+	m_pTrans->Identity();
+	m_pTrans->RotateLocal(FPoint3(0,1,0), dRadAzimuth);
+
+	FPoint3 wpos;
+	pHF->m_Conversion.convert_earth_to_local_xz(m_p.x, m_p.y, wpos.x, wpos.z);
+	pHF->FindAltitudeAtPoint(wpos, wpos.y);
+	m_pTrans->SetTrans(wpos);
+	return true;
+}
+
+void vtPole3d::DestroyGeometry()
+{
+	if (m_pTrans)
+	{
+		osg::Group *parent = m_pTrans->getParent(0);
+		if (parent)
+			parent->removeChild(m_pTrans);
+
+		m_pTrans = NULL;
+	}
 }
 
 ///////////////////
 
-vtRoute::vtRoute(vtTerrain* pT)
+vtLine3d::vtLine3d()
 {
 	m_bBuilt = false;
-	m_bDirty = true;
-
-	m_pTheTerrain = pT;
 
 	m_pWireGeom = new vtGeode;
 	m_pWireGeom->setName("Route Wires");
 
-	if (m_pRouteMats == NULL)
+	if (s_pUtilMaterials == NULL)
 		_CreateMaterials();
-	m_pWireGeom->SetMaterials(m_pRouteMats);
-}
-
-vtRoute::~vtRoute()
-{
-	uint i;
-	for (i = 0; i < m_Nodes.GetSize(); i++)
-		delete m_Nodes[i];
-}
-
-void vtRoute::AddPoint(const DPoint2 &epos, const char *structname)
-{
-	vtUtilNode *node =  new vtUtilNode;
-	node->m_Point = epos;
-	node->m_sStructName = structname;
-
-	m_Nodes.Append(node);
-	Dirty();
-
-	// Load structure for the indicated node.
-	// sPath identifies the path to the Route data
-	vtUtilStruct *struc = vtGetTS()->LoadUtilStructure(node->m_sStructName);
-	if (struc)
-		node->m_struct = struc;
+	m_pWireGeom->SetMaterials(s_pUtilMaterials);
 }
 
 //
 // Builds (or rebuilds) the geometry for a route.
 //
-void vtRoute::BuildGeometry(vtHeightField3d *pHeightField)
+void vtLine3d::CreateGeometry(vtHeightField3d *pHeightField)
 {
-	if (!m_bDirty)
-		return;
-
 	if (m_bBuilt)
 		DestroyGeometry();
 
@@ -89,10 +96,9 @@ void vtRoute::BuildGeometry(vtHeightField3d *pHeightField)
 	_AddRouteMeshes(pHeightField);
 
 	m_bBuilt = true;
-	m_bDirty = false;
 }
 
-void vtRoute::DestroyGeometry()
+void vtLine3d::DestroyGeometry()
 {
 	// Destroy the meshes so they can be re-made
 	while (m_pWireGeom->NumMeshes())
@@ -104,139 +110,82 @@ void vtRoute::DestroyGeometry()
 	m_bBuilt = false;
 }
 
-void vtRoute::Dirty()
+void vtLine3d::_ComputeStructureRotations()
 {
-	_ComputeStructureRotations();
-	m_bDirty = true;
-}
-
-void vtRoute::_ComputeStructureRotations()
-{
-	int i, nodes = m_Nodes.GetSize();
+	int i, poles = m_poles.size();
 	DPoint2 curr, diff_last, diff_next, diff_use;
 
-	if (nodes < 2)
+	if (poles < 2)
 		return;
 
-	for (i = 0; i < nodes; i++)
+	for (i = 0; i < poles; i++)
 	{
-		curr = m_Nodes[i]->m_Point;
+		curr = m_poles[i]->m_p;
 		if (i > 0)
 		{
-			diff_last = curr - m_Nodes[i-1]->m_Point;
+			diff_last = curr - m_poles[i-1]->m_p;
 			diff_last.Normalize();
 			diff_use = diff_last;
 		}
-		if (i < nodes-1)
+		if (i < poles-1)
 		{
-			diff_next = m_Nodes[i+1]->m_Point - curr;
+			diff_next = m_poles[i+1]->m_p - curr;
 			diff_next.Normalize();
 			diff_use = diff_next;
 		}
-		if (i > 0 && i < nodes-1)
+		if (i > 0 && i < poles-1)
 		{
 			// has a node before and after, average the angles
 			diff_use = diff_last + diff_next;
 		}
 		diff_use.Normalize();
 		double angle = atan2(diff_use.y, diff_use.x);
-		m_Nodes[i]->dRadAzimuth = angle;
+		GetPole(i)->dRadAzimuth = angle;
 	}
 }
 
-int vtRoute::m_mi_wire;
+int vtLine3d::m_mi_wire;
 
-void vtRoute::_CreateMaterials()
+void vtLine3d::_CreateMaterials()
 {
-	m_pRouteMats = new vtMaterialArray;
+	s_pUtilMaterials = new vtMaterialArray;
 
 	// add wire material (0)
-	m_mi_wire = m_pRouteMats->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
+	m_mi_wire = s_pUtilMaterials->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
 //		RGBf(0.5f, 0.5f, 0.5f),	// ambient grey
 		RGBf(1.5f, 1.5f, 1.5f),	// ambient bright white
 		false, true, false,		// culling, lighting, wireframe
 		1.0f);					// alpha
 }
 
-void vtRoute::_CreateStruct(int iNode)
+void vtLine3d::_AddRouteMeshes(vtHeightField3d *pHeightField)
 {
-	vtUtilNode *node =  m_Nodes[iNode];
-
-	bool add = false;
-	if (!node->m_pTrans)
-	{
-		vtUtilStruct *sobj = node->m_struct;
-		if (!sobj)
-			return;
-
-		osg::Node *tower = sobj->m_pTower;
-		if (tower)
-		{
-			node->m_pTrans = new vtTransform;
-			vtString name;
-			name.Format("RouteNode %d", iNode);
-			node->m_pTrans->setName(name);
-			node->m_pTrans->addChild(tower);
-			add = true;
-		}
-	}
-
-	// set orientation
-	node->m_pTrans->Identity();
-	node->m_pTrans->RotateLocal(FPoint3(0,1,0), node->dRadAzimuth);
-
-	m_pTheTerrain->PlantModelAtPoint(node->m_pTrans, node->m_Point);
-
-	if (add)
-		m_pTheTerrain->AddNodeToStructGrid(node->m_pTrans);
+	// The wires
+	for (uint i = 1; i < NumPoles(); i++)
+		_StringWires(i, pHeightField);
 }
 
-void vtRoute::_DeleteStruct(int iNode)
+//
+// Using pole numbers i and i-1, string catenaries between them
+//
+void vtLine3d::_StringWires(int iPoleIndex, vtHeightField3d *pHeightField)
 {
-	vtUtilNode *node =  m_Nodes[iNode];
-	if (node->m_pTrans)
-	{
-		m_pTheTerrain->RemoveNodeFromStructGrid(node->m_pTrans);
-		node->m_pTrans = NULL;
-	}
-}
+	const int numiterations = NUM_WIRE_SEGMENTS;
 
-void vtRoute::_AddRouteMeshes(vtHeightField3d *pHeightField)
-{
-	int i, numnodes = m_Nodes.GetSize();
+	const vtPole3d *n0 = GetPole(iPoleIndex - 1);
+	const vtPole3d *n1 = GetPole(iPoleIndex);
 
-	// generate the structures (poles/towers/etc.)
-	for (i = 0; i < numnodes; i++)
-		_CreateStruct(i);
-
-	// and the wires
-	if (numnodes > 1)
-	{
-		for (i=1; i<numnodes; i++)
-			_StringWires(i, pHeightField);
-	}
-}
-
-void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
-{
-	// pick pole numbers i and i-1 and string a wire between them
-	long numiterations = NUM_WIRE_SEGMENTS;
-
-	FPoint3 fp0, fp1;
-
-	vtUtilNode *n0 = m_Nodes[ll-1];
-	vtUtilNode *n1 = m_Nodes[ll];
-
-	vtUtilStruct *st0 = n0->m_struct;
-	vtUtilStruct *st1 = n1->m_struct;
+	const vtUtilStruct *st0 = n0->m_pUtilStruct;
+	const vtUtilStruct *st1 = n1->m_pUtilStruct;
 
 	// safety check
 	if (!st0 || !st1)
 		return;
 
-	DPoint2 p0 = n0->m_Point;
-	DPoint2 p1 = n1->m_Point;
+	const DPoint2 p0 = n0->m_p;
+	const DPoint2 p1 = n1->m_p;
 
+	FPoint3 fp0, fp1;
 	pHeightField->ConvertEarthToSurfacePoint(p0, fp0);
 	pHeightField->ConvertEarthToSurfacePoint(p1, fp1);
 
@@ -262,7 +211,8 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 		rot.Transform(offset, wire1);
 		FPoint3 wire_end = fp1 + wire1;
 
-		_DrawCat(wire_start, wire_end, vtGetTS()->m_fCatenaryFactor, numiterations, pWireMesh);
+		_DrawCat(pHeightField, wire_start, wire_end, vtGetTS()->m_fCatenaryFactor,
+			numiterations, pWireMesh);
 
 		pWireMesh->AddVertex(wire_end);
 
@@ -275,8 +225,8 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 // Draw catenary curve between conductor attachment points
 //	from the current tower to the previous tower.
 //
-void vtRoute::_DrawCat(FPoint3 pt0, FPoint3 pt1, double catenary,
-					  int iNumSegs, vtMesh *pWireMesh)
+void vtLine3d::_DrawCat(vtHeightField3d *pHeightField, const FPoint3 &pt0,
+	const FPoint3 &pt1, double catenary, int iNumSegs, vtMesh *pWireMesh)
 {
 	FPoint3 diff = pt1-pt0;
 	FPoint3 ptNew;
@@ -289,21 +239,18 @@ void vtRoute::_DrawCat(FPoint3 pt0, FPoint3 pt1, double catenary,
 	double parabolicConst = (xz / 2) - (y * (catenary / xz));
 
 	FPoint3 ptCur(0,0,0);
-	double dist=0;
-
-	vtHeightField3d *pHeightField = m_pTheTerrain->GetHeightField();
-	float ground;
 
 	// Iterate along the xz-plane
 	for (i = 0; i < iNumSegs-1; i++)
 	{
 		ptCur.x += step.x;
 		ptCur.z += step.z;
-		dist = sqrt(ptCur.x*ptCur.x + ptCur.z*ptCur.z);
+		const double dist = sqrt(ptCur.x*ptCur.x + ptCur.z*ptCur.z);
 
 		ptCur.y = (float) ((dist / (2*catenary)) * (dist - (2*parabolicConst)));
 
 		ptNew = pt0 + ptCur;
+		float ground;
 		pHeightField->FindAltitudeAtPoint(ptNew, ground);
 		ground += 0.5;
 		if (ptNew.y < ground)
@@ -313,70 +260,75 @@ void vtRoute::_DrawCat(FPoint3 pt0, FPoint3 pt1, double catenary,
 	}
 }
 
-
-/** Find the util node which is closest to the given point, if it is within
- * 'error' distance.  The node and distance are returned by reference.
- */
-bool vtRouteMap::FindClosestUtilNode(const DPoint2 &point, double error,
-					   vtRoute* &found_route, vtUtilNode* &found_node, double &closest)
+void vtUtilityMap3d::AddPole(const DPoint2 &epos, const char *structname)
 {
-	found_node = NULL;
-	closest = 1E8;
+	vtPole3d *pole = (vtPole3d *) AddNewPole();
+	pole->m_p = epos;
+	pole->m_sStructName = structname;
 
-	if (IsEmpty())
+	// Load structure for the indicated node.
+	// sPath identifies the path to the Route data
+	vtUtilStruct *struc = vtGetTS()->LoadUtilStructure(pole->m_sStructName);
+	if (struc)
+		pole->m_pUtilStruct = struc;
+}
+
+/**
+ Find the util pole which is closest to the given point, if it is within
+ 'error' distance.  The pole and distance are returned by reference.
+ */
+bool vtUtilityMap3d::FindClosestUtilPole(const DPoint2 &point, double error,
+	vtPole3d* &found_pole, double &closest) const
+{
+	found_pole = NULL;
+
+	if (m_Poles.empty())
 		return false;
 
-	DPoint2 loc;
-	double dist;
-
-	int i, j, routes = GetSize();
-	for (i = 0; i < routes; i++)
+	closest = 1E8;
+	for (uint i = 0; i < NumPoles(); i++)
 	{
-		vtRoute *pRoute = GetAt(i);
-		int nodes = pRoute->GetSize();
+		vtPole3d *pole = GetPole(i);
 
-		for (j = 0; j < nodes; j++)
+		const double dist = (pole->m_p - point).Length();
+		if (dist > error)
+			continue;
+		if (dist < closest)
 		{
-			vtUtilNode *pNode = pRoute->GetAt(j);
-
-			loc = pNode->m_Point;
-
-			dist = (loc - point).Length();
-			if (dist > error)
-				continue;
-			if (dist < closest)
-			{
-				found_route = pRoute;
-				found_node = pNode;
-				closest = dist;
-			}
+			found_pole = pole;
+			closest = dist;
 		}
 	}
-	return (found_node != NULL);
+	return (found_pole != NULL);
 }
 
-void vtRouteMap::BuildGeometry(vtHeightField3d *pHeightField)
+void vtUtilityMap3d::BuildGeometry(vtLodGrid *pLodGrid, vtHeightField3d *pHeightField)
 {
-	int routes = GetSize();
-	for (int i = 0; i < routes; i++)
+	// generate the structures (poles/towers/etc.)
+	for (uint i = 0; i < NumPoles(); i++)
 	{
-		GetAt(i)->BuildGeometry(pHeightField);
+		if (GetPole(i)->CreateGeometry(pHeightField))
+			pLodGrid->AddToGrid(GetPole(i)->m_pTrans);
+	}
+
+	for (uint i = 0; i < NumLines(); i++)
+	{
+		GetLine(i)->CreateGeometry(pHeightField);
 	}
 }
 
-bool vtRouteMap::FindRouteFromNode(osg::Node *pNode, int &iOffset)
+bool vtUtilityMap3d::FindPoleFromNode(osg::Node *pNode, int &iPoleIndex) const
 {
-	bool bFound = false;
-	uint i;
+	iPoleIndex = -1;
 
-	for (i = 0; (i < GetSize()) & !bFound; i++)
+	for (uint i = 0; i < NumPoles(); i++)
 	{
-		if (FindAncestor(pNode, GetAt(i)->GetGeom()))
+		if (FindAncestor(pNode, GetPole(i)->m_pTrans))
 		{
-			iOffset = i;
-			bFound = true;
+			iPoleIndex = i;
+			break;
 		}
 	}
-	return bFound;
+	return (iPoleIndex != -1);
 }
 

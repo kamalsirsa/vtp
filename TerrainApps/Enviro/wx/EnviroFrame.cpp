@@ -246,7 +246,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(450, 600);
 	m_pTimeDlg = new TimeDlg(this, -1, _("Time"));
-	m_pUtilDlg = new UtilDlg(this, -1, _("Routes"));
+	m_pUtilDlg = new UtilDlg(this, -1, _("Utility Poles"));
 	m_pScenarioSelectDialog = new ScenarioSelectDialog(this, -1, _("Scenarios"));
 	m_pVehicleDlg = new VehicleDlg(this, -1, _("Vehicles"));
 	m_pDriveDlg = new DriveDlg(this);
@@ -406,7 +406,7 @@ void EnviroFrame::RefreshToolbar()
 			AddTool(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);
 			AddTool(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
 			AddTool(ID_TOOLS_BUILDINGS, wxBITMAP(building), _("Create Buildings"), true);
-			AddTool(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
+			AddTool(ID_TOOLS_POWER, wxBITMAP(route), _("Create Powerlines"), true);
 			AddTool(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
 		}
 		AddTool(ID_TOOLS_POINTS, wxBITMAP(placemark), _("Create Points"), true);
@@ -792,7 +792,7 @@ WXLRESULT EnviroFrame::MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lPar
 void EnviroFrame::SetMode(MouseMode mode)
 {
 	// Show/hide the modeless dialogs as appropriate
-	m_pUtilDlg->Show(mode == MM_ROUTES);
+	m_pUtilDlg->Show(mode == MM_POWER);
 	m_pInstanceDlg->Show(mode == MM_INSTANCES);
 	m_pDistanceDlg->Show(mode == MM_MEASURE);
 	m_pVehicleDlg->Show(mode == MM_VEHICLES);

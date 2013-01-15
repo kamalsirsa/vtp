@@ -95,8 +95,8 @@ EVT_MENU(ID_TOOLS_FENCES,			EnviroFrame::OnToolsFences)
 EVT_UPDATE_UI(ID_TOOLS_FENCES,		EnviroFrame::OnUpdateToolsFences)
 EVT_MENU(ID_TOOLS_BUILDINGS,		EnviroFrame::OnToolsBuildings)
 EVT_UPDATE_UI(ID_TOOLS_BUILDINGS,	EnviroFrame::OnUpdateToolsBuildings)
-EVT_MENU(ID_TOOLS_ROUTES,			EnviroFrame::OnToolsRoutes)
-EVT_UPDATE_UI(ID_TOOLS_ROUTES,		EnviroFrame::OnUpdateToolsRoutes)
+EVT_MENU(ID_TOOLS_POWER,			EnviroFrame::OnToolsPower)
+EVT_UPDATE_UI(ID_TOOLS_POWER,		EnviroFrame::OnUpdateToolsPower)
 EVT_MENU(ID_TOOLS_PLANTS,			EnviroFrame::OnToolsPlants)
 EVT_UPDATE_UI(ID_TOOLS_PLANTS,		EnviroFrame::OnUpdateToolsPlants)
 EVT_MENU(ID_TOOLS_POINTS,			EnviroFrame::OnToolsPoints)
@@ -287,7 +287,7 @@ void EnviroFrame::CreateMenus()
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_SELECT_MOVE, _("Select and Move"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _("Fences"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_BUILDINGS, _("Buildings"));
-	m_pToolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_POWER, _("Powerlines"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _("Plants"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_POINTS, _("Points"));
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
@@ -916,15 +916,15 @@ void EnviroFrame::OnUpdateToolsBuildings(wxUpdateUIEvent& event)
 	event.Check(g_App.m_mode == MM_BUILDINGS);
 }
 
-void EnviroFrame::OnToolsRoutes(wxCommandEvent& event)
+void EnviroFrame::OnToolsPower(wxCommandEvent& event)
 {
-	SetMode(MM_ROUTES);
+	SetMode(MM_POWER);
 }
 
-void EnviroFrame::OnUpdateToolsRoutes(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateToolsPower(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
-	event.Check(g_App.m_mode == MM_ROUTES);
+	event.Check(g_App.m_mode == MM_POWER);
 }
 
 void EnviroFrame::OnToolsPlants(wxCommandEvent& event)

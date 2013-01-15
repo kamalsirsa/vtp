@@ -27,7 +27,8 @@ class vtTerrainScene;
 class vtTerrain;
 class TerrainPicker;
 class vtIcoGlobe;
-class vtRoute;
+class vtLine3d;
+class vtPole3d;
 class vtUtilNode;
 class vtFence3d;
 class vtAbstractLayer;
@@ -206,11 +207,10 @@ public:
 	void CreateInstance();
 	void CreateInstanceAt(const DPoint2 &pos, vtTagArray *tags);
 
-	// route methods
-	void start_new_route();
-	void finish_route();
-	void close_route();
-	void SetRouteOptions(const vtString &sStructType);
+	// UtilityMap methods
+	void StartPowerline();
+	void FinishPowerline();
+	void SetPowerOptions(const vtString &sStructType);
 
 	// plants
 	void LoadSpeciesList();
@@ -264,9 +264,8 @@ public:
 	int			m_iDraggingFencePoint;
 	DPoint3		m_EarthPosDown;
 	DPoint3		m_EarthPosLast;
-	vtRoute		*m_pCurRoute;
-	vtUtilNode	*m_pSelUtilNode;
-	vtRoute		*m_pSelRoute;
+	vtLine3d	*m_pCurUtilLine;
+	vtPole3d	*m_pSelUtilPole;
 	IPoint2		m_MouseDown, m_MouseLast;
 	float		m_StartRotation;
 	bool		m_bConstrainAngles;
@@ -351,7 +350,7 @@ protected:
 	ElasticPolyline m_Elastic;
 
 	// route members
-	bool		m_bActiveRoute;
+	bool		m_bActiveUtilLine;
 	vtString	m_sStructType;
 
 	// linear arc on Earth (or Distance Tool on the Terrain)

@@ -152,8 +152,7 @@ public:
 //  float   m_fVehicleSize;
 //  float   m_fVehicleSpeed;
 
-	bool	m_bRouteEnable;		// not yet used
-	wxString m_strRouteFile;	// not yet used
+	wxString m_strUtilFile;
 
 	// HUD
 	wxString m_strOverlayFile;

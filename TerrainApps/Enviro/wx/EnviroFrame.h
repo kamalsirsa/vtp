@@ -185,8 +185,8 @@ protected:
 	void OnUpdateToolsFences(wxUpdateUIEvent& event);
 	void OnToolsBuildings(wxCommandEvent& event);
 	void OnUpdateToolsBuildings(wxUpdateUIEvent& event);
-	void OnToolsRoutes(wxCommandEvent& event);
-	void OnUpdateToolsRoutes(wxUpdateUIEvent& event);
+	void OnToolsPower(wxCommandEvent& event);
+	void OnUpdateToolsPower(wxUpdateUIEvent& event);
 	void OnToolsPlants(wxCommandEvent& event);
 	void OnUpdateToolsPlants(wxUpdateUIEvent& event);
 	void OnToolsPoints(wxCommandEvent& event);
