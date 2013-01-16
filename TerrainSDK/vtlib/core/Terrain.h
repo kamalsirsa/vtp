@@ -384,7 +384,6 @@ protected:
 	void _CreateAbstractLayers();
 	void _CreateImageLayers();
 	void _CreateTextures(const FPoint3 &light_dir, bool progress_callback(int) = NULL);
-	void _CreateDetailTexture();
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
@@ -457,7 +456,6 @@ protected:
 	float	m_fPagingStructureDist;
 
 	vtMaterialArrayPtr m_pTerrMats;		// materials for the LOD terrain
-	vtMaterialArrayPtr m_pDetailMats;	// and detail texture
 	vtMaterialArrayPtr m_pEphemMats;	// and ephemeris
 	int				m_idx_water;
 	bool			m_bBothSides;	// show both sides of terrain materials

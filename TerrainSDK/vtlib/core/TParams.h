@@ -282,8 +282,6 @@ Color_Map
 Texture_Retain
 Detail_Texture
 DTexture_Name
-DTexture_Scale
-DTexture_Distance
 Roads
 Road_File
 Highway
@@ -395,11 +393,7 @@ private:
 #define STR_TIMESPEED "Time_Speed"
 
 #define STR_TEXTURE "Texture"	// 0=none, 1=single, 3=derived, 4=tileset
-//#define STR_TILESIZE "Tile_Size"				// obsolete
 #define STR_TEXTUREFILE "Texture_Filename"
-//#define STR_TEXTUREBASE "Base_Texture"		// obsolete
-//#define STR_TEXTURE4BY4 "Texture_4by4"		// obsolete
-//#define STR_TEXTUREFORMAT "Texture_Format"	// 0=bmp, 1=jpg; obsolete
 #define STR_TEXTURE_GRADUAL "Texture_Gradual"
 #define STR_TEXURE_LOD_FACTOR "Texture_LOD_Factor"
 #define STR_MIPMAP "MIP_Map"
@@ -410,10 +404,8 @@ private:
 #define STR_COLOR_MAP "Color_Map"
 #define STR_TEXTURE_RETAIN "Texture_Retain"
 
-#define STR_DETAILTEXTURE "Detail_Texture"
+#define STR_DETAILTEXTURE "Detail_Texture"	// Current unused; may happen someday
 #define STR_DTEXTURE_NAME "DTexture_Name"
-#define STR_DTEXTURE_SCALE "DTexture_Scale"
-#define STR_DTEXTURE_DISTANCE "DTexture_Distance"
 
 #define STR_ROADS "Roads"
 #define STR_ROADFILE "Road_File"

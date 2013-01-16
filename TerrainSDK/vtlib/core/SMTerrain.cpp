@@ -241,7 +241,6 @@ DTErr SMTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	m_iPolygonTarget = DEFAULT_POLYGON_TARGET;
 	m_fQualityConstant= 0.1f;		// safe initial value
 	m_iDrawnTriangles = -1;
-	hack_detail_pass = false;
 
 	return DTErr_OK;
 }
@@ -957,13 +956,6 @@ void SMTerrain::render_triangle_single(BinTri *pTri, int v0, int v1, int va)
 	default:			glColor3f(0.0f, 1.0f, 0.0f); break;
 	}
 #endif
-	if (hack_detail_pass)
-	{
-		float dist = (DistanceToTriangle(v0) + DistanceToTriangle(v0))/2;
-		// fade out over 1 km
-		if (dist > m_fDetailDistance) return;
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f - dist / m_fDetailDistance);
-	}
 	Begin(GL_TRIANGLES);
 
 	send_vertex(v0);
@@ -975,7 +967,7 @@ void SMTerrain::render_triangle_single(BinTri *pTri, int v0, int v1, int va)
 	if (verts_in_buffer == VERTEX_BUFFER_SIZE)
 		flush_buffer(GL_TRIANGLES);
 #endif
-	if (!hack_detail_pass) m_iDrawnTriangles++;
+	m_iDrawnTriangles++;
 }
 
 
@@ -1054,20 +1046,7 @@ void SMTerrain::RenderSurface()
 
 			LoadSingleMaterial();
 
-			hack_detail_pass = false;
 			RenderBlock(block);
-
-			if (m_bDetailTexture)
-			{
-				// once again, with the detail texture
-				ApplyMaterial(m_pDetailMat);
-				SetupTexGen(m_fDetailTiling);
-				hack_detail_pass = true;
-				glPolygonOffset(-1.0f, -1.0f);
-				glEnable(GL_POLYGON_OFFSET_FILL);
-				RenderBlock(block);	// NOT as fans?
-				glDisable(GL_POLYGON_OFFSET_FILL);
-			}
 		}
 	}
 	DisableTexGen();

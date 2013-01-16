@@ -273,23 +273,6 @@ void SRTerrain::RenderSurface()
 	LoadSingleMaterial();
 
 	RenderPass();
-
-	// how to do a second rendering pass
-	if (m_bDetailTexture)
-	{
-		// once again, with the detail texture material
-		ApplyMaterial(m_pDetailMat);
-
-		// the uv tiling is different (usually highly repetitive)
-		SetupTexGen(m_fDetailTiling);
-
-		// draw the second pass
-		glPolygonOffset(-1.0f, -1.0f);
-		glEnable(GL_POLYGON_OFFSET_FILL);
-		RenderPass();
-		glDisable(GL_POLYGON_OFFSET_FILL);
-	}
-	DisableTexGen();
 }
 
 void SRTerrain::RenderPass()

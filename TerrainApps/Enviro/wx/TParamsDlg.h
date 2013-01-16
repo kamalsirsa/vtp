@@ -100,8 +100,6 @@ public:
 	// detail texture
 	bool	m_bDetailTexture;
 	wxString m_strDetailName;
-	float	m_fDetailScale;
-	float	m_fDetailDistance;
 
 	// culture
 	bool	m_bRoads;

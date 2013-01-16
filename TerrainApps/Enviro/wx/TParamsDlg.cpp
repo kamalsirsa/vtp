@@ -253,8 +253,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// detail texture
 	AddValidator(this, ID_DETAILTEXTURE, &m_bDetailTexture);
 	AddValidator(this, ID_DT_NAME, &m_strDetailName);
-	AddNumValidator(this, ID_DT_SCALE, &m_fDetailScale);
-	AddNumValidator(this, ID_DT_DISTANCE, &m_fDetailDistance);
 
 	// culture page
 	AddNumValidator(this, ID_VEGDISTANCE, &m_iVegDistance);
@@ -403,8 +401,6 @@ void TParamsDlg::SetParams(const TParams &Params)
 	// detail texture
 	m_bDetailTexture =  Params.GetValueBool(STR_DETAILTEXTURE);
 	m_strDetailName = wxString(Params.GetValueString(STR_DTEXTURE_NAME), wxConvUTF8);
-	m_fDetailScale = Params.GetValueFloat(STR_DTEXTURE_SCALE);
-	m_fDetailDistance = Params.GetValueFloat(STR_DTEXTURE_DISTANCE);
 
 	// culture
 	m_bRoads =			Params.GetValueBool(STR_ROADS);
@@ -560,8 +556,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	// detail texture
 	Params.SetValueBool(STR_DETAILTEXTURE, m_bDetailTexture);
 	Params.SetValueString(STR_DTEXTURE_NAME, (const char *) m_strDetailName.mb_str(wxConvUTF8));
-	Params.SetValueFloat(STR_DTEXTURE_SCALE, m_fDetailScale);
-	Params.SetValueFloat(STR_DTEXTURE_DISTANCE, m_fDetailDistance);
 
 	// culture
 	Params.SetValueBool(STR_ROADS, m_bRoads);
@@ -661,8 +655,6 @@ void TParamsDlg::UpdateEnableState()
 
 	FindWindow(ID_DETAILTEXTURE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY);
 	FindWindow(ID_DT_NAME)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
-	FindWindow(ID_DT_SCALE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
-	FindWindow(ID_DT_DISTANCE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
 
 	FindWindow(ID_ROADFILE)->Enable(m_bRoads);
 	FindWindow(ID_ROADHEIGHT)->Enable(m_bRoads);

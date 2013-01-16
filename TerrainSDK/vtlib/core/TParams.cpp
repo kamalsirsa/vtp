@@ -96,8 +96,6 @@ TParams::TParams() : vtTagArray()
 
 	AddTag(STR_DETAILTEXTURE, "false");
 	AddTag(STR_DTEXTURE_NAME, "");
-	AddTag(STR_DTEXTURE_SCALE, "1");
-	AddTag(STR_DTEXTURE_DISTANCE, "1000");
 
 	AddTag(STR_ROADS, "false");
 	AddTag(STR_ROADFILE, "");

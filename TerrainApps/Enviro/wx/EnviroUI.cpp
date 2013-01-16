@@ -2280,6 +2280,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer13;
 	bSizer13 = new wxBoxSizer( wxVERTICAL );
 	
+	bSizer13->SetMinSize( wxSize( 600,-1 ) ); 
 	wxBoxSizer* bSizer14;
 	bSizer14 = new wxBoxSizer( wxHORIZONTAL );
 	
@@ -2600,28 +2601,10 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer36;
 	bSizer36 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_text10 = new wxStaticText( TParamsPanel2, ID_TEXT, _("Scale"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text10->Wrap( 0 );
-	bSizer36->Add( m_text10, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_dt_scale = new wxTextCtrl( TParamsPanel2, ID_DT_SCALE, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
-	bSizer36->Add( m_dt_scale, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
 	sbSizer8->Add( bSizer36, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
-	
-	m_text11 = new wxStaticText( TParamsPanel2, ID_TEXT, _("(meter size of detail texture)"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text11->Wrap( -1 );
-	sbSizer8->Add( m_text11, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	wxBoxSizer* bSizer37;
 	bSizer37 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text12 = new wxStaticText( TParamsPanel2, ID_TEXT, _("Distance"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text12->Wrap( 0 );
-	bSizer37->Add( m_text12, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_dt_distance = new wxTextCtrl( TParamsPanel2, ID_DT_DISTANCE, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
-	bSizer37->Add( m_dt_distance, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	sbSizer8->Add( bSizer37, 0, wxALIGN_CENTER_VERTICAL, 5 );
 	
@@ -2633,6 +2616,27 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	TParamsPanel2->Layout();
 	bSizer24->Fit( TParamsPanel2 );
 	m_notebook->AddPage( TParamsPanel2, _("Texture"), false );
+	TParamsPanelPlus = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer241;
+	bSizer241 = new wxBoxSizer( wxHORIZONTAL );
+	
+	wxStaticBoxSizer* sbSizer71;
+	sbSizer71 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanelPlus, wxID_ANY, _("Elevation Layers") ), wxHORIZONTAL );
+	
+	id_elevfiles = new wxListBox( TParamsPanelPlus, ID_ELEVFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
+	id_elevfiles->SetMinSize( wxSize( -1,100 ) );
+	
+	sbSizer71->Add( id_elevfiles, 1, wxALL, 5 );
+	
+	m_set_texture = new wxButton( TParamsPanelPlus, ID_SET_TEXTURE, _("Set Texture"), wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer71->Add( m_set_texture, 0, wxALL, 5 );
+	
+	bSizer241->Add( sbSizer71, 2, wxALL, 5 );
+	
+	TParamsPanelPlus->SetSizer( bSizer241 );
+	TParamsPanelPlus->Layout();
+	bSizer241->Fit( TParamsPanelPlus );
+	m_notebook->AddPage( TParamsPanelPlus, _("Plus"), false );
 	TParamsPanel3 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer38;
 	bSizer38 = new wxBoxSizer( wxHORIZONTAL );

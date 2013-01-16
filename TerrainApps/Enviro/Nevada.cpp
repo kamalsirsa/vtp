@@ -136,6 +136,7 @@ void NevadaTerrain::CreateWater()
 
 void NevadaTerrain::CreateDetailTextures()
 {
+#if 0
 	vtString str;
 
 	str = FindFileOnPaths(vtGetDataPath(), "Nevada/playa3.png");
@@ -171,6 +172,7 @@ void NevadaTerrain::CreateDetailTextures()
 	m_pDetailMat2 = m_pMats->at(id);
 	m_pDynGeom->SetDetailMaterial(m_pDetailMat,
 		DETAIL_TILING, DETAIL_DISTANCE);
+#endif
 }
 
 
@@ -552,8 +554,8 @@ void EpochEngine::Eval()
 				diffuse = pMaterial->GetDiffuse();
 				diffuse.a = alpha;
 				pMaterial->SetDiffuse(diffuse);
-				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPastMat,
-					DETAIL_TILING, DETAIL_DISTANCE);
+				//m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPastMat,
+				//	DETAIL_TILING, DETAIL_DISTANCE);
 			}
 			else
 			{
@@ -563,8 +565,8 @@ void EpochEngine::Eval()
 				diffuse = pMaterial->GetDiffuse();
 				diffuse.a = alpha;
 				pMaterial->SetDiffuse(diffuse);
-				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPresentMat,
-					DETAIL_TILING, DETAIL_DISTANCE);
+				//m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPresentMat,
+				//	DETAIL_TILING, DETAIL_DISTANCE);
 			}
 		}
 	}

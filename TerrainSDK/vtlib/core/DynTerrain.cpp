@@ -17,8 +17,6 @@ vtDynTerrainGeom::vtDynTerrainGeom() : vtDynGeom(), vtHeightFieldGrid3d()
 
 	m_bCulleveryframe = true;
 	m_bCullonce = false;
-	m_bDetailTexture = false;
-	m_pDetailMat = NULL;
 
 	m_fXLookup = m_fZLookup = NULL;
 }
@@ -243,19 +241,6 @@ void vtDynTerrainGeom::SetPolygonTarget(int iCount)
 int vtDynTerrainGeom::GetPolygonTarget() const
 {
 	return m_iPolygonTarget;
-}
-
-void vtDynTerrainGeom::SetDetailMaterial(vtMaterial *pMat, float fTiling, float fDistance)
-{
-	m_pDetailMat = pMat;
-	m_bDetailTexture = (m_pDetailMat != NULL);
-	m_fDetailTiling = fTiling;
-	m_fDetailDistance = fDistance;
-}
-
-void vtDynTerrainGeom::EnableDetail(bool bOn)
-{
-	m_bDetailTexture = (m_pDetailMat != NULL && bOn);
 }
 
 /**

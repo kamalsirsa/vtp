@@ -120,7 +120,6 @@ typedef Block *BlockPtr;
 	 -# Initialize it with a LocalGrid to provide height values
 	 -# add it to your scene graph
 	 -# set the desired level detail with SetPolygonTarget()
-	 -# for a detail texture, call SetDetailMaterial()
 	 -# let the scene graph API render the terrain for you each frame
  */
 class SMTerrain : public vtDynTerrainGeom
@@ -208,8 +207,6 @@ private:
 	// the two root triangles of the binary triangle trees
 	BinTri *m_pNWTri;
 	BinTri *m_pSETri;
-
-	bool hack_detail_pass;
 };
 
 /*@}*/	// Group dynterr

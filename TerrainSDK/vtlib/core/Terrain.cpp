@@ -54,7 +54,6 @@ vtTerrain::vtTerrain()
 	m_bShadows = false;
 
 	m_pTerrMats = new vtMaterialArray;
-	m_pDetailMats = new vtMaterialArray;
 	m_pEphemMats = new vtMaterialArray;
 	m_idx_water = -1;
 	m_bBothSides = false;
@@ -439,52 +438,6 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 	}
 
 	VTLOG("  Total CreateTextures: %.2f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
-}
-
-//
-// prepare detail texture
-//
-void vtTerrain::_CreateDetailTexture()
-{
-	// We only support detail texture on certain dynamic LOD algorithms
-	if (!m_pDynGeom)
-		return;
-
-	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
-	vtString fname = m_Params.GetValueString(STR_DTEXTURE_NAME);
-	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
-	if (path == "")
-	{
-		vtString prefix = "GeoTypical/";
-		path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
-		if (path == "")
-			return;
-	}
-	vtDIB dib;
-	if (!dib.Read(path))
-		return;
-
-	vtImagePtr pDetailTexture = new vtImage(&dib);
-
-	int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
-					 true,	// culling
-					 false,	// lighting
-					 true,	// transp: blend
-					 false,	// additive
-					 0.0f, 1.0f,	// ambient, diffuse
-					 0.5f, 0.0f,	// alpha, emmisive
-					 true, false,	// texgen, clamp
-					 true);			// mipmap
-	vtMaterial *pDetailMat = m_pDetailMats->at(index);
-
-	float scale = m_Params.GetValueFloat(STR_DTEXTURE_SCALE);
-	float dist = m_Params.GetValueFloat(STR_DTEXTURE_DISTANCE);
-
-	FRECT r = m_pHeightField->m_WorldExtents;
-	float width_meters = r.Width();
-	m_pDynGeom->SetDetailMaterial(pDetailMat, width_meters / scale, dist);
 }
 
 //
@@ -2325,9 +2278,6 @@ bool vtTerrain::CreateStep5()
 		float time = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
 		VTLOG("CLOD construction: %.3f seconds.\n", time);
 	}
-
-	if (m_Params.GetValueBool(STR_DETAILTEXTURE))
-		_CreateDetailTexture();
 
 	return true;
 }

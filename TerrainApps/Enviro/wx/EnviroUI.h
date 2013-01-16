@@ -257,8 +257,8 @@
 #define ID_RETAIN 1210
 #define ID_DETAILTEXTURE 1211
 #define ID_DT_NAME 1212
-#define ID_DT_SCALE 1213
-#define ID_DT_DISTANCE 1214
+#define ID_ELEVFILES 1213
+#define ID_SET_TEXTURE 1214
 #define ID_PLANTFILES 1215
 #define ID_VEGDISTANCE 1216
 #define ID_TREES_USE_SHADERS 1217
@@ -993,11 +993,9 @@ class TParamsDlgBase : public wxDialog
 		wxCheckBox* m_retain;
 		wxCheckBox* m_detailtexture;
 		wxComboBox* m_dt_name;
-		wxStaticText* m_text10;
-		wxTextCtrl* m_dt_scale;
-		wxStaticText* m_text11;
-		wxStaticText* m_text12;
-		wxTextCtrl* m_dt_distance;
+		wxPanel* TParamsPanelPlus;
+		wxListBox* id_elevfiles;
+		wxButton* m_set_texture;
 		wxPanel* TParamsPanel3;
 		wxListBox* id_plantfiles;
 		wxStaticText* m_text14;

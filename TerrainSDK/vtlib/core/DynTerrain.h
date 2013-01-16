@@ -50,9 +50,6 @@ public:
 
 	int NumDrawnTriangles() const;
 
-	void SetDetailMaterial(vtMaterial *pApp, float fTiling, float fDistance);
-	void EnableDetail(bool bOn);
-	bool GetDetail() { return m_bDetailTexture; }
 	void SetupTexGen(float fTiling);
 	void DisableTexGen();
 
@@ -93,12 +90,6 @@ protected:
 	// flags
 	bool m_bCulleveryframe;
 	bool m_bCullonce;
-
-	// detail texture
-	float m_fDetailTiling;
-	float m_fDetailDistance;
-	bool m_bDetailTexture;
-	vtMaterial *m_pDetailMat;
 
 protected:
 	~vtDynTerrainGeom();
