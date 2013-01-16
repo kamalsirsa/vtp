@@ -425,7 +425,6 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 			ambient, diffuse,
 			1.0f,			// alpha
 			0.0f,			// emmisive,
-			true,			// texgen
 			false,			// clamp
 			bMipmap);
 	}
@@ -436,7 +435,6 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback
 		mat->SetTexture(m_pSingleImage);
 		mat->ModifiedTexture();
 	}
-
 	VTLOG("  Total CreateTextures: %.2f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
 }
 
@@ -819,7 +817,6 @@ void vtTerrain::MakeWaterMaterial()
 			1.0f,				// diffuse
 			0.5,				// alpha
 			TERRAIN_EMISSIVE,	// emissive
-			false,				// texgen
 			false,				// clamp
 			false);				// don't mipmap: allowing texture aliasing to
 								// occur, it actually looks more water-like
@@ -1609,7 +1606,7 @@ vtMultiTexture *vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &
 	if (iTextureUnit == -1)
 		return NULL;
 
-		// Calculate the mapping of texture coordinates
+	// Calculate the mapping of texture coordinates
 	DPoint2 scale;
 	FPoint2 offset;
 	vtHeightFieldGrid3d *grid = GetDynTerrain();
@@ -2206,10 +2203,13 @@ bool vtTerrain::CreateFromTIN()
 {
 	bool bDropShadow = true;
 
-	// build heirarchy (add terrain to scene graph)
+	// If we are using a single texture, then use that existing texture material
+	// for the TIN.  Otherwise, the TIN will color and texture itself.
 	int tex = m_Params.GetValueInt(STR_TEXTURE);
 	if (tex == 1)
 		m_pTin->SetTextureMaterials(m_pTerrMats);
+
+	// Make the TIN's geometry.
 	vtGeode *geode = m_pTin->CreateGeometry(bDropShadow);
 	geode->SetCastShadow(false);
 	m_pTerrainGroup->addChild(geode);

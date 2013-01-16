@@ -832,7 +832,7 @@ void EnviroFrame::SetMode(MouseMode mode)
 
 void EnviroFrame::LoadClouds(const char *fname)
 {
-	osg::ref_ptr<osg::Image> input = osgDB::readImageFile(fname);
+	ImagePtr input = osgDB::readImageFile(fname);
 	if (input.valid())
 	{
 		int depth = input->getPixelSizeInBits();

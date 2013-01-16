@@ -352,7 +352,7 @@ float CVisualImpactCalculatorOSG::InnerImplementation() const
 
 #define DUMP_VIA_IMAGE
 #ifdef DUMP_VIA_IMAGE
-	osg::ref_ptr<osg::Image> pDebugImage = new osg::Image;
+	ImagePtr pDebugImage = new osg::Image;
 	pDebugImage->allocateImage(DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							DEFAULT_VISUAL_IMPACT_RESOLUTION,
 							1,

@@ -155,8 +155,7 @@ void NevadaTerrain::CreateDetailTextures()
 						 true,	// transp: blend
 						 false,	// add
 						 0.3f, 0.6f,	// ambient, diffuse
-						 1.0f, 0.1f,	// alpha, emmisive
-						 true);			// texgen
+						 1.0f, 0.1f);
 	m_pDetailMat = m_pMats->at(id);
 	m_pDetailMat->SetMipMap(true);
 
@@ -167,8 +166,7 @@ void NevadaTerrain::CreateDetailTextures()
 					 true,	// transp: blend
 					 false, // add
 					 0.3f, 0.6f,	// ambient, diffuse
-					 1.0f, 0.1f,	// alpha, emmisive
-					 true);			// texgen
+					 1.0f, 0.1f);	// alpha, emmisive
 	m_pDetailMat2 = m_pMats->at(id);
 	m_pDynGeom->SetDetailMaterial(m_pDetailMat,
 		DETAIL_TILING, DETAIL_DISTANCE);

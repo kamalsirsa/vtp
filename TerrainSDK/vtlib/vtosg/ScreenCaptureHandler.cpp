@@ -22,7 +22,7 @@ void CScreenCaptureHandler::operator () (osg::RenderInfo& renderInfo) const
 	glReadBuffer(GL_BACK);
 
 	// Create a new image object
-	osg::ref_ptr<osg::Image> pImage = new osg::Image;
+	ImagePtr pImage = new osg::Image;
 
 	// Read the pixels
     osg::GraphicsContext* gc = renderInfo.getState()->getGraphicsContext();

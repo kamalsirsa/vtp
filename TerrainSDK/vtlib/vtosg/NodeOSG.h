@@ -131,7 +131,7 @@ public:
 	int	m_iMode;
 #endif
 	osg::Node *m_pNode;
-	osg::ref_ptr<osg::Texture2D> m_pTexture;
+	TexturePtr m_pTexture;
 };
 
 
@@ -145,7 +145,7 @@ osg::Node *FindDescendent(osg::Group *node, const char *pName);
 void InsertNodeAbove(osg::Node *node, osg::Group *newnode);
 void InsertNodeBelow(osg::Group *group, osg::Group *newnode);
 
-vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, vtImage *pImage,
+vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, osg::Image *pImage,
 								int iTextureMode, const FPoint2 &scale, const FPoint2 &offset);
 void EnableMultiTexture(osg::Node *node, vtMultiTexture *mt, bool bEnable);
 bool MultiTextureIsEnabled(osg::Node *node, vtMultiTexture *mt);

@@ -69,7 +69,7 @@ void vtTin3d::MakeSurfaceMaterials()
 		}
 
 		m_pMats->AddTextureMaterial(path, false, bLighting, false, false,
-			fAmbient, 1.0f, 1.0f, 0.0f, false, false, true);
+			fAmbient, 1.0f, 1.0f, 0.0f, false, true);	// No clamp, yes mipmap.
 	}
 }
 

@@ -75,7 +75,7 @@ bool CSaveImageOSG::SaveImage(std::string& FilePath, int Width, int Height)
 	if (!pCamera.valid())
 		return false;
 
-	osg::ref_ptr<osg::Image> pImage = new osg::Image;
+	ImagePtr pImage = new osg::Image;
 	if (!pImage.valid())
 	{
 		pCamera = NULL;

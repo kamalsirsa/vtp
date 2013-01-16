@@ -394,14 +394,16 @@ private:
 
 #define STR_TEXTURE "Texture"	// 0=none, 1=single, 3=derived, 4=tileset
 #define STR_TEXTUREFILE "Texture_Filename"
+#define STR_COLOR_MAP "Color_Map"
+#define STR_TEXTURE_GEOTYPICAL "Texture_Geotypical"
+#define STR_GEOTYPICAL_SCALE "Texture_Geotypical_Scale"
 #define STR_TEXTURE_GRADUAL "Texture_Gradual"
 #define STR_TEXURE_LOD_FACTOR "Texture_LOD_Factor"
-#define STR_MIPMAP "MIP_Map"
-#define STR_REQUEST16BIT "Request_16_Bit"
 #define STR_PRELIGHT "Pre-Light"
 #define STR_PRELIGHTFACTOR "PreLight_Factor"
 #define STR_CAST_SHADOWS "Cast_Shadows"
-#define STR_COLOR_MAP "Color_Map"
+#define STR_MIPMAP "MIP_Map"
+#define STR_REQUEST16BIT "Request_16_Bit"
 #define STR_TEXTURE_RETAIN "Texture_Retain"
 
 #define STR_DETAILTEXTURE "Detail_Texture"	// Current unused; may happen someday

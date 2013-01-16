@@ -85,8 +85,11 @@ public:
 
 	// texture
 	int	 m_iTexture;
-	wxString   m_strTextureSingle;
-	wxString   m_strTextureTileset;
+	wxString m_strTextureSingle;
+	wxString m_strColorMap;
+	wxString m_strTextureGeotypical;
+	float	m_fGeotypicalScale;
+	wxString m_strTextureTileset;
 	bool	m_bTextureGradual;
 	float	m_fTextureLODFactor;
 	bool	m_bMipmap;
@@ -94,7 +97,6 @@ public:
 	bool	m_bPreLight;
 	float   m_fPreLightFactor;
 	bool	m_bCastShadows;
-	wxString   m_strColorMap;
 	bool	m_bTextureRetain;
 
 	// detail texture
@@ -168,7 +170,6 @@ public:
 	std::vector<ScenarioParams> m_Scenarios;
 
 	// WDR: method declarations for TParamsDlg
-	wxTextCtrl* GetTtExternalData()  { return (wxTextCtrl*) FindWindow( ID_TT_EXTERNAL_DATA ); }
 	wxRadioButton* GetUseExternal()  { return (wxRadioButton*) FindWindow( ID_USE_EXTERNAL ); }
 	wxChoice* GetScenarios()  { return (wxChoice*) FindWindow( ID_CHOICE_SCENARIO ); }
 	wxButton* GetMovedownScenario()  { return (wxButton*) FindWindow( ID_MOVEDOWN_SCENARIO ); }
@@ -177,37 +178,26 @@ public:
 	wxButton* GetDeleteScenario()  { return (wxButton*) FindWindow( ID_DELETE_SCENARIO ); }
 	wxListBox* GetScenarioList()  { return (wxListBox*) FindWindow( ID_SCENARIO_LIST ); }
 	wxListBox* GetAnimPaths()  { return (wxListBox*) FindWindow( ID_ANIM_PATHS ); }
-	wxComboBox* GetDTName()  { return (wxComboBox*) FindWindow( ID_DT_NAME ); }
 	wxChoice* GetColorMap()  { return (wxChoice*) FindWindow( ID_CHOICE_COLORS ); }
 	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
 	wxChoice* GetChoiceShadowRez()  { return (wxChoice*) FindWindow( ID_CHOICE_SHADOW_REZ ); }
 	wxCheckBox* GetCheckStructureShadows()  { return (wxCheckBox*) FindWindow( ID_CHECK_STRUCTURE_SHADOWS ); }
-	wxComboBox* GetContentFile()  { return (wxComboBox*) FindWindow( ID_CONTENT_FILE ); }
 	wxChoice* GetNavStyle()  { return (wxChoice*) FindWindow( ID_NAV_STYLE ); }
 	wxRadioButton* GetUseGrid()  { return (wxRadioButton*) FindWindow( ID_USE_GRID ); }
 	wxRadioButton* GetUseTin()  { return (wxRadioButton*) FindWindow( ID_USE_TIN ); }
 	wxRadioButton* GetUseTileset()  { return (wxRadioButton*) FindWindow( ID_USE_TILESET ); }
-	wxComboBox* GetLocfile()  { return (wxComboBox*) FindWindow( ID_LOCFILE ); }
 	wxRadioButton* GetTileset()  { return (wxRadioButton*) FindWindow( ID_TILESET ); }
 	wxRadioButton* GetDerived()  { return (wxRadioButton*) FindWindow( ID_DERIVED ); }
 	wxRadioButton* GetSingle()  { return (wxRadioButton*) FindWindow( ID_SINGLE ); }
 	wxRadioButton* GetNone()  { return (wxRadioButton*) FindWindow( ID_NONE ); }
 	wxTextCtrl* GetLightFactor()  { return (wxTextCtrl*) FindWindow( ID_LIGHT_FACTOR ); }
-	wxComboBox* GetRoadfile()  { return (wxComboBox*) FindWindow( ID_ROADFILE ); }
-	wxComboBox* GetTfileSingle()  { return (wxComboBox*) FindWindow( ID_TFILE_SINGLE ); }
-	wxComboBox* GetTfileTileset()  { return (wxComboBox*) FindWindow( ID_TFILE_TILESET ); }
 	wxChoice* GetLodmethod()  { return (wxChoice*) FindWindow( ID_LODMETHOD ); }
-	wxComboBox* GetFilename()  { return (wxComboBox*) FindWindow( ID_FILENAME ); }
-	wxComboBox* GetFilenameTin()  { return (wxComboBox*) FindWindow( ID_FILENAME_TIN ); }
-	wxComboBox* GetFilenameTileset()  { return (wxComboBox*) FindWindow( ID_FILENAME_TILES ); }
-	wxComboBox* GetSkytexture()  { return (wxComboBox*) FindWindow( ID_SKYTEXTURE ); }
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
 	wxChoice* GetLocField()  { return (wxChoice*) FindWindow( ID_INIT_LOCATION ); }
 	wxListBox* GetStructFiles()  { return (wxListBox*) FindWindow( ID_STRUCTFILES ); }
 	wxListBox* GetPlantFiles()  { return (wxListBox*) FindWindow( ID_PLANTFILES ); }
 	wxListBox* GetRawFiles()  { return (wxListBox*) FindWindow( ID_RAWFILES ); }
 	wxListBox* GetImageFiles()  { return (wxListBox*) FindWindow( ID_IMAGEFILES ); }
-	wxComboBox* GetFilenameWater()  { return (wxComboBox*) FindWindow( ID_FILENAME_WATER ); }
 
 	bool	m_bReady;
 	bool	m_bSetting;
@@ -215,33 +205,23 @@ public:
 
 private:
 	// WDR: member variable declarations for TParamsDlg
-	wxComboBox* m_pFilename;
-	wxComboBox* m_pFilenameTin;
-	wxComboBox* m_pFilenameTileset;
 	wxListBox* m_pAnimFiles;
 	wxListBox* m_pRawFiles;
-	wxComboBox* m_pDTName;
 	wxChoice* m_pNavStyle;
 	wxTextCtrl* m_pPreLightFactor;
 	wxListBox* m_pStructFiles;
 	wxListBox* m_pPlantFiles;
 	wxListBox* m_pImageFiles;
-	wxComboBox* m_pRoadFile;
-	wxComboBox* m_pTextureFileSingle;
-	wxComboBox* m_pTextureFileTileset;
 	wxChoice* m_pLodMethod;
 	wxRadioButton* m_pNone;
 	wxRadioButton* m_pSingle;
 	wxRadioButton* m_pDerived;
 	wxRadioButton* m_pTiled;
 	wxRadioButton* m_pTileset;
-	wxComboBox* m_pLocFile;
-	wxComboBox* m_pSkyTexture;
 	wxChoice* m_pLocField;
 	wxChoice* m_pShadowRez;
 	wxChoice* m_pColorMap;
 	wxListBox* m_pScenarioList;
-	wxComboBox* m_pFilenameWater;
 
 private:
 	// WDR: handler declarations for TParamsDlg

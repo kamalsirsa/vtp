@@ -41,8 +41,8 @@ protected:
 	mutable osg::Matrix m_ProjectionMatrix;
 	mutable bool m_bUsingLiveFrameBuffer;
 	mutable bool m_bInitialised;
-	osg::ref_ptr<osg::Image> m_pIntermediateImage;
-	osg::ref_ptr<osg::Image> m_pFinalImage;
+	ImagePtr m_pIntermediateImage;
+	ImagePtr m_pFinalImage;
 	osg::ref_ptr<osg::Camera> m_pVisualImpactCamera;
 	typedef std::set<osg::Node*> VisualImpactContributors;
 	VisualImpactContributors m_VisualImpactContributors;

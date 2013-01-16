@@ -171,20 +171,10 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pRawFiles = GetRawFiles();
 	m_pAnimFiles = GetAnimPaths();
 	m_pImageFiles = GetImageFiles();
-	m_pRoadFile = GetRoadfile();
-	m_pTextureFileSingle = GetTfileSingle();
-	m_pTextureFileTileset = GetTfileTileset();
-	m_pDTName = GetDTName();
 	m_pLodMethod = GetLodmethod();
-	m_pFilename = GetFilename();
-	m_pFilenameTin = GetFilenameTin();
-	m_pFilenameTileset = GetFilenameTileset();
-	m_pLocFile = GetLocfile();
 	m_pShadowRez = GetChoiceShadowRez();
-	m_pSkyTexture = GetSkytexture();
 	m_pLocField = GetLocField();
 	m_pNavStyle = GetNavStyle();
-	m_pFilenameWater = GetFilenameWater();
 
 	m_pNone = GetNone();
 	m_pSingle = GetSingle();
@@ -239,15 +229,19 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	// texture
 	AddValidator(this, ID_TFILE_SINGLE, &m_strTextureSingle);
+	AddValidator(this, ID_TFILE_GEOTYPICAL, &m_strTextureGeotypical);
+	AddNumValidator(this, ID_GEOTYPICAL_SCALE, &m_fGeotypicalScale);
+	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
+
 	AddValidator(this, ID_TFILE_TILESET, &m_strTextureTileset);
 	AddValidator(this, ID_TEXTURE_GRADUAL, &m_bTextureGradual);
 	AddNumValidator(this, ID_TEX_LOD, &m_fTextureLODFactor);
+
 	AddValidator(this, ID_MIPMAP, &m_bMipmap);
 	AddValidator(this, ID_16BIT, &m_b16bit);
 	AddValidator(this, ID_PRELIGHT, &m_bPreLight);
 	AddValidator(this, ID_CAST_SHADOWS, &m_bCastShadows);
 	AddNumValidator(this, ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
-	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
 	AddValidator(this, ID_RETAIN, &m_bTextureRetain);
 
 	// detail texture
@@ -384,6 +378,8 @@ void TParamsDlg::SetParams(const TParams &Params)
 
 	// derived
 	m_strColorMap = wxString(Params.GetValueString(STR_COLOR_MAP), wxConvUTF8);
+	m_strTextureGeotypical = wxString(Params.GetValueString(STR_TEXTURE_GEOTYPICAL), wxConvUTF8);
+	m_fGeotypicalScale = Params.GetValueFloat(STR_GEOTYPICAL_SCALE);
 
 	// tileset
 	if (m_iTexture == TE_TILESET)
@@ -537,6 +533,9 @@ void TParamsDlg::GetParams(TParams &Params)
 	if (m_iTexture != TE_TILESET)
 		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle.mb_str(wxConvUTF8));
 
+	// geotypical
+	Params.SetValueString(STR_TEXTURE_GEOTYPICAL, (const char *) m_strTextureGeotypical.mb_str(wxConvUTF8));
+
 	// derived
 	Params.SetValueString(STR_COLOR_MAP, (const char *) m_strColorMap.mb_str(wxConvUTF8));
 
@@ -623,10 +622,10 @@ void TParamsDlg::GetParams(TParams &Params)
 
 void TParamsDlg::UpdateEnableState()
 {
-	GetTtExternalData()->Enable(m_bExternal);
-	GetFilename()->Enable(m_bGrid);
-	GetFilenameTin()->Enable(m_bTin);
-	GetFilenameTileset()->Enable(m_bTileset);
+	m_tt_external_data->Enable(m_bExternal);
+	m_filename->Enable(m_bGrid);
+	m_filename_tin->Enable(m_bTin);
+	m_filename_tileset->Enable(m_bTileset);
 
 	FindWindow(ID_LODMETHOD)->Enable(m_bGrid);
 	FindWindow(ID_TRI_COUNT)->Enable(m_bGrid);
@@ -677,7 +676,7 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_OCEANPLANEOFFSET)->Enable(m_bOceanPlane);
 	FindWindow(ID_FILENAME_WATER)->Enable(m_bWater);
 	FindWindow(ID_DEPRESSOCEANOFFSET)->Enable(m_bDepressOcean);
-	GetSkytexture()->Enable(m_bSky);
+	m_skytexture->Enable(m_bSky);
 	GetFogDistance()->Enable(m_bFog);
 
 	int iSelected = m_pScenarioList->GetSelection();
@@ -812,12 +811,12 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	int sel;
 
 	// Clear drop-down controls before putting values into them
-	m_pFilename->Clear();
-	m_pFilenameTin->Clear();
-	m_pFilenameTileset->Clear();
-	m_pTextureFileSingle->Clear();
-	m_pTextureFileTileset->Clear();
-	m_pFilenameWater->Clear();
+	m_filename->Clear();
+	m_filename_tin->Clear();
+	m_filename_tileset->Clear();
+	m_tfile_single->Clear();
+	m_tfile_geotypical->Clear();
+	m_filename_water->Clear();
 
 	vtStringArray &paths = vtGetDataPath();
 
@@ -833,82 +832,106 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.png");
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.tif");
 
+		// fill the "geotypical" control with available bitmap files
+		AddFilenamesToComboBox(m_tfile_geotypical, paths[i] + "GeoTypical", "*.bmp");
+		AddFilenamesToComboBox(m_tfile_geotypical, paths[i] + "GeoTypical", "*.jpg");
+		AddFilenamesToComboBox(m_tfile_geotypical, paths[i] + "GeoTypical", "*.png");
+
 		// fill the "Grid filename" control with available files
-		AddFilenamesToComboBox(m_pFilename, paths[i] + "Elevation", "*.bt*");
-		sel = m_pFilename->FindString(m_strFilename);
-		if (sel != -1)
-			m_pFilename->SetSelection(sel);
+		AddFilenamesToComboBox(m_filename, paths[i] + "Elevation", "*.bt*");
 
 		// fill the "TIN filename" control with available files
-		AddFilenamesToComboBox(m_pFilenameTin, paths[i] + "Elevation", "*.tin");
-		AddFilenamesToComboBox(m_pFilenameTin, paths[i] + "Elevation", "*.itf");
-		sel = m_pFilenameTin->FindString(m_strFilenameTin);
-		if (sel != -1)
-			m_pFilenameTin->SetSelection(sel);
+		AddFilenamesToComboBox(m_filename_tin, paths[i] + "Elevation", "*.tin");
+		AddFilenamesToComboBox(m_filename_tin, paths[i] + "Elevation", "*.itf");
 
 		// fill the "Tileset filename" control with available files
-		AddFilenamesToComboBox(m_pFilenameTileset, paths[i] + "Elevation", "*.ini");
-		sel = m_pFilenameTileset->FindString(m_strFilenameTileset);
-		if (sel != -1)
-			m_pFilenameTileset->SetSelection(sel);
+		AddFilenamesToComboBox(m_filename_tileset, paths[i] + "Elevation", "*.ini");
 
 		// fill the "texture Tileset filename" control with available files
-		AddFilenamesToComboBox(m_pTextureFileTileset, paths[i] + "GeoSpecific", "*.ini");
-		sel = m_pTextureFileTileset->FindString(m_strTextureTileset);
+		AddFilenamesToComboBox(m_filename_tileset, paths[i] + "GeoSpecific", "*.ini");
+		sel = m_filename_tileset->FindString(m_strTextureTileset);
 		if (sel != -1)
-			m_pTextureFileTileset->SetSelection(sel);
+			m_filename_tileset->SetSelection(sel);
 
 		// fill the "detail texture" control with available bitmap files
-		AddFilenamesToComboBox(m_pDTName, paths[i] + "GeoTypical", "*.bmp");
-		AddFilenamesToComboBox(m_pDTName, paths[i] + "GeoTypical", "*.jpg");
-		AddFilenamesToComboBox(m_pDTName, paths[i] + "GeoTypical", "*.png");
-		sel = m_pDTName->FindString(m_strDetailName);
-		if (sel != -1)
-			m_pDTName->SetSelection(sel);
+		AddFilenamesToComboBox(m_dt_name, paths[i] + "GeoTypical", "*.bmp");
+		AddFilenamesToComboBox(m_dt_name, paths[i] + "GeoTypical", "*.jpg");
+		AddFilenamesToComboBox(m_dt_name, paths[i] + "GeoTypical", "*.png");
 
 		// fill the Location files
-		AddFilenamesToComboBox(m_pLocFile, paths[i] + "Locations", "*.loc");
-		sel = m_pLocFile->FindString(m_strLocFile);
-		if (sel != -1)
-			m_pLocFile->SetSelection(sel);
+		AddFilenamesToComboBox(m_locfile, paths[i] + "Locations", "*.loc");
 
 		// fill in Road files
-		AddFilenamesToComboBox(m_pRoadFile, paths[i] + "RoadData", "*.rmf");
-		sel = m_pRoadFile->FindString(m_strRoadFile);
-		if (sel != -1)
-			m_pRoadFile->SetSelection(sel);
+		AddFilenamesToComboBox(m_roadfile, paths[i] + "RoadData", "*.rmf");
 
 		// fill in Content file
-		AddFilenamesToComboBox(GetContentFile(), paths[i], "*.vtco");
-		sel = GetContentFile()->FindString(m_strContent);
-		if (sel != -1)
-			GetContentFile()->SetSelection(sel);
+		AddFilenamesToComboBox(m_content_file, paths[i], "*.vtco");
 
 		// fill in Water (TIN) files
-		AddFilenamesToComboBox(m_pFilenameWater, paths[i] + "Elevation", "*.itf");
-		sel = m_pFilenameWater->FindString(m_strFilenameWater);
-		if (sel != -1)
-			m_pFilenameWater->SetSelection(sel);
+		AddFilenamesToComboBox(m_filename_water, paths[i] + "Elevation", "*.itf");
 
 		// fill in Sky files
-		AddFilenamesToComboBox(m_pSkyTexture, paths[i] + "Sky", "*.bmp");
-		AddFilenamesToComboBox(m_pSkyTexture, paths[i] + "Sky", "*.png");
-		AddFilenamesToComboBox(m_pSkyTexture, paths[i] + "Sky", "*.jpg");
-		sel = m_pSkyTexture->FindString(m_strSkyTexture);
-		if (sel != -1)
-			m_pSkyTexture->SetSelection(sel);
+		AddFilenamesToComboBox(m_skytexture, paths[i] + "Sky", "*.bmp");
+		AddFilenamesToComboBox(m_skytexture, paths[i] + "Sky", "*.png");
+		AddFilenamesToComboBox(m_skytexture, paths[i] + "Sky", "*.jpg");
 	}
 
 	// fill the "single texture filename" control with available image files
 	for (i = 0; i < m_TextureFiles.size(); i++)
 	{
 		wxString str(m_TextureFiles[i], wxConvUTF8);
-		m_pTextureFileSingle->Append(str);
+		m_tfile_single->Append(str);
 	}
-	sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
-	if (sel != -1)
-		m_pTextureFileSingle->SetSelection(sel);
 
+	// Look for existing values.
+	sel = m_tfile_geotypical->FindString(m_strTextureGeotypical);
+	if (sel != -1)
+		m_tfile_geotypical->SetSelection(sel);
+
+	sel = m_filename->FindString(m_strFilename);
+	if (sel != -1)
+		m_filename->SetSelection(sel);
+
+	sel = m_filename_tin->FindString(m_strFilenameTin);
+	if (sel != -1)
+		m_filename_tin->SetSelection(sel);
+		
+	sel = m_filename_tileset->FindString(m_strFilenameTileset);
+	if (sel != -1)
+		m_filename_tileset->SetSelection(sel);
+
+	sel = m_dt_name->FindString(m_strDetailName);
+	if (sel != -1)
+		m_dt_name->SetSelection(sel);
+
+	sel = m_tfile_single->FindString(m_strTextureSingle);
+	if (sel != -1)
+		m_tfile_single->SetSelection(sel);
+
+	sel = m_tfile_geotypical->FindString(m_strTextureSingle);
+	if (sel != -1)
+		m_tfile_geotypical->SetSelection(sel);
+
+	sel = m_locfile->FindString(m_strLocFile);
+	if (sel != -1)
+		m_locfile->SetSelection(sel);
+
+	sel = m_roadfile->FindString(m_strRoadFile);
+	if (sel != -1)
+		m_roadfile->SetSelection(sel);
+		
+	sel = m_content_file->FindString(m_strContent);
+	if (sel != -1)
+		m_content_file->SetSelection(sel);
+		
+	sel = m_filename_water->FindString(m_strFilenameWater);
+	if (sel != -1)
+		m_filename_water->SetSelection(sel);
+		
+	sel = m_skytexture->FindString(m_strSkyTexture);
+	if (sel != -1)
+		m_skytexture->SetSelection(sel);
+		
 	UpdateColorMapChoice();
 
 	// The following must match the ordering in the enum LodMethodEnum:

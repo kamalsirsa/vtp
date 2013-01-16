@@ -67,7 +67,7 @@ protected :
 
 	osg::ref_ptr<osg::Camera>		m_pCamera;
 	osg::ref_ptr<osg::TexGen>		m_pTexgen;
-	osg::ref_ptr<osg::Texture2D>	m_pTexture;
+	TexturePtr						m_pTexture;
 	osg::ref_ptr<osg::StateSet>		m_pStateset;
 	osg::ref_ptr<osg::Material>		m_pMaterial;
 	uint					m_LightNumber;// Must be set before init is called

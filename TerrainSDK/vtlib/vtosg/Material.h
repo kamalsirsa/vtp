@@ -1,7 +1,7 @@
 //
 // Material.h for OSG
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,6 +17,9 @@
 
 /** \addtogroup sg */
 /*@{*/
+
+typedef osg::ref_ptr<osg::Image> ImagePtr;
+typedef osg::ref_ptr<osg::Texture2D> TexturePtr;
 
 /**
  A material is a description of how geometry (typically, a surface) should be
@@ -58,15 +61,18 @@ public:
 	void SetWireframe(bool bOn);
 	bool GetWireframe() const;
 
-	void SetTexture(osg::Image *pImage);
-	osg::Image	*GetTexture() const;
-	void ModifiedTexture();
+	void SetTexture(osg::Image *pImage, int unit = 0);
+	osg::Image	*GetTexture(int unit = 0) const;
+	void ModifiedTexture(int unit = 0);
 
-	void SetClamp(bool bClamp);
-	bool GetClamp() const;
+	void SetTexGen(const FPoint2 &scale, const FPoint2 &offset,
+		int iTextureMode, int unit = 0);
 
-	void SetMipMap(bool bMipMap);
-	bool GetMipMap() const;
+	void SetClamp(bool bClamp, int unit = 0);
+	bool GetClamp(int unit = 0) const;
+
+	void SetMipMap(bool bMipMap, int unit = 0);
+	bool GetMipMap(int unit = 0) const;
 
 	void SetDiffuse(const RGBAf &c) { SetDiffuse(c.r, c.g, c.b, c.a); }
 	void SetDiffuse(float f) { SetDiffuse(f, f, f); }
@@ -83,12 +89,13 @@ public:
 	// global option
 	static bool s_bTextureCompression;
 
-	// remember this for convenience and referencing
-	osg::ref_ptr<osg::Image> m_Image;
+	// remember any texture images, by unit, for convenience and referencing
+	std::vector<ImagePtr> m_Images;
+
+	std::vector<TexturePtr> m_Textures;
 
 	// the VT material object includes texture
 	osg::ref_ptr<osg::Material>		m_pMaterial;
-	osg::ref_ptr<osg::Texture2D>	m_pTexture;
 	osg::ref_ptr<osg::BlendFunc>	m_pBlendFunc;
 	osg::ref_ptr<osg::AlphaFunc>	m_pAlphaFunc;
 };
@@ -106,15 +113,13 @@ public:
 						   bool bTransp = false, bool bAdditive = false,
 						   float fAmbient = 0.0f, float fDiffuse = 1.0f,
 						   float fAlpha = 1.0f, float fEmissive = 0.0f,
-						   bool bTexGen = false, bool bClamp = false,
-						   bool bMipMap = false);
+						   bool bClamp = false, bool bMipMap = false);
 	int AddTextureMaterial(const char *fname,
 						   bool bCulling, bool bLighting,
 						   bool bTransp = false, bool bAdditive = false,
 						   float fAmbient = 0.0f, float fDiffuse = 1.0f,
 						   float fAlpha = 1.0f, float fEmissive = 0.0f,
-						   bool bTexGen = false, bool bClamp = false,
-						   bool bMipMap = false);
+						   bool bClamp = false, bool bMipMap = false);
 	int AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient,
 					   bool bCulling = true, bool bLighting= true,
 					   bool bWireframe = false, float fAlpha = 1.0f,

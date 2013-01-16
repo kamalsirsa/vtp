@@ -273,6 +273,8 @@ void SRTerrain::RenderSurface()
 	LoadSingleMaterial();
 
 	RenderPass();
+
+	DisableTexGen();
 }
 
 void SRTerrain::RenderPass()

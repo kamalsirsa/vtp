@@ -2310,7 +2310,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	m_filename = new wxComboBox( TParamsPanel1, ID_FILENAME, wxEmptyString, wxDefaultPosition, wxSize( 180,-1 ), 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
 	m_filename->Append( _("Item") );
-	bSizer16->Add( m_filename, 1, wxALIGN_CENTER|wxALL, 5 );
+	bSizer16->Add( m_filename, 1, wxALIGN_CENTER|wxRIGHT|wxLEFT, 5 );
 	
 	sbSizer3->Add( bSizer16, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
@@ -2355,14 +2355,14 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	m_filename_tin = new wxComboBox( TParamsPanel1, ID_FILENAME_TIN, wxEmptyString, wxDefaultPosition, wxSize( 180,-1 ), 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
 	m_filename_tin->Append( _("Item") );
-	bSizer19->Add( m_filename_tin, 1, wxALIGN_CENTER|wxALL, 5 );
+	bSizer19->Add( m_filename_tin, 1, wxALIGN_CENTER|wxRIGHT|wxLEFT, 5 );
 	
-	sbSizer4->Add( bSizer19, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+	sbSizer4->Add( bSizer19, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxLEFT, 5 );
 	
 	bSizer15->Add( sbSizer4, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxLEFT, 10 );
 	
 	wxStaticBoxSizer* sbSizer5;
-	sbSizer5 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel1, wxID_ANY, _("Grid Tiles") ), wxVERTICAL );
+	sbSizer5 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel1, wxID_ANY, _("Tileset") ), wxVERTICAL );
 	
 	wxBoxSizer* bSizer20;
 	bSizer20 = new wxBoxSizer( wxHORIZONTAL );
@@ -2371,9 +2371,9 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_use_tileset->SetValue( true ); 
 	bSizer20->Add( m_use_tileset, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 	
-	m_filename_tiles = new wxComboBox( TParamsPanel1, ID_FILENAME_TILES, wxEmptyString, wxDefaultPosition, wxSize( 180,-1 ), 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
-	m_filename_tiles->Append( _("Item") );
-	bSizer20->Add( m_filename_tiles, 1, wxALIGN_CENTER|wxALL, 5 );
+	m_filename_tileset = new wxComboBox( TParamsPanel1, ID_FILENAME_TILES, wxEmptyString, wxDefaultPosition, wxSize( 180,-1 ), 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
+	m_filename_tileset->Append( _("Item") );
+	bSizer20->Add( m_filename_tileset, 1, wxALIGN_CENTER|wxRIGHT|wxLEFT, 5 );
 	
 	sbSizer5->Add( bSizer20, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 	
@@ -2419,7 +2419,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	bSizer22->Add( m_use_external, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_tt_external_data = new wxTextCtrl( TParamsPanel1, ID_TT_EXTERNAL_DATA, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), 0 );
-	bSizer22->Add( m_tt_external_data, 1, wxALIGN_CENTER|wxALL, 5 );
+	bSizer22->Add( m_tt_external_data, 1, wxALIGN_CENTER|wxRIGHT|wxLEFT, 5 );
 	
 	sbSizer6->Add( bSizer22, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -2461,17 +2461,17 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	m_single = new wxRadioButton( TParamsPanel2, ID_SINGLE, _("Single texture "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_single->SetValue( true ); 
-	bSizer25->Add( m_single, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+	bSizer25->Add( m_single, 0, wxALIGN_CENTER|wxALL, 5 );
 	
 	m_tfile_single = new wxComboBox( TParamsPanel2, ID_TFILE_SINGLE, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
 	m_tfile_single->Append( _("Item") );
-	bSizer25->Add( m_tfile_single, 1, wxALIGN_CENTER|wxALL, 0 );
+	bSizer25->Add( m_tfile_single, 1, wxALIGN_CENTER|wxALL, 5 );
 	
-	sbSizer7->Add( bSizer25, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	sbSizer7->Add( bSizer25, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 0 );
 	
-	m_derived = new wxRadioButton( TParamsPanel2, ID_DERIVED, _("Derive texture from elevation"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_derived = new wxRadioButton( TParamsPanel2, ID_DERIVED, _("Derive color from elevation"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_derived->SetValue( true ); 
-	sbSizer7->Add( m_derived, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+	sbSizer7->Add( m_derived, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer26;
 	bSizer26 = new wxBoxSizer( wxHORIZONTAL );
@@ -2483,13 +2483,40 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	int m_choice_colorsNChoices = sizeof( m_choice_colorsChoices ) / sizeof( wxString );
 	m_choice_colors = new wxChoice( TParamsPanel2, ID_CHOICE_COLORS, wxDefaultPosition, wxSize( 180,-1 ), m_choice_colorsNChoices, m_choice_colorsChoices, 0 );
 	m_choice_colors->SetSelection( 0 );
-	bSizer26->Add( m_choice_colors, 1, wxALIGN_CENTER|wxALL, 5 );
+	bSizer26->Add( m_choice_colors, 1, wxALIGN_CENTER|wxRIGHT|wxLEFT, 5 );
 	
 	id_edit_colors = new wxButton( TParamsPanel2, ID_EDIT_COLORS, _("Edit Colors..."), wxDefaultPosition, wxDefaultSize, 0 );
 	id_edit_colors->SetDefault(); 
-	bSizer26->Add( id_edit_colors, 0, wxALIGN_CENTER|wxALL, 5 );
+	bSizer26->Add( id_edit_colors, 0, wxALIGN_CENTER|wxALIGN_BOTTOM|wxRIGHT|wxLEFT, 5 );
 	
 	sbSizer7->Add( bSizer26, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	wxBoxSizer* bSizer261;
+	bSizer261 = new wxBoxSizer( wxHORIZONTAL );
+	
+	
+	bSizer261->Add( 20, 10, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_staticText144 = new wxStaticText( TParamsPanel2, wxID_ANY, _("Geotypical texture"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText144->Wrap( -1 );
+	bSizer261->Add( m_staticText144, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_tfile_geotypical = new wxComboBox( TParamsPanel2, ID_TFILE_GEOTYPICAL, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
+	m_tfile_geotypical->Append( _("Item") );
+	bSizer261->Add( m_tfile_geotypical, 1, wxALIGN_CENTER|wxTOP|wxBOTTOM|wxRIGHT, 5 );
+	
+	m_staticText149 = new wxStaticText( TParamsPanel2, wxID_ANY, _("Tile size:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText149->Wrap( -1 );
+	bSizer261->Add( m_staticText149, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	m_geotypical_scale = new wxTextCtrl( TParamsPanel2, ID_GEOTYPICAL_SCALE, wxEmptyString, wxDefaultPosition, wxSize( 50,-1 ), 0 );
+	bSizer261->Add( m_geotypical_scale, 0, wxTOP|wxBOTTOM|wxRIGHT, 5 );
+	
+	m_staticText150 = new wxStaticText( TParamsPanel2, wxID_ANY, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText150->Wrap( -1 );
+	bSizer261->Add( m_staticText150, 0, wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM|wxRIGHT, 5 );
+	
+	sbSizer7->Add( bSizer261, 1, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer27;
 	bSizer27 = new wxBoxSizer( wxHORIZONTAL );
@@ -2498,9 +2525,9 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_tileset->SetValue( true ); 
 	bSizer27->Add( m_tileset, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	id_tfile_tileset = new wxComboBox( TParamsPanel2, ID_TFILE_TILESET, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
-	id_tfile_tileset->Append( _("Item") );
-	bSizer27->Add( id_tfile_tileset, 1, wxALIGN_CENTER|wxALL, 0 );
+	m_tfile_tileset = new wxComboBox( TParamsPanel2, ID_TFILE_TILESET, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
+	m_tfile_tileset->Append( _("Item") );
+	bSizer27->Add( m_tfile_tileset, 1, wxALIGN_CENTER|wxALL, 5 );
 	
 	sbSizer7->Add( bSizer27, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 	
@@ -2534,6 +2561,34 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer30;
 	bSizer30 = new wxBoxSizer( wxHORIZONTAL );
 	
+	wxBoxSizer* bSizer32;
+	bSizer32 = new wxBoxSizer( wxVERTICAL );
+	
+	m_prelight = new wxCheckBox( TParamsPanel2, ID_PRELIGHT, _("Precompute lighting"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_prelight->SetValue(true); 
+	bSizer32->Add( m_prelight, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	wxBoxSizer* bSizer33;
+	bSizer33 = new wxBoxSizer( wxHORIZONTAL );
+	
+	
+	bSizer33->Add( 20, 10, 1, wxEXPAND, 5 );
+	
+	m_text9 = new wxStaticText( TParamsPanel2, ID_TEXT, _("Lighting factor: "), wxDefaultPosition, wxDefaultSize, 0 );
+	m_text9->Wrap( -1 );
+	bSizer33->Add( m_text9, 0, wxALIGN_CENTER|wxALL, 5 );
+	
+	m_light_factor = new wxTextCtrl( TParamsPanel2, ID_LIGHT_FACTOR, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
+	bSizer33->Add( m_light_factor, 0, wxALIGN_CENTER|wxRIGHT, 5 );
+	
+	bSizer32->Add( bSizer33, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+	
+	m_cast_shadows = new wxCheckBox( TParamsPanel2, ID_CAST_SHADOWS, _("Cast shadows"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cast_shadows->SetValue(true); 
+	bSizer32->Add( m_cast_shadows, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	bSizer30->Add( bSizer32, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 0 );
+	
 	wxBoxSizer* bSizer31;
 	bSizer31 = new wxBoxSizer( wxVERTICAL );
 	
@@ -2545,45 +2600,19 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_16bit->SetValue(true); 
 	bSizer31->Add( m_16bit, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	bSizer30->Add( bSizer31, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+	m_retain = new wxCheckBox( TParamsPanel2, ID_RETAIN, _("Retain loaded texture in memory"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer31->Add( m_retain, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	wxBoxSizer* bSizer32;
-	bSizer32 = new wxBoxSizer( wxVERTICAL );
+	bSizer30->Add( bSizer31, 0, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxEXPAND, 5 );
 	
-	m_prelight = new wxCheckBox( TParamsPanel2, ID_PRELIGHT, _("Precompute lighting"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_prelight->SetValue(true); 
-	bSizer32->Add( m_prelight, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	wxBoxSizer* bSizer33;
-	bSizer33 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text9 = new wxStaticText( TParamsPanel2, ID_TEXT, _("Lighting factor: "), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text9->Wrap( -1 );
-	bSizer33->Add( m_text9, 0, wxALIGN_CENTER|wxALL, 0 );
-	
-	m_light_factor = new wxTextCtrl( TParamsPanel2, ID_LIGHT_FACTOR, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	bSizer33->Add( m_light_factor, 0, wxALIGN_CENTER|wxALL, 0 );
-	
-	bSizer32->Add( bSizer33, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
-	
-	m_cast_shadows = new wxCheckBox( TParamsPanel2, ID_CAST_SHADOWS, _("Cast shadows"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cast_shadows->SetValue(true); 
-	bSizer32->Add( m_cast_shadows, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	bSizer30->Add( bSizer32, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 0 );
-	
-	sbSizer7->Add( bSizer30, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+	sbSizer7->Add( bSizer30, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP|wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer34;
 	bSizer34 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_retain = new wxCheckBox( TParamsPanel2, ID_RETAIN, _("Retain loaded texture in memory for faster re-lighting"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_retain->SetValue(true); 
-	bSizer34->Add( m_retain, 0, wxALIGN_CENTER|wxALL, 5 );
-	
 	sbSizer7->Add( bSizer34, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 	
-	bSizer24->Add( sbSizer7, 2, wxALL, 5 );
+	bSizer24->Add( sbSizer7, 3, wxALL, 5 );
 	
 	wxBoxSizer* bSizer35;
 	bSizer35 = new wxBoxSizer( wxVERTICAL );
@@ -2595,7 +2624,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_detailtexture->SetValue(true); 
 	sbSizer8->Add( m_detailtexture, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	m_dt_name = new wxComboBox( TParamsPanel2, ID_DT_NAME, wxEmptyString, wxDefaultPosition, wxSize( 100,-1 ), 0, NULL, wxCB_DROPDOWN ); 
+	m_dt_name = new wxComboBox( TParamsPanel2, ID_DT_NAME, wxEmptyString, wxDefaultPosition, wxSize( 40,-1 ), 0, NULL, wxCB_DROPDOWN ); 
 	sbSizer8->Add( m_dt_name, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer36;
@@ -2608,7 +2637,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	sbSizer8->Add( bSizer37, 0, wxALIGN_CENTER_VERTICAL, 5 );
 	
-	bSizer35->Add( sbSizer8, 0, wxEXPAND|wxALL, 5 );
+	bSizer35->Add( sbSizer8, 0, wxALL, 5 );
 	
 	bSizer24->Add( bSizer35, 1, wxEXPAND|wxALIGN_CENTER_HORIZONTAL, 5 );
 	
@@ -2968,9 +2997,9 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_water->SetValue(true); 
 	sbSizer12->Add( m_water, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	id_filename_water = new wxComboBox( TParamsPanel4, ID_FILENAME_WATER, wxEmptyString, wxDefaultPosition, wxSize( 180,-1 ), 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
-	id_filename_water->Append( _("Item") );
-	sbSizer12->Add( id_filename_water, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+	m_filename_water = new wxComboBox( TParamsPanel4, ID_FILENAME_WATER, wxEmptyString, wxDefaultPosition, wxSize( 180,-1 ), 0, NULL, wxCB_DROPDOWN|wxCB_SORT );
+	m_filename_water->Append( _("Item") );
+	sbSizer12->Add( m_filename_water, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 	
 	m_depressocean = new wxCheckBox( TParamsPanel4, ID_DEPRESSOCEAN, _("Depress Ocean"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_depressocean->SetValue(true); 

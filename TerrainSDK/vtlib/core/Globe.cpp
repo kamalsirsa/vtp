@@ -224,7 +224,7 @@ vtMaterialArray *vtIcoGlobe::CreateMaterialsFromFiles(const vtString &strImagePr
 							bCulling, bLighting,
 							GetDepth(img) == 32, false,	// transp, additive
 							0.1f, 1.0f, 1.0f, 0.0f,		// ambient, diffuse, alpha, emmisive
-							false, true, false);		// texgen, clamp, mipmap
+							true, false);		// clamp, mipmap
 			}
 			else
 				index = -1;
@@ -251,8 +251,8 @@ vtMaterialArray *vtIcoGlobe::CreateMaterialsFromImages(vtImage **images)
 		int index = mats->AddTextureMaterial(img,
 					 bCulling, bLighting,
 					 img->GetDepth() == 32, false,	// transp, additive
-					 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
-					 false, true, false);		// texgen, clamp, mipmap
+					 0.1f, 1.0f, 1.0f, 0.0f,		// ambient, diffuse, alpha, emmisive
+					 true, false);					// clamp, mipmap
 		m_globe_mat[pair] = index;
 	}
 	return mats;
