@@ -141,10 +141,9 @@ void vtGeomFactory::SetMatIndex(int iIdx)
 }
 
 /**
- * Create geometry on the terrain for a 2D line by draping the point onto
- * the terrain surface.
+ * Create geometry for a 2D line by draping the point on a heightfield.
  *
- * \param pMF	A vtGeomFactory which will produces the mesh geometry.
+ * \param pHF	The heightfield to drape on.
  * \param line	The 2D line to drape, in Earth coordinates.
  * \param fSpacing	The approximate spacing of the surface tessellation, used to
  *		decide how finely to tessellate the line.

@@ -10,6 +10,7 @@
 
 #include "TParams.h"
 #include "TerrainLayers.h"
+#include "vtTin3d.h"
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -66,6 +67,19 @@ void vtElevLayer::SetVisible(bool vis)
 {
 	//SetEnabled(vis);	// TODO
 	vtLayerBase::SetVisible(vis);
+}
+
+bool vtElevLayer::Load(const vtString &path, bool progress_callback(int))
+{
+	m_pTin = new vtTin3d;
+	if (!m_pTin->Read(path))
+		return false;
+
+	vtGeode *geode = m_pTin->CreateGeometry(false);
+	geode->SetCastShadow(false);
+//	m_pTerrainGroup->addChild(geode);
+
+	return true;
 }
 
 

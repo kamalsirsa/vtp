@@ -21532,7 +21532,7 @@
             <event name="OnSize"></event>
             <event name="OnUpdateUI"></event>
             <object class="wxBoxSizer" expanded="0">
-                <property name="minimum_size">600,-1</property>
+                <property name="minimum_size">610,-1</property>
                 <property name="name">bSizer13</property>
                 <property name="orient">wxVERTICAL</property>
                 <property name="permission">none</property>
@@ -24886,7 +24886,7 @@
                                                     <property name="id">ID_ELEVFILES</property>
                                                     <property name="maximum_size"></property>
                                                     <property name="minimum_size">-1,100</property>
-                                                    <property name="name">id_elevfiles</property>
+                                                    <property name="name">m_elev_files</property>
                                                     <property name="permission">protected</property>
                                                     <property name="pos"></property>
                                                     <property name="size">80,90</property>
@@ -25082,7 +25082,7 @@
                                                             <property name="id">ID_PLANTFILES</property>
                                                             <property name="maximum_size"></property>
                                                             <property name="minimum_size"></property>
-                                                            <property name="name">id_plantfiles</property>
+                                                            <property name="name">m_plant_files</property>
                                                             <property name="permission">protected</property>
                                                             <property name="pos"></property>
                                                             <property name="size">80,90</property>
@@ -26407,7 +26407,7 @@
                                                             <property name="id">ID_STRUCTFILES</property>
                                                             <property name="maximum_size"></property>
                                                             <property name="minimum_size"></property>
-                                                            <property name="name">id_structfiles</property>
+                                                            <property name="name">m_structure_files</property>
                                                             <property name="permission">protected</property>
                                                             <property name="pos"></property>
                                                             <property name="size">80,90</property>
@@ -29439,7 +29439,7 @@
                                                     <property name="id">ID_RAWFILES</property>
                                                     <property name="maximum_size"></property>
                                                     <property name="minimum_size"></property>
-                                                    <property name="name">mmawfiles</property>
+                                                    <property name="name">m_raw_files</property>
                                                     <property name="permission">protected</property>
                                                     <property name="pos"></property>
                                                     <property name="size">180,120</property>
@@ -29578,7 +29578,7 @@
                                                     <property name="id">ID_IMAGEFILES</property>
                                                     <property name="maximum_size"></property>
                                                     <property name="minimum_size"></property>
-                                                    <property name="name">m_imagefiles</property>
+                                                    <property name="name">m_image_files</property>
                                                     <property name="permission">protected</property>
                                                     <property name="pos"></property>
                                                     <property name="size">180,-1</property>

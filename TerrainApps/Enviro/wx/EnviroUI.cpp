@@ -2245,7 +2245,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer13;
 	bSizer13 = new wxBoxSizer( wxVERTICAL );
 	
-	bSizer13->SetMinSize( wxSize( 600,-1 ) ); 
+	bSizer13->SetMinSize( wxSize( 610,-1 ) ); 
 	wxBoxSizer* bSizer14;
 	bSizer14 = new wxBoxSizer( wxHORIZONTAL );
 	
@@ -2617,10 +2617,10 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxStaticBoxSizer* sbSizer71;
 	sbSizer71 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanelPlus, wxID_ANY, _("Elevation Layers") ), wxHORIZONTAL );
 	
-	id_elevfiles = new wxListBox( TParamsPanelPlus, ID_ELEVFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
-	id_elevfiles->SetMinSize( wxSize( -1,100 ) );
+	m_elev_files = new wxListBox( TParamsPanelPlus, ID_ELEVFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
+	m_elev_files->SetMinSize( wxSize( -1,100 ) );
 	
-	sbSizer71->Add( id_elevfiles, 1, wxALL, 5 );
+	sbSizer71->Add( m_elev_files, 1, wxALL, 5 );
 	
 	m_set_texture = new wxButton( TParamsPanelPlus, ID_SET_TEXTURE, _("Set Texture"), wxDefaultPosition, wxDefaultSize, 0 );
 	sbSizer71->Add( m_set_texture, 0, wxALL, 5 );
@@ -2641,8 +2641,8 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxStaticBoxSizer* sbSizer38;
 	sbSizer38 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel3, wxID_ANY, _("Plant Layers") ), wxVERTICAL );
 	
-	id_plantfiles = new wxListBox( TParamsPanel3, ID_PLANTFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
-	sbSizer38->Add( id_plantfiles, 0, wxALL|wxEXPAND, 5 );
+	m_plant_files = new wxListBox( TParamsPanel3, ID_PLANTFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
+	sbSizer38->Add( m_plant_files, 0, wxALL|wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer41;
 	bSizer41 = new wxBoxSizer( wxHORIZONTAL );
@@ -2775,8 +2775,8 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer203;
 	bSizer203 = new wxBoxSizer( wxVERTICAL );
 	
-	id_structfiles = new wxListBox( TParamsPanel8, ID_STRUCTFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
-	bSizer203->Add( id_structfiles, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	m_structure_files = new wxListBox( TParamsPanel8, ID_STRUCTFILES, wxDefaultPosition, wxSize( 80,90 ), 0, NULL, wxLB_SINGLE ); 
+	bSizer203->Add( m_structure_files, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer48;
 	bSizer48 = new wxBoxSizer( wxHORIZONTAL );
@@ -3094,8 +3094,8 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxStaticBoxSizer* sbSizer14;
 	sbSizer14 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel5, wxID_ANY, _("Abstract Layers") ), wxHORIZONTAL );
 	
-	mmawfiles = new wxListBox( TParamsPanel5, ID_RAWFILES, wxDefaultPosition, wxSize( 180,120 ), 0, NULL, wxLB_SINGLE ); 
-	sbSizer14->Add( mmawfiles, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	m_raw_files = new wxListBox( TParamsPanel5, ID_RAWFILES, wxDefaultPosition, wxSize( 180,120 ), 0, NULL, wxLB_SINGLE ); 
+	sbSizer14->Add( m_raw_files, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	wxBoxSizer* bSizer67;
 	bSizer67 = new wxBoxSizer( wxVERTICAL );
@@ -3111,8 +3111,8 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxStaticBoxSizer* sbSizer15;
 	sbSizer15 = new wxStaticBoxSizer( new wxStaticBox( TParamsPanel5, wxID_ANY, _("Image Layers") ), wxHORIZONTAL );
 	
-	m_imagefiles = new wxListBox( TParamsPanel5, ID_IMAGEFILES, wxDefaultPosition, wxSize( 180,-1 ), 0, NULL, wxLB_SINGLE ); 
-	sbSizer15->Add( m_imagefiles, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	m_image_files = new wxListBox( TParamsPanel5, ID_IMAGEFILES, wxDefaultPosition, wxSize( 180,-1 ), 0, NULL, wxLB_SINGLE ); 
+	sbSizer15->Add( m_image_files, 1, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	bSizer66->Add( sbSizer15, 2, wxEXPAND|wxALL, 5 );
 	

@@ -1610,6 +1610,55 @@ osg::Node *vtTerrain::GetTerrainSurfaceNode()
 	return NULL;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+void vtTerrain::_CreateElevLayers()
+{
+	// Go through the layers in the terrain parameters, and try to load them
+	uint i, num = m_Params.m_Layers.size();
+	for (i = 0; i < num; i++)
+	{
+		const vtTagArray &lay = m_Params.m_Layers[i];
+
+		// Look for image layers
+		vtString ltype = lay.GetValueString("Type");
+		if (ltype != TERR_LTYPE_ELEVATION)
+			continue;
+
+		VTLOG(" Layer %d: Elevation\n", i);
+		for (uint j = 0; j < lay.NumTags(); j++)
+		{
+			const vtTag *tag = lay.GetTag(j);
+			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
+		}
+
+		vtString fname = lay.GetValueString("Filename");
+		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+		if (path == "")
+		{
+			vtString prefix = "Elevation/";
+			path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
+		}
+		if (path == "")
+		{
+			VTLOG("Couldn't find elevation layer file '%s'\n", (const char *) fname);
+			continue;
+		}
+
+		vtElevLayer *elayer = new vtElevLayer;
+		if (!elayer->Load(path, m_progress_callback))
+		{
+			VTLOG("Couldn't read elevation from file '%s'\n", (const char *) path);
+			continue;
+		}
+		VTLOG("Read elevation from file '%s'\n", (const char *) path);
+		m_Layers.push_back(elayer);
+	}
+}
+
+/**
+ Turn on fog for this terrain.  Mutually exclusive with shadow.
+ */
 void vtTerrain::SetFog(bool fog)
 {
 	m_bFog = fog;
@@ -1633,6 +1682,9 @@ void vtTerrain::SetFog(bool fog)
 	}
 }
 
+/**
+ Set the color of the fog.
+ */
 void vtTerrain::SetFogColor(const RGBf &color)
 {
 	m_fog_color = color;
@@ -1640,6 +1692,9 @@ void vtTerrain::SetFogColor(const RGBf &color)
 		SetFog(true);
 }
 
+/**
+ Set the distance at which the fog is solid.
+ */
 void vtTerrain::SetFogDistance(float fMeters)
 {
 	m_Params.SetValueFloat(STR_FOGDISTANCE, fMeters / 1000);
@@ -1647,6 +1702,9 @@ void vtTerrain::SetFogDistance(float fMeters)
 		SetFog(true);
 }
 
+/**
+ Turn on shadows for this terrain.  Mutually exclusive with fog.
+ */
 void vtTerrain::SetShadows(bool shadows)
 {
 	m_bShadows = shadows;
@@ -1709,6 +1767,9 @@ void vtTerrain::SetShadows(bool shadows)
 	}
 }
 
+/**
+ Set shadow options (darkness, radius, etc.)
+ */
 void vtTerrain::SetShadowOptions(const vtShadowOptions &opt)
 {
 	//param.SetValueBool(STR_STRUCT_SHADOWS);
@@ -2294,6 +2355,8 @@ void vtTerrain::CreateStep9()
 	_CreateAbstractLayersFromParams();
 
 	_CreateImageLayers();
+
+	_CreateElevLayers();
 
 	// Engines will be activated later in vtTerrainScene::SetTerrain
 	ActivateEngines(false);

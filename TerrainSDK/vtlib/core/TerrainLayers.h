@@ -95,6 +95,8 @@ public:
 	osg::ref_ptr<vtMultiTexture> m_pMultiTexture;
 };
 
+class vtTin3d;
+
 /**
  * An elevation heightfield as a terrain layer.
  * Currently, it is always a TIN (vtTin3d).
@@ -104,12 +106,13 @@ class vtElevLayer : public vtLayer
 public:
 	vtElevLayer();
 
+	bool Load(const vtString &path, bool progress_callback(int) = NULL);
 	void SetLayerName(const vtString &fname) { m_strName = fname; }
 	vtString GetLayerName() { return m_strName; }
 	void SetVisible(bool vis);
 
 protected:
-	class vtTin3d *m_pTin;
+	osg::ref_ptr<vtTin3d> m_pTin;
 	vtString m_strName;
 };
 

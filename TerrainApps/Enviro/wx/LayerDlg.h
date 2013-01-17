@@ -20,6 +20,12 @@
 class LayerItemData : public wxTreeItemData
 {
 public:
+	LayerItemData(vtElevLayer *elay)
+	{
+		Defaults();
+		m_type = LT_ELEVATION;
+		m_layer = m_elay = elay;
+	}
 	LayerItemData(vtVegLayer *vlay)
 	{
 		Defaults();
@@ -75,6 +81,7 @@ public:
 	vtAbstractLayer *m_alay;
 	vtImageLayer *m_ilay;
 	vtVegLayer *m_vlay;
+	vtElevLayer *m_elay;
 	vtStructureLayer *m_slay;
 	vtFeatureSet *m_fset;
 	GlobeLayer *m_glay;

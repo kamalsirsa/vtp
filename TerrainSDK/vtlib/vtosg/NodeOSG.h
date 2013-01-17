@@ -308,7 +308,8 @@ public:
 	/** Add a text mesh to this geometry.
 		\param pMesh The mesh to add
 		\param iMatIdx The material index for this mesh, which is an index
-			into the material array of the geometry. */
+			into the material array of the geometry.
+		\param bOutline true to put a dark outline around the text for contrast. */
 	void AddTextMesh(vtTextMesh *pMesh, int iMatIdx, bool bOutline = true);
 
 	/** Return the number of contained meshes. */

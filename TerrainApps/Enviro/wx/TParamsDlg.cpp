@@ -139,6 +139,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,TParamsDlgBase)
 	EVT_CHOICE( ID_CHOICE_SCENARIO, TParamsDlg::OnChoiceScenario )
 
 	// Clickable listboxes
+	EVT_LISTBOX_DCLICK( ID_ELEVFILES, TParamsDlg::OnListDblClickElev )
 	EVT_LISTBOX_DCLICK( ID_PLANTFILES, TParamsDlg::OnListDblClickPlants )
 	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClickStructure )
 	EVT_LISTBOX_DCLICK( ID_RAWFILES, TParamsDlg::OnListDblClickRaw )
@@ -166,10 +167,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	notebook->SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
 	m_pPreLightFactor = GetLightFactor();
-	m_pPlantFiles = GetPlantFiles();
-	m_pStructFiles = GetStructFiles();
-	m_pRawFiles = GetRawFiles();
-	m_pImageFiles = GetImageFiles();
 	m_pLodMethod = GetLodmethod();
 	m_pShadowRez = GetChoiceShadowRez();
 	m_pLocField = GetLocField();
@@ -300,20 +297,22 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	// It's somewhat roundabout, but this lets us capture events on the
 	// listbox controls without having to subclass.
-	m_pPlantFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pPlantFiles));
-	m_pStructFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pStructFiles));
-	m_pRawFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pRawFiles));
+	m_elev_files->PushEventHandler(new wxListBoxEventHandler(this, m_elev_files));
+	m_plant_files->PushEventHandler(new wxListBoxEventHandler(this, m_plant_files));
+	m_structure_files->PushEventHandler(new wxListBoxEventHandler(this, m_structure_files));
+	m_raw_files->PushEventHandler(new wxListBoxEventHandler(this, m_raw_files));
 	m_anim_paths->PushEventHandler(new wxListBoxEventHandler(this, m_anim_paths));
-	m_pImageFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pImageFiles));
+	m_image_files->PushEventHandler(new wxListBoxEventHandler(this, m_image_files));
 }
 
 TParamsDlg::~TParamsDlg()
 {
-	m_pPlantFiles->PopEventHandler(true);
-	m_pStructFiles->PopEventHandler(true);
-	m_pRawFiles->PopEventHandler(true);
+	m_elev_files->PopEventHandler(true);
+	m_plant_files->PopEventHandler(true);
+	m_structure_files->PopEventHandler(true);
+	m_raw_files->PopEventHandler(true);
 	m_anim_paths->PopEventHandler(true);
-	m_pImageFiles->PopEventHandler(true);
+	m_image_files->PopEventHandler(true);
 }
 
 //
@@ -1001,10 +1000,11 @@ bool TParamsDlg::TransferDataToWindow()
 	m_pTileset->SetValue(m_iTexture == TE_TILESET);
 
 	uint i;
-	m_pPlantFiles->Clear();
-	m_pStructFiles->Clear();
-	m_pRawFiles->Clear();
-	m_pImageFiles->Clear();
+	m_elev_files->Clear();
+	m_plant_files->Clear();
+	m_structure_files->Clear();
+	m_raw_files->Clear();
+	m_image_files->Clear();
 	for (i = 0; i < m_Layers.size(); i++)
 	{
 		vtString ltype = m_Layers[i].GetValueString("Type");
@@ -1012,18 +1012,21 @@ bool TParamsDlg::TransferDataToWindow()
 		wxString fname2(fname, wxConvUTF8);
 
 		if (ltype == TERR_LTYPE_VEGETATION)
-			m_pPlantFiles->Append(fname2);
+			m_plant_files->Append(fname2);
 		if (ltype == TERR_LTYPE_STRUCTURE)
-			m_pStructFiles->Append(fname2);
+			m_structure_files->Append(fname2);
 		if (ltype == TERR_LTYPE_ABSTRACT)
-			m_pRawFiles->Append(fname2);
+			m_raw_files->Append(fname2);
 		if (ltype == TERR_LTYPE_IMAGE)
-			m_pImageFiles->Append(fname2);
+			m_image_files->Append(fname2);
+		if (ltype == TERR_LTYPE_ELEVATION)
+			m_elev_files->Append(fname2);
 	}
-	m_pPlantFiles->Append(_("(double-click to add files)"));
-	m_pStructFiles->Append(_("(double-click to add files)"));
-	m_pRawFiles->Append(_("(double-click to add files)"));
-	m_pImageFiles->Append(_("(double-click to add files)"));
+	m_elev_files->Append(_("(double-click to add files)"));
+	m_plant_files->Append(_("(double-click to add files)"));
+	m_structure_files->Append(_("(double-click to add files)"));
+	m_raw_files->Append(_("(double-click to add files)"));
+	m_image_files->Append(_("(double-click to add files)"));
 
 	m_anim_paths->Clear();
 	for (i = 0; i < m_AnimPaths.size(); i++)
@@ -1184,6 +1187,32 @@ void AddFilenamesToArray(wxArrayString &array, const wxString &dirname,
 	{
 		array.Add(filename);
 		cont = dir.GetNext(&filename);
+	}
+}
+
+void TParamsDlg::OnListDblClickElev( wxCommandEvent &event )
+{
+	uint i;
+	wxArrayString strings;
+
+	for (i = 0; i < vtGetDataPath().size(); i++)
+	{
+		wxString path(vtGetDataPath()[i], wxConvUTF8);
+		path += _T("Elevation");
+		AddFilenamesToArray(strings, path, _T("*.itf"));
+	}
+
+	wxString result = wxGetSingleChoice(_("One of the following to add:"),
+		_("Choose an elevation file"), strings, this);
+
+	if (result.Cmp(_T(""))) // user selected something
+	{
+		TransferDataFromWindow();
+		vtTagArray lay;
+		lay.SetValueString("Type", TERR_LTYPE_ELEVATION, true);
+		lay.SetValueString("Filename", (const char *) result.mb_str(wxConvUTF8), true);
+		m_Layers.push_back(lay);
+		TransferDataToWindow();
 	}
 }
 
@@ -1361,7 +1390,7 @@ void TParamsDlg::OnSetInitTime( wxCommandEvent &event )
 
 void TParamsDlg::OnStyle( wxCommandEvent &event )
 {
-	vtString str = (const char *) GetRawFiles()->GetStringSelection().mb_str(wxConvUTF8);
+	vtString str = (const char *) m_raw_files->GetStringSelection().mb_str(wxConvUTF8);
 	int idx = FindLayerByFilename(str);
 	if (idx == -1)
 		return;

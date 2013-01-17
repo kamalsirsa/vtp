@@ -51,11 +51,23 @@ enum TFType
 	TFT_ROADS
 };
 
+/** Shadow options */
 struct vtShadowOptions
 {
+	/** Darkness (opacity) of the shadows from 0 to 1. */
 	float fDarkness;
+
+	/** Set to true to improve rendering speed by only recomputing shadows
+		when the camera has moved significantly (1/10 of shadow radius)
+		since the last frame. */
 	bool bShadowsEveryFrame;
+
+	/** Set to true, shadows will only be drawn within this radius of the
+		camera. Highly recommended to set this, since shadow resolution is
+		limited. */
 	bool bShadowLimit;
+
+	/** The radius to use when shadow area is limited. */
 	float fShadowRadius;
 };
 
@@ -63,57 +75,48 @@ struct vtShadowOptions
 typedef bool (*ProgFuncPtrType)(int);
 
 /**
- * The vtTerrain class represents a terrain, which is a part of the surface
- *  of the earth.
- *
- * It is generally described by a set of parameters such as elevation,
- * vegetation, and time of day.  These terrain parameters are contained
- * in the class TParams.
- *
- * To create a new terrain, first construct a vtTerrain and set its
- * parameters with SetParams() or SetParamFile().
- * You can also set many properties of the terrain directly, which is useful
- * if you want to set them from memory instead of from disk.  These include:
+ The vtTerrain class represents a terrain, which is a part of the surface
+  of the earth.
+ 
+ It is generally described by a set of parameters such as elevation,
+ vegetation, and time of day.  These terrain parameters are contained
+ in the class TParams.
+ 
+ To create a new terrain, first construct a vtTerrain and set its
+ parameters with SetParams() or SetParamFile().
+ You can also set many properties of the terrain directly, which is useful
+ if you want to set them from memory instead of from disk.  These include:
 	- Elevation grid: use SetLocalGrid().
 	- Elevation TIN: use SetTin().
 	- Structures: use NewStructureLayer(), then fill it with your structures.
-	- Vegetation: call SetSpeciesList(), then GetPlantInstances().
-	- Abstract layers: use GetLayers() to get the LayerSet, then create and append
-	  your vtAbstractLayer objects. The features will be created
-	  according to the properties you have set with vtAbstractLayer::SetProperties().
+	- Vegetation: call SetSpeciesList(), then NewVegLayer().
+	- Abstract layers: call NewAbstractLayer() and fill in the properties.
+	  The features will be created according to the properties you have set
+	  with vtAbstractLayer::SetProps().
 	  The properties you can set are documented with the class TParams.
 	- Animation paths: use GetAnimContainer(), then add your own animpaths.
- *
- * You can then build the terrain using the CreateStep methods, or add it
- * to a vtTerrainScene and use vtTerrainScene::BuildTerrain.
- *
- * <h3>Customizing your Terrain</h3>
- *
- * To extend your terrain beyond what is possible with the terrain
- * parameters, you can create a subclass of vtTerrain and implement the
- * method CreateCustomCulture().  Here you can create anything you like,
- * and add it to the terrain.  Generally you should add your nodes with
- * AddNode(), or AddNodeToStructGrid() if it is a structure that should
- * be culled in the distance.  You can also add your nodes with
- * GetScaledFeatures()->addChild(), if they are 'flat' like GIS features
- * or contour lines, which should be scaled up/down with the vertical
- * exaggeration of the terrain.
- *
- * <h3>How it works</h3>
- *
- * The terrain is implemented with a scene graph with the following structure.
- * - vtGroup "Terrain Group"
- *  - vtTransform "Dynamic Geometry"
- *   - A vtDynGeom for the CLOD terrain surface.
- *  - vtTransform "Scaled Features"
- *   - Abstract layers, which may need scaling in order to remain draped
- *		on the ground as the user changes the vertical exaggeration.
- *  - vtGroup "Structure LOD Grid"
- *   - many vtLOD objects, for efficient culling of large number of structures.
- *  - vtGroup "Roads"
- *   - many vtLOD objects, for efficient culling of large number of roads.
- *  - vtGroup "Vegetation"
- *   - many vtLOD objects, for efficient culling of large number of plants.
+ 
+ You can then build the terrain using the CreateStep methods, or add it
+ to a vtTerrainScene and use vtTerrainScene::BuildTerrain.
+ 
+ <h3>Customizing your Terrain</h3>
+ 
+ To extend your terrain beyond what is possible with the terrain
+ parameters, you can create a subclass of vtTerrain and implement the
+ method CreateCustomCulture().  Here you can create anything you like,
+ and add it to the terrain.  Generally you should add your nodes with
+ AddNode(), or AddNodeToStructGrid() if it is a structure that should
+ be culled in the distance.  You can also add your nodes with
+ GetScaledFeatures()->addChild(), if they are 'flat' like GIS features
+ or contour lines, which should be scaled up/down with the vertical
+ exaggeration of the terrain.
+ 
+ <h3>How it works</h3>
+ 
+ The terrain is implemented with a scene graph with the following structure.
+ When you call SetShadows() or SetFog(), a vtShadow or vtFog node (but not
+ both) may be inserted between the container and the main terrain group.
+ \dotfile terrain_graph.dot "Top of the Scenegraph per Terrain"
  */
 class vtTerrain : public CultureExtension
 {
@@ -381,6 +384,7 @@ protected:
 	void _CreateAbstractLayersFromParams();
 	bool _CreateAbstractLayerFromParams(int index);
 	void _CreateImageLayers();
+	void _CreateElevLayers();
 	void _CreateTextures(const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);

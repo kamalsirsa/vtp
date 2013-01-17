@@ -51,6 +51,7 @@
 
 #include "wxosg/icons/top.xpm"
 #include "icons/raw.xpm"
+#include "icons/elevation.xpm"
 #include "icons/raw_yellow.xpm"
 
 #define LocalIcon(X) wxIcon( (const char**) X##_xpm )
@@ -63,7 +64,8 @@
 #define ICON_INSTANCE	5
 #define ICON_TOP		6
 #define ICON_IMAGE		7
-#define ICON_RAW_YELLOW	8
+#define ICON_ELEV		8
+#define ICON_RAW_YELLOW	9
 
 /////////////////////////////
 
@@ -196,7 +198,7 @@ void LayerDlg::CreateImageList(int size)
 	// Make an image list containing small icons
 	m_imageListNormal = new wxImageList(size, size, TRUE);
 
-	wxIcon icons[9];
+	wxIcon icons[10];
 	icons[0] = wxICON(building);		// ICON_BUILDING
 	icons[1] = wxICON(road);			// ICON_ROAD
 	icons[2] = wxICON(veg1);			// ICON_VEG1
@@ -205,7 +207,8 @@ void LayerDlg::CreateImageList(int size)
 	icons[5] = wxICON(instance);		// ICON_INSTANCE
 	icons[6] = LocalIcon(top);			// ICON_TOP
 	icons[7] = wxICON(image);			// ICON_IMAGE
-	icons[8] = LocalIcon(raw_yellow);	// ICON_RAW_YELLOW
+	icons[8] = LocalIcon(elevation);	// ICON_ELEV
+	icons[9] = LocalIcon(raw_yellow);	// ICON_RAW_YELLOW
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
@@ -347,9 +350,8 @@ void LayerDlg::RefreshTreeTerrain()
 
 	wxString str;
 	vtString vs;
-	uint i, j;
 	LayerSet &layers = m_pTerrain->GetLayers();
-	for (i = 0; i < layers.size(); i++)
+	for (uint i = 0; i < layers.size(); i++)
 	{
 		vtLayer *layer = layers[i].get();
 		LayerItemData *lid;
@@ -372,7 +374,7 @@ void LayerDlg::RefreshTreeTerrain()
 			wxTreeItemId hItem;
 			if (m_bShowAll)
 			{
-				for (j = 0; j < slay->size(); j++)
+				for (uint j = 0; j < slay->size(); j++)
 				{
 					vtBuilding *bld = slay->GetBuilding(j);
 					if (bld)
@@ -430,7 +432,7 @@ void LayerDlg::RefreshTreeTerrain()
 			else
 			{
 				int bld = 0, fen = 0, inst = 0;
-				for (j = 0; j < slay->size(); j++)
+				for (uint j = 0; j < slay->size(); j++)
 				{
 					if (slay->GetBuilding(j)) bld++;
 					if (slay->GetFence(j)) fen++;
@@ -509,6 +511,20 @@ void LayerDlg::RefreshTreeTerrain()
 			icon = ICON_VEG1;
 			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, icon, icon);
 			lid = new LayerItemData(vlay);
+			lid->m_text = str;
+			lid->m_icon = icon;
+			m_pTree->SetItemData(hLayer, lid);
+		}
+		// Elevation
+		vtElevLayer *elay = dynamic_cast<vtElevLayer*>(layer);
+		if (elay)
+		{
+			vs = elay->GetLayerName();
+			str = wxString(vs, wxConvUTF8);
+
+			icon = ICON_ELEV;
+			wxTreeItemId hLayer = m_pTree->AppendItem(m_root, str, icon, icon);
+			lid = new LayerItemData(elay);
 			lid->m_text = str;
 			lid->m_icon = icon;
 			m_pTree->SetItemData(hLayer, lid);

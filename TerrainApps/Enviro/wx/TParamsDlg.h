@@ -193,10 +193,6 @@ public:
 	wxChoice* GetLodmethod()  { return (wxChoice*) FindWindow( ID_LODMETHOD ); }
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
 	wxChoice* GetLocField()  { return (wxChoice*) FindWindow( ID_INIT_LOCATION ); }
-	wxListBox* GetStructFiles()  { return (wxListBox*) FindWindow( ID_STRUCTFILES ); }
-	wxListBox* GetPlantFiles()  { return (wxListBox*) FindWindow( ID_PLANTFILES ); }
-	wxListBox* GetRawFiles()  { return (wxListBox*) FindWindow( ID_RAWFILES ); }
-	wxListBox* GetImageFiles()  { return (wxListBox*) FindWindow( ID_IMAGEFILES ); }
 
 	bool	m_bReady;
 	bool	m_bSetting;
@@ -204,11 +200,8 @@ public:
 
 private:
 	// WDR: member variable declarations for TParamsDlg
-	wxListBox* m_pRawFiles;
 	wxChoice* m_pNavStyle;
 	wxTextCtrl* m_pPreLightFactor;
-	wxListBox* m_pStructFiles;
-	wxListBox* m_pPlantFiles;
 	wxListBox* m_pImageFiles;
 	wxChoice* m_pLodMethod;
 	wxRadioButton* m_pNone;
@@ -234,6 +227,7 @@ private:
 	void OnEditColors( wxCommandEvent &event );
 	void OnCheckBoxElevType( wxCommandEvent &event );
 	void OnCheckBox( wxCommandEvent &event );
+	void OnListDblClickElev( wxCommandEvent &event );
 	void OnListDblClickPlants( wxCommandEvent &event );
 	void OnListDblClickStructure( wxCommandEvent &event );
 	void OnListDblClickRaw( wxCommandEvent &event );

@@ -996,10 +996,10 @@ class TParamsDlgBase : public wxDialog
 		wxCheckBox* m_detailtexture;
 		wxComboBox* m_dt_name;
 		wxPanel* TParamsPanelPlus;
-		wxListBox* id_elevfiles;
+		wxListBox* m_elev_files;
 		wxButton* m_set_texture;
 		wxPanel* TParamsPanel3;
-		wxListBox* id_plantfiles;
+		wxListBox* m_plant_files;
 		wxStaticText* m_text14;
 		wxTextCtrl* mmegdistance;
 		wxStaticText* m_text15;
@@ -1020,7 +1020,7 @@ class TParamsDlgBase : public wxDialog
 		wxCheckBox* id_paved;
 		wxCheckBox* m_dirt;
 		wxPanel* TParamsPanel8;
-		wxListBox* id_structfiles;
+		wxListBox* m_structure_files;
 		wxStaticText* m_text19;
 		wxTextCtrl* m_struct_distance;
 		wxStaticText* m_text20;
@@ -1075,9 +1075,9 @@ class TParamsDlgBase : public wxDialog
 		wxStaticText* m_text29;
 		
 		wxPanel* TParamsPanel5;
-		wxListBox* mmawfiles;
+		wxListBox* m_raw_files;
 		wxButton* m_style;
-		wxListBox* m_imagefiles;
+		wxListBox* m_image_files;
 		wxPanel* TParamsPanel6;
 		wxStaticText* id_text6;
 		wxTextCtrl* m_overlay_file;
