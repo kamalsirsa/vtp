@@ -198,6 +198,17 @@ void vtFeatureSetPoint2D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 	}
 }
 
+bool vtFeatureSetPoint2D::EarthExtents(DRECT &ext) const
+{
+	ext.SetRect(1E9,-1E9,-1E9,1E9);
+
+	if (m_Point2.IsEmpty())
+		return false;
+
+	ext.GrowToContainLine(m_Point2);
+	return true;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // vtFeatureSetPoint3D
@@ -365,6 +376,17 @@ void vtFeatureSetPoint3D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 		m_Point3.SetAt(i, p3);
 		SHPDestroyObject(pObj);
 	}
+}
+
+bool vtFeatureSetPoint3D::EarthExtents(DRECT &ext) const
+{
+	ext.SetRect(1E9,-1E9,-1E9,1E9);
+
+	if (m_Point3.IsEmpty())
+		return false;
+
+	ext.GrowToContainLine(m_Point3);
+	return true;
 }
 
 
@@ -606,6 +628,21 @@ void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callb
 	}
 }
 
+bool vtFeatureSetLineString::EarthExtents(DRECT &ext) const
+{
+	ext.SetRect(1E9,-1E9,-1E9,1E9);
+
+	if (m_Line.size() == 0)
+		return false;
+
+	for (uint i = 0; i < m_Line.size(); i++)
+	{
+		const DLine2 &dl = m_Line[i];
+		ext.GrowToContainLine(dl);
+	}
+	return true;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // vtFeatureSetLineString
@@ -832,6 +869,21 @@ void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_cal
 		}
 		SHPDestroyObject(pObj);
 	}
+}
+
+bool vtFeatureSetLineString3D::EarthExtents(DRECT &ext) const
+{
+	ext.SetRect(1E9,-1E9,-1E9,1E9);
+
+	if (m_Line.size() == 0)
+		return false;
+
+	for (uint i = 0; i < m_Line.size(); i++)
+	{
+		const DLine3 &dl = m_Line[i];
+		ext.GrowToContainLine(dl);
+	}
+	return true;
 }
 
 
@@ -1324,5 +1376,20 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 	}
 	if (iFailed > 0)
 		VTLOG("  %d of the %d entities were bad.\n", iFailed, nElems);
+}
+
+bool vtFeatureSetPolygon::EarthExtents(DRECT &ext) const
+{
+	ext.SetRect(1E9,-1E9,-1E9,1E9);
+
+	if (m_Poly.size() == 0)
+		return false;
+
+	for (uint i = 0; i < m_Poly.size(); i++)
+	{
+		const DPolygon2 &poly = m_Poly[i];
+		ext.GrowToContainLine(poly[0]);
+	}
+	return true;
 }
 

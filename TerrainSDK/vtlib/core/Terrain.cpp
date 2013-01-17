@@ -7,6 +7,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/vtosg/GroupLOD.h"
+#include "vtlib/vtosg/MultiTexture.h"
 
 #include "vtdata/vtLog.h"
 #include "vtdata/CubicSpline.h"
@@ -1450,84 +1451,46 @@ void vtTerrain::_CreateStructures()
 
 /////////////////////////
 
-void vtTerrain::_CreateAbstractLayers()
+void vtTerrain::_CreateAbstractLayersFromParams()
 {
 	// Go through the layers in the terrain parameters, and try to load them
-	uint i, num = m_Params.m_Layers.size();
-	for (i = 0; i < num; i++)
+	for (uint i = 0; i < m_Params.m_Layers.size(); i++)
 	{
-		const vtTagArray &lay = m_Params.m_Layers[i];
-
-		// Look for abstract layers
-		vtString ltype = lay.GetValueString("Type");
+		vtString ltype = m_Params.m_Layers[i].GetValueString("Type");
 		if (ltype != TERR_LTYPE_ABSTRACT)
-			continue;
+			return;
 
 		VTLOG(" Layer %d: Abstract\n", i);
-		for (uint j = 0; j < lay.NumTags(); j++)
-		{
-			const vtTag *tag = lay.GetTag(j);
-			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
-		}
-
-		// Load the features: use the loader we are provided, or the default
-		vtFeatureSet *feat = NULL;
-		vtString fname = lay.GetValueString("Filename");
-		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
-		if (path == "")
-		{
-			// For historical reasons, also search a "PointData" folder on the data path
-			vtString prefix = "PointData/";
-			path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
-		}
-		if (path == "")
-		{
-			// If it's not a file, perhaps it's a virtual data source
-			if (m_pFeatureLoader)
-				feat = m_pFeatureLoader->LoadFrom(fname);
-			if (!feat)
-			{
-				VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
-				continue;
-			}
-		}
-		if (!feat)
-		{
-			vtFeatureLoader loader;
-			feat = loader.LoadFrom(path);
-		}
-		if (!feat)
-		{
-			VTLOG("Couldn't read features from file '%s'\n", (const char *) path);
-			continue;
-		}
-		VTLOG("Successfully read features from file '%s'\n", (const char *) path);
-
-		VTLOG1("  Constructing and appending layer.\n");
-		vtAbstractLayer *layer = new vtAbstractLayer(this);
-		layer->SetFeatureSet(feat);
-		m_Layers.push_back(layer);
-
-		// Copy all the other attributes to the new layer
-		VTLOG1("  Setting layer properties.\n");
-		layer->SetProperties(lay);
+		_CreateAbstractLayerFromParams(i);
 	}
+}
 
-	// Now for each layer that we have, create the geometry and labels
-	for (i = 0; i < m_Layers.size(); i++)
+bool vtTerrain::_CreateAbstractLayerFromParams(int index)
+{
+	const vtTagArray &lay = m_Params.m_Layers[index];
+
+	// Look for abstract layers
+	for (uint j = 0; j < lay.NumTags(); j++)
 	{
-		vtAbstractLayer *layer = dynamic_cast<vtAbstractLayer*>(m_Layers[i].get());
-		if (layer)
-		{
-			layer->CreateStyledFeatures();
-
-			// Show only layers which should be visible
-			bool bVis;
-			bool has_value = layer->GetProperties().GetValueBool("Visible", bVis);
-			if (has_value)
-				layer->SetVisible(bVis);
-		}
+		const vtTag *tag = lay.GetTag(j);
+		VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
 	}
+
+	vtAbstractLayer *ab_layer = new vtAbstractLayer;
+
+	// Copy all the properties from params to the new layer
+	VTLOG1("  Setting layer properties.\n");
+	ab_layer->SetProps(lay);
+	m_Layers.push_back(ab_layer);
+
+	// Abstract geometry goes into the scale features group, so it will be
+	//  scaled up/down with the vertical exaggeration.
+	bool success = ab_layer->Load(GetProjection(), NULL, m_progress_callback);
+	if (!success)
+		return false;
+
+	CreateAbstractLayerVisuals(ab_layer);
+	return true;
 }
 
 /////////////////////////
@@ -1589,57 +1552,11 @@ void vtTerrain::_CreateImageLayers()
 
 		m_Layers.push_back(ilayer);
 
-		ilayer->m_pMultiTexture = AddMultiTextureOverlay(ilayer->m_pImage,
-			ilayer->m_pImage->GetExtents(), GL_DECAL);
+		vtMultiTexture *mt = new vtMultiTexture;
+		mt->Create(GetTerrainSurfaceNode(), ilayer->m_pImage, GetHeightFieldGrid3d(),
+			ilayer->m_pImage->GetExtents(), m_TextureUnits.ReserveTextureUnit(), GL_DECAL);
+		ilayer->m_pMultiTexture = mt;
 	}
-}
-
-//
-// \param TextureMode One of GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD
-//
-vtMultiTexture *vtTerrain::AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents,
-									   int TextureMode)
-{
-	DRECT EarthExtents = GetHeightField()->GetEarthExtents();
-
-	int iTextureUnit = m_TextureUnits.ReserveTextureUnit();
-	if (iTextureUnit == -1)
-		return NULL;
-
-	// Calculate the mapping of texture coordinates
-	DPoint2 scale;
-	FPoint2 offset;
-	vtHeightFieldGrid3d *grid = GetDynTerrain();
-
-	if (grid)
-	{
-		int iCols, iRows;
-		grid->GetDimensions(iCols, iRows);
-
-		// input values go from (0,0) to (Cols-1,Rows-1)
-		// output values go from 0 to 1
-		scale.Set(1.0/(iCols - 1), 1.0/(iRows - 1));
-
-		// stretch the (0-1) over the data extents
-		scale.x *= (EarthExtents.Width() / extents.Width());
-		scale.y *= (EarthExtents.Height() / extents.Height());
-	}
-	else	// might be a TiledGeom, or a TIN
-	{
-		FRECT worldExtents;
-		GetLocalConversion().ConvertFromEarth(extents, worldExtents);
-
-		// Map input values (0-terrain size in world coords) to 0-1
-		scale.Set(1.0/worldExtents.Width(), 1.0/worldExtents.Height());
-	}
-
-	// and offset it to place it at the right place
-	offset.x = (float) ((extents.left - EarthExtents.left) / extents.Width());
-	offset.y = (float) ((extents.bottom - EarthExtents.bottom) / extents.Height());
-
-	// apply it to the node that is above the terrain surface
-	return AddMultiTexture(GetTerrainSurfaceNode(), iTextureUnit, pImage,
-		TextureMode, scale, offset);
 }
 
 osg::Node *vtTerrain::GetTerrainSurfaceNode()
@@ -2334,7 +2251,7 @@ void vtTerrain::CreateStep9()
 			CreateWaterHeightfield(wpath);
 	}
 
-	_CreateAbstractLayers();
+	_CreateAbstractLayersFromParams();
 
 	_CreateImageLayers();
 
@@ -2704,200 +2621,6 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bit
 	VTLOG("%.3f seconds.\n", (float)c3 / CLOCKS_PER_SEC);
 }
 
-/**
- * Create a set of points on the terrain for a 2D polyline by draping the point onto
- * the terrain surface.
- *
- * \param line	The 2D line to drape, in Earth coordinates.
- * \param fOffset	An offset to elevate each point in the resulting geometry,
- *		useful for keeping it visibly above the ground.
- * \param bInterp	True to interpolate between the vertices of the input
- *		line. This is generally desirable when the ground is much more finely
- *		spaced than the input line.
- * \param bCurve	True to interpret the vertices of the input line as
- *		control points of a curve.  The created geometry will consist of
- *		a draped line which passes through the control points.
- * \param bTrue		True to use the true elevation of the terrain, ignoring
- *		whatever scale factor is being used to exaggerate elevation for
- *		display.
- * \param output	Received the points.
- * \return The approximate length of the resulting 3D polyline.
- */
-float vtTerrain::LineOnSurface(const DLine2 &line, float fOffset, bool bInterp,
-	bool bCurve, bool bTrue, FLine3 &output)
-{
-	uint i, j;
-	FPoint3 v1, v2, v;
-
-	float fSpacing=0;
-	if (bInterp)
-	{
-		// try to guess how finely to tessellate our line
-		if (m_pDynGeom)
-		{
-			FPoint2 spacing = m_pDynGeom->GetWorldSpacing();
-			fSpacing = std::min(spacing.x, spacing.y) / 2;
-		}
-		else if (m_pTin)
-		{
-			// TINs don't have a grid spacing.  In lieu of using a completely
-			//  different (more correct) algorithm for draping, just estimate.
-			DRECT ext = m_pTin->GetEarthExtents();
-			FPoint2 p1, p2;
-			m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
-			m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
-			fSpacing = (p2 - p1).Length() / 1000.0f;
-		}
-		else if (m_pTiledGeom)
-		{
-			// There is no ideal way to drape a line on a tileset of tiles
-			//  with varying resolution.  For now, just use the highest (LOD0)
-			//  grid density at the starting point.
-			FPoint2 spacing = m_pTiledGeom->GetWorldSpacingAtPoint(line[0]);
-			fSpacing = std::min(spacing.x, spacing.y);
-		}
-	}
-
-	float fTotalLength = 0.0f;
-	int iVerts = 0;
-	uint points = line.GetSize();
-	if (bCurve)
-	{
-		DPoint2 p2, last(1E9,1E9);
-		DPoint3 p3;
-
-		int spline_points = 0;
-		CubicSpline spline;
-		for (i = 0; i < points; i++)
-		{
-			p2 = line[i];
-			if (i > 1 && p2 == last)
-				continue;
-			p3.Set(p2.x, p2.y, 0);
-			spline.AddPoint(p3);
-			spline_points++;
-			last = p2;
-		}
-		spline.Generate();
-
-		// estimate how many steps to subdivide this line into
-		double dLinearLength = line.Length();
-		float fLinearLength, dummy;
-		m_pHeightField->m_Conversion.ConvertVectorFromEarth(DPoint2(dLinearLength,0.0), fLinearLength, dummy);
-		double full = (double) (spline_points-1);
-		int iSteps = (uint) (fLinearLength / fSpacing);
-		if (iSteps < 3)
-			iSteps = 3;
-		double dStep = full / iSteps;
-
-		FPoint3 last_v;
-		double f;
-		for (f = 0; f <= full; f += dStep)
-		{
-			spline.Interpolate(f, &p3);
-
-			m_pHeightField->m_Conversion.convert_earth_to_local_xz(p3.x, p3.y, v.x, v.z);
-			m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
-			v.y += fOffset;
-			output.Append(v);
-			iVerts++;
-
-			// keep a running total of approximate ground length
-			if (f > 0)
-				fTotalLength += (v - last_v).Length();
-			last_v = v;
-		}
-	}
-	else
-	{
-		// not curved: straight line in earth coordinates
-		FPoint3 last_v;
-		for (i = 0; i < points; i++)
-		{
-			if (bInterp)
-			{
-				v1 = v2;
-				m_pHeightField->m_Conversion.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
-				if (i == 0)
-					continue;
-
-				// estimate how many steps to subdivide this segment into
-				FPoint3 diff = v2 - v1;
-				float fLen = diff.Length();
-				uint iSteps = (uint) (fLen / fSpacing);
-				if (iSteps < 1) iSteps = 1;
-
-				for (j = (i == 1 ? 0:1); j <= iSteps; j++)
-				{
-					// simple linear interpolation of the ground coordinate
-					v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
-					m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
-					v.y += fOffset;
-					output.Append(v);
-					iVerts++;
-
-					// keep a running total of approximate ground length
-					if (j > 0)
-						fTotalLength += (v - last_v).Length();
-					last_v = v;
-				}
-			}
-			else
-			{
-				m_pHeightField->m_Conversion.ConvertFromEarth(line[i], v.x, v.z);
-				m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
-				v.y += fOffset;
-				output.Append(v);
-			}
-		}
-	}
-	return fTotalLength;
-}
-
-/**
- * Create geometry on the terrain for a 2D line by draping the point onto
- * the terrain surface.
- *
- * \param pMF	A vtGeomFactory which will produces the mesh geometry.
- * \param line	The 2D line to drape, in Earth coordinates.
- * \param fOffset	An offset to elevate each point in the resulting geometry,
- *		useful for keeping it visibly above the ground.
- * \param bInterp	True to interpolate between the vertices of the input
- *		line. This is generally desirable when the ground is much more finely
- *		spaced than the input line.
- * \param bCurve	True to interpret the vertices of the input line as
- *		control points of a curve.  The created geometry will consist of
- *		a draped line which passes through the control points.
- * \param bTrue		True to use the true elevation of the terrain, ignoring
- *		whatever scale factor is being used to exaggerate elevation for
- *		display.
- * \return The approximate length of the resulting 3D line mesh.
- *
- * \par Example:
-	\code
-	DLine2 line = ...;
-	vtTerrain *pTerr = ...;
-	vtGeode *pLineGeom = new vtGeode;
-	pTerr->AddNode(pLineGeom);
-	vtGeomFactory mf(pLineGeom, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
-	float length = pTerr->AddSurfaceLineToMesh(&mf, dline, 10, true);
-	\endcode
- */
-float vtTerrain::AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
-									 float fOffset, bool bInterp, bool bCurve,
-									 bool bTrue)
-{
-	FLine3 tessellated;
-	float fTotalLength = LineOnSurface(line, fOffset, bInterp, bCurve, bTrue, tessellated);
-
-	pMF->PrimStart();
-	for (uint i = 0; i < tessellated.GetSize(); i++)
-		pMF->AddVertex(tessellated[i]);
-	pMF->PrimEnd();
-
-	return fTotalLength;
-}
-
 
 ///////////////////////////////////////////////////////////////////////
 // Camera viewpoints
@@ -2975,18 +2698,20 @@ vtLayer *vtTerrain::LoadLayer(const char *fname)
 	}
 	else if (!ext.CompareNoCase(".shp"))
 	{
-		vtFeatureLoader loader;
-		vtFeatureSet *feat = loader.LoadFrom(fname);
-		if (!feat)
+		vtAbstractLayer *ab_layer = NewAbstractLayer();
+		ab_layer->SetLayerName(fname);
+
+		// TODO here: progress dialog on load?
+		if (ab_layer->Load(GetProjection(), NULL))
+		{
+			VTLOG("Successfully read features from file '%s'\n", fname);
+			return ab_layer;
+		}
+		else
 		{
 			VTLOG("Couldn't read features from file '%s'\n", fname);
-			return NULL;
+			RemoveLayer(ab_layer);
 		}
-		VTLOG("Successfully read features from file '%s'\n", fname);
-		vtAbstractLayer *alay = new vtAbstractLayer(this);
-		alay->SetFeatureSet(feat);
-		m_Layers.push_back(alay);
-		return alay;
 	}
 	return NULL;
 }
@@ -3031,7 +2756,7 @@ vtVegLayer *vtTerrain::GetVegLayer()
 }
 
 /**
- * Create a new veg array for this terrain, and return it.
+ * Create a new veg array for this terrain, and returns it.
  */
 vtVegLayer *vtTerrain::NewVegLayer()
 {
@@ -3474,10 +3199,73 @@ void vtTerrain::OnDeleteBehavior(vtStructure *str)
 ////////////////////////////////////////////////////////////////////////////
 // Abstracts
 
+/**
+ * Create a new abstract array for this terrain, and returns it.
+ */
+vtAbstractLayer *vtTerrain::NewAbstractLayer()
+{
+	vtAbstractLayer *alay = new vtAbstractLayer;
+	m_Layers.push_back(alay);
+	return alay;
+}
+
 /** Get the currently active abstract layer for this terrain. */
 vtAbstractLayer *vtTerrain::GetAbstractLayer()
 {
 	return dynamic_cast<vtAbstractLayer *>(m_pActiveLayer);
+}
+
+bool vtTerrain::CreateAbstractLayerVisuals(vtAbstractLayer *ab_layer)
+{
+	int iTextureUnit = -1;
+	if (ab_layer->Props().GetValueBool("TextureOverlay"))
+	{
+		iTextureUnit = m_TextureUnits.ReserveTextureUnit();
+	}
+
+	// We must decide how to tesselate the features, in case of interpolation of edges.
+	// That depends on the spacing of the underlying surface, which may vary from place
+	// to place.  Look for where the center of the featureset is.
+	bool have_center = false;
+	DPoint2 center;
+	DRECT ext;
+	bool have_extents = ab_layer->EarthExtents(ext);
+	if (have_extents)
+	{
+		center = ext.GetCenter();
+		const vtProjection &source = ab_layer->GetFeatureSet()->GetAtProjection();
+
+		// If we have two valid CRSs, and they are not the same, then we need a transform
+		if (source.GetRoot() && m_proj.GetRoot() && !source.IsSame(&m_proj))
+		{
+			OCT *trans = CreateConversionIgnoringDatum(&source, &m_proj);
+			if (trans)
+			{
+				if (trans->Transform(1, &center.x, &center.y) == 1)
+					have_center = true;
+				delete trans;
+			}
+		}
+	}
+	if (!have_center)
+	{
+		// Just use the terrain center.
+		center = GetHeightFieldGrid3d()->GetEarthExtents().GetCenter();
+	}
+	float fSpacing = EstimateGroundSpacingAtPoint(center);
+
+	VTLOG1("  Constructing layer visuals.\n");
+	ab_layer->CreateFeatureVisuals(GetScaledFeatures(), GetHeightFieldGrid3d(),
+		fSpacing, GetTerrainSurfaceNode(), iTextureUnit,
+		m_progress_callback);
+
+	// Show only layers which should be visible
+	bool bVis;
+	bool has_value = ab_layer->Props().GetValueBool("Visible", bVis);
+	if (has_value)
+		ab_layer->SetVisible(bVis);
+
+	return true;
 }
 
 void vtTerrain::RemoveFeatureGeometries(vtAbstractLayer *alay)

@@ -451,6 +451,9 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr, bool bAskStyle)
 	pSet->SetFilename("Untitled.shp");
 	pSet->AddField("Label", FT_String);
 
+	// Inherit projection
+	pSet->SetProjection(pTerr->GetProjection());
+
 	// Ask style for the new point layer
 	vtTagArray props;
 	props.SetValueBool("ObjectGeometry", false, true);
@@ -474,18 +477,21 @@ vtAbstractLayer *CreateNewAbstractPointLayer(vtTerrain *pTerr, bool bAskStyle)
 	}
 
 	// wrap the features in an abstract layer
-	vtAbstractLayer *pLay = new vtAbstractLayer(pTerr);
-	pLay->SetFeatureSet(pSet);
-	pLay->SetProperties(props);
+	vtAbstractLayer *ab_layer = new vtAbstractLayer;
+	ab_layer->SetFeatureSet(pSet);
+	ab_layer->AddProps(props);
 
 	// add the new layer to the terrain
-	pTerr->GetLayers().push_back(pLay);
-	pTerr->SetActiveLayer(pLay);
+	pTerr->GetLayers().push_back(ab_layer);
+	pTerr->SetActiveLayer(ab_layer);
+
+	// Construct it once so it is set up for future visuals.
+	pTerr->CreateAbstractLayerVisuals(ab_layer);
 
 	// and show it in the layers dialog
 	GetFrame()->m_pLayerDlg->RefreshTreeContents();	// full refresh
 
-	return pLay;
+	return ab_layer;
 }
 
 vtAbstractLayer *CreateNewAbstractLineLayer(vtTerrain *pTerr, bool bAskStyle)
@@ -518,16 +524,19 @@ vtAbstractLayer *CreateNewAbstractLineLayer(vtTerrain *pTerr, bool bAskStyle)
 	}
 
 	// wrap the features in an abstract layer
-	vtAbstractLayer *pLay = new vtAbstractLayer(pTerr);
-	pLay->SetFeatureSet(pSet);
-	pLay->SetProperties(props);
+	vtAbstractLayer *ab_layer = new vtAbstractLayer();
+	ab_layer->SetFeatureSet(pSet);
+	ab_layer->SetProps(props);
 
 	// add the new layer to the terrain
-	pTerr->GetLayers().push_back(pLay);
-	pTerr->SetActiveLayer(pLay);
+	pTerr->GetLayers().push_back(ab_layer);
+	pTerr->SetActiveLayer(ab_layer);
+
+	// Construct it once so it is set up for future visuals.
+	pTerr->CreateAbstractLayerVisuals(ab_layer);
 
 	// and show it in the layers dialog
 	GetFrame()->m_pLayerDlg->RefreshTreeContents();	// full refresh
 
-	return pLay;
+	return ab_layer;
 }

@@ -1,7 +1,7 @@
 //
 // vtHeightField.h
 //
-// Copyright (c) 2002-2012 Virtual Terrain Project
+// Copyright (c) 2002-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -120,6 +120,9 @@ public:
 	void GetCenter(FPoint3 &center) const;
 
 	void SetCulture(CultureExtension *ext) { m_pCulture = ext; }
+
+	float LineOnSurface(const DLine2 &line, float fSpacing, float fOffset,
+		bool bInterp, bool bCurve, bool bTrue, FLine3 &output);
 
 	FRECT	m_WorldExtents;		// cooked (OpenGL) extents (in the XZ plane)
 	vtLocalConversion	m_Conversion;

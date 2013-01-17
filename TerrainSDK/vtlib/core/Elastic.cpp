@@ -112,6 +112,35 @@ void ElasticPolyline::Clear()
 	Realize();
 }
 
+float vtTerrain::EstimateGroundSpacingAtPoint(const DPoint2 &p) const
+{
+	// try to guess how finely to tessellate a feature that will be draped on the surface.
+	if (m_pDynGeom)
+	{
+		const FPoint2 &spacing = m_pDynGeom->GetWorldSpacing();
+		return std::min(spacing.x, spacing.y) / 2;
+	}
+	else if (m_pTin)
+	{
+		// TINs don't have a grid spacing.  In lieu of using a completely
+		//  different (more correct) algorithm for draping, just estimate.
+		DRECT ext = m_pTin->GetEarthExtents();
+		FPoint2 p1, p2;
+		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
+		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
+		return (p2 - p1).Length() / 1000.0f;
+	}
+	else if (m_pTiledGeom)
+	{
+		// There is no ideal way to drape a line on a tileset of tiles
+		//  with varying resolution.  For now, just use the highest (LOD0)
+		//  grid density.
+		const FPoint2 spacing = m_pTiledGeom->GetWorldSpacingAtPoint(p);
+		return std::min(spacing.x, spacing.y);
+	}
+	return 1.0;		// Should not get here.
+}
+
 void ElasticPolyline::Realize()
 {
 	if (!m_pTerr)	// safety check
@@ -131,8 +160,10 @@ void ElasticPolyline::Realize()
 		xform->addChild(m_Marker);
 	}
 
+	const DPoint2 first_point = m_Line[0];
+	const float fSpacing = m_pTerr->EstimateGroundSpacingAtPoint(first_point);
 	FLine3 tessellated;
-	float fTotalLength = m_pTerr->LineOnSurface(m_Line, 0.0f, true,
+	float fTotalLength = m_pTerr->GetHeightFieldGrid3d()->LineOnSurface(m_Line, fSpacing, 0.0f, true,
 		false, false, tessellated);
 
 	// Make lines between them

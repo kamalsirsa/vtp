@@ -1,28 +1,31 @@
 //
 // AbstractLayer.cpp
 //
-// Copyright (c) 2006-2011 Virtual Terrain Project
+// Copyright (c) 2006-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
+#include "vtlib/vtosg/MultiTexture.h"
+#include "vtlib/core/TParams.h"
+#include "vtlib/core/GeomUtil.h"
 
 #include "AbstractLayer.h"
-#include "Terrain.h"
 
 #include "vtdata/DataPath.h"
 #include "vtdata/Features.h"	// for vtFeatureSet
 #include "vtdata/vtLog.h"
 
-vtAbstractLayer::vtAbstractLayer(vtTerrain *pTerr) : vtLayer(LT_RAW)
+vtAbstractLayer::vtAbstractLayer() : vtLayer(LT_RAW)
 {
-	m_pTerr = pTerr;
-
-	pSet = NULL;
+	m_pSet = NULL;
 	pContainer = NULL;
 	pGeomGroup = NULL;
 	pLabelGroup = NULL;
 	pMultiTexture = NULL;
+	m_pHeightField = NULL;
+
+	m_Props.SetValueString("Type", TERR_LTYPE_ABSTRACT);
 
 	m_bNeedRebuild = false;
 }
@@ -36,21 +39,75 @@ vtAbstractLayer::~vtAbstractLayer()
 		pContainer = NULL;
 	}
 	delete pMultiTexture;
-	delete pSet;
+	delete m_pSet;
+}
+
+bool vtAbstractLayer::Load(const vtProjection &proj, vtFeatureLoader *loader, bool progress_callback(int))
+{
+	// Load the features: use the loader we are provided, or the default
+	vtFeatureSet *feat = NULL;
+	vtString fname = m_Props.GetValueString("Filename");
+	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+	if (path == "")
+	{
+		// For historical reasons, also search a "PointData" folder on the data path
+		vtString prefix = "PointData/";
+		path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
+	}
+	if (path == "")
+	{
+		// If it's not a file, perhaps it's a virtual data source
+		if (loader)
+			feat = loader->LoadFrom(fname);
+		if (!feat)
+		{
+			VTLOG("Couldn't read features from '%s'\n", (const char *) fname);
+			return false;
+		}
+	}
+	if (!feat)
+	{
+		// Use the regular feature loader, for regular disk files.
+		vtFeatureLoader loader;
+		feat = loader.LoadFrom(path);
+	}
+	if (!feat)
+	{
+		VTLOG("Couldn't read features from file '%s'\n", (const char *) path);
+		return false;
+	}
+	VTLOG("Successfully read features from file '%s'\n", (const char *) path);
+
+	SetFeatureSet(feat);
+
+	// We may need to convert from the CRS of the featureset to the CRS of the
+	//  terrain (before converting from terrain to world coordinates)
+	vtProjection &proj_feat = m_pSet->GetAtProjection();
+
+	// If we have two valid CRSs, and they are not the same, then we need a transform
+	if (proj_feat.GetRoot() && proj.GetRoot() && !proj_feat.IsSame(&proj))
+	{
+		VTLOG1("  CRS is different, making a transform.\n");
+		m_pOCTransform.reset(CreateCoordTransform(&proj_feat, &proj, true));
+	}
+	return true;
 }
 
 void vtAbstractLayer::SetLayerName(const vtString &fname)
 {
-	if (pSet)
-		pSet->SetFilename(fname);
+	if (m_pSet)
+		m_pSet->SetFilename(fname);
+
+	// Keep properties in sync
+	m_Props.SetValueString("Filename", fname);
 }
 
 vtString vtAbstractLayer::GetLayerName()
 {
-	if (pSet)
-		return pSet->GetFilename();
-	else
-		return "";
+	if (m_pSet)
+		return m_pSet->GetFilename();
+
+	return m_Props.GetValueString("Filename");
 }
 
 void vtAbstractLayer::SetVisible(bool bVis)
@@ -59,21 +116,21 @@ void vtAbstractLayer::SetVisible(bool bVis)
 		pContainer->SetEnabled(bVis);
 
 	if (pMultiTexture)
-		EnableMultiTexture(pMultiTexture->m_pNode, pMultiTexture, bVis);
+		pMultiTexture->Enable(bVis);
 
 	vtLayerBase::SetVisible(bVis);
 }
 
 void vtAbstractLayer::SetFeatureSet(vtFeatureSet *pFeatureSet)
 {
-	pSet = pFeatureSet;
+	m_pSet = pFeatureSet;
 
-	// Handy pointers to disambiguate pSet
-	pSetP2 = dynamic_cast<vtFeatureSetPoint2D*>(pSet);
-	pSetP3 = dynamic_cast<vtFeatureSetPoint3D*>(pSet);
-	pSetLS2 = dynamic_cast<vtFeatureSetLineString*>(pSet);
-	pSetLS3 = dynamic_cast<vtFeatureSetLineString3D*>(pSet);
-	pSetPoly = dynamic_cast<vtFeatureSetPolygon*>(pSet);
+	// Handy pointers to disambiguate m_pSet
+	m_pSetP2 = dynamic_cast<vtFeatureSetPoint2D*>(m_pSet);
+	m_pSetP3 = dynamic_cast<vtFeatureSetPoint3D*>(m_pSet);
+	m_pSetLS2 = dynamic_cast<vtFeatureSetLineString*>(m_pSet);
+	m_pSetLS3 = dynamic_cast<vtFeatureSetLineString3D*>(m_pSet);
+	m_pSetPoly = dynamic_cast<vtFeatureSetPolygon*>(m_pSet);
 }
 
 
@@ -89,34 +146,52 @@ bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgb
 	return true;
 }
 
-void vtAbstractLayer::CreateContainer()
+void vtAbstractLayer::CreateContainer(osg::Group *pParent)
 {
 	// first time
 	pContainer = new vtGroup;
 	pContainer->setName("Abstract Layer");
 
-	// Abstract geometry goes into the scale features group, so it will be
-	//  scaled up/down with the vertical exaggeration.
-	m_pTerr->GetScaledFeatures()->addChild(pContainer);
+	pParent->addChild(pContainer);
+}
+
+bool vtAbstractLayer::EarthExtents(DRECT &ext)
+{
+	if (m_pSet)
+		return m_pSet->EarthExtents(ext);
+	return false;
 }
 
 /**
  * Given a featureset, create the geometry and place it
  * on the terrain.
  */
-void vtAbstractLayer::CreateStyledFeatures()
+void vtAbstractLayer::CreateFeatureVisuals(osg::Group *pParent, vtHeightField3d *pHF,
+	float fSpacing, osg::Node *pSurfaceNode, int iTextureUnit, bool progress_callback(int))
 {
-	VTLOG1("CreateStyledFeatures\n");
-	if (!pContainer)
-		CreateContainer();
+	VTLOG1("CreateFeatureVisuals\n");
 
-	uint entities = pSet->NumEntities();
+	if (!pContainer)
+		CreateContainer(pParent);
+
+	SetHeightfield(pHF);
+	m_fSpacing = fSpacing;
+	m_iTextureUnit = iTextureUnit;
+	m_pSurfaceNode = pSurfaceNode;
+
+	RecreateFeatureVisuals(progress_callback);
+}
+
+void vtAbstractLayer::RecreateFeatureVisuals(bool progress_callback(int))
+{
+	uint entities = m_pSet->NumEntities();
 	VTLOG("  Creating %d entities.. ", entities);
 
 	for (uint i = 0; i < entities; i++)
 	{
-		CreateStyledFeature(i);
-		m_pTerr->ProgressCallback(i * 100 / entities);
+		CreateFeatureVisual(i);
+		if (progress_callback != NULL)
+			progress_callback(i * 100 / entities);
 	}
 
 	// A few types of visuals are not strictly per-feature; they must be
@@ -125,27 +200,24 @@ void vtAbstractLayer::CreateStyledFeatures()
 	// 1. A line going through a point set.
 	// 2. A TextureOverlay which rasterizes all the featues.
 
-	if (m_StyleProps.GetValueBool("LineGeometry") && pSetP3 != NULL)
+	if (m_Props.GetValueBool("LineGeometry") && m_pSetP3 != NULL)
 		CreateLineGeometryForPoints();
 
-	if (m_StyleProps.GetValueBool("TextureOverlay"))
-		CreateTextureOverlay();
+	if (m_Props.GetValueBool("TextureOverlay"))
+		CreateTextureOverlay(m_pSurfaceNode, m_iTextureUnit);
 
 	VTLOG1("Done.\n");
 }
 
-void vtAbstractLayer::CreateStyledFeature(int iIndex)
+void vtAbstractLayer::CreateFeatureVisual(int iIndex)
 {
-	if (!pContainer)
-		CreateContainer();
-
-	if (m_StyleProps.GetValueBool("ObjectGeometry"))
+	if (m_Props.GetValueBool("ObjectGeometry"))
 		CreateObjectGeometry(iIndex);
 
-	if (m_StyleProps.GetValueBool("LineGeometry"))
+	if (m_Props.GetValueBool("LineGeometry"))
 		CreateLineGeometry(iIndex);
 
-	if (m_StyleProps.GetValueBool("Labels"))
+	if (m_Props.GetValueBool("Labels"))
 		CreateFeatureLabel(iIndex);
 }
 
@@ -162,10 +234,10 @@ void vtAbstractLayer::CreateGeomGroup()
 	// common colors
 	RGBi color;
 
-	color = m_StyleProps.GetValueRGBi("ObjectGeomColor");
+	color = m_Props.GetValueRGBi("ObjectGeomColor");
 	material_index_object = pGeomMats->AddRGBMaterial(color, true, true);
 
-	color = m_StyleProps.GetValueRGBi("LineGeomColor");
+	color = m_Props.GetValueRGBi("LineGeomColor");
 	material_index_line = pGeomMats->AddRGBMaterial(color, false, false);
 
 	// There is always a yellow highlight material
@@ -190,7 +262,7 @@ void vtAbstractLayer::CreateLabelGroup()
 
 	// If they specified a font name, use it
 	vtString fontfile;
-	if (!m_StyleProps.GetValueString("Font", fontfile))
+	if (!m_Props.GetValueString("Font", fontfile))
 	{
 		// otherwise, use the default
 		fontfile = "Arial.ttf";
@@ -218,7 +290,7 @@ int vtAbstractLayer::GetObjectMaterialIndex(vtTagArray &style, uint iIndex)
 	if (style.GetValueInt("ObjectColorFieldIndex", color_field_index))
 	{
 		RGBAf rgba;
-		if (GetColorField(*pSet, iIndex, color_field_index, rgba))
+		if (GetColorField(*m_pSet, iIndex, color_field_index, rgba))
 		{
 			result = pGeomMats->FindByDiffuse(rgba);
 			if (result == -1)
@@ -250,32 +322,31 @@ void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 2D and 3D points, and 2D and 3D polylines
-	if (!pSetP2 && !pSetP3 && !pSetLS2 && !pSetLS3)
+	if (!m_pSetP2 && !m_pSetP3 && !m_pSetLS2 && !m_pSetLS3)
 		return;
 
 	// Determine color and material index
-	int material_index = GetObjectMaterialIndex(m_StyleProps, iIndex);
+	int material_index = GetObjectMaterialIndex(m_Props, iIndex);
 
 	// Determine geometry size and placement
 	float fHeight = 0.0f;
-	if (pSetP2 || pSetLS2)
-		m_StyleProps.GetValueFloat("ObjectGeomHeight", fHeight);
+	if (m_pSetP2 || m_pSetLS2)
+		m_Props.GetValueFloat("ObjectGeomHeight", fHeight);
 
 	float fRadius;
-	if (!m_StyleProps.GetValueFloat("ObjectGeomSize", fRadius))
+	if (!m_Props.GetValueFloat("ObjectGeomSize", fRadius))
 		fRadius = 1;
 
-	vtHeightField3d *hf = m_pTerr->GetHeightField();
 	int res = 3;
 	FPoint3 p3;
 
 	// Track what is created
-	vtVisual *viz = GetViz(pSet->GetFeature(iIndex));
+	vtVisual *viz = GetViz(m_pSet->GetFeature(iIndex));
 
-	if (pSetP2)
+	if (m_pSetP2)
 	{
-		const DPoint2 &epos = pSetP2->GetPoint(iIndex);
-		hf->ConvertEarthToSurfacePoint(epos, p3, 0, true);	// use true elev
+		const DPoint2 &epos = m_pSetP2->GetPoint(iIndex);
+		m_pHeightField->ConvertEarthToSurfacePoint(epos, p3, 0, true);	// use true elev
 		p3.y += fHeight;
 
 		vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
@@ -286,14 +357,14 @@ void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 		// Track
 		if (viz) viz->m_meshes.push_back(mesh);
 	}
-	else if (pSetP3)
+	else if (m_pSetP3)
 	{
-		const DPoint3 &epos = pSetP3->GetPoint(iIndex);
+		const DPoint3 &epos = m_pSetP3->GetPoint(iIndex);
 		float original_z = (float) epos.z;
-		hf->m_Conversion.ConvertFromEarth(epos, p3);
+		m_pHeightField->m_Conversion.ConvertFromEarth(epos, p3);
 
 		// If a large number of entities, make as simple geometry as possible
-		bool bTetrahedra = (pSet->NumEntities() > 10000);
+		bool bTetrahedra = (m_pSet->NumEntities() > 10000);
 
 		bool bShaded = true;
 		vtMesh *mesh;
@@ -315,13 +386,13 @@ void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 		// Track
 		if (viz) viz->m_meshes.push_back(mesh);
 	}
-	else if (pSetLS2)
+	else if (m_pSetLS2)
 	{
-		const DLine2 &dline = pSetLS2->GetPolyLine(iIndex);
+		const DLine2 &dline = m_pSetLS2->GetPolyLine(iIndex);
 		for (uint j = 0; j < dline.GetSize(); j++)
 		{
 			// preserve 3D point's elevation: don't drape
-			hf->ConvertEarthToSurfacePoint(dline[j], p3);
+			m_pHeightField->ConvertEarthToSurfacePoint(dline[j], p3);
 			p3.y += fHeight;
 
 			vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
@@ -333,13 +404,13 @@ void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 			if (viz) viz->m_meshes.push_back(mesh);
 		}
 	}
-	else if (pSetLS3)
+	else if (m_pSetLS3)
 	{
-		const DLine3 &dline = pSetLS3->GetPolyLine(iIndex);
+		const DLine3 &dline = m_pSetLS3->GetPolyLine(iIndex);
 		for (uint j = 0; j < dline.GetSize(); j++)
 		{
 			// preserve 3D point's elevation: don't drape
-			hf->m_Conversion.ConvertFromEarth(dline[j], p3);
+			m_pHeightField->m_Conversion.ConvertFromEarth(dline[j], p3);
 
 			vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
@@ -364,31 +435,20 @@ void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 2D and 3D polylines, and 2D polygons
-	if (!pSetLS2 && !pSetLS3 && !pSetPoly)
+	if (!m_pSetLS2 && !m_pSetLS3 && !m_pSetPoly)
 		return;
 
 	// geometry group to contain all the meshes
 	if (!pGeomGroup)
 		CreateGeomGroup();
 
-	// We may need to convert from the CRS of the featureset to the CRS of the
-	//  terrain (before converting from terrain to world coordinates)
-	vtProjection &proj_feat = pSet->GetAtProjection();
-	const vtProjection &proj_terr = m_pTerr->GetProjection();
-	auto_ptr<OCT> octransform;
-	if (proj_feat.GetRoot() && proj_terr.GetRoot() && !proj_feat.IsSame(&proj_terr))
-	{
-		// If we have two valid CRSs, and they are not the same, then we need a transform
-		octransform.reset(CreateCoordTransform(&proj_feat, &proj_terr, true));
-	}
-
 	// Determine color and material index
 	int color_field_index;
 	int material_index;
-	if (m_StyleProps.GetValueInt("LineColorFieldIndex", color_field_index))
+	if (m_Props.GetValueInt("LineColorFieldIndex", color_field_index))
 	{
 		RGBAf rgba;
-		if (GetColorField(*pSet, iIndex, color_field_index, rgba))
+		if (GetColorField(*m_pSet, iIndex, color_field_index, rgba))
 		{
 			material_index = pGeomMats->FindByDiffuse(rgba);
 			if (material_index == -1)
@@ -405,19 +465,19 @@ void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 
 	// Estimate number of mesh vertices we'll have
 	int iEstimatedVerts = 0;
-	if (pSetLS2)
+	if (m_pSetLS2)
 	{
-		const DLine2 &dline = pSetLS2->GetPolyLine(iIndex);
+		const DLine2 &dline = m_pSetLS2->GetPolyLine(iIndex);
 		iEstimatedVerts = dline.GetSize();
 	}
-	else if (pSetLS3)
+	else if (m_pSetLS3)
 	{
-		const DLine3 &dline = pSetLS3->GetPolyLine(iIndex);
+		const DLine3 &dline = m_pSetLS3->GetPolyLine(iIndex);
 		iEstimatedVerts = dline.GetSize();
 	}
-	else if (pSetPoly)
+	else if (m_pSetPoly)
 	{
-		const DPolygon2 &dpoly = pSetPoly->GetPolygon(iIndex);
+		const DPolygon2 &dpoly = m_pSetPoly->GetPolygon(iIndex);
 		for (uint k = 0; k < dpoly.size(); k++)
 		{
 			const DLine2 &dline = dpoly[k];
@@ -430,41 +490,49 @@ void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 		iEstimatedVerts);
 
 	float fHeight = 0.0f;
-	if (pSetLS2 || pSetPoly)
+	if (m_pSetLS2 || m_pSetPoly)
 	{
-		if (!m_StyleProps.GetValueFloat("LineGeomHeight", fHeight))
+		if (!m_Props.GetValueFloat("LineGeomHeight", fHeight))
 			fHeight = 1.0f;
 	}
-	bool bTessellate = m_StyleProps.GetValueBool("Tessellate");
+	bool bTessellate = m_Props.GetValueBool("Tessellate");
 	bool bCurve = false;
 
 	FPoint3 f3;
 	uint size;
-	if (pSetLS2)
+	if (m_pSetLS2)
 	{
-		const DLine2 &dline = pSetLS2->GetPolyLine(iIndex);
+		const DLine2 &dline = m_pSetLS2->GetPolyLine(iIndex);
 
-		m_pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve, true);
+		if (m_pOCTransform.get())
+		{
+			// Make a copy and transform it
+			DLine2 copy = dline;
+			TransformInPlace(m_pOCTransform.get(), copy);
+			mf.AddSurfaceLineToMesh(m_pHeightField, copy, m_fSpacing, fHeight, bTessellate, bCurve, true);
+		}
+		else
+			mf.AddSurfaceLineToMesh(m_pHeightField, dline, m_fSpacing, fHeight, bTessellate, bCurve, true);
 	}
-	else if (pSetLS3)
+	else if (m_pSetLS3)
 	{
 		mf.PrimStart();
-		const DLine3 &dline = pSetLS3->GetPolyLine(iIndex);
+		const DLine3 &dline = m_pSetLS3->GetPolyLine(iIndex);
 		size = dline.GetSize();
 		for (uint j = 0; j < size; j++)
 		{
 			// preserve 3D point's elevation: don't drape
 			DPoint3 p = dline[j];
-			if (octransform.get())
-				octransform->Transform(1, &p.x, &p.y);
-			m_pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(p, f3);
+			if (m_pOCTransform.get())
+				m_pOCTransform->Transform(1, &p.x, &p.y);
+			m_pHeightField->m_Conversion.ConvertFromEarth(p, f3);
 			mf.AddVertex(f3);
 		}
 		mf.PrimEnd();
 	}
-	else if (pSetPoly)
+	else if (m_pSetPoly)
 	{
-		const DPolygon2 &dpoly = pSetPoly->GetPolygon(iIndex);
+		const DPolygon2 &dpoly = m_pSetPoly->GetPolygon(iIndex);
 		for (uint k = 0; k < dpoly.size(); k++)
 		{
 			// This would be the efficient way
@@ -474,21 +542,24 @@ void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 			DLine2 dline = dpoly[k];
 			dline.Append(dline[0]);
 
-			m_pTerr->AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve, true);
+			if (m_pOCTransform.get())
+				TransformInPlace(m_pOCTransform.get(), dline);
+
+			mf.AddSurfaceLineToMesh(m_pHeightField, dline, m_fSpacing, fHeight, bTessellate, bCurve, true);
 		}
 	}
 
 	// If the user specified a line width, apply it now
 	bool bWidth = false;
 	float fWidth;
-	if (m_StyleProps.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
+	if (m_Props.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
 		bWidth = true;
 
 	// Track what was created
-	vtVisual *viz = GetViz(pSet->GetFeature(iIndex));
-	for (uint i = 0; i < mf.m_Meshes.size(); i++)
+	vtVisual *viz = GetViz(m_pSet->GetFeature(iIndex));
+	for (uint i = 0; i < mf.Meshes(); i++)
 	{
-		vtMesh *mesh = mf.m_Meshes[i];
+		vtMesh *mesh = mf.Mesh(i);
 
 		if (bWidth)
 			mesh->SetLineWidth(fWidth);
@@ -508,7 +579,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 3D point sets (line through the points),
-	if (!pSetP3)
+	if (!m_pSetP3)
 		return;
 
 	// geometry group to contain all the meshes
@@ -518,7 +589,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 	int material_index = material_index_line;
 
 	// Estimate number of mesh vertices we'll have
-	const DLine3 &dline = pSetP3->GetAllPoints();
+	const DLine3 &dline = m_pSetP3->GetAllPoints();
 	uint size = dline.GetSize();
 	int iEstimatedVerts = size;
 
@@ -530,18 +601,18 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 	for (uint j = 0; j < size; j++)
 	{
 		// preserve 3D point's elevation: don't drape
-		m_pTerr->GetHeightField()->m_Conversion.ConvertFromEarth(dline[j], f3);
+		m_pHeightField->m_Conversion.ConvertFromEarth(dline[j], f3);
 		mf.AddVertex(f3);
 	}
 	mf.PrimEnd();
 
 	// If the user specified a line width, apply it now
 	float fWidth;
-	if (m_StyleProps.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
+	if (m_Props.GetValueFloat("LineWidth", fWidth) && fWidth != 1.0f)
 	{
-		for (uint i = 0; i < mf.m_Meshes.size(); i++)
+		for (uint i = 0; i < mf.Meshes(); i++)
 		{
-			vtMesh *mesh = mf.m_Meshes[i];
+			vtMesh *mesh = mf.Mesh(i);
 			mesh->SetLineWidth(fWidth);
 		}
 	}
@@ -559,7 +630,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 {
 	// We support text labels for 2D and 3D points, and 2D polygons
-	if (!pSetP2 && !pSetP3 && !pSetPoly)
+	if (!m_pSetP2 && !m_pSetP3 && !m_pSetPoly)
 		return;
 
 	// create group
@@ -576,26 +647,26 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 	// Get the earth location of the label
 	DPoint2 p2;
 	DPoint3 p3;
-	if (pSetP2)
-		p2 = pSetP2->GetPoint(iIndex);
-	else if (pSetP3)
+	if (m_pSetP2)
+		p2 = m_pSetP2->GetPoint(iIndex);
+	else if (m_pSetP3)
 	{
-		p3 = pSetP3->GetPoint(iIndex);
+		p3 = m_pSetP3->GetPoint(iIndex);
 		p2.Set(p3.x, p3.y);
 	}
-	else if (pSetPoly)
+	else if (m_pSetPoly)
 	{
-		const DPolygon2 &dp = pSetPoly->GetPolygon(iIndex);
+		const DPolygon2 &dp = m_pSetPoly->GetPolygon(iIndex);
 		p2 = dp[0].Centroid();
 	}
 
 	// Don't drape on culture, but do use true elevation
 	FPoint3 fp3;
-	if (!m_pTerr->GetHeightField()->ConvertEarthToSurfacePoint(p2, fp3, 0, true))
+	if (!m_pHeightField->ConvertEarthToSurfacePoint(p2, fp3, 0, true))
 		return;
 
 	float label_elevation;
-	if (!m_StyleProps.GetValueFloat("LabelHeight", label_elevation))
+	if (!m_Props.GetValueFloat("LabelHeight", label_elevation))
 		label_elevation = 0.0f;
 
 	// Elevate the location by the desired vertical offset
@@ -603,11 +674,11 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 
 	// If we have a 3D point, we can use the Z component of the point
 	//  to further affect the elevation.
-	if (pSetP3)
+	if (m_pSetP3)
 		fp3.y += p3.z;
 
 	float label_size;
-	if (!m_StyleProps.GetValueFloat("LabelSize", label_size))
+	if (!m_Props.GetValueFloat("LabelSize", label_size))
 		label_size = 18;
 
 	// Create the vtTextMesh
@@ -615,10 +686,10 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 
 	// Get the label text
 	int text_field_index;
-	if (!m_StyleProps.GetValueInt("TextFieldIndex", text_field_index))
+	if (!m_Props.GetValueInt("TextFieldIndex", text_field_index))
 		text_field_index = -1;
 	vtString str;
-	pSet->GetValueAsString(iIndex, text_field_index, str);
+	m_pSet->GetValueAsString(iIndex, text_field_index, str);
 
 #if SUPPORT_WSTRING
 	// Text will be UTF-8
@@ -637,10 +708,10 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 	// Determine feature color
 	bool bGotColor = false;
 	int color_field_index;
-	if (m_StyleProps.GetValueInt("TextColorFieldIndex", color_field_index))
+	if (m_Props.GetValueInt("TextColorFieldIndex", color_field_index))
 	{
 		RGBAf rgba;
-		if (GetColorField(*pSet, iIndex, color_field_index, rgba))
+		if (GetColorField(*m_pSet, iIndex, color_field_index, rgba))
 		{
 			text->SetColor(rgba);
 			bGotColor = true;
@@ -648,11 +719,11 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 	}
 	if (!bGotColor)
 	{
-		RGBf rgb = m_StyleProps.GetValueRGBi("LabelColor");
+		RGBf rgb = m_Props.GetValueRGBi("LabelColor");
 		text->SetColor(rgb);
 	}
 
-	bool bOutline = m_StyleProps.GetValueBool("LabelOutline");
+	bool bOutline = m_Props.GetValueBool("LabelOutline");
 
 	// Labels will automatically turn to face the user because that's vtlib's
 	// default behavior now.
@@ -665,11 +736,11 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 	pLabelGroup->addChild(bb);
 
 	// Track what was created
-	vtVisual *viz = GetViz(pSet->GetFeature(iIndex));
+	vtVisual *viz = GetViz(m_pSet->GetFeature(iIndex));
 	if (viz) viz->m_xform = bb;
 }
 
-bool vtAbstractLayer::CreateTextureOverlay()
+bool vtAbstractLayer::CreateTextureOverlay(osg::Node *pSurfaceNode, int iTextureUnit)
 {
 	VTLOG1("  CreateTextureOverlay\n");
 
@@ -677,8 +748,8 @@ bool vtAbstractLayer::CreateTextureOverlay()
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// We support texture overlay for only 2D polygons (so far)
-	vtFeatureSet &feat = *(pSet);
-	if (!pSetPoly)
+	vtFeatureSet &feat = *(m_pSet);
+	if (!m_pSetPoly)
 		return false;
 
 	const int ALPD_RESOLUTION = 1024;
@@ -690,13 +761,13 @@ bool vtAbstractLayer::CreateTextureOverlay()
 
 	// Get data extents
 	DRECT DataExtents;
-	pSet->ComputeExtent(DataExtents);
+	m_pSet->ComputeExtent(DataExtents);
 
 	double DeltaX = DataExtents.Width() / (double)ALPD_RESOLUTION;
 	double DeltaY = DataExtents.Height() / (double)ALPD_RESOLUTION;
 
-	int iNumFeatures = pSetPoly->NumEntities();
-	RGBAi LayerColour = m_StyleProps.GetValueRGBi("GeomColor");
+	int iNumFeatures = m_pSetPoly->NumEntities();
+	RGBAi LayerColour = m_Props.GetValueRGBi("GeomColor");
 	LayerColour.a = 255;
 
 	for (int ImageX = 0; ImageX < ALPD_RESOLUTION; ImageX++)
@@ -708,7 +779,7 @@ bool vtAbstractLayer::CreateTextureOverlay()
 			{
 				DPoint2 Point(DataExtents.left + DeltaX / 2 + DeltaX * ImageX,
 								DataExtents.top - DeltaY / 2 - DeltaY * ImageY);
-				if (pSetPoly->GetPolygon(feat).ContainsPoint(Point))
+				if (m_pSetPoly->GetPolygon(feat).ContainsPoint(Point))
 				{
 					image->SetPixel32(ImageX, ImageY, LayerColour);
 				}
@@ -717,11 +788,12 @@ bool vtAbstractLayer::CreateTextureOverlay()
 	}
 
 	int iTextureMode;
-	vtString mode = m_StyleProps.GetValueString("TextureMode");
+	vtString mode = m_Props.GetValueString("TextureMode");
 	if (mode == "ADD") iTextureMode = GL_ADD;
 	if (mode == "MODULATE") iTextureMode = GL_MODULATE;
 	if (mode == "DECAL") iTextureMode = GL_DECAL;
-	pMultiTexture = m_pTerr->AddMultiTextureOverlay(image, DataExtents, iTextureMode);
+	pMultiTexture = new vtMultiTexture;
+	pMultiTexture->Create(pSurfaceNode, image, m_pHeightField, DataExtents, iTextureUnit, iTextureMode);
 	return true;
 }
 
@@ -730,9 +802,9 @@ bool vtAbstractLayer::CreateTextureOverlay()
  */
 void vtAbstractLayer::ReleaseGeometry()
 {
-	for (int i = pSet->NumEntities()-1; i >= 0; i--)
+	for (int i = m_pSet->NumEntities()-1; i >= 0; i--)
 	{
-		vtFeature *f = pSet->GetFeature(i);
+		vtFeature *f = m_pSet->GetFeature(i);
 		ReleaseFeatureGeometry(f);
 	}
 	if (pGeomGroup)
@@ -776,11 +848,46 @@ void vtAbstractLayer::DeleteFeature(vtFeature *f)
 		ReleaseFeatureGeometry(f);
 }
 
-// When the underlying feature changes (in memory), we need to rebuild the visual
-void vtAbstractLayer::RebuildVisual()
+void vtAbstractLayer::RefreshFeatureVisuals(bool progress_callback(int))
 {
 	ReleaseGeometry();
-	CreateStyledFeatures();
+	RecreateFeatureVisuals(progress_callback);
+}
+
+// When the underlying feature changes, we need to rebuild the visual
+void vtAbstractLayer::RefreshFeature(uint iIndex)
+{
+	// If we're not doing a full rebuild, we can create individual items
+	if (!m_bNeedRebuild)
+	{
+		vtFeature *f = m_pSet->GetFeature(iIndex);
+		ReleaseFeatureGeometry(f);
+		CreateFeatureVisual(iIndex);
+	}
+}
+
+void vtAbstractLayer::UpdateVisualSelection()
+{
+	// use SetMeshMatIndex to make the meshes of selected features yellow
+	for (uint j = 0; j < m_pSet->NumEntities(); j++)
+	{
+		vtFeature *feat = m_pSet->GetFeature(j);
+		vtVisual *viz = GetViz(feat);
+		if (viz)
+		{
+			int material_index;
+			if (m_pSet->IsSelected(j))
+				material_index = material_index_yellow;
+			else
+				material_index = GetObjectMaterialIndex(m_Props, j);
+
+			for (uint k = 0; k < viz->m_meshes.size(); k++)
+			{
+				vtMesh *mesh = viz->m_meshes[k];
+				pGeodeObject->SetMeshMatIndex(mesh, material_index);
+			}
+		}
+	}
 }
 
 // When the feature set changes (on disk), we can reload it and rebuild the visual
@@ -789,10 +896,10 @@ void vtAbstractLayer::Reload()
 	// We must release the geometry before changing the featureset
 	ReleaseGeometry();
 
-	vtString fname = pSet->GetFilename();
+	vtString fname = m_pSet->GetFilename();
 
 	// Now we can remove the previous featureset
-	delete pSet;
+	delete m_pSet;
 
 	vtFeatureLoader loader;
 	vtFeatureSet *newset = loader.LoadFrom(fname);
@@ -804,43 +911,7 @@ void vtAbstractLayer::Reload()
 	VTLOG("Successfully read features from file '%s'\n", (const char *)fname);
 	SetFeatureSet(newset);
 
-	CreateStyledFeatures();
-}
-
-// When the underlying feature changes, we need to rebuild the visual
-void vtAbstractLayer::RebuildFeature(uint iIndex)
-{
-	// If we're not doing a full rebuild, we can create individual items
-	if (!m_bNeedRebuild)
-	{
-		vtFeature *f = pSet->GetFeature(iIndex);
-		ReleaseFeatureGeometry(f);
-		CreateStyledFeature(iIndex);
-	}
-}
-
-void vtAbstractLayer::UpdateVisualSelection()
-{
-	// use SetMeshMatIndex to make the meshes of selected features yellow
-	for (uint j = 0; j < pSet->NumEntities(); j++)
-	{
-		vtFeature *feat = pSet->GetFeature(j);
-		vtVisual *viz = GetViz(feat);
-		if (viz)
-		{
-			int material_index;
-			if (pSet->IsSelected(j))
-				material_index = material_index_yellow;
-			else
-				material_index = GetObjectMaterialIndex(m_StyleProps, j);
-
-			for (uint k = 0; k < viz->m_meshes.size(); k++)
-			{
-				vtMesh *mesh = viz->m_meshes[k];
-				pGeodeObject->SetMeshMatIndex(mesh, material_index);
-			}
-		}
-	}
+	RefreshFeatureVisuals();
 }
 
 // To make sure all edits are fully reflected in the visual, call these
@@ -854,7 +925,7 @@ void vtAbstractLayer::EditEnd()
 	if (m_bNeedRebuild)
 	{
 		m_bNeedRebuild = false;
-		RebuildVisual();
+		RefreshFeatureVisuals();
 	}
 }
 
@@ -877,9 +948,9 @@ vtVisual *vtAbstractLayer::GetViz(vtFeature *feat)
 //  created at once from all the features.
 bool vtAbstractLayer::CreateAtOnce()
 {
-	if (m_StyleProps.GetValueBool("LineGeometry") && pSetP3 != NULL)
+	if (m_Props.GetValueBool("LineGeometry") && m_pSetP3 != NULL)
 		return true;
-	if (m_StyleProps.GetValueBool("TextureOverlay"))
+	if (m_Props.GetValueBool("TextureOverlay"))
 		return true;
 	return false;
 }

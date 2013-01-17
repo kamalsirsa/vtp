@@ -1,7 +1,7 @@
 //
 // HeightField.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,7 @@
 #include "vtDIB.h"
 #include "vtLog.h"
 #include "FilePath.h"
+#include "CubicSpline.h"
 
 
 vtHeightField::vtHeightField()
@@ -90,6 +91,128 @@ void vtHeightField3d::GetCenter(FPoint3 &center) const
 	center.x = c.x;
 	center.z = c.y;
 	center.y = 0.0f;
+}
+
+/**
+ * Create a set of points on the heightfield for a 2D polyline by draping the point onto
+ * the surface.
+ *
+ * \param line	The 2D line to drape, in Earth coordinates.
+ * \param fSpacing	The approximate spacing of the surface tessellation, used to
+ *		decide how finely to tessellate the line.
+ * \param fOffset	An offset to elevate each point in the resulting geometry,
+ *		useful for keeping it visibly above the ground.
+ * \param bInterp	True to interpolate between the vertices of the input
+ *		line. This is generally desirable when the ground is much more finely
+ *		spaced than the input line.
+ * \param bCurve	True to interpret the vertices of the input line as
+ *		control points of a curve.  The created geometry will consist of
+ *		a draped line which passes through the control points.
+ * \param bTrue		True to use the true elevation of the terrain, ignoring
+ *		whatever scale factor is being used to exaggerate elevation for
+ *		display.
+ * \param output	Received the points.
+ * \return The approximate length of the resulting 3D polyline.
+ */
+float vtHeightField3d::LineOnSurface(const DLine2 &line, float fSpacing, float fOffset,
+	bool bInterp, bool bCurve, bool bTrue, FLine3 &output)
+{
+	uint i, j;
+	FPoint3 v1, v2, v;
+
+	float fTotalLength = 0.0f;
+	int iVerts = 0;
+	uint points = line.GetSize();
+	if (bCurve)
+	{
+		DPoint2 p2, last(1E9,1E9);
+		DPoint3 p3;
+
+		int spline_points = 0;
+		CubicSpline spline;
+		for (i = 0; i < points; i++)
+		{
+			p2 = line[i];
+			if (i > 1 && p2 == last)
+				continue;
+			p3.Set(p2.x, p2.y, 0);
+			spline.AddPoint(p3);
+			spline_points++;
+			last = p2;
+		}
+		spline.Generate();
+
+		// Estimate how many steps to subdivide this line into
+		const double dLinearLength = line.Length();
+		float fLinearLength, dummy;
+		m_Conversion.ConvertVectorFromEarth(DPoint2(dLinearLength, 0.0), fLinearLength, dummy);
+		double full = (double) (spline_points-1);
+		int iSteps = (uint) (fLinearLength / fSpacing);
+		if (iSteps < 3)
+			iSteps = 3;
+		double dStep = full / iSteps;
+
+		FPoint3 last_v;
+		for (double f = 0; f <= full; f += dStep)
+		{
+			spline.Interpolate(f, &p3);
+
+			m_Conversion.convert_earth_to_local_xz(p3.x, p3.y, v.x, v.z);
+			FindAltitudeAtPoint(v, v.y, bTrue);
+			v.y += fOffset;
+			output.Append(v);
+			iVerts++;
+
+			// keep a running total of approximate ground length
+			if (f > 0)
+				fTotalLength += (v - last_v).Length();
+			last_v = v;
+		}
+	}
+	else
+	{
+		// not curved: straight line in earth coordinates
+		FPoint3 last_v;
+		for (i = 0; i < points; i++)
+		{
+			if (bInterp)
+			{
+				v1 = v2;
+				m_Conversion.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
+				if (i == 0)
+					continue;
+
+				// estimate how many steps to subdivide this segment into
+				FPoint3 diff = v2 - v1;
+				float fLen = diff.Length();
+				uint iSteps = (uint) (fLen / fSpacing);
+				if (iSteps < 1) iSteps = 1;
+
+				for (j = (i == 1 ? 0:1); j <= iSteps; j++)
+				{
+					// simple linear interpolation of the ground coordinate
+					v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
+					FindAltitudeAtPoint(v, v.y, bTrue);
+					v.y += fOffset;
+					output.Append(v);
+					iVerts++;
+
+					// keep a running total of approximate ground length
+					if (j > 0)
+						fTotalLength += (v - last_v).Length();
+					last_v = v;
+				}
+			}
+			else
+			{
+				m_Conversion.ConvertFromEarth(line[i], v.x, v.z);
+				FindAltitudeAtPoint(v, v.y, bTrue);
+				v.y += fOffset;
+				output.Append(v);
+			}
+		}
+	}
+	return fTotalLength;
 }
 
 

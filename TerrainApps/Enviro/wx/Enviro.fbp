@@ -17158,7 +17158,7 @@
                         <object class="notebookpage" expanded="0">
                             <property name="bitmap"></property>
                             <property name="label">Object Geometry</property>
-                            <property name="select">0</property>
+                            <property name="select">1</property>
                             <object class="wxPanel" expanded="0">
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
@@ -18882,7 +18882,7 @@
                         <object class="notebookpage" expanded="0">
                             <property name="bitmap"></property>
                             <property name="label">Text Labels</property>
-                            <property name="select">1</property>
+                            <property name="select">0</property>
                             <object class="wxPanel" expanded="0">
                                 <property name="bg"></property>
                                 <property name="context_help"></property>
@@ -25067,7 +25067,7 @@
                         </object>
                         <object class="notebookpage" expanded="0">
                             <property name="bitmap"></property>
-                            <property name="label">Plus</property>
+                            <property name="label">Surfaces</property>
                             <property name="select">0</property>
                             <object class="wxPanel" expanded="0">
                                 <property name="bg"></property>

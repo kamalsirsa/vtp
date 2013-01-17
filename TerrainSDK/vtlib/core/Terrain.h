@@ -140,6 +140,7 @@ public:
 	void SetTin(vtTin3d *pTin);
 	vtTin3d *GetTin() { return m_pTin; }
 	bool GetGeoExtentsFromMetadata();
+	float EstimateGroundSpacingAtPoint(const DPoint2 &p) const;
 
 	/// pass true to draw the underside of the terrain as well
 	void SetBothSides(bool bFlag) { m_bBothSides = bFlag; }
@@ -256,7 +257,9 @@ public:
 	virtual void OnDeleteBehavior(vtStructure *s);
 
 	// abstract layers
+	vtAbstractLayer *NewAbstractLayer();
 	vtAbstractLayer *GetAbstractLayer();
+	bool CreateAbstractLayerVisuals(vtAbstractLayer *ab_layer);
 	void RemoveFeatureGeometries(vtAbstractLayer *alay);
 	int DeleteSelectedFeatures(vtAbstractLayer *alay);
 	void SetFeatureLoader(vtFeatureLoader *loader) { m_pFeatureLoader = loader; }
@@ -307,12 +310,6 @@ public:
 	bool IsGeographicCRS() const { return (m_proj.IsGeographic() == 1); }
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, bool bTrue, int iCultureFlags) const;
 	int GetShadowTextureUnit();
-
-	// symbols and labels for abstract data
-	float LineOnSurface(const DLine2 &line, float fOffset, bool bInterp,
-		bool bCurve, bool bTrue, FLine3 &output);
-	float AddSurfaceLineToMesh(vtGeomFactory *pMF, const DLine2 &line,
-		float fOffset, bool bInterp = true, bool bCurve = false, bool bTrue = false);
 
 	// Access the viewpoint(s) associated with this terrain
 	void SetCamLocation(FMatrix4 &mat);
@@ -381,7 +378,8 @@ protected:
 	void _CreateRoads();
 	void _SetupVegGrid(float fLODDistance);
 	void _SetupStructGrid(float fLODDistance);
-	void _CreateAbstractLayers();
+	void _CreateAbstractLayersFromParams();
+	bool _CreateAbstractLayerFromParams(int index);
 	void _CreateImageLayers();
 	void _CreateTextures(const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	bool _CreateDynamicTerrain();

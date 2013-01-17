@@ -1,15 +1,76 @@
 //
 // TerrainLayers.cpp
 //
-// Copyright (c) 2006-2007 Virtual Terrain Project
+// Copyright (c) 2006-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
+#include "vtlib/vtosg/MultiTexture.h"
+
+#include "TParams.h"
 #include "TerrainLayers.h"
 
+
 ////////////////////////////////////////////////////////////////////////////
-// Layers
+// Structures
+
+vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
+{
+	m_Props.SetValueString("Type", TERR_LTYPE_STRUCTURE);
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+// Vegetation
+
+vtVegLayer::vtVegLayer() : vtLayer(LT_VEG)
+{
+	m_Props.SetValueString("Type", TERR_LTYPE_VEGETATION);
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+// Imagery
+
+vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
+{
+	m_Props.SetValueString("Type", TERR_LTYPE_IMAGE);
+
+	m_pImage = new vtImageGeo;
+	m_pMultiTexture = NULL;
+}
+
+vtImageLayer::~vtImageLayer()
+{
+	delete m_pMultiTexture;
+}
+
+void vtImageLayer::SetVisible(bool vis)
+{
+	if (m_pMultiTexture)
+		m_pMultiTexture->Enable(vis);
+	vtLayerBase::SetVisible(vis);
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+// Elevation Surfaces
+
+vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
+{
+	m_Props.SetValueString("Type", TERR_LTYPE_ELEVATION);
+}
+
+void vtElevLayer::SetVisible(bool vis)
+{
+	//SetEnabled(vis);	// TODO
+	vtLayerBase::SetVisible(vis);
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+// LayerSet
 
 void LayerSet::Remove(vtLayer *lay)
 {
@@ -58,23 +119,5 @@ vtStructureLayer *LayerSet::FindStructureFromNode(osg::Node *pNode, int &iOffset
 		}
 	}
 	return NULL;
-}
-
-vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
-{
-	m_pImage = new vtImageGeo;
-	m_pMultiTexture = NULL;
-}
-
-vtImageLayer::~vtImageLayer()
-{
-	delete m_pMultiTexture;
-}
-
-void vtImageLayer::SetVisible(bool vis)
-{
-	if (m_pMultiTexture)
-		EnableMultiTexture(m_pMultiTexture->m_pNode, m_pMultiTexture, vis);
-	vtLayerBase::SetVisible(vis);
 }
 

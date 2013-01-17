@@ -1830,7 +1830,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel1->SetSizer( bSizer198 );
 	StylePanel1->Layout();
 	bSizer198->Fit( StylePanel1 );
-	m_notebook->AddPage( StylePanel1, _("Object Geometry"), false );
+	m_notebook->AddPage( StylePanel1, _("Object Geometry"), true );
 	StylePanel2 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer205;
 	bSizer205 = new wxBoxSizer( wxVERTICAL );
@@ -2050,7 +2050,7 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel3->SetSizer( bSizer213 );
 	StylePanel3->Layout();
 	bSizer213->Fit( StylePanel3 );
-	m_notebook->AddPage( StylePanel3, _("Text Labels"), true );
+	m_notebook->AddPage( StylePanel3, _("Text Labels"), false );
 	StylePanel4 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer222;
 	bSizer222 = new wxBoxSizer( wxVERTICAL );
@@ -2665,7 +2665,7 @@ TParamsDlgBase::TParamsDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	TParamsPanelPlus->SetSizer( bSizer241 );
 	TParamsPanelPlus->Layout();
 	bSizer241->Fit( TParamsPanelPlus );
-	m_notebook->AddPage( TParamsPanelPlus, _("Plus"), false );
+	m_notebook->AddPage( TParamsPanelPlus, _("Surfaces"), false );
 	TParamsPanel3 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer38;
 	bSizer38 = new wxBoxSizer( wxHORIZONTAL );

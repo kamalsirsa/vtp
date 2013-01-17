@@ -41,6 +41,7 @@ enum LodMethodEnum {
 #define TERR_LTYPE_ABSTRACT		"Abstract"
 #define TERR_LTYPE_IMAGE		"Image"
 #define TERR_LTYPE_VEGETATION	"Vegetation"
+#define TERR_LTYPE_ELEVATION	"Elevation"
 
 ////////////////////////////////////////////////////////////////////////
 // Class to encapsulate a scenarios parameters.

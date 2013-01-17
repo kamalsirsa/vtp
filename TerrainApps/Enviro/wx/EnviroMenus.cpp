@@ -1824,7 +1824,7 @@ void EnviroFrame::OnTerrainAddContour(wxCommandEvent& event)
 	cc.Finish();
 
 	// show the geometry
-	alay->CreateStyledFeatures();
+	pTerr->CreateAbstractLayerVisuals(alay);
 
 	// and show it in the layers dialog
 	m_pLayerDlg->RefreshTreeContents();	// full refresh

@@ -1177,32 +1177,7 @@ void Enviro::StoreTerrainParameters()
 	const LayerSet &set = terr->GetLayers();
 	par.m_Layers.clear();
 	for (uint i = 0; i < set.size(); i++)
-	{
-		vtLayer *lay = set[i];
-
-		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
-		vtImageLayer *ilay = dynamic_cast<vtImageLayer*>(lay);
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
-		vtVegLayer *vlay = dynamic_cast<vtVegLayer*>(lay);
-
-		vtTagArray newlay;
-		if (slay)
-			newlay.SetValueString("Type", TERR_LTYPE_STRUCTURE, true);
-		if (ilay)
-			newlay.SetValueString("Type", TERR_LTYPE_IMAGE, true);
-		if (alay)
-		{
-			newlay.SetValueString("Type", TERR_LTYPE_ABSTRACT, true);
-			vtTagArray &style = alay->GetProperties();
-			newlay.CopyTagsFrom(style);
-		}
-		if (vlay)
-			newlay.SetValueString("Type", TERR_LTYPE_VEGETATION, true);
-
-		newlay.SetValueString("Filename", lay->GetLayerName(), true);
-		newlay.SetValueBool("Visible", lay->GetVisible());
-		par.m_Layers.push_back(newlay);
-	}
+		par.m_Layers.push_back(set[i]->Props());
 }
 
 /**
@@ -1457,7 +1432,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 				pset->SetValueFromString(rec, field, str);
 
 				// create its 3D visual
-				alay->CreateStyledFeature(rec);
+				alay->CreateFeatureVisual(rec);
 			}
 			UpdateLayerView();
 		}
@@ -2204,7 +2179,11 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtGeomFactory mf(m_pArc, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	mf.SetLineWidth(2);
-	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, dline, m_fDistToolHeight, true);
+
+	const float fSpacing = pTerr->EstimateGroundSpacingAtPoint(dline[0]);
+
+	m_fArcLength = mf.AddSurfaceLineToMesh(pTerr->GetHeightFieldGrid3d(), dline,
+		fSpacing, m_fDistToolHeight, true);
 }
 
 void Enviro::SetTerrainMeasure(const DLine2 &path)
@@ -2215,7 +2194,11 @@ void Enviro::SetTerrainMeasure(const DLine2 &path)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtGeomFactory mf(m_pArc, osg::PrimitiveSet::LINE_STRIP, 0, 30000, 1);
 	mf.SetLineWidth(2);
-	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, path, m_fDistToolHeight, true);
+
+	const float fSpacing = pTerr->EstimateGroundSpacingAtPoint(path[0]);
+
+	m_fArcLength = mf.AddSurfaceLineToMesh(pTerr->GetHeightFieldGrid3d(), path,
+		fSpacing, m_fDistToolHeight, true);
 }
 
 void Enviro::SetDistanceToolMode(bool bPath)

@@ -268,12 +268,13 @@ void vtContourConverter::Flush()
 		{
 			if (m_pMF)
 			{
-				bool bInterpolate = false;		// no need; it already hugs the ground
-				bool bCurve = false;			// no need; it's already quite smooth
-				bool bUseTrueElevation = true;	// use true elevation, not scaled
+				const bool bInterpolate = false;		// no need; it already hugs the ground
+				const bool bCurve = false;				// no need; it's already quite smooth
+				const bool bUseTrueElevation = true;	// use true elevation, not scaled
+				const float fSpacing = 0.0f;			// Doesn't matter, no interpolation.
 
-				m_pTerrain->AddSurfaceLineToMesh(m_pMF, m_line, m_fHeight,
-					bInterpolate, bCurve, bUseTrueElevation);
+				m_pMF->AddSurfaceLineToMesh(m_pTerrain->GetHeightFieldGrid3d(),
+					m_line, fSpacing, m_fHeight, bInterpolate, bCurve, bUseTrueElevation);
 			}
 			else if (m_pLS)
 			{

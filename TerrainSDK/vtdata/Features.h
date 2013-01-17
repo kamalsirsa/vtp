@@ -138,6 +138,7 @@ public:
 	virtual bool TransformCoords(OCT *pTransform, bool progress_callback(int)=0) = 0;
 	virtual bool AppendGeometryFrom(vtFeatureSet *pFromSet) = 0;
 	virtual int NumTotalVertices() const { return 0; }
+	virtual bool EarthExtents(DRECT &ext) const = 0;
 
 	// deletion
 	void SetToDelete(int iFeature);
@@ -263,6 +264,7 @@ public:
 	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
+	virtual bool EarthExtents(DRECT &ext) const;
 
 protected:
 	DLine2	m_Point2;	// wkbPoint
@@ -297,6 +299,7 @@ public:
 	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
+	virtual bool EarthExtents(DRECT &ext) const;
 
 protected:
 	DLine3	m_Point3;	// wkbPoint25D
@@ -333,6 +336,7 @@ public:
 	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
+	virtual bool EarthExtents(DRECT &ext) const;
 
 protected:
 	DLine2Array	m_Line;		// wkbLineString
@@ -367,6 +371,7 @@ public:
 	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
+	virtual bool EarthExtents(DRECT &ext) const;
 
 protected:
 	std::vector<DLine3>	m_Line;		// wkbLineString25D
@@ -433,6 +438,7 @@ public:
 	virtual void CopyGeometry(uint from, uint to);
 	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
 	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
+	virtual bool EarthExtents(DRECT &ext) const;
 
 protected:
 	DPolyArray	m_Poly;		// wkbPolygon

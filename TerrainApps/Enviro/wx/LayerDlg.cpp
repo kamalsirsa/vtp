@@ -762,7 +762,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 		if (alay)
 		{
 			// Ask style for the newly loaded layer
-			vtTagArray &props = alay->GetProperties();
+			vtTagArray &props = alay->Props();
 
 			StyleDlg dlg(NULL, -1, _("Style"), wxDefaultPosition, wxDefaultSize,
 				wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
@@ -778,7 +778,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 			VTLOG1("  Setting featureset properties.\n");
 			dlg.GetOptions(props);
 
-			alay->CreateStyledFeatures();
+			m_pTerrain->CreateAbstractLayerVisuals(alay);
 		}
 
 		if (lay)

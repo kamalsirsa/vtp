@@ -1,7 +1,7 @@
 //
 // TerrainLayers.h
 //
-// Copyright (c) 2006-2012 Virtual Terrain Project
+// Copyright (c) 2006-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,6 +25,19 @@ public:
 
 	virtual void SetLayerName(const vtString &fname) = 0;
 	virtual vtString GetLayerName() = 0;
+
+	/// Set the properties for this layer, which includes style.
+	void SetProps(const vtTagArray &props) { m_Props = props; }
+	void AddProps(const vtTagArray &props) { m_Props.CopyTagsFrom(props); }
+
+	/// Get the properties for this layer, which includes style.
+	vtTagArray &Props() { return m_Props; }
+	const vtTagArray &Props() const { return m_Props; }
+
+protected:
+	// A set of properties that can provide additional information, such as
+	//  style information for visual display.
+	vtTagArray	m_Props;
 };
 typedef osg::ref_ptr<vtLayer> vtLayerPtr;
 
@@ -34,7 +47,7 @@ typedef osg::ref_ptr<vtLayer> vtLayerPtr;
 class vtStructureLayer : public vtStructureArray3d, public vtLayer
 {
 public:
-	vtStructureLayer(): vtLayer(LT_STRUCTURE) {}
+	vtStructureLayer();
 
 	void SetLayerName(const vtString &fname) { SetFilename(fname); }
 	vtString GetLayerName() { return GetFilename(); }
@@ -51,7 +64,7 @@ public:
 class vtVegLayer : public vtPlantInstanceArray3d, public vtLayer
 {
 public:
-	vtVegLayer(): vtLayer(LT_VEG) {}
+	vtVegLayer();
 
 	void SetLayerName(const vtString &fname) { SetFilename(fname); }
 	vtString GetLayerName() { return GetFilename(); }
@@ -77,15 +90,34 @@ public:
 	bool GetVisible();
 
 	vtImageGeoPtr m_pImage;
-	vtMultiTexture *m_pMultiTexture;
+	class vtMultiTexture *m_pMultiTexture;
 };
 
-/** The set of all structure arrays which are on a terrain. */
+/**
+ * An elevation heightfield as a terrain layer.
+ * Currently, it is always a TIN (vtTin3d).
+ */
+class vtElevLayer : public vtLayer
+{
+public:
+	vtElevLayer();
+
+	void SetLayerName(const vtString &fname) { m_strName = fname; }
+	vtString GetLayerName() { return m_strName; }
+	void SetVisible(bool vis);
+
+protected:
+	class vtTin3d *m_pTin;
+	vtString m_strName;
+};
+
+/** The set of all layers which are on a terrain. */
 class LayerSet : public std::vector<vtLayerPtr>
 {
 public:
 	void Remove(vtLayer *lay);
 	vtLayer *FindByName(const vtString &name);
+
 	vtStructureLayer *FindStructureFromNode(osg::Node *pNode, int &iOffset);
 };
 

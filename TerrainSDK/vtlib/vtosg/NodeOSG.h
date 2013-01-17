@@ -123,17 +123,6 @@ struct TransformExtension: public NodeExtension
 	osg::MatrixTransform *m_pTransform;
 };
 
-class vtMultiTexture
-{
-public:
-	int	m_iTextureUnit;
-#if VTLISPSM
-	int	m_iMode;
-#endif
-	osg::Node *m_pNode;
-	TexturePtr m_pTexture;
-};
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Standalone methods which operate on a node
@@ -144,11 +133,6 @@ osg::Node *FindDescendent(osg::Group *node, const char *pName);
 
 void InsertNodeAbove(osg::Node *node, osg::Group *newnode);
 void InsertNodeBelow(osg::Group *group, osg::Group *newnode);
-
-vtMultiTexture *AddMultiTexture(osg::Node *onode, int iTextureUnit, osg::Image *pImage,
-								int iTextureMode, const FPoint2 &scale, const FPoint2 &offset);
-void EnableMultiTexture(osg::Node *node, vtMultiTexture *mt, bool bEnable);
-bool MultiTextureIsEnabled(osg::Node *node, vtMultiTexture *mt);
 
 void LocalToWorld(osg::Node *node, FPoint3 &point);
 void GetBoundSphere(osg::Node *node, FSphere &sphere, bool bGlobal = false);

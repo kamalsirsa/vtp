@@ -1,7 +1,7 @@
 //
 // Projections.cpp
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Parts of the code are derived from public-domain USGS software.
@@ -1118,6 +1118,17 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 		return result;
 }
 
+void TransformInPlace(OCT *transform, DPolygon2 &poly)
+{
+	for (uint ring = 0; ring < poly.size(); ring++)
+		TransformInPlace(transform, poly[ring]);
+}
+
+void TransformInPlace(OCT *transform, DLine2 &line)
+{
+	for (uint v = 0; v < line.GetSize(); v++)
+		transform->Transform(1, &line[v].x, &line[v].y);
+}
 
 double GetMetersPerUnit(LinearUnits lu)
 {

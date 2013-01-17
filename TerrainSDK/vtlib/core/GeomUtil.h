@@ -3,7 +3,7 @@
 //
 // Useful classes and functions for working with geometry and meshes.
 //
-// Copyright (c) 2001-2011 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -49,11 +49,17 @@ public:
 	void SetLineWidth(float width);
 	void SetMatIndex(int iIdx);
 
-	std::vector<vtMesh*> m_Meshes;
+	float AddSurfaceLineToMesh(vtHeightField3d *pHF, const DLine2 &line,
+		float fSpacing, float fOffset, bool bInterp = true, bool bCurve = false,
+		bool bTrue = false);
+
+	uint Meshes() { return m_Meshes.size(); }
+	vtMesh *Mesh(int index) { return m_Meshes[index]; }
 
 protected:
 	void NewMesh();
 
+	std::vector<vtMesh*> m_Meshes;
 	vtGeode *m_pGeode;
 	vtMesh::PrimType m_ePrimType;
 	int m_iVertType;
@@ -91,7 +97,7 @@ public:
 };
 
 
-// helper functions
+// Helper functions
 vtGeode *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
 vtGeode *CreateBoundSphereGeode(const FSphere &sphere, int res = 24);
 vtMesh *CreateSphereMesh(const FSphere &sphere, int res = 24);
