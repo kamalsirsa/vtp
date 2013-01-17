@@ -256,9 +256,12 @@ void TParamsVisitor::endElement(const char *name)
 	}
 	else if (m_level == 2 && !strcmp(name, "Layer"))
 	{
-		// Older files without LabelOutline should default it to true
-		if (m_layer.FindTag("LabelOutline") == NULL)
-			m_layer.AddTag("LabelOutline", "true");
+		if (m_layer.GetValueString("Type") ==  TERR_LTYPE_ABSTRACT)
+		{
+			// Older files without LabelOutline should default it to true
+			if (m_layer.FindTag("LabelOutline") == NULL)
+				m_layer.AddTag("LabelOutline", "true");
+		}
 
 		m_pParams->m_Layers.push_back(m_layer);
 		m_level--;
