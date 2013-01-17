@@ -70,9 +70,6 @@ private:
 	wxTextCtrl* GetLabelHeight()  { return (wxTextCtrl*) FindWindow( ID_LABEL_HEIGHT ); }
 	wxTextCtrl* GetLabelSize()  { return (wxTextCtrl*) FindWindow( ID_LABEL_SIZE ); }
 	wxTextCtrl* GetFont()  { return (wxTextCtrl*) FindWindow( ID_FONT ); }
-	// Texture Overlay
-	wxCheckBox* GetEnableTextureOverlay()  { return (wxCheckBox*) FindWindow( ID_ENABLE_TEXTURE_OVERLAY ); }
-	wxChoice* GetTextureMode()  { return (wxChoice*) FindWindow( ID_TEXTURE_MODE ); }
 
 private:
 	// WDR: member variable declarations for StyleDlg
@@ -109,10 +106,6 @@ private:
 	float m_fLabelSize;
 	wxString m_strFont;
 	bool m_bLabelOutline;
-
-	// Texture Overlay
-	bool m_bTextureOverlay;
-	wxString m_strTextureMode;
 
 	vtFeatureSetPoint2D m_DummyFeatures;
 	wxColourData m_ColourData;

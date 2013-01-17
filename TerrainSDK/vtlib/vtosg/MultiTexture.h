@@ -10,11 +10,15 @@
 
 #include "vtdata/HeightField.h"
 
-class vtMultiTexture
+class vtMultiTexture : public osg::Referenced
 {
 public:
-	void Create(osg::Node *pSurfaceNode, vtImage *pImage, const vtHeightField3d *pSurface,
-		const DRECT &ImageExtent, int iTextureUnit, int iTextureMode);
+	vtMultiTexture();
+	~vtMultiTexture();
+
+	void Create(osg::Node *pSurfaceNode, vtImage *pImage,
+		const FPoint2 &scale, const FPoint2 &offset,
+		int iTextureUnit, int iTextureMode);
 	void Enable(bool bEnable);
 	bool IsEnabled();
 
@@ -26,5 +30,5 @@ public:
 	TexturePtr m_pTexture;
 };
 
+#endif  // VTLIB_MULTI_TEXTURE_H
 
-#endif

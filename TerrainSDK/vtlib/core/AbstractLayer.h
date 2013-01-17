@@ -95,10 +95,8 @@ public:
 
 	// Create for all features
 	void CreateFeatureVisuals(osg::Group *pParent, vtHeightField3d *pHF,
-		float fSpacing, osg::Node *pSurfaceNode, int iTextureUnit,
-		bool progress_callback(int) = NULL);
+		float fSpacing, bool progress_callback(int) = NULL);
 	void RecreateFeatureVisuals(bool progress_callback(int) = NULL);
-	bool CreateTextureOverlay(osg::Node *pSurfaceNode, int iTextureUnit);
 	void CreateLineGeometryForPoints();
 
 	// Create for a single feature
@@ -133,9 +131,6 @@ protected:
 	vtGroup *pGeomGroup;
 	vtGroup *pLabelGroup;
 	vtMultiTexture *pMultiTexture;
-
-	osg::Node *m_pSurfaceNode;	// Surface to put a multitexture on.
-	int m_iTextureUnit;
 
 	// Handy pointers to disambiguate pSet
 	vtFeatureSetPoint2D *m_pSetP2;

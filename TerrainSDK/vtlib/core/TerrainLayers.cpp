@@ -43,7 +43,7 @@ vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 
 vtImageLayer::~vtImageLayer()
 {
-	delete m_pMultiTexture;
+	m_pMultiTexture = NULL;
 }
 
 void vtImageLayer::SetVisible(bool vis)

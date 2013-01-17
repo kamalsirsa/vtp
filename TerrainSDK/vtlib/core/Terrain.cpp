@@ -1546,17 +1546,57 @@ void vtTerrain::_CreateImageLayers()
 			VTLOG("Couldn't get extents from image, so we can't use it as an image overlay.\n");
 			continue;
 		}
-
-		// Copy all the other attributes to the new layer (TODO?)
-		//feat->SetProperties(lay);
-
 		m_Layers.push_back(ilayer);
-
-		vtMultiTexture *mt = new vtMultiTexture;
-		mt->Create(GetTerrainSurfaceNode(), ilayer->m_pImage, GetHeightFieldGrid3d(),
-			ilayer->m_pImage->GetExtents(), m_TextureUnits.ReserveTextureUnit(), GL_DECAL);
-		ilayer->m_pMultiTexture = mt;
+		AddMultiTextureOverlay(ilayer);
 	}
+}
+
+//
+// \param TextureMode One of GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD
+//
+void vtTerrain::AddMultiTextureOverlay(vtImageLayer *im_layer)
+{
+	DRECT extents = im_layer->m_pImage->GetExtents();
+	DRECT EarthExtents = GetHeightField()->GetEarthExtents();
+
+	int iTextureUnit = m_TextureUnits.ReserveTextureUnit();
+	if (iTextureUnit == -1)
+		return;
+
+	// Calculate the mapping of texture coordinates
+	DPoint2 scale;
+	FPoint2 offset;
+	vtHeightFieldGrid3d *grid = GetDynTerrain();
+
+	if (grid)
+	{
+		int iCols, iRows;
+		grid->GetDimensions(iCols, iRows);
+
+		// input values go from (0,0) to (Cols-1,Rows-1)
+		// output values go from 0 to 1
+		scale.Set(1.0/(iCols - 1), 1.0/(iRows - 1));
+
+		// stretch the (0-1) over the data extents
+		scale.x *= (EarthExtents.Width() / extents.Width());
+		scale.y *= (EarthExtents.Height() / extents.Height());
+	}
+	else	// might be a TiledGeom, or a TIN
+	{
+		FRECT worldExtents;
+		GetLocalConversion().ConvertFromEarth(extents, worldExtents);
+
+		// Map input values (0-terrain size in world coords) to 0-1
+		scale.Set(1.0/worldExtents.Width(), 1.0/worldExtents.Height());
+	}
+
+	// and offset it to place it at the right place
+	offset.x = (float) ((extents.left - EarthExtents.left) / extents.Width());
+	offset.y = (float) ((extents.bottom - EarthExtents.bottom) / extents.Height());
+
+	im_layer->m_pMultiTexture = new vtMultiTexture;
+	im_layer->m_pMultiTexture->Create(GetTerrainSurfaceNode(), im_layer->m_pImage,
+		scale, offset, iTextureUnit, GL_DECAL);
 }
 
 osg::Node *vtTerrain::GetTerrainSurfaceNode()
@@ -3217,12 +3257,6 @@ vtAbstractLayer *vtTerrain::GetAbstractLayer()
 
 bool vtTerrain::CreateAbstractLayerVisuals(vtAbstractLayer *ab_layer)
 {
-	int iTextureUnit = -1;
-	if (ab_layer->Props().GetValueBool("TextureOverlay"))
-	{
-		iTextureUnit = m_TextureUnits.ReserveTextureUnit();
-	}
-
 	// We must decide how to tesselate the features, in case of interpolation of edges.
 	// That depends on the spacing of the underlying surface, which may vary from place
 	// to place.  Look for where the center of the featureset is.
@@ -3256,8 +3290,7 @@ bool vtTerrain::CreateAbstractLayerVisuals(vtAbstractLayer *ab_layer)
 
 	VTLOG1("  Constructing layer visuals.\n");
 	ab_layer->CreateFeatureVisuals(GetScaledFeatures(), GetHeightFieldGrid3d(),
-		fSpacing, GetTerrainSurfaceNode(), iTextureUnit,
-		m_progress_callback);
+		fSpacing, m_progress_callback);
 
 	// Show only layers which should be visible
 	bool bVis;

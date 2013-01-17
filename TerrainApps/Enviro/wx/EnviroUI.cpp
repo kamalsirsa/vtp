@@ -2051,41 +2051,6 @@ StyleDlgBase::StyleDlgBase( wxWindow* parent, wxWindowID id, const wxString& tit
 	StylePanel3->Layout();
 	bSizer213->Fit( StylePanel3 );
 	m_notebook->AddPage( StylePanel3, _("Text Labels"), false );
-	StylePanel4 = new wxPanel( m_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer222;
-	bSizer222 = new wxBoxSizer( wxVERTICAL );
-	
-	m_enable_texture_overlay = new wxCheckBox( StylePanel4, ID_ENABLE_TEXTURE_OVERLAY, _("Enable"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_enable_texture_overlay->SetValue(true); 
-	bSizer222->Add( m_enable_texture_overlay, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
-	wxStaticBoxSizer* sbSizer42;
-	sbSizer42 = new wxStaticBoxSizer( new wxStaticBox( StylePanel4, wxID_ANY, wxEmptyString ), wxVERTICAL );
-	
-	wxBoxSizer* bSizer223;
-	bSizer223 = new wxBoxSizer( wxHORIZONTAL );
-	
-	
-	bSizer223->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
-	
-	m_text146 = new wxStaticText( StylePanel4, ID_TEXT, _("Mode:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text146->Wrap( 0 );
-	bSizer223->Add( m_text146, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	wxString m_texture_modeChoices[] = { _("Item") };
-	int m_texture_modeNChoices = sizeof( m_texture_modeChoices ) / sizeof( wxString );
-	m_texture_mode = new wxChoice( StylePanel4, ID_TEXTURE_MODE, wxDefaultPosition, wxSize( 160,-1 ), m_texture_modeNChoices, m_texture_modeChoices, 0 );
-	m_texture_mode->SetSelection( 0 );
-	bSizer223->Add( m_texture_mode, 1, wxALIGN_CENTER|wxALL, 5 );
-	
-	sbSizer42->Add( bSizer223, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
-	
-	bSizer222->Add( sbSizer42, 1, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM|wxEXPAND, 5 );
-	
-	StylePanel4->SetSizer( bSizer222 );
-	StylePanel4->Layout();
-	bSizer222->Fit( StylePanel4 );
-	m_notebook->AddPage( StylePanel4, _("Texture Overlay"), false );
 	
 	bSizer196->Add( m_notebook, 0, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5 );
 	

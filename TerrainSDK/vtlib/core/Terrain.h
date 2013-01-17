@@ -355,7 +355,7 @@ public:
 	// Texture
 	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 	osg::Image *GetTextureImage();
-	vtMultiTexture *AddMultiTextureOverlay(vtImage *pImage, const DRECT &extents, int TextureMode);
+	void AddMultiTextureOverlay(vtImageLayer *im_layer);
 	osg::Node *GetTerrainSurfaceNode();
 
 	/********************** Public Data ******************/

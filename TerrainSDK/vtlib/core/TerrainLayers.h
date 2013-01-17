@@ -75,6 +75,8 @@ public:
 	}
 };
 
+class vtMultiTexture;
+
 /**
  * A vtlib image layer is a bitmap draped on the terrain surface.
  */
@@ -90,7 +92,7 @@ public:
 	bool GetVisible();
 
 	vtImageGeoPtr m_pImage;
-	class vtMultiTexture *m_pMultiTexture;
+	osg::ref_ptr<vtMultiTexture> m_pMultiTexture;
 };
 
 /**

@@ -167,7 +167,7 @@ bool vtAbstractLayer::EarthExtents(DRECT &ext)
  * on the terrain.
  */
 void vtAbstractLayer::CreateFeatureVisuals(osg::Group *pParent, vtHeightField3d *pHF,
-	float fSpacing, osg::Node *pSurfaceNode, int iTextureUnit, bool progress_callback(int))
+	float fSpacing, bool progress_callback(int))
 {
 	VTLOG1("CreateFeatureVisuals\n");
 
@@ -176,8 +176,6 @@ void vtAbstractLayer::CreateFeatureVisuals(osg::Group *pParent, vtHeightField3d 
 
 	SetHeightfield(pHF);
 	m_fSpacing = fSpacing;
-	m_iTextureUnit = iTextureUnit;
-	m_pSurfaceNode = pSurfaceNode;
 
 	RecreateFeatureVisuals(progress_callback);
 }
@@ -202,9 +200,6 @@ void vtAbstractLayer::RecreateFeatureVisuals(bool progress_callback(int))
 
 	if (m_Props.GetValueBool("LineGeometry") && m_pSetP3 != NULL)
 		CreateLineGeometryForPoints();
-
-	if (m_Props.GetValueBool("TextureOverlay"))
-		CreateTextureOverlay(m_pSurfaceNode, m_iTextureUnit);
 
 	VTLOG1("Done.\n");
 }
@@ -740,63 +735,6 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 	if (viz) viz->m_xform = bb;
 }
 
-bool vtAbstractLayer::CreateTextureOverlay(osg::Node *pSurfaceNode, int iTextureUnit)
-{
-	VTLOG1("  CreateTextureOverlay\n");
-
-	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
-	// We support texture overlay for only 2D polygons (so far)
-	vtFeatureSet &feat = *(m_pSet);
-	if (!m_pSetPoly)
-		return false;
-
-	const int ALPD_RESOLUTION = 1024;
-
-	// Set up the image
-	vtImage *image = new vtImage;
-	if (!image->Create(ALPD_RESOLUTION, ALPD_RESOLUTION, 32))
-		return false;
-
-	// Get data extents
-	DRECT DataExtents;
-	m_pSet->ComputeExtent(DataExtents);
-
-	double DeltaX = DataExtents.Width() / (double)ALPD_RESOLUTION;
-	double DeltaY = DataExtents.Height() / (double)ALPD_RESOLUTION;
-
-	int iNumFeatures = m_pSetPoly->NumEntities();
-	RGBAi LayerColour = m_Props.GetValueRGBi("GeomColor");
-	LayerColour.a = 255;
-
-	for (int ImageX = 0; ImageX < ALPD_RESOLUTION; ImageX++)
-	{
-		for (int ImageY = 0; ImageY < ALPD_RESOLUTION; ImageY++)
-		{
-			image->SetPixel32(ImageX, ImageY, RGBAi(0,0,0,0));
-			for (int feat = 0; feat < iNumFeatures; feat++)
-			{
-				DPoint2 Point(DataExtents.left + DeltaX / 2 + DeltaX * ImageX,
-								DataExtents.top - DeltaY / 2 - DeltaY * ImageY);
-				if (m_pSetPoly->GetPolygon(feat).ContainsPoint(Point))
-				{
-					image->SetPixel32(ImageX, ImageY, LayerColour);
-				}
-			}
-		}
-	}
-
-	int iTextureMode;
-	vtString mode = m_Props.GetValueString("TextureMode");
-	if (mode == "ADD") iTextureMode = GL_ADD;
-	if (mode == "MODULATE") iTextureMode = GL_MODULATE;
-	if (mode == "DECAL") iTextureMode = GL_DECAL;
-	pMultiTexture = new vtMultiTexture;
-	pMultiTexture->Create(pSurfaceNode, image, m_pHeightField, DataExtents, iTextureUnit, iTextureMode);
-	return true;
-}
-
 /**
  * Release all the 3D stuff created for the layer (including geometry and labels).
  */
@@ -949,8 +887,6 @@ vtVisual *vtAbstractLayer::GetViz(vtFeature *feat)
 bool vtAbstractLayer::CreateAtOnce()
 {
 	if (m_Props.GetValueBool("LineGeometry") && m_pSetP3 != NULL)
-		return true;
-	if (m_Props.GetValueBool("TextureOverlay"))
 		return true;
 	return false;
 }

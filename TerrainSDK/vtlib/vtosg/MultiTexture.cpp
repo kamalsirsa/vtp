@@ -9,31 +9,25 @@
 #include "MultiTexture.h"
 
 
-void vtMultiTexture::Create(osg::Node *pSurfaceNode, vtImage *pImage, const vtHeightField3d *pSurface,
-		const DRECT &ImageExtent, int iTextureUnit, int iTextureMode)
+vtMultiTexture::vtMultiTexture()
+{
+	m_pNode = NULL;
+}
+
+vtMultiTexture::~vtMultiTexture()
+{
+	m_pTexture = NULL;
+}
+
+void vtMultiTexture::Create(osg::Node *pSurfaceNode, vtImage *pImage,
+	const FPoint2 &scale, const FPoint2 &offset,
+	int iTextureUnit, int iTextureMode)
 {
 	m_pNode = pSurfaceNode;
 	m_iTextureUnit = iTextureUnit;
 #if VTLISPSM
 	m_iMode = iTextureMode;
 #endif
-
-	// Calculate the mapping of texture coordinates
-	DRECT SurfaceEarthExtents = pSurface->GetEarthExtents();
-	DPoint2 scale;
-	FPoint2 offset;
-
-	FRECT worldExtents;
-	pSurface->m_Conversion.ConvertFromEarth(ImageExtent, worldExtents);
-
-	// Map input values (0-terrain size in world coords) to 0-1
-	scale.Set(1.0/worldExtents.Width(), 1.0/worldExtents.Height());
-
-	// and offset it to place it at the right place
-	offset.x = (float) ((ImageExtent.left - SurfaceEarthExtents.left) / ImageExtent.Width());
-	offset.y = (float) ((ImageExtent.bottom - SurfaceEarthExtents.bottom) / ImageExtent.Height());
-
-	// apply it to the node that is above the terrain surface
 
 	// Get a stateset to work with
 	osg::ref_ptr<osg::StateSet> pStateSet = pSurfaceNode->getOrCreateStateSet();

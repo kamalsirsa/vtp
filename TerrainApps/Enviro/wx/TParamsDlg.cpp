@@ -169,7 +169,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pPlantFiles = GetPlantFiles();
 	m_pStructFiles = GetStructFiles();
 	m_pRawFiles = GetRawFiles();
-	m_pAnimFiles = GetAnimPaths();
 	m_pImageFiles = GetImageFiles();
 	m_pLodMethod = GetLodmethod();
 	m_pShadowRez = GetChoiceShadowRez();
@@ -304,7 +303,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pPlantFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pPlantFiles));
 	m_pStructFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pStructFiles));
 	m_pRawFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pRawFiles));
-	m_pAnimFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pAnimFiles));
+	m_anim_paths->PushEventHandler(new wxListBoxEventHandler(this, m_anim_paths));
 	m_pImageFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pImageFiles));
 }
 
@@ -313,7 +312,7 @@ TParamsDlg::~TParamsDlg()
 	m_pPlantFiles->PopEventHandler(true);
 	m_pStructFiles->PopEventHandler(true);
 	m_pRawFiles->PopEventHandler(true);
-	m_pAnimFiles->PopEventHandler(true);
+	m_anim_paths->PopEventHandler(true);
 	m_pImageFiles->PopEventHandler(true);
 }
 
@@ -1026,10 +1025,10 @@ bool TParamsDlg::TransferDataToWindow()
 	m_pRawFiles->Append(_("(double-click to add files)"));
 	m_pImageFiles->Append(_("(double-click to add files)"));
 
-	m_pAnimFiles->Clear();
+	m_anim_paths->Clear();
 	for (i = 0; i < m_AnimPaths.size(); i++)
-		m_pAnimFiles->Append(wxString(m_AnimPaths[i], wxConvUTF8));
-	m_pAnimFiles->Append(_("(double-click to add files)"));
+		m_anim_paths->Append(wxString(m_AnimPaths[i], wxConvUTF8));
+	m_anim_paths->Append(_("(double-click to add files)"));
 
 	m_pScenarioList->Clear();
 	for (i = 0; i < m_Scenarios.size(); i++)

@@ -177,7 +177,6 @@ public:
 	wxButton* GetEditScenario()  { return (wxButton*) FindWindow( ID_EDIT_SCENARIO ); }
 	wxButton* GetDeleteScenario()  { return (wxButton*) FindWindow( ID_DELETE_SCENARIO ); }
 	wxListBox* GetScenarioList()  { return (wxListBox*) FindWindow( ID_SCENARIO_LIST ); }
-	wxListBox* GetAnimPaths()  { return (wxListBox*) FindWindow( ID_ANIM_PATHS ); }
 	wxChoice* GetColorMap()  { return (wxChoice*) FindWindow( ID_CHOICE_COLORS ); }
 	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
 	wxChoice* GetChoiceShadowRez()  { return (wxChoice*) FindWindow( ID_CHOICE_SHADOW_REZ ); }
@@ -205,7 +204,6 @@ public:
 
 private:
 	// WDR: member variable declarations for TParamsDlg
-	wxListBox* m_pAnimFiles;
 	wxListBox* m_pRawFiles;
 	wxChoice* m_pNavStyle;
 	wxTextCtrl* m_pPreLightFactor;

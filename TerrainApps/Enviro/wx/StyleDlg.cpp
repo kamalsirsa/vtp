@@ -47,7 +47,6 @@ BEGIN_EVENT_TABLE(StyleDlg,StyleDlgBase)
 	EVT_BUTTON( ID_TEXT_COLOR, StyleDlg::OnLabelColor )
 
 	// Texture Overlay
-	EVT_CHECKBOX( ID_ENABLE_TEXTURE_OVERLAY, StyleDlg::OnCheck )
 	EVT_RADIOBUTTON( ID_RADIO1, StyleDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_USE_OBJECT_COLOR_FIELD, StyleDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO2, StyleDlg::OnRadio )
@@ -124,14 +123,6 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(this, ID_LABEL_SIZE, &m_fLabelSize);
 	AddValidator(this, ID_FONT, &m_strFont);
 	AddValidator(this, ID_OUTLINE, &m_bLabelOutline);
-
-	// Texture Overlay
-	AddValidator(this, ID_ENABLE_TEXTURE_OVERLAY, &m_bTextureOverlay);
-	GetTextureMode()->Clear();
-	GetTextureMode()->Append(_("ADD"));
-	GetTextureMode()->Append(_("MODULATE"));
-	GetTextureMode()->Append(_("DECAL"));
-	AddValidator(this, ID_TEXTURE_MODE, &m_strTextureMode);
 }
 
 //
@@ -210,16 +201,6 @@ void StyleDlg::SetOptions(const vtTagArray &Layer)
 	else
 		m_strFont = _T("Arial.ttf");
 	m_bLabelOutline = Layer.GetValueBool("LabelOutline");
-
-	// Texture Overlay
-	m_bTextureOverlay = Layer.GetValueBool("TextureOverlay");
-	if (m_bTextureOverlay)
-	{
-		vtString modename = Layer.GetValueString("TextureMode");
-		m_strTextureMode = wxString(modename, wxConvUTF8);
-	}
-	else
-		m_strTextureMode = _T("");
 }
 
 //
@@ -298,18 +279,6 @@ void StyleDlg::GetOptions(vtTagArray &pLayer)
 		pLayer.RemoveTag("Font");
 		pLayer.RemoveTag("LabelOutline");
 	}
-
-	if (m_bTextureOverlay)
-	{
-		pLayer.SetValueBool("TextureOverlay", m_bTextureOverlay, true);
-		vtString modename = (const char *) m_strTextureMode.mb_str(wxConvUTF8);
-		pLayer.SetValueString("TextureMode", modename);
-	}
-	else
-	{
-		pLayer.RemoveTag("TextureOverlay");
-		pLayer.RemoveTag("TextureMode");
-	}
 }
 
 void Bound(int &val, int num)
@@ -379,10 +348,6 @@ void StyleDlg::UpdateEnabling()
 	GetLabelHeight()->Enable(m_bTextLabels && !bIs3D);
 	GetLabelSize()->Enable(m_bTextLabels);
 	GetFont()->Enable(m_bTextLabels);
-
-	// Texture Overlay
-	GetEnableTextureOverlay()->Enable(m_type == wkbPolygon);
-	GetTextureMode()->Enable(m_bTextureOverlay);
 }
 
 void StyleDlg::UpdateColorButtons()
