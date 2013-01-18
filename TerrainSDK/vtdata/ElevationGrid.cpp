@@ -553,6 +553,8 @@ int vtElevationGrid::ReplaceValue(float value1, float value2)
  */
 bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
 {
+	VTLOG1(" FillGaps (fast)\n");
+
 	int i, j, ix, jx, surrounding;
 	int gaps = 1;
 	float value, value2, sum;
@@ -745,6 +747,8 @@ bool vtElevationGrid::FillGaps(DRECT *area, bool progress_callback(int))
  */
 bool vtElevationGrid::FillGapsSmooth(DRECT *area, bool progress_callback(int))
 {
+	VTLOG1(" FillGapsSmooth\n");
+
 	int i, j, ix, jx;
 	int gaps = 1;
 	float value, value2, sum, surrounding;

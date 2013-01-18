@@ -1646,12 +1646,34 @@ void vtTerrain::_CreateElevLayers()
 		}
 
 		vtElevLayer *elayer = new vtElevLayer;
+		elayer->SetProps(lay);
 		if (!elayer->Load(path, m_progress_callback))
 		{
 			VTLOG("Couldn't read elevation from file '%s'\n", (const char *) path);
 			continue;
 		}
 		VTLOG("Read elevation from file '%s'\n", (const char *) path);
+
+		MakeWaterMaterial();
+
+		elayer->GetTin()->SetTextureMaterials(m_pEphemMats);
+		vtGeode *wsgeom = elayer->GetTin()->CreateGeometry(false, m_idx_water);
+		wsgeom->setName("Elevation layer");
+
+		// We require that the TIN has a compatible CRS with the base
+		//  terrain, but the extents may be different.  If they are,
+		//  we may need to offset the TIN to be in the correct place.
+		DRECT ext1 = m_pHeightField->GetEarthExtents();
+		DRECT ext2 = elayer->GetTin()->GetEarthExtents();
+		DPoint2 offset = ext2.LowerLeft() - ext1.LowerLeft();
+		float x, z;
+		GetLocalConversion().ConvertVectorFromEarth(offset, x, z);
+		
+		vtTransform *xform = new vtTransform;
+		xform->Translate(FPoint3(x, 0, z));
+		xform->addChild(wsgeom);
+		m_pUnshadowedGroup->addChild(xform);
+
 		m_Layers.push_back(elayer);
 	}
 }

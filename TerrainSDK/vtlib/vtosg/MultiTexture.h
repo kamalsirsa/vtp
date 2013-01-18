@@ -27,7 +27,11 @@ public:
 	int	m_iMode;
 #endif
 	osg::Node *m_pNode;
-	TexturePtr m_pTexture;
+
+	// These three are set/unset as stateset attributes:
+	osg::ref_ptr<osg::Texture2D> m_pTexture;
+	osg::ref_ptr<osg::TexGen> m_pTexgen;
+	osg::ref_ptr<osg::TexEnv> m_pTexEnv;
 };
 
 #endif  // VTLIB_MULTI_TEXTURE_H

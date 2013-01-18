@@ -107,13 +107,13 @@ public:
 	vtElevLayer();
 
 	bool Load(const vtString &path, bool progress_callback(int) = NULL);
-	void SetLayerName(const vtString &fname) { m_strName = fname; }
-	vtString GetLayerName() { return m_strName; }
+	void SetLayerName(const vtString &fname);
+	vtString GetLayerName();
 	void SetVisible(bool vis);
+	vtTin3d *GetTin() { return m_pTin.get(); }
 
 protected:
 	osg::ref_ptr<vtTin3d> m_pTin;
-	vtString m_strName;
 };
 
 /** The set of all layers which are on a terrain. */

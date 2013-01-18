@@ -644,7 +644,7 @@ bool vtLevel::GetOverallEdgeColor(RGBi &color)
 // try to guess type of roof from looking at slopes of edges of
 // this level
 //
-RoofType vtLevel::GuessRoofType()
+RoofType vtLevel::GuessRoofType() const
 {
 	int sloped = 0, vert = 0, hori = 0;
 	int i, edges = NumEdges();
@@ -1067,11 +1067,11 @@ void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 	}
 }
 
-RoofType vtBuilding::GetRoofType()
+RoofType vtBuilding::GetRoofType() const
 {
 	// try to guess type of roof from looking at slopes of edges of
 	// the top level
-	vtLevel *pLev = GetLevel(NumLevels()-1);
+	const vtLevel *pLev = GetLevel(NumLevels()-1);
 
 	return pLev->GuessRoofType();
 }
@@ -1537,7 +1537,7 @@ void vtBuilding::SetEavesFelkel(float fLength)
 	DetermineLocalFootprints();
 }
 
-void vtBuilding::CopyStyleFrom(vtBuilding *pSource, bool bDoHeight)
+void vtBuilding::CopyStyleFrom(const vtBuilding * const pSource, bool bDoHeight)
 {
 	SetElevationOffset(pSource->GetElevationOffset());
 
@@ -1564,7 +1564,7 @@ void vtBuilding::CopyStyleFrom(vtBuilding *pSource, bool bDoHeight)
 			pLevel = CreateLevel(foot);
 
 		int from_level;
-		vtLevel *pFromLevel;
+		const vtLevel *pFromLevel;
 		if (bDoHeight)
 		{
 			from_level = i;

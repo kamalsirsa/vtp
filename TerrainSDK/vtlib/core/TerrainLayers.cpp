@@ -63,9 +63,22 @@ vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 	m_Props.SetValueString("Type", TERR_LTYPE_ELEVATION);
 }
 
+void vtElevLayer::SetLayerName(const vtString &fname)
+{
+	m_Props.SetValueString("Filename", fname);
+}
+
+vtString vtElevLayer::GetLayerName()
+{
+	return m_Props.GetValueString("Filename");
+}
+
 void vtElevLayer::SetVisible(bool vis)
 {
-	//SetEnabled(vis);	// TODO
+	if (m_pTin.get() && m_pTin->GetGeometry())
+	{
+		m_pTin->GetGeometry()->SetEnabled(vis);
+	}
 	vtLayerBase::SetVisible(vis);
 }
 

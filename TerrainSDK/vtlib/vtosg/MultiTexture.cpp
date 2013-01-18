@@ -41,11 +41,11 @@ void vtMultiTexture::Create(osg::Node *pSurfaceNode, vtImage *pImage,
 	pStateSet->setTextureAttributeAndModes(iTextureUnit, m_pTexture.get(), osg::StateAttribute::ON);
 
 	// Set up the texgen
-	osg::ref_ptr<osg::TexGen> pTexgen = new osg::TexGen;
-	pTexgen->setMode(osg::TexGen::EYE_LINEAR);
-	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(scale.x, 0.0f, 0.0f, -offset.x));
-	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, scale.y, -offset.y));
-	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexgen.get(), osg::StateAttribute::ON);
+	m_pTexgen = new osg::TexGen;
+	m_pTexgen->setMode(osg::TexGen::EYE_LINEAR);
+	m_pTexgen->setPlane(osg::TexGen::S, osg::Vec4(scale.x, 0.0f, 0.0f, -offset.x));
+	m_pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, scale.y, -offset.y));
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, m_pTexgen.get(), osg::StateAttribute::ON);
 	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
 	pStateSet->setTextureMode(iTextureUnit, GL_TEXTURE_GEN_T,  osg::StateAttribute::ON);
 
@@ -56,8 +56,8 @@ void vtMultiTexture::Create(osg::Node *pSurfaceNode, vtImage *pImage,
 	if (iTextureMode == GL_REPLACE) mode = osg::TexEnv::REPLACE;
 	if (iTextureMode == GL_MODULATE) mode = osg::TexEnv::MODULATE;
 	if (iTextureMode == GL_DECAL) mode = osg::TexEnv::DECAL;
-	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
-	pStateSet->setTextureAttributeAndModes(iTextureUnit, pTexEnv.get(), osg::StateAttribute::ON);
+	m_pTexEnv = new osg::TexEnv(mode);
+	pStateSet->setTextureAttributeAndModes(iTextureUnit, m_pTexEnv.get(), osg::StateAttribute::ON);
 
 	// If texture mode is DECAL and internal texture format does not have an alpha channel then
 	// force the format to be converted on texture binding
@@ -73,12 +73,16 @@ void vtMultiTexture::Enable(bool bEnable)
 {
 	osg::ref_ptr<osg::StateSet> pStateSet = m_pNode->getOrCreateStateSet();
 	if (bEnable)
+	{
 		pStateSet->setTextureAttributeAndModes(m_iTextureUnit, m_pTexture.get(), osg::StateAttribute::ON);
+		pStateSet->setTextureAttributeAndModes(m_iTextureUnit, m_pTexgen.get(), osg::StateAttribute::ON);
+		pStateSet->setTextureAttributeAndModes(m_iTextureUnit, m_pTexEnv.get(), osg::StateAttribute::ON);
+	}
 	else
 	{
-		osg::StateAttribute *attr = pStateSet->getTextureAttribute(m_iTextureUnit, osg::StateAttribute::TEXTURE);
-		if (attr != NULL)
-			pStateSet->removeTextureAttribute(m_iTextureUnit, attr);
+		pStateSet->setTextureAttributeAndModes(m_iTextureUnit, m_pTexture.get(), osg::StateAttribute::OFF);
+		pStateSet->setTextureAttributeAndModes(m_iTextureUnit, m_pTexgen.get(), osg::StateAttribute::OFF);
+		pStateSet->setTextureAttributeAndModes(m_iTextureUnit, m_pTexEnv.get(), osg::StateAttribute::OFF);
 	}
 }
 

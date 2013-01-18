@@ -140,7 +140,7 @@ public:
 	float GetLocalEdgeLength(uint i) const;
 	const vtString GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
-	RoofType GuessRoofType();
+	RoofType GuessRoofType() const;
 	void FlipFootprintDirection();
 
 	bool HasSlopedEdges() const;
@@ -224,7 +224,7 @@ public:
 
 	// roof methods
 	void SetRoofType(RoofType rt, int iSlope = -1, int iLev = -1);
-	RoofType GetRoofType();
+	RoofType GetRoofType() const;
 	RGBi GuessRoofColor() const;
 	void SetRoofColor(const RGBi &rgb);
 
@@ -261,7 +261,7 @@ public:
 	void SetEaves(float fLength);
 	void SetEavesSimple(float fLength);
 	void SetEavesFelkel(float fLength);
-	void CopyStyleFrom(vtBuilding *pDefBld, bool bDoHeight);
+	void CopyStyleFrom(const vtBuilding * const pSource, bool bDoHeight);
 
 	void SetCRS(vtProjection *proj) { m_pCRS = proj; }
 

@@ -886,6 +886,9 @@ bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
 
 	if (iMethod == -1)
 		iMethod = g_Options.GetValueInt(TAG_GAP_FILL_METHOD);
+
+	VTLOG("FillElevGaps, method %d\n", iMethod);
+
 	if (iMethod == 1)
 		// fast
 		bGood = el->GetGrid()->FillGaps(area, progress_callback);
