@@ -44,7 +44,6 @@
 #include "LODDlg.h"
 #include "PlantDlg.h"
 #include "ScenarioSelectDialog.h"
-#include "TextureDlg.h"
 #include "UtilDlg.h"
 #include "VehicleDlg.h"
 #include "VIADlg.h"

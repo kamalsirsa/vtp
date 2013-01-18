@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -30,8 +30,10 @@
 #include "vtui/Helper.h"			// for AddFilenamesToChoice
 #include "wxosg/TimeDlg.h"
 
-#include "TParamsDlg.h"
 #include "StyleDlg.h"
+#include "TextureDlg.h"
+#include "TinTextureDlg.h"
+#include "TParamsDlg.h"
 
 #include "ScenarioParamsDialog.h"
 
@@ -92,17 +94,9 @@ BEGIN_EVENT_TABLE(TParamsDlg,TParamsDlgBase)
 	EVT_RADIOBUTTON( ID_USE_TILESET, TParamsDlg::OnCheckBoxElevType )
 	EVT_RADIOBUTTON( ID_USE_EXTERNAL, TParamsDlg::OnCheckBoxElevType )
 	EVT_CHOICE( ID_LODMETHOD, TParamsDlg::OnCheckBox )
-
-	// Texture
-	EVT_RADIOBUTTON( ID_NONE, TParamsDlg::OnTextureNone )
-	EVT_RADIOBUTTON( ID_SINGLE, TParamsDlg::OnTextureSingle )
-	EVT_RADIOBUTTON( ID_DERIVED, TParamsDlg::OnTextureDerived )
-	EVT_RADIOBUTTON( ID_TILESET, TParamsDlg::OnTextureTileset )
 	EVT_CHECKBOX( ID_TILE_THREADING, TParamsDlg::OnCheckBox )
-
-	EVT_COMBOBOX( ID_TFILE_SINGLE, TParamsDlg::OnComboTFileSingle )
-	EVT_BUTTON( ID_EDIT_COLORS, TParamsDlg::OnEditColors )
-	EVT_CHECKBOX( ID_DETAILTEXTURE, TParamsDlg::OnCheckBox )
+	EVT_BUTTON( ID_PRIMARY_TEXTURE, TParamsDlg::OnPrimaryTexture )
+	EVT_BUTTON( ID_SET_TIN_TEXTURE, TParamsDlg::OnSetTinTexture )
 
 	// Culture
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
@@ -167,16 +161,10 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	notebook->SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
 	m_pPreLightFactor = GetLightFactor();
-	m_pLodMethod = GetLodmethod();
-	m_pShadowRez = GetChoiceShadowRez();
-	m_pLocField = GetLocField();
-	m_pNavStyle = GetNavStyle();
 
 	m_pNone = GetNone();
 	m_pSingle = GetSingle();
 	m_pDerived = GetDerived();
-	m_pTileset = GetTileset();
-	m_pColorMap = GetColorMap();
 
 	m_pScenarioList = GetScenarioList();
 	m_iOverlayX = 0;
@@ -189,15 +177,30 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// overall name
 	AddValidator(this, ID_TNAME, &m_strTerrainName);
 
-	// elevation
+	// elevation: grid clod
 	AddValidator(this, ID_USE_GRID, &m_bGrid);
+	AddValidator(this, ID_LODMETHOD, &m_iLodMethod);
+	AddNumValidator(this, ID_TRI_COUNT, &m_iTriCount);
+
+	// tin
 	AddValidator(this, ID_USE_TIN, &m_bTin);
+
+	// tileset
 	AddValidator(this, ID_USE_TILESET, &m_bTileset);
+	AddValidator(this, ID_FILENAME_TILES, &m_strFilenameTileset);
+	AddNumValidator(this, ID_VTX_COUNT, &m_iVertCount);
+	AddValidator(this, ID_TILE_THREADING, &m_bTileThreading);
+	AddValidator(this, ID_TFILE_TILESET, &m_strTextureTileset);
+	AddNumValidator(this, ID_TEX_LOD, &m_fTextureLODFactor);
+	AddValidator(this, ID_TEXTURE_GRADUAL, &m_bTextureGradual);
+
+	// external
 	AddValidator(this, ID_USE_EXTERNAL, &m_bExternal);
 	AddValidator(this, ID_TT_EXTERNAL_DATA, &m_strExternalData);
+
 	AddValidator(this, ID_FILENAME, &m_strFilename);
 	AddValidator(this, ID_FILENAME_TIN, &m_strFilenameTin);
-	AddValidator(this, ID_FILENAME_TILES, &m_strFilenameTileset);
+
 	AddNumValidator(this, ID_VERTEXAG, &m_fVerticalExag, 2);
 
 	// nav
@@ -211,38 +214,10 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(this, ID_ACCEL, &m_bAccel);
 	AddValidator(this, ID_ALLOW_ROLL, &m_bAllowRoll);
 
-	// LOD
-	AddValidator(this, ID_LODMETHOD, &m_iLodMethod);
-	AddNumValidator(this, ID_TRI_COUNT, &m_iTriCount);
-	AddNumValidator(this, ID_VTX_COUNT, &m_iVertCount);
-	AddNumValidator(this, ID_TILE_CACHE_SIZE, &m_iTileCacheSize);
-	AddValidator(this, ID_TILE_THREADING, &m_bTileThreading);
-
 	// time
 	AddValidator(this, ID_TIMEMOVES, &m_bTimeOn);
 	AddValidator(this, ID_TEXT_INIT_TIME, &m_strInitTime);
 	AddNumValidator(this, ID_TIMESPEED, &m_fTimeSpeed, 2);
-
-	// texture
-	AddValidator(this, ID_TFILE_SINGLE, &m_strTextureSingle);
-	AddValidator(this, ID_TFILE_GEOTYPICAL, &m_strTextureGeotypical);
-	AddNumValidator(this, ID_GEOTYPICAL_SCALE, &m_fGeotypicalScale);
-	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
-
-	AddValidator(this, ID_TFILE_TILESET, &m_strTextureTileset);
-	AddValidator(this, ID_TEXTURE_GRADUAL, &m_bTextureGradual);
-	AddNumValidator(this, ID_TEX_LOD, &m_fTextureLODFactor);
-
-	AddValidator(this, ID_MIPMAP, &m_bMipmap);
-	AddValidator(this, ID_16BIT, &m_b16bit);
-	AddValidator(this, ID_PRELIGHT, &m_bPreLight);
-	AddValidator(this, ID_CAST_SHADOWS, &m_bCastShadows);
-	AddNumValidator(this, ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
-	AddValidator(this, ID_RETAIN, &m_bTextureRetain);
-
-	// detail texture
-	AddValidator(this, ID_DETAILTEXTURE, &m_bDetailTexture);
-	AddValidator(this, ID_DT_NAME, &m_strDetailName);
 
 	// culture page
 	AddNumValidator(this, ID_VEGDISTANCE, &m_iVegDistance);
@@ -325,137 +300,115 @@ void TParamsDlg::SetParams(const TParams &Params)
 	VTLOG("TParamsDlg::SetParams\n");
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
+	// Store main copy of the parameters
+	m_Params = Params;
+
 	// overall name
-	m_strTerrainName = wxString(Params.GetValueString(STR_NAME), wxConvUTF8);
+	m_strTerrainName = wxString(m_Params.GetValueString(STR_NAME), wxConvUTF8);
 
 	// elevation
-	m_bGrid =			Params.GetValueInt(STR_SURFACE_TYPE) == 0;
-	m_bTin =			Params.GetValueInt(STR_SURFACE_TYPE) == 1;
-	m_bTileset =		Params.GetValueInt(STR_SURFACE_TYPE) == 2;
-	m_bExternal =		Params.GetValueInt(STR_SURFACE_TYPE) == 3;
+	m_bGrid =			m_Params.GetValueInt(STR_SURFACE_TYPE) == 0;
+	m_bTin =			m_Params.GetValueInt(STR_SURFACE_TYPE) == 1;
+	m_bTileset =		m_Params.GetValueInt(STR_SURFACE_TYPE) == 2;
+	m_bExternal =		m_Params.GetValueInt(STR_SURFACE_TYPE) == 3;
+
 	if (m_bExternal)
-		m_strExternalData = wxString(Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
+		m_strExternalData = wxString(m_Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
 	if (m_bGrid)
-		m_strFilename = wxString(Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
+		m_strFilename = wxString(m_Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
 	if (m_bTin)
-		m_strFilenameTin = wxString(Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
+		m_strFilenameTin = wxString(m_Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
 	if (m_bTileset)
-		m_strFilenameTileset = wxString(Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
-	m_fVerticalExag =   Params.GetValueFloat(STR_VERTICALEXAG);
+	{
+		m_strFilenameTileset = wxString(m_Params.GetValueString(STR_ELEVFILE), wxConvUTF8);
+		m_strTextureTileset = wxString(m_Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
+	}
+
+	m_iLodMethod =		m_Params.GetLodMethod();
+	m_iTriCount =		m_Params.GetValueInt(STR_TRICOUNT);
+	m_iVertCount =		m_Params.GetValueInt(STR_VERTCOUNT);
+	m_bTileThreading =	m_Params.GetValueBool(STR_TILE_THREADING);
+	m_fTextureLODFactor =	m_Params.GetValueFloat(STR_TEXURE_LOD_FACTOR);
+	m_bTextureGradual =	m_Params.GetValueBool(STR_TEXTURE_GRADUAL);
+	m_fVerticalExag =   m_Params.GetValueFloat(STR_VERTICALEXAG);
 
 	/// navigation
-	m_fMinHeight =		Params.GetValueFloat(STR_MINHEIGHT);
-	m_iNavStyle =		Params.GetValueInt(STR_NAVSTYLE);
-	m_fNavSpeed =		Params.GetValueFloat(STR_NAVSPEED);
-	m_fDamping =		Params.GetValueFloat(STR_NAVDAMPING);
-	m_strLocFile = wxString(Params.GetValueString(STR_LOCFILE), wxConvUTF8);
-	m_strInitLocation = wxString(Params.GetValueString(STR_INITLOCATION), wxConvUTF8);
-	m_fHither =			Params.GetValueFloat(STR_HITHER);
-	m_bAccel =			Params.GetValueBool(STR_ACCEL);
-	m_bAllowRoll =		Params.GetValueBool(STR_ALLOW_ROLL);
-	m_AnimPaths =		Params.m_AnimPaths;
-
-	// LOD
-	m_iLodMethod =		Params.GetLodMethod();
-	m_iTriCount =		Params.GetValueInt(STR_TRICOUNT);
-	m_iVertCount =		Params.GetValueInt(STR_VERTCOUNT);
-	m_iTileCacheSize =	Params.GetValueInt(STR_TILE_CACHE_SIZE);
-	m_bTileThreading =	Params.GetValueBool(STR_TILE_THREADING);
+	m_fMinHeight =		m_Params.GetValueFloat(STR_MINHEIGHT);
+	m_iNavStyle =		m_Params.GetValueInt(STR_NAVSTYLE);
+	m_fNavSpeed =		m_Params.GetValueFloat(STR_NAVSPEED);
+	m_fDamping =		m_Params.GetValueFloat(STR_NAVDAMPING);
+	m_strLocFile = wxString(m_Params.GetValueString(STR_LOCFILE), wxConvUTF8);
+	m_strInitLocation = wxString(m_Params.GetValueString(STR_INITLOCATION), wxConvUTF8);
+	m_fHither =			m_Params.GetValueFloat(STR_HITHER);
+	m_bAccel =			m_Params.GetValueBool(STR_ACCEL);
+	m_bAllowRoll =		m_Params.GetValueBool(STR_ALLOW_ROLL);
+	m_AnimPaths =		m_Params.m_AnimPaths;
 
 	// time
-	m_bTimeOn =			Params.GetValueBool(STR_TIMEON);
-	m_InitTime.SetFromString(Params.GetValueString(STR_INITTIME));
-	m_fTimeSpeed =		Params.GetValueFloat(STR_TIMESPEED);
-
-	// texture
-	m_iTexture =		Params.GetTextureEnum();
-
-	// single
-	if (m_iTexture != TE_TILESET)
-		m_strTextureSingle = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
-
-	// derived
-	m_strColorMap = wxString(Params.GetValueString(STR_COLOR_MAP), wxConvUTF8);
-	m_strTextureGeotypical = wxString(Params.GetValueString(STR_TEXTURE_GEOTYPICAL), wxConvUTF8);
-	m_fGeotypicalScale = Params.GetValueFloat(STR_GEOTYPICAL_SCALE);
-
-	// tileset
-	if (m_iTexture == TE_TILESET)
-		m_strTextureTileset = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
-
-	m_bTextureGradual =	Params.GetValueBool(STR_TEXTURE_GRADUAL);
-	m_fTextureLODFactor =	Params.GetValueFloat(STR_TEXURE_LOD_FACTOR);
-	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
-	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
-	m_bPreLight =		Params.GetValueBool(STR_PRELIGHT);
-	m_fPreLightFactor = Params.GetValueFloat(STR_PRELIGHTFACTOR);
-	m_bCastShadows =	Params.GetValueBool(STR_CAST_SHADOWS);
-	m_bTextureRetain =	Params.GetValueBool(STR_TEXTURE_RETAIN);
-
-	// detail texture
-	m_bDetailTexture =  Params.GetValueBool(STR_DETAILTEXTURE);
-	m_strDetailName = wxString(Params.GetValueString(STR_DTEXTURE_NAME), wxConvUTF8);
+	m_bTimeOn =			m_Params.GetValueBool(STR_TIMEON);
+	m_InitTime.SetFromString(m_Params.GetValueString(STR_INITTIME));
+	m_fTimeSpeed =		m_Params.GetValueFloat(STR_TIMESPEED);
 
 	// culture
-	m_bRoads =			Params.GetValueBool(STR_ROADS);
-	m_strRoadFile = wxString(Params.GetValueString(STR_ROADFILE), wxConvUTF8);
-	m_bHwy =			Params.GetValueBool(STR_HWY);
-	m_bPaved =			Params.GetValueBool(STR_PAVED);
-	m_bDirt =			Params.GetValueBool(STR_DIRT);
-	m_fRoadHeight =		Params.GetValueFloat(STR_ROADHEIGHT);
-	m_fRoadDistance =	Params.GetValueFloat(STR_ROADDISTANCE);
-	m_bTexRoads =		Params.GetValueBool(STR_TEXROADS);
-	m_bRoadCulture =	Params.GetValueBool(STR_ROADCULTURE);
+	m_bRoads =			m_Params.GetValueBool(STR_ROADS);
+	m_strRoadFile = wxString(m_Params.GetValueString(STR_ROADFILE), wxConvUTF8);
+	m_bHwy =			m_Params.GetValueBool(STR_HWY);
+	m_bPaved =			m_Params.GetValueBool(STR_PAVED);
+	m_bDirt =			m_Params.GetValueBool(STR_DIRT);
+	m_fRoadHeight =		m_Params.GetValueFloat(STR_ROADHEIGHT);
+	m_fRoadDistance =	m_Params.GetValueFloat(STR_ROADDISTANCE);
+	m_bTexRoads =		m_Params.GetValueBool(STR_TEXROADS);
+	m_bRoadCulture =	m_Params.GetValueBool(STR_ROADCULTURE);
 
-	m_iVegDistance =	Params.GetValueInt(STR_VEGDISTANCE);
-	m_bTreesUseShaders = Params.GetValueBool(STR_TREES_USE_SHADERS);
+	m_iVegDistance =	m_Params.GetValueInt(STR_VEGDISTANCE);
+	m_bTreesUseShaders = m_Params.GetValueBool(STR_TREES_USE_SHADERS);
 
-	m_bFog =			Params.GetValueBool(STR_FOG);
-	m_fFogDistance =	Params.GetValueFloat(STR_FOGDISTANCE);
+	m_bFog =			m_Params.GetValueBool(STR_FOG);
+	m_fFogDistance =	m_Params.GetValueFloat(STR_FOGDISTANCE);
 
 	// Layers and structure stuff
-	m_strContent = wxString(Params.GetValueString(STR_CONTENT_FILE), wxConvUTF8);
-	m_Layers = Params.m_Layers;
-	m_iStructDistance = Params.GetValueInt(STR_STRUCTDIST);
+	m_strContent = wxString(m_Params.GetValueString(STR_CONTENT_FILE), wxConvUTF8);
+	m_Layers = m_Params.m_Layers;
+	m_iStructDistance = m_Params.GetValueInt(STR_STRUCTDIST);
 	// shadows
-	m_bStructureShadows =	 Params.GetValueBool(STR_STRUCT_SHADOWS);
-	m_iShadowRez =	 vt_log2(Params.GetValueInt(STR_SHADOW_REZ))-8;
-	m_fDarkness =			 Params.GetValueFloat(STR_SHADOW_DARKNESS);
-	m_bShadowsDefaultOn =	 Params.GetValueBool(STR_SHADOWS_DEFAULT_ON);
-	m_bShadowsEveryFrame =	 Params.GetValueBool(STR_SHADOWS_EVERY_FRAME);
-	m_bLimitShadowArea =	 Params.GetValueBool(STR_LIMIT_SHADOW_AREA);
-	m_fShadowRadius =		 Params.GetValueFloat(STR_SHADOW_RADIUS);
+	m_bStructureShadows =	 m_Params.GetValueBool(STR_STRUCT_SHADOWS);
+	m_iShadowRez =	 vt_log2(m_Params.GetValueInt(STR_SHADOW_REZ))-8;
+	m_fDarkness =			 m_Params.GetValueFloat(STR_SHADOW_DARKNESS);
+	m_bShadowsDefaultOn =	 m_Params.GetValueBool(STR_SHADOWS_DEFAULT_ON);
+	m_bShadowsEveryFrame =	 m_Params.GetValueBool(STR_SHADOWS_EVERY_FRAME);
+	m_bLimitShadowArea =	 m_Params.GetValueBool(STR_LIMIT_SHADOW_AREA);
+	m_fShadowRadius =		 m_Params.GetValueFloat(STR_SHADOW_RADIUS);
 	// paging
-	m_bPagingStructures =	 Params.GetValueBool(STR_STRUCTURE_PAGING);
-	m_iPagingStructureMax =	 Params.GetValueInt(STR_STRUCTURE_PAGING_MAX);
-	m_fPagingStructureDist = Params.GetValueFloat(STR_STRUCTURE_PAGING_DIST);
+	m_bPagingStructures =	 m_Params.GetValueBool(STR_STRUCTURE_PAGING);
+	m_iPagingStructureMax =	 m_Params.GetValueInt(STR_STRUCTURE_PAGING_MAX);
+	m_fPagingStructureDist = m_Params.GetValueFloat(STR_STRUCTURE_PAGING_DIST);
 
-//	m_bVehicles =	   Params.GetValueBool(STR_VEHICLES);
-//  m_fVehicleSize =	Params.GetValueFloat(STR_VEHICLESIZE);
-//  m_fVehicleSpeed =   Params.GetValueFloat(STR_VEHICLESPEED);
+//	m_bVehicles =	   m_Params.GetValueBool(STR_VEHICLES);
+//  m_fVehicleSize =	m_Params.GetValueFloat(STR_VEHICLESIZE);
+//  m_fVehicleSpeed =   m_Params.GetValueFloat(STR_VEHICLESPEED);
 
-	m_bSky =			Params.GetValueBool(STR_SKY);
-	m_strSkyTexture = wxString(Params.GetValueString(STR_SKYTEXTURE), wxConvUTF8);
-	m_bOceanPlane =	 Params.GetValueBool(STR_OCEANPLANE);
-	m_fOceanPlaneLevel = Params.GetValueFloat(STR_OCEANPLANELEVEL);
-	m_bWater =	 Params.GetValueBool(STR_WATER);
-	m_strFilenameWater =	 wxString(Params.GetValueString(STR_WATERFILE), wxConvUTF8);
-	m_bDepressOcean =   Params.GetValueBool(STR_DEPRESSOCEAN);
-	m_fDepressOceanLevel = Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
-	RGBi col =			Params.GetValueRGBi(STR_BGCOLOR);
+	m_bSky =			m_Params.GetValueBool(STR_SKY);
+	m_strSkyTexture = wxString(m_Params.GetValueString(STR_SKYTEXTURE), wxConvUTF8);
+	m_bOceanPlane =	 m_Params.GetValueBool(STR_OCEANPLANE);
+	m_fOceanPlaneLevel = m_Params.GetValueFloat(STR_OCEANPLANELEVEL);
+	m_bWater =	 m_Params.GetValueBool(STR_WATER);
+	m_strFilenameWater =	 wxString(m_Params.GetValueString(STR_WATERFILE), wxConvUTF8);
+	m_bDepressOcean =   m_Params.GetValueBool(STR_DEPRESSOCEAN);
+	m_fDepressOceanLevel = m_Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
+	RGBi col =			m_Params.GetValueRGBi(STR_BGCOLOR);
 	m_BgColor.Set(col.r, col.g, col.b);
 
-	m_strUtilFile = wxString(Params.GetValueString(STR_UTILITY_FILE), wxConvUTF8);
+	m_strUtilFile = wxString(m_Params.GetValueString(STR_UTILITY_FILE), wxConvUTF8);
 
 	vtString fname;
-	if (Params.GetOverlay(fname, m_iOverlayX, m_iOverlayY))
+	if (m_Params.GetOverlay(fname, m_iOverlayX, m_iOverlayY))
 		m_strOverlayFile = wxString(fname, wxConvUTF8);
-	m_bOverview =	Params.GetValueBool(STR_OVERVIEW);
-	m_bCompass =	Params.GetValueBool(STR_COMPASS);
+	m_bOverview =	m_Params.GetValueBool(STR_OVERVIEW);
+	m_bCompass =	m_Params.GetValueBool(STR_COMPASS);
 
 	// Scenarios
-	m_strInitScenario = wxString(Params.GetValueString(STR_INIT_SCENARIO), wxConvUTF8);
-	m_Scenarios = Params.m_Scenarios;
+	m_strInitScenario = wxString(m_Params.GetValueString(STR_INIT_SCENARIO), wxConvUTF8);
+	m_Scenarios = m_Params.m_Scenarios;
 
 	// Safety checks
 	if (m_iTriCount < 500 || m_iTriCount > 100000)
@@ -475,183 +428,146 @@ void TParamsDlg::GetParams(TParams &Params)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// overall name
-	Params.SetValueString(STR_NAME, (const char *) m_strTerrainName.mb_str(wxConvUTF8));
+	m_Params.SetValueString(STR_NAME, (const char *) m_strTerrainName.mb_str(wxConvUTF8));
 
 	// elevation
 	if (m_bGrid)
 	{
-		Params.SetValueInt(STR_SURFACE_TYPE, 0);
-		Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilename.mb_str(wxConvUTF8));
+		m_Params.SetValueInt(STR_SURFACE_TYPE, 0);
+		m_Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilename.mb_str(wxConvUTF8));
 	}
+	m_Params.SetLodMethod((enum LodMethodEnum) m_iLodMethod);
+	m_Params.SetValueInt(STR_TRICOUNT, m_iTriCount);
 	if (m_bTin)
 	{
-		Params.SetValueInt(STR_SURFACE_TYPE, 1);
-		Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilenameTin.mb_str(wxConvUTF8));
+		m_Params.SetValueInt(STR_SURFACE_TYPE, 1);
+		m_Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilenameTin.mb_str(wxConvUTF8));
 	}
 	if (m_bTileset)
 	{
-		Params.SetValueInt(STR_SURFACE_TYPE, 2);
-		Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilenameTileset.mb_str(wxConvUTF8));
+		m_Params.SetValueInt(STR_SURFACE_TYPE, 2);
+		m_Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilenameTileset.mb_str(wxConvUTF8));
 	}
+	m_Params.SetValueInt(STR_VERTCOUNT, m_iVertCount);
+	m_Params.SetValueBool(STR_TILE_THREADING, m_bTileThreading);
+	m_Params.SetValueBool(STR_TEXTURE_GRADUAL, m_bTextureGradual);
+	m_Params.SetValueFloat(STR_TEXURE_LOD_FACTOR, m_fTextureLODFactor);
 	if (m_bExternal)
 	{
-		Params.SetValueInt(STR_SURFACE_TYPE, 3);
-		Params.SetValueString(STR_ELEVFILE, (const char *) m_strExternalData.mb_str(wxConvUTF8));
+		m_Params.SetValueInt(STR_SURFACE_TYPE, 3);
+		m_Params.SetValueString(STR_ELEVFILE, (const char *) m_strExternalData.mb_str(wxConvUTF8));
 	}
-	Params.SetValueFloat(STR_VERTICALEXAG, m_fVerticalExag);
+	m_Params.SetValueFloat(STR_VERTICALEXAG, m_fVerticalExag);
 
 	// navigation
-	Params.SetValueFloat(STR_MINHEIGHT, m_fMinHeight);
-	Params.SetValueInt(STR_NAVSTYLE, m_iNavStyle);
-	Params.SetValueFloat(STR_NAVSPEED, m_fNavSpeed);
-	Params.SetValueFloat(STR_NAVDAMPING, m_fDamping);
-	Params.SetValueString(STR_LOCFILE, (const char *) m_strLocFile.mb_str(wxConvUTF8));
-	Params.SetValueString(STR_INITLOCATION, (const char *) m_strInitLocation.mb_str(wxConvUTF8));
-	Params.SetValueFloat(STR_HITHER, m_fHither);
-	Params.SetValueBool(STR_ACCEL, m_bAccel);
-	Params.SetValueBool(STR_ALLOW_ROLL, m_bAllowRoll);
-	Params.m_AnimPaths = m_AnimPaths;
-
-	// LOD
-	Params.SetLodMethod((enum LodMethodEnum) m_iLodMethod);
-	Params.SetValueInt(STR_TRICOUNT, m_iTriCount);
-	Params.SetValueInt(STR_VERTCOUNT, m_iVertCount);
-	Params.SetValueInt(STR_TILE_CACHE_SIZE, m_iTileCacheSize);
-	Params.SetValueBool(STR_TILE_THREADING, m_bTileThreading);
+	m_Params.SetValueFloat(STR_MINHEIGHT, m_fMinHeight);
+	m_Params.SetValueInt(STR_NAVSTYLE, m_iNavStyle);
+	m_Params.SetValueFloat(STR_NAVSPEED, m_fNavSpeed);
+	m_Params.SetValueFloat(STR_NAVDAMPING, m_fDamping);
+	m_Params.SetValueString(STR_LOCFILE, (const char *) m_strLocFile.mb_str(wxConvUTF8));
+	m_Params.SetValueString(STR_INITLOCATION, (const char *) m_strInitLocation.mb_str(wxConvUTF8));
+	m_Params.SetValueFloat(STR_HITHER, m_fHither);
+	m_Params.SetValueBool(STR_ACCEL, m_bAccel);
+	m_Params.SetValueBool(STR_ALLOW_ROLL, m_bAllowRoll);
+	m_Params.m_AnimPaths = m_AnimPaths;
 
 	// time
-	Params.SetValueBool(STR_TIMEON, m_bTimeOn);
-	Params.SetValueString(STR_INITTIME, m_InitTime.GetAsString());
-	Params.SetValueFloat(STR_TIMESPEED, m_fTimeSpeed);
-
-	// texture
-	Params.SetTextureEnum((enum TextureEnum)m_iTexture);
-
-	// single
-	if (m_iTexture != TE_TILESET)
-		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle.mb_str(wxConvUTF8));
-
-	// geotypical
-	Params.SetValueString(STR_TEXTURE_GEOTYPICAL, (const char *) m_strTextureGeotypical.mb_str(wxConvUTF8));
-
-	// derived
-	Params.SetValueString(STR_COLOR_MAP, (const char *) m_strColorMap.mb_str(wxConvUTF8));
+	m_Params.SetValueBool(STR_TIMEON, m_bTimeOn);
+	m_Params.SetValueString(STR_INITTIME, m_InitTime.GetAsString());
+	m_Params.SetValueFloat(STR_TIMESPEED, m_fTimeSpeed);
 
 	// tileset
-	if (m_iTexture == TE_TILESET)
-		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureTileset.mb_str(wxConvUTF8));
-
-	Params.SetValueBool(STR_TEXTURE_GRADUAL, m_bTextureGradual);
-	Params.SetValueFloat(STR_TEXURE_LOD_FACTOR, m_fTextureLODFactor);
-	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
-	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
-	Params.SetValueBool(STR_PRELIGHT, m_bPreLight);
-	Params.SetValueFloat(STR_PRELIGHTFACTOR, m_fPreLightFactor);
-	Params.SetValueBool(STR_CAST_SHADOWS, m_bCastShadows);
-	Params.SetValueBool(STR_TEXTURE_RETAIN, m_bTextureRetain);
-
-	// detail texture
-	Params.SetValueBool(STR_DETAILTEXTURE, m_bDetailTexture);
-	Params.SetValueString(STR_DTEXTURE_NAME, (const char *) m_strDetailName.mb_str(wxConvUTF8));
+	if (m_bTileset)
+		m_Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureTileset.mb_str(wxConvUTF8));
 
 	// culture
-	Params.SetValueBool(STR_ROADS, m_bRoads);
-	Params.SetValueString(STR_ROADFILE, (const char *) m_strRoadFile.mb_str(wxConvUTF8));
-	Params.SetValueBool(STR_HWY, m_bHwy);
-	Params.SetValueBool(STR_PAVED, m_bPaved);
-	Params.SetValueBool(STR_DIRT, m_bDirt);
-	Params.SetValueFloat(STR_ROADHEIGHT, m_fRoadHeight);
-	Params.SetValueFloat(STR_ROADDISTANCE, m_fRoadDistance);
-	Params.SetValueBool(STR_TEXROADS, m_bTexRoads);
-	Params.SetValueBool(STR_ROADCULTURE, m_bRoadCulture);
+	m_Params.SetValueBool(STR_ROADS, m_bRoads);
+	m_Params.SetValueString(STR_ROADFILE, (const char *) m_strRoadFile.mb_str(wxConvUTF8));
+	m_Params.SetValueBool(STR_HWY, m_bHwy);
+	m_Params.SetValueBool(STR_PAVED, m_bPaved);
+	m_Params.SetValueBool(STR_DIRT, m_bDirt);
+	m_Params.SetValueFloat(STR_ROADHEIGHT, m_fRoadHeight);
+	m_Params.SetValueFloat(STR_ROADDISTANCE, m_fRoadDistance);
+	m_Params.SetValueBool(STR_TEXROADS, m_bTexRoads);
+	m_Params.SetValueBool(STR_ROADCULTURE, m_bRoadCulture);
 
-	Params.SetValueInt(STR_VEGDISTANCE, m_iVegDistance);
-	Params.SetValueBool(STR_TREES_USE_SHADERS, m_bTreesUseShaders);
+	m_Params.SetValueInt(STR_VEGDISTANCE, m_iVegDistance);
+	m_Params.SetValueBool(STR_TREES_USE_SHADERS, m_bTreesUseShaders);
 
-	Params.SetValueBool(STR_FOG, m_bFog);
-	Params.SetValueFloat(STR_FOGDISTANCE, m_fFogDistance);
+	m_Params.SetValueBool(STR_FOG, m_bFog);
+	m_Params.SetValueFloat(STR_FOGDISTANCE, m_fFogDistance);
 	// (fog color not exposed in UI)
 
 	// Layers and structure stuff
-	Params.SetValueString(STR_CONTENT_FILE, (const char *) m_strContent.mb_str(wxConvUTF8));
-	Params.m_Layers = m_Layers;
+	m_Params.SetValueString(STR_CONTENT_FILE, (const char *) m_strContent.mb_str(wxConvUTF8));
+	m_Params.m_Layers = m_Layers;
 
-	Params.SetValueInt(STR_STRUCTDIST, m_iStructDistance);
-	Params.SetValueBool(STR_STRUCT_SHADOWS, m_bStructureShadows);
+	m_Params.SetValueInt(STR_STRUCTDIST, m_iStructDistance);
+	m_Params.SetValueBool(STR_STRUCT_SHADOWS, m_bStructureShadows);
 	// shadows
-	Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_iShadowRez+8));
-	Params.SetValueFloat(STR_SHADOW_DARKNESS, m_fDarkness);
-	Params.SetValueBool(STR_SHADOWS_DEFAULT_ON, m_bShadowsDefaultOn);
-	Params.SetValueBool(STR_SHADOWS_EVERY_FRAME, m_bShadowsEveryFrame);
-	Params.SetValueBool(STR_LIMIT_SHADOW_AREA, m_bLimitShadowArea);
-	Params.SetValueFloat(STR_SHADOW_RADIUS, m_fShadowRadius);
+	m_Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_iShadowRez+8));
+	m_Params.SetValueFloat(STR_SHADOW_DARKNESS, m_fDarkness);
+	m_Params.SetValueBool(STR_SHADOWS_DEFAULT_ON, m_bShadowsDefaultOn);
+	m_Params.SetValueBool(STR_SHADOWS_EVERY_FRAME, m_bShadowsEveryFrame);
+	m_Params.SetValueBool(STR_LIMIT_SHADOW_AREA, m_bLimitShadowArea);
+	m_Params.SetValueFloat(STR_SHADOW_RADIUS, m_fShadowRadius);
 	// paging
-	Params.SetValueBool(STR_STRUCTURE_PAGING, m_bPagingStructures);
-	Params.SetValueInt(STR_STRUCTURE_PAGING_MAX, m_iPagingStructureMax);
-	Params.SetValueFloat(STR_STRUCTURE_PAGING_DIST, m_fPagingStructureDist);
+	m_Params.SetValueBool(STR_STRUCTURE_PAGING, m_bPagingStructures);
+	m_Params.SetValueInt(STR_STRUCTURE_PAGING_MAX, m_iPagingStructureMax);
+	m_Params.SetValueFloat(STR_STRUCTURE_PAGING_DIST, m_fPagingStructureDist);
 
-//	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
-//  Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
-//  Params.SetValueFloat(STR_VEHICLESPEED, m_fVehicleSpeed);
+//	m_Params.SetValueBool(STR_VEHICLES, m_bVehicles);
+//  m_Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
+//  m_Params.SetValueFloat(STR_VEHICLESPEED, m_fVehicleSpeed);
 
-	Params.SetValueBool(STR_SKY, m_bSky);
-	Params.SetValueString(STR_SKYTEXTURE, (const char *) m_strSkyTexture.mb_str(wxConvUTF8));
+	m_Params.SetValueBool(STR_SKY, m_bSky);
+	m_Params.SetValueString(STR_SKYTEXTURE, (const char *) m_strSkyTexture.mb_str(wxConvUTF8));
 
-	Params.SetValueBool(STR_OCEANPLANE, m_bOceanPlane);
-	Params.SetValueFloat(STR_OCEANPLANELEVEL, m_fOceanPlaneLevel);
-	Params.SetValueBool(STR_WATER, m_bWater);
-	Params.SetValueString(STR_WATERFILE, (const char *) m_strFilenameWater.mb_str(wxConvUTF8));
-	Params.SetValueBool(STR_DEPRESSOCEAN, m_bDepressOcean);
-	Params.SetValueFloat(STR_DEPRESSOCEANLEVEL, m_fDepressOceanLevel);
+	m_Params.SetValueBool(STR_OCEANPLANE, m_bOceanPlane);
+	m_Params.SetValueFloat(STR_OCEANPLANELEVEL, m_fOceanPlaneLevel);
+	m_Params.SetValueBool(STR_WATER, m_bWater);
+	m_Params.SetValueString(STR_WATERFILE, (const char *) m_strFilenameWater.mb_str(wxConvUTF8));
+	m_Params.SetValueBool(STR_DEPRESSOCEAN, m_bDepressOcean);
+	m_Params.SetValueFloat(STR_DEPRESSOCEANLEVEL, m_fDepressOceanLevel);
 	RGBi col(m_BgColor.Red(), m_BgColor.Green(), m_BgColor.Blue());
-	Params.SetValueRGBi(STR_BGCOLOR, col);
+	m_Params.SetValueRGBi(STR_BGCOLOR, col);
 
-	Params.SetValueString(STR_UTILITY_FILE, (const char *) m_strUtilFile.mb_str(wxConvUTF8));
+	m_Params.SetValueString(STR_UTILITY_FILE, (const char *) m_strUtilFile.mb_str(wxConvUTF8));
 
 	// HUD
-	Params.SetOverlay((const char *) m_strOverlayFile.mb_str(wxConvUTF8), m_iOverlayX, m_iOverlayY);
-	Params.SetValueBool(STR_OVERVIEW, m_bOverview);
-	Params.SetValueBool(STR_COMPASS, m_bCompass);
+	m_Params.SetOverlay((const char *) m_strOverlayFile.mb_str(wxConvUTF8), m_iOverlayX, m_iOverlayY);
+	m_Params.SetValueBool(STR_OVERVIEW, m_bOverview);
+	m_Params.SetValueBool(STR_COMPASS, m_bCompass);
 
 	// Scenarios
-	Params.SetValueString(STR_INIT_SCENARIO, (const char *) m_strInitScenario.mb_str(wxConvUTF8));
-	Params.m_Scenarios = m_Scenarios;
+	m_Params.SetValueString(STR_INIT_SCENARIO, (const char *) m_strInitScenario.mb_str(wxConvUTF8));
+	m_Params.m_Scenarios = m_Scenarios;
+
+	// Sent back our copy of the parameters.
+	Params = m_Params;
 }
 
 void TParamsDlg::UpdateEnableState()
 {
-	m_tt_external_data->Enable(m_bExternal);
 	m_filename->Enable(m_bGrid);
+	m_primary_texture->Enable(m_bGrid);
+	m_lodmethod->Enable(m_bGrid);
+	m_tri_count->Enable(m_bGrid);
+
 	m_filename_tin->Enable(m_bTin);
+	m_set_tin_texture->Enable(m_bTin);
+
 	m_filename_tileset->Enable(m_bTileset);
+	m_vtx_count->Enable(m_bTileset);
+	m_tile_threading->Enable(m_bTileset);
+	m_tfile_tileset->Enable(m_bTileset);
+	m_tex_lod->Enable(m_bTileset);
+	m_texture_gradual->Enable(m_bTileset);
 
-	FindWindow(ID_LODMETHOD)->Enable(m_bGrid);
-	FindWindow(ID_TRI_COUNT)->Enable(m_bGrid);
-	FindWindow(ID_VTX_COUNT)->Enable(m_bTileset);
-	FindWindow(ID_TILE_CACHE_SIZE)->Enable(false);
-	FindWindow(ID_TILE_THREADING)->Enable(m_bTileset);
+	m_tt_external_data->Enable(m_bExternal);
 
-	FindWindow(ID_NONE)->Enable(!m_bTileset);
-	FindWindow(ID_SINGLE)->Enable(!m_bTileset);
-	FindWindow(ID_DERIVED)->Enable(!m_bTileset);
-	FindWindow(ID_TILESET)->Enable(m_bTileset);
-
-	FindWindow(ID_TFILE_SINGLE)->Enable(m_iTexture == TE_SINGLE);
-	FindWindow(ID_CHOICE_COLORS)->Enable(m_iTexture == TE_DERIVED);
-	FindWindow(ID_EDIT_COLORS)->Enable(m_iTexture == TE_DERIVED);
-	FindWindow(ID_TFILE_TILESET)->Enable(m_iTexture == TE_TILESET);
-	FindWindow(ID_TEXTURE_GRADUAL)->Enable(m_iTexture == TE_TILESET && m_bTileThreading);
-	FindWindow(ID_TEX_LOD)->Enable(m_iTexture == TE_TILESET);
-
-	FindWindow(ID_MIPMAP)->Enable(m_iTexture != TE_NONE && !m_bTileset);
-	FindWindow(ID_16BIT)->Enable(m_iTexture != TE_NONE && !m_bTileset);
-	FindWindow(ID_PRELIGHT)->Enable(m_iTexture != TE_NONE && m_bGrid);
-	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE && m_bGrid);
-	FindWindow(ID_CAST_SHADOWS)->Enable(m_iTexture != TE_NONE && m_bGrid);
-	FindWindow(ID_RETAIN)->Enable(m_iTexture != TE_NONE && m_bGrid);
-
-	FindWindow(ID_DETAILTEXTURE)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY);
-	FindWindow(ID_DT_NAME)->Enable(m_bGrid && m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
+	FindWindow(ID_TEXTURE_GRADUAL)->Enable(m_bTileset && m_bTileThreading);
+	FindWindow(ID_TEX_LOD)->Enable(m_bTileset);
 
 	FindWindow(ID_ROADFILE)->Enable(m_bRoads);
 	FindWindow(ID_ROADHEIGHT)->Enable(m_bRoads);
@@ -702,8 +618,8 @@ void TParamsDlg::UpdateEnableState()
 
 void TParamsDlg::RefreshLocationFields()
 {
-	m_pLocField->Clear();
-	m_pLocField->Append(_("(default)"));
+	m_locfile->Clear();
+	m_locfile->Append(_("(default)"));
 
 	vtString locfile = (const char *)m_strLocFile.mb_str(wxConvUTF8);
 	if (locfile == "")
@@ -723,7 +639,7 @@ void TParamsDlg::RefreshLocationFields()
 	{
 		vtLocation *loc = saver.GetLocation(i);
 		wxString str(loc->m_strName.c_str(), wxConvUTF8);
-		m_pLocField->Append(str);
+		m_locfile->Append(str);
 	}
 	if (num)
 	{
@@ -731,20 +647,6 @@ void TParamsDlg::RefreshLocationFields()
 			m_iInitLocation = 0;
 		if (m_iInitLocation > num-1)
 			m_iInitLocation = num-1;
-	}
-}
-
-void TParamsDlg::UpdateColorMapChoice()
-{
-	m_pColorMap->Clear();
-	vtStringArray &paths = vtGetDataPath();
-	for (uint i = 0; i < paths.size(); i++)
-	{
-		// fill the "colormap" control with available colormap files
-		AddFilenamesToChoice(m_pColorMap, paths[i] + "GeoTypical", "*.cmt");
-		int sel = m_pColorMap->FindString(m_strColorMap);
-		if (sel != -1)
-			m_pColorMap->SetSelection(sel);
 	}
 }
 
@@ -812,8 +714,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_filename->Clear();
 	m_filename_tin->Clear();
 	m_filename_tileset->Clear();
-	m_tfile_single->Clear();
-	m_tfile_geotypical->Clear();
 	m_filename_water->Clear();
 
 	vtStringArray &paths = vtGetDataPath();
@@ -830,11 +730,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.png");
 		AddFilenamesToStringArray(m_TextureFiles, paths[i] + "GeoSpecific", "*.tif");
 
-		// fill the "geotypical" control with available bitmap files
-		AddFilenamesToComboBox(m_tfile_geotypical, paths[i] + "GeoTypical", "*.bmp");
-		AddFilenamesToComboBox(m_tfile_geotypical, paths[i] + "GeoTypical", "*.jpg");
-		AddFilenamesToComboBox(m_tfile_geotypical, paths[i] + "GeoTypical", "*.png");
-
 		// fill the "Grid filename" control with available files
 		AddFilenamesToComboBox(m_filename, paths[i] + "Elevation", "*.bt*");
 
@@ -850,11 +745,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		sel = m_filename_tileset->FindString(m_strTextureTileset);
 		if (sel != -1)
 			m_filename_tileset->SetSelection(sel);
-
-		// fill the "detail texture" control with available bitmap files
-		AddFilenamesToComboBox(m_dt_name, paths[i] + "GeoTypical", "*.bmp");
-		AddFilenamesToComboBox(m_dt_name, paths[i] + "GeoTypical", "*.jpg");
-		AddFilenamesToComboBox(m_dt_name, paths[i] + "GeoTypical", "*.png");
 
 		// fill the Location files
 		AddFilenamesToComboBox(m_locfile, paths[i] + "Locations", "*.loc");
@@ -874,18 +764,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		AddFilenamesToComboBox(m_skytexture, paths[i] + "Sky", "*.jpg");
 	}
 
-	// fill the "single texture filename" control with available image files
-	for (i = 0; i < m_TextureFiles.size(); i++)
-	{
-		wxString str(m_TextureFiles[i], wxConvUTF8);
-		m_tfile_single->Append(str);
-	}
-
-	// Look for existing values.
-	sel = m_tfile_geotypical->FindString(m_strTextureGeotypical);
-	if (sel != -1)
-		m_tfile_geotypical->SetSelection(sel);
-
 	sel = m_filename->FindString(m_strFilename);
 	if (sel != -1)
 		m_filename->SetSelection(sel);
@@ -897,18 +775,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	sel = m_filename_tileset->FindString(m_strFilenameTileset);
 	if (sel != -1)
 		m_filename_tileset->SetSelection(sel);
-
-	sel = m_dt_name->FindString(m_strDetailName);
-	if (sel != -1)
-		m_dt_name->SetSelection(sel);
-
-	sel = m_tfile_single->FindString(m_strTextureSingle);
-	if (sel != -1)
-		m_tfile_single->SetSelection(sel);
-
-	sel = m_tfile_geotypical->FindString(m_strTextureSingle);
-	if (sel != -1)
-		m_tfile_geotypical->SetSelection(sel);
 
 	sel = m_locfile->FindString(m_strLocFile);
 	if (sel != -1)
@@ -930,32 +796,30 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	if (sel != -1)
 		m_skytexture->SetSelection(sel);
 		
-	UpdateColorMapChoice();
-
 	// The following must match the ordering in the enum LodMethodEnum:
-	m_pLodMethod->Clear();
-	m_pLodMethod->Append(_T("Roettger"));
-	m_pLodMethod->Append(_T("---"));
-	m_pLodMethod->Append(_T("McNally"));
-	m_pLodMethod->Append(_T("---"));
-	m_pLodMethod->Append(_("Custom"));
+	m_lodmethod->Clear();
+	m_lodmethod->Append(_T("Roettger"));
+	m_lodmethod->Append(_T("---"));
+	m_lodmethod->Append(_T("McNally"));
+	m_lodmethod->Append(_T("---"));
+	m_lodmethod->Append(_("Custom"));
 	// add your own LOD method here!
 
-	m_pLodMethod->SetSelection(m_iLodMethod);
+	m_lodmethod->SetSelection(m_iLodMethod);
 
-	m_pShadowRez->Clear();
-	m_pShadowRez->Append(_T("256"));
-	m_pShadowRez->Append(_T("512"));
-	m_pShadowRez->Append(_T("1024"));
-	m_pShadowRez->Append(_T("2048"));
-	m_pShadowRez->Append(_T("4096"));
+	m_choice_shadow_rez->Clear();
+	m_choice_shadow_rez->Append(_T("256"));
+	m_choice_shadow_rez->Append(_T("512"));
+	m_choice_shadow_rez->Append(_T("1024"));
+	m_choice_shadow_rez->Append(_T("2048"));
+	m_choice_shadow_rez->Append(_T("4096"));
 
-	m_pNavStyle->Clear();
-	m_pNavStyle->Append(_("Normal Terrain Flyer"));
-	m_pNavStyle->Append(_("Terrain Flyer with Velocity"));
-	m_pNavStyle->Append(_("Grab-Pivot"));
-//  m_pNavStyle->Append(_("Quake-Style Walk"));
-	m_pNavStyle->Append(_("Panoramic Flyer"));
+	m_nav_style->Clear();
+	m_nav_style->Append(_("Normal Terrain Flyer"));
+	m_nav_style->Append(_("Terrain Flyer with Velocity"));
+	m_nav_style->Append(_("Grab-Pivot"));
+//  m_nav_style->Append(_("Quake-Style Walk"));
+	m_nav_style->Append(_("Panoramic Flyer"));
 
 	RefreshLocationFields();
 
@@ -971,7 +835,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	UpdateTimeString();
 
-	m_iInitLocation = m_pLocField->FindString(m_strInitLocation);
+	m_iInitLocation = m_locfile->FindString(m_strInitLocation);
 	if (m_iInitLocation == -1)
 		m_iInitLocation = 0;
 
@@ -993,11 +857,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 bool TParamsDlg::TransferDataToWindow()
 {
 	m_bSetting = true;
-
-	m_pNone->SetValue(m_iTexture == TE_NONE);
-	m_pSingle->SetValue(m_iTexture == TE_SINGLE);
-	m_pDerived->SetValue(m_iTexture == TE_DERIVED);
-	m_pTileset->SetValue(m_iTexture == TE_TILESET);
 
 	uint i;
 	m_elev_files->Clear();
@@ -1048,69 +907,12 @@ bool TParamsDlg::TransferDataToWindow()
 
 bool TParamsDlg::TransferDataFromWindow()
 {
-	if (m_pNone->GetValue()) m_iTexture = TE_NONE;
-	if (m_pSingle->GetValue()) m_iTexture = TE_SINGLE;
-	if (m_pDerived->GetValue()) m_iTexture = TE_DERIVED;
-	if (m_pTileset->GetValue()) m_iTexture = TE_TILESET;
-
 	return wxDialog::TransferDataFromWindow();
 }
 
 void TParamsDlg::UpdateColorControl()
 {
 	FillWithColor(GetColorBitmap(), m_BgColor);
-}
-
-void TParamsDlg::OnTextureNone( wxCommandEvent &event )
-{
-	if (m_bSetting)
-		return;
-	if (event.IsChecked())
-	{
-		// turn off "Prelighting" if there is no texture
-		TransferDataFromWindow();
-		m_bPreLight = false;
-		TransferDataToWindow();
-	}
-	UpdateEnableState();
-}
-
-void TParamsDlg::OnTextureSingle( wxCommandEvent &event )
-{
-	if (m_bSetting || !event.IsChecked())
-		return;
-	TransferDataFromWindow();
-	UpdateEnableState();
-}
-
-void TParamsDlg::OnTextureDerived( wxCommandEvent &event )
-{
-	if (m_bSetting)
-		return;
-	if (event.IsChecked())
-	{
-		// turn on "Prelighting" if the user wants a derived texture
-		TransferDataFromWindow();
-		m_bPreLight = true;
-		TransferDataToWindow();
-	}
-	UpdateEnableState();
-}
-
-void TParamsDlg::OnTextureTiled( wxCommandEvent &event )
-{
-	if (m_bSetting || !event.IsChecked())
-		return;
-	TransferDataFromWindow();
-	UpdateEnableState();
-}
-
-void TParamsDlg::OnTextureTileset( wxCommandEvent &event )
-{
-	if (m_bSetting || !event.IsChecked())
-		return;
-	TransferDataFromWindow();
-	UpdateEnableState();
 }
 
 void TParamsDlg::OnComboTFileSingle( wxCommandEvent &event )
@@ -1120,49 +922,18 @@ void TParamsDlg::OnComboTFileSingle( wxCommandEvent &event )
 	TransferDataFromWindow();
 }
 
-void TParamsDlg::OnEditColors( wxCommandEvent &event )
-{
-	TransferDataFromWindow();
-
-	if (m_strColorMap.IsEmpty())
-	{
-		wxMessageBox(_("Please select a filename."));
-		return;
-	}
-
-	// Look on data paths, to give a complete path to the dialog
-	vtString name = "GeoTypical/";
-	name += m_strColorMap.mb_str(wxConvUTF8);
-	name = FindFileOnPaths(vtGetDataPath(), name);
-	if (name == "")
-	{
-		wxMessageBox(_("Couldn't locate file."));
-		return;
-	}
-
-	ColorMapDlg dlg(this, -1, _("ColorMap"));
-	dlg.SetFile(name);
-	dlg.ShowModal();
-
-	// They may have added or removed some color map files on the data path
-	UpdateColorMapChoice();
-}
-
 void TParamsDlg::OnCheckBoxElevType( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
 	TransferDataFromWindow();
-
-	// the tileset elevation and tileset texture only work with each other
-	if (event.GetId() == ID_USE_TILESET && event.IsChecked())
-		m_iTexture = TE_TILESET;
-	if (event.GetId() != ID_USE_TILESET && event.IsChecked() && m_iTexture == TE_TILESET)
-		m_iTexture = TE_NONE;
-
 	UpdateEnableState();
 }
 
 void TParamsDlg::OnCheckBox( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
 	TransferDataFromWindow();
 	UpdateEnableState();
 }
@@ -1368,7 +1139,7 @@ void TParamsDlg::OnChoiceLocFile( wxCommandEvent &event )
 void TParamsDlg::OnChoiceInitLocation( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	m_strInitLocation = m_pLocField->GetString(m_iInitLocation);
+	m_strInitLocation = m_locfile->GetString(m_iInitLocation);
 }
 
 void TParamsDlg::OnSetInitTime( wxCommandEvent &event )
@@ -1436,13 +1207,13 @@ void TParamsDlg::UpdateTimeString()
 
 void TParamsDlg::UpdateScenarioChoices()
 {
-	GetScenarios()->Clear();
+	m_choice_scenario->Clear();
 	for (uint i = 0; i < m_Scenarios.size(); i++)
 	{
 		vtString vs = m_Scenarios[i].GetValueString(STR_SCENARIO_NAME);
-		GetScenarios()->Append(wxString(vs, wxConvUTF8));
+		m_choice_scenario->Append(wxString(vs, wxConvUTF8));
 	}
-	GetScenarios()->SetStringSelection(m_strInitScenario);
+	m_choice_scenario->SetStringSelection(m_strInitScenario);
 }
 
 void TParamsDlg::OnNewScenario( wxCommandEvent &event )
@@ -1547,6 +1318,28 @@ void TParamsDlg::OnScenarioListEvent( wxCommandEvent &event )
 
 void TParamsDlg::OnChoiceScenario( wxCommandEvent &event )
 {
-	m_strInitScenario = GetScenarios()->GetStringSelection();
+	m_strInitScenario = m_choice_scenario->GetStringSelection();
+}
+
+void TParamsDlg::OnPrimaryTexture( wxCommandEvent &event )
+{
+	// Show texture dialog
+	TextureDlg dlg(this, -1, _("Primary Texture"));
+	dlg.SetParams(m_Params);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		dlg.GetParams(m_Params);
+	}
+}
+
+void TParamsDlg::OnSetTinTexture( wxCommandEvent &event )
+{
+	// Show texture dialog
+	TinTextureDlg dlg(this, -1, _("TIN Texture"));
+	dlg.SetParams(m_Params);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		dlg.GetParams(m_Params);
+	}
 }
 

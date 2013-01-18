@@ -2182,7 +2182,7 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 
 	const float fSpacing = pTerr->EstimateGroundSpacingAtPoint(dline[0]);
 
-	m_fArcLength = mf.AddSurfaceLineToMesh(pTerr->GetHeightFieldGrid3d(), dline,
+	m_fArcLength = mf.AddSurfaceLineToMesh(pTerr->GetHeightField(), dline,
 		fSpacing, m_fDistToolHeight, true);
 }
 
@@ -2197,7 +2197,7 @@ void Enviro::SetTerrainMeasure(const DLine2 &path)
 
 	const float fSpacing = pTerr->EstimateGroundSpacingAtPoint(path[0]);
 
-	m_fArcLength = mf.AddSurfaceLineToMesh(pTerr->GetHeightFieldGrid3d(), path,
+	m_fArcLength = mf.AddSurfaceLineToMesh(pTerr->GetHeightField(), path,
 		fSpacing, m_fDistToolHeight, true);
 }
 

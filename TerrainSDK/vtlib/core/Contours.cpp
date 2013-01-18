@@ -273,7 +273,7 @@ void vtContourConverter::Flush()
 				const bool bUseTrueElevation = true;	// use true elevation, not scaled
 				const float fSpacing = 0.0f;			// Doesn't matter, no interpolation.
 
-				m_pMF->AddSurfaceLineToMesh(m_pTerrain->GetHeightFieldGrid3d(),
+				m_pMF->AddSurfaceLineToMesh(m_pTerrain->GetHeightField(),
 					m_line, fSpacing, m_fHeight, bInterpolate, bCurve, bUseTrueElevation);
 			}
 			else if (m_pLS)

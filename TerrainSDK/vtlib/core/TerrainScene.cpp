@@ -411,18 +411,15 @@ void vtTerrainScene::SetTime(const vtTime &time)
 
 vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
 {
-	VTLOG("LoadUtilStructure '%s'\n", (const char *)name);
-
 	// Check to see if it's already loaded
 	uint i;
 	for (i = 0; i < m_StructObjs.GetSize(); i++)
 	{
 		if (m_StructObjs[i]->m_sStructName == name)
-		{
-			VTLOG("  already loaded.\n");
 			return m_StructObjs[i];
-		}
 	}
+
+	VTLOG("LoadUtilStructure '%s'\n", (const char *)name);
 
 	// If not, look for it in the global content manager
 	vtItem *item = m_Content.FindItemByName(name);

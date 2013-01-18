@@ -1,9 +1,10 @@
 # Add a library target called envdlg_xxx
 set(ENVDLG_SOURCE_FILES
 	EnviroUI.cpp CameraDlg.cpp DistanceDlg3d.cpp DriveDlg.cpp EphemDlg.cpp
-	FeatureTableDlg3d.cpp LayerDlg.cpp LinearStructDlg3d.cpp LocationDlg.cpp LODDlg.cpp OptionsDlg.cpp
-	PlantDlg.cpp ScenarioParamsDialog.cpp ScenarioSelectDialog.cpp StartupDlg.cpp
-	StyleDlg.cpp TerrManDlg.cpp TextureDlg.cpp TParamsDlg.cpp UtilDlg.cpp VehicleDlg.cpp VIADlg.cpp VIAGDALOptionsDlg.cpp)
+	FeatureTableDlg3d.cpp LayerDlg.cpp LinearStructDlg3d.cpp LocationDlg.cpp
+	LODDlg.cpp OptionsDlg.cpp PlantDlg.cpp ScenarioParamsDialog.cpp
+	ScenarioSelectDialog.cpp StartupDlg.cpp	StyleDlg.cpp TerrManDlg.cpp TextureDlg.cpp
+	TinTextureDlg.cpp TParamsDlg.cpp UtilDlg.cpp VehicleDlg.cpp VIADlg.cpp VIAGDALOptionsDlg.cpp)
 
 if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
 	set(ENVDLG_SOURCE_FILES ${ENVDLG_SOURCE_FILES} PerformanceMonitor.cpp)
@@ -13,7 +14,8 @@ set(ENVDLG_HEADER_FILES
 	EnviroUI.h CameraDlg.h DistanceDlg3d.h DriveDlg.h EphemDlg.h
 	FeatureTableDlg3d.h LayerDlg.h LinearStructDlg3d.h LocationDlg.h LODDlg.h OptionsDlg.h
 	PlantDlg.h ScenarioParamsDialog.h ScenarioSelectDialog.h StartupDlg.h
-	StyleDlg.h TerrManDlg.h TParamsDlg.h TextureDlg.h UtilDlg.h VehicleDlg.h VIADlg.h VIAGDALOptionsDlg.h)
+	StyleDlg.h TerrManDlg.h TinTextureDlg.h TParamsDlg.h TextureDlg.h UtilDlg.h
+	VehicleDlg.h VIADlg.h VIAGDALOptionsDlg.h)
 
 if(NVPERFSDK_FOUND AND NVIDIA_PERFORMANCE_MONITORING)
 	set(ENVDLG_HEADER_FILES ${ENVDLG_HEADER_FILES} PerformanceMonitor.h)

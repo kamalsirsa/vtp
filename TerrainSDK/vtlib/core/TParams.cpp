@@ -84,18 +84,19 @@ TParams::TParams() : vtTagArray()
 
 	AddTag(STR_TEXTURE, "0");
 	AddTag(STR_TEXTUREFILE, "");
+	AddTag(STR_COLOR_MAP, "");
+	AddTag(STR_TEXTURE_GEOTYPICAL, "");
+	AddTag(STR_GEOTYPICAL_SCALE, "10.0");
 	AddTag(STR_TEXTURE_GRADUAL, "false");
 	AddTag(STR_TEXURE_LOD_FACTOR, "0.25");
-	AddTag(STR_MIPMAP, "false");
-	AddTag(STR_REQUEST16BIT, "true");
+
 	AddTag(STR_PRELIGHT, "true");
 	AddTag(STR_PRELIGHTFACTOR, "1.0");
 	AddTag(STR_CAST_SHADOWS, "false");
-	AddTag(STR_COLOR_MAP, "");
-	AddTag(STR_TEXTURE_RETAIN, "true");
-
-	AddTag(STR_DETAILTEXTURE, "false");
-	AddTag(STR_DTEXTURE_NAME, "");
+	AddTag(STR_MIPMAP, "false");
+	AddTag(STR_REQUEST16BIT, "true");
+	AddTag(STR_SHOW_UNDERSIDE, "false");
+	AddTag(STR_OPACITY, "1.0");
 
 	AddTag(STR_ROADS, "false");
 	AddTag(STR_ROADFILE, "");

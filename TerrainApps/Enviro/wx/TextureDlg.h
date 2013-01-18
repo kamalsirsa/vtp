@@ -32,30 +32,20 @@ public:
 	void UpdateEnableState();
 	void UpdateColorMapChoice();
 
-	// WDR: method declarations for TextureDlg
-	wxRadioButton* GetSingle()  { return (wxRadioButton*) FindWindow( ID_SINGLE ); }
-	wxRadioButton* GetDerived()  { return (wxRadioButton*) FindWindow( ID_DERIVED ); }
-	wxChoice* GetColorMap()  { return (wxChoice*) FindWindow( ID_CHOICE_COLORS ); }
-	wxButton* GetEditColors()  { return (wxButton*) FindWindow( ID_EDIT_COLORS ); }
-	wxChoice* GetChoiceColors()  { return (wxChoice*) FindWindow( ID_CHOICE_COLORS ); }
-	wxComboBox* GetTfileSingle()  { return (wxComboBox*) FindWindow( ID_TFILE_SINGLE ); }
-
 private:
-	// WDR: member variable declarations for TextureDlg
-
 	// texture
 	int	 m_iTexture;
-	wxString	m_strTextureSingle;
-	wxString	m_strTextureTileset;
-	wxString	m_strColorMap;
+	wxString m_strTextureSingle;
+	wxString m_strColorMap;
+	wxString m_strTextureGeotypical;
+	float	m_fGeotypicalScale;
+	bool	m_bMipmap;
+	bool	m_b16bit;
+	bool	m_bPreLight;
+	float   m_fPreLightFactor;
+	bool	m_bCastShadows;
 
 	bool	m_bSetting;
-	vtStringArray m_TextureFiles;
-
-	wxRadioButton* m_pSingle;
-	wxRadioButton* m_pDerived;
-	wxChoice* m_pColorMap;
-	wxComboBox* m_pTextureFileSingle;
 
 private:
 	// WDR: handler declarations for TextureDlg

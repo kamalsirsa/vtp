@@ -400,16 +400,14 @@ private:
 #define STR_GEOTYPICAL_SCALE "Texture_Geotypical_Scale"
 #define STR_TEXTURE_GRADUAL "Texture_Gradual"
 #define STR_TEXURE_LOD_FACTOR "Texture_LOD_Factor"
+
 #define STR_PRELIGHT "Pre-Light"
 #define STR_PRELIGHTFACTOR "PreLight_Factor"
 #define STR_CAST_SHADOWS "Cast_Shadows"
 #define STR_MIPMAP "MIP_Map"
 #define STR_REQUEST16BIT "Request_16_Bit"
-#define STR_TEXTURE_RETAIN "Texture_Retain"
 #define STR_SHOW_UNDERSIDE "Show_Underside"
-
-#define STR_DETAILTEXTURE "Detail_Texture"	// Current unused; may happen someday
-#define STR_DTEXTURE_NAME "DTexture_Name"
+#define STR_OPACITY "Opacity"
 
 #define STR_ROADS "Roads"
 #define STR_ROADFILE "Road_File"

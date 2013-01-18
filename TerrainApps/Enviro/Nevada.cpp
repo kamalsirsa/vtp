@@ -61,8 +61,10 @@ void NevadaTerrain::CreateCustomCulture()
 
 	m_pMats = new vtMaterialArray;
 
+#if 0
 	if (m_Params.GetValueBool(STR_DETAILTEXTURE))
 		CreateDetailTextures();
+#endif
 
 	CreatePast();
 	CreatePresent();

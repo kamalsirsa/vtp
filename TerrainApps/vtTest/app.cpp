@@ -10,6 +10,7 @@
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/GeomUtil.h"
 #include "vtlib/vtosg/OSGEventHandler.h"
+#include "vtlib/vtosg/MultiTexture.h"
 #include "vtdata/vtLog.h"
 
 class Orbit : public vtEngine
@@ -51,10 +52,39 @@ public:
 	void OnKey(int key, int flags);
 	void SetTest(int test);
 
+	vtGroup *MakeTestGroup(int number)
+	{
+		vtGroup *grp = new vtGroup;
+		m_Test.push_back(grp);
+		char name[80];
+		sprintf(name, "Test %d", number);
+		grp->setName(name);
+
+		// Initially, not shown.
+		grp->setNodeMask(0);
+
+		m_pRoot->addChild(grp);
+		return grp;
+	}
+
+	void MakeTest0();
+	void MakeTest1();
+	void MakeTest2();
+	void MakeTest3();
+	void MakeTest4();
+	void MakeTest5();
+	void MakeTest6();
+	void MakeTest7();
+	void MakeTest8();
+	void MakeTest9();
+	void MakeTest10();
+
 public:
 	vtScene *m_pScene;
 	vtCamera *m_pCamera;
 	vtGroup *m_pRoot;
+	vtMaterialArrayPtr m_Materials;
+	vtGeode *m_BlockGeode;
 	int m_iTest;
 
 	// Component nodes
@@ -143,83 +173,114 @@ bool App::CreateScene()
 	// we, the app, are the root engine
 	m_pScene->SetRootEngine(this);
 
-	vtMaterialArrayPtr mats = new vtMaterialArray;
-	mats->AddRGBMaterial(RGBf(1,1,0));
-	mats->AddRGBMaterial(RGBf(1,0,0),true,false,true);	// wire
-	mats->AddRGBMaterial(RGBf(0,1,0),true,false,true);	// wire
-	mats->AddRGBMaterial(RGBf(0,0,1),true,false,true);	// wire
-	mats->AddRGBMaterial(RGBf(0,0,1),RGBf(0,0,1),true,true,false,0.6f,0.5f);
-	mats->AddRGBMaterial(RGBf(1,1,1),true,false,true);	// wire
+	m_Materials = new vtMaterialArray;
+	m_Materials->AddRGBMaterial(RGBf(1,1,0));
+	m_Materials->AddRGBMaterial(RGBf(1,0,0),true,false,true);	// wire
+	m_Materials->AddRGBMaterial(RGBf(0,1,0),true,false,true);	// wire
+	m_Materials->AddRGBMaterial(RGBf(0,0,1),true,false,true);	// wire
+	m_Materials->AddRGBMaterial(RGBf(0,0,1),RGBf(0,0,1),true,true,false,0.6f,0.5f);
+	m_Materials->AddRGBMaterial(RGBf(1,1,1),true,false,true);	// wire
 
 	// Reference grid (always there)
-	vtGeode *pGeode = CreateLineGridGeom(mats, 5,
+	vtGeode *pGeode = CreateLineGridGeom(m_Materials, 5,
 					   FPoint3(-10,-1,-10), FPoint3(10,-1,10), 32);
 	m_pRoot->addChild(pGeode);
 
+	m_BlockGeode = CreateBlockGeom(m_Materials, 4, FPoint3(0.1f, 0.1f, 0.6f));
+
+	MakeTest0();
+	MakeTest1();
+	MakeTest2();
+	MakeTest3();
+	MakeTest4();
+	MakeTest5();
+	MakeTest6();
+	MakeTest7();
+	MakeTest8();
+	MakeTest9();
+	MakeTest10();
+
+	SetTest(0);
+
+	//vtLogGraph(m_pRoot);
+
+	return true;
+}
+
+void App::MakeTest0()
+{
 	// Test 0
-	m_Test.push_back(new vtGroup);
-	m_Test[0]->setName("Test 0");
-	m_pRoot->addChild(m_Test[0]);
+	vtGroup *grp = MakeTestGroup(0);
+
 	m_pCrosshair = new vtGeode;
-	m_pCrosshair->SetMaterials(mats);
+	m_pCrosshair->SetMaterials(m_Materials);
 	AddLineMesh(m_pCrosshair, 1, FPoint3(-1, 0, 0), FPoint3(1, 0, 0));
 	AddLineMesh(m_pCrosshair, 2, FPoint3(0, -1, 0), FPoint3(0, 1, 0));
 	AddLineMesh(m_pCrosshair, 3, FPoint3(0, 0, -1), FPoint3(0, 0, 1));
-	m_Test[0]->addChild(m_pCrosshair);
+	grp->addChild(m_pCrosshair);
+}
 
+void App::MakeTest1()
+{
 	// Test 1
-	m_Test.push_back(new vtGroup);
-	m_Test[1]->setName("Test 1");
-	m_pRoot->addChild(m_Test[1]);
-	m_pBall = CreateSphereGeom(mats, 0, VT_Normals, 1.0f, 32);	// Unit radius
-	m_Test[1]->addChild(m_pBall);
+	vtGroup *grp = MakeTestGroup(1);
 
+	m_pBall = CreateSphereGeom(m_Materials, 0, VT_Normals, 1.0f, 32);	// Unit radius
+	grp->addChild(m_pBall);
+}
+
+void App::MakeTest2()
+{
 	// Test 2: light, orbiting, box to show its location
-	m_Test.push_back(new vtGroup);
-	m_Test[2]->setName("Test 2");
-	m_pRoot->addChild(m_Test[2]);
-	vtGeode *block = CreateBlockGeom(mats, 4, FPoint3(0.1f, 0.1f, 0.6f));
+	vtGroup *grp = MakeTestGroup(2);
+
 	m_pMovingBox = new vtTransform;
-	m_pMovingBox->addChild(block);
-	m_Test[2]->addChild(m_pBall);
-	m_Test[2]->addChild(m_pMovingBox);
+	m_pMovingBox->addChild(m_BlockGeode);
+	grp->addChild(m_pBall);
+	grp->addChild(m_pMovingBox);
 
 	orbit = new Orbit;
 	orbit->axis = 0;
 	orbit->AddTarget(m_pLightTrans);
 	orbit->AddTarget(m_pMovingBox);
 	this->AddChild(orbit);
+}
 
+void App::MakeTest3()
+{
 	// Test 3: red light, orbiting, box to show its location
-	m_Test.push_back(new vtGroup);
-	m_Test[3]->setName("Test 3");
-	m_pRoot->addChild(m_Test[3]);
-	m_Test[3]->addChild(m_pBall);
-	m_Test[3]->addChild(m_pMovingBox);
+	vtGroup *grp = MakeTestGroup(3);
 
+	grp->addChild(m_pBall);
+	grp->addChild(m_pMovingBox);
+}
+
+void App::MakeTest4()
+{
 	// Test 4: second orbiting light
-	m_Test.push_back(new vtGroup);
-	m_Test[4]->setName("Test 4");
-	m_pRoot->addChild(m_Test[4]);
+	vtGroup *grp = MakeTestGroup(4);
+
 	m_pMovingBox2 = new vtTransform;
-	m_pMovingBox2->addChild(block);
-	m_Test[4]->addChild(m_pBall);
-	m_Test[4]->addChild(m_pMovingBox);
-	m_Test[4]->addChild(m_pMovingBox2);
+	m_pMovingBox2->addChild(m_BlockGeode);
+	grp->addChild(m_pBall);
+	grp->addChild(m_pMovingBox);
+	grp->addChild(m_pMovingBox2);
 
 	orbit2 = new Orbit;
 	orbit2->axis = 1;
 	orbit2->AddTarget(m_pLightTrans2);
 	orbit2->AddTarget(m_pMovingBox2);
 	this->AddChild(orbit2);
+}
 
+void App::MakeTest5()
+{
 	// Test 5: LOD
-	m_Test.push_back(new vtGroup);
-	m_Test[5]->setName("Test 5");
-	m_pRoot->addChild(m_Test[5]);
-	vtGeode *g1 = CreateSphereGeom(mats, 0, VT_Normals, 0.6f, 32);
-	vtGeode *g2 = CreateSphereGeom(mats, 1, VT_Normals, 0.7f, 32);
-	vtGeode *g3 = CreateSphereGeom(mats, 2, VT_Normals, 0.8f, 32);
+	vtGroup *grp = MakeTestGroup(5);
+
+	vtGeode *g1 = CreateSphereGeom(m_Materials, 0, VT_Normals, 0.6f, 32);
+	vtGeode *g2 = CreateSphereGeom(m_Materials, 1, VT_Normals, 0.7f, 32);
+	vtGeode *g3 = CreateSphereGeom(m_Materials, 2, VT_Normals, 0.8f, 32);
 	m_pLOD = new vtLOD;
 	m_pLOD->addChild(g1);
 	m_pLOD->addChild(g2);
@@ -229,16 +290,18 @@ bool App::CreateScene()
 	m_pLOD->setRange(1, 6.0f, 12.0f);
 	m_pLOD->setRange(2, 12.0f, 22.0f);
 	m_pLOD->SetCenter(FPoint3(0,0,0));
-	m_Test[5]->addChild(m_pLOD);
+	grp->addChild(m_pLOD);
+}
 
+void App::MakeTest6()
+{
 	// Test 6: many LOD objects
-	m_Test.push_back(new vtGroup);
-	m_Test[6]->setName("Test 6");
-	m_pRoot->addChild(m_Test[6]);
+	vtGroup *grp = MakeTestGroup(6);
+
 	m_pLODs = new vtGroup;
-	m_Test[6]->addChild(m_pLODs);
-	for (int i = -4; i <= 4; i++)
-	for (int j = -4; j <= 4; j++)
+	grp->addChild(m_pLODs);
+	for (int i = -3; i <= 3; i++)
+	for (int j = -3; j <= 3; j++)
 	{
 		if (i == 0 && j == 0)
 			continue;
@@ -247,13 +310,16 @@ bool App::CreateScene()
 		m_pLODs->addChild(trans);
 		trans->addChild(m_pLOD);
 	}
+}
 
+void App::MakeTest7()
+{
 	// Test 7: Shader
-	m_Test.push_back(new vtGroup);
-	m_Test[7]->setName("Test 7");
-	m_pRoot->addChild(m_Test[7]);
-	vtGeode *ball2 = CreateSphereGeom(mats, 0, VT_Normals, 1.0f, 32);	// Unit radius
-	m_Test[7]->addChild(ball2);
+	vtGroup *grp = MakeTestGroup(7);
+
+	vtGeode *ball2 = CreateSphereGeom(m_Materials, 0, VT_Normals, 1.0f, 32);	// Unit radius
+	ball2->setName("ball2");
+	grp->addChild(ball2);
 
 	const std::string TheShaderSource =
 	   "uniform vec3 rgb;\n"
@@ -301,12 +367,87 @@ bool App::CreateScene()
 	osg::ref_ptr<osg::Uniform> rgbUniform(
 		new osg::Uniform("rgb", osg::Vec3(0.2, 0.2, 1.0)));
 	ss->addUniform(rgbUniform);
+}
 
-	SetTest(0);
+void App::MakeTest8()
+{
+	// Test 8: Single texture
+	vtGroup *grp = MakeTestGroup(8);
 
-	//vtLogGraph(m_pRoot);
+	int matidx = m_Materials->AddTextureMaterial("G:/Data-Testing/Culture/modulate.jpg", true, false);
 
-	return true;
+	vtGeode *ball3 = CreateSphereGeom(m_Materials, matidx, VT_Normals | VT_TexCoords, 1.0f, 32);
+
+	grp->addChild(ball3);
+}
+
+void App::MakeTest9()
+{
+	// Test 9: Single texture, using TexGen
+	vtGroup *grp = MakeTestGroup(9);
+
+//	osg::Image *image = osgDB::readImageFile("G:/Data-Testing/Culture/modulate.jpg");
+	vtImageGeo *image = new vtImageGeo;
+	image->ReadTIF("G:/Data-USA/Data-Hawaii/GeoSpecific/waimea_subset_2048.tif");
+
+	// Force the internal format to RGBA
+	image->setInternalTextureFormat(GL_RGBA);
+
+	vtMaterial *pMat = new vtMaterial;
+	pMat->SetAmbient(1,1,1);
+	pMat->SetTexture(image);
+	pMat->SetCulling(true);
+	pMat->SetLighting(false);
+
+	FPoint2 scale(1, 1), offset(-0.5, -0.5);
+	pMat->SetTexGen(scale, offset, GL_DECAL);
+	pMat->SetClamp(true);
+
+	int matidx = m_Materials->AppendMaterial(pMat);
+
+	vtGeode *ball4 = CreateSphereGeom(m_Materials, matidx, VT_Normals, 1.0f, 32);
+
+	grp->addChild(ball4);
+}
+
+void App::MakeTest10()
+{
+	// Test 10: Two textures
+	vtGroup *grp = MakeTestGroup(10);
+
+//	osg::Image *image1 = osgDB::readImageFile("G:/Data-Testing/Culture/drystone_wall_512.jpg");
+	osg::Image *image1 = osgDB::readImageFile("G:/Data-Testing/Culture/modulate.jpg");
+
+	vtMaterial *pMat = new vtMaterial;
+	pMat->SetTexture(image1, 0);
+	pMat->SetCulling(true);
+	pMat->SetLighting(false);
+
+//	osg::Image *image2 = osgDB::readImageFile("G:/Data-Testing/Culture/modulate.jpg");
+//	osg::Image *image2 = osgDB::readImageFile("G:/Data-USA/Data-Hawaii/GeoSpecific/waimea_subset_2048.tif");
+
+	vtImageGeo *image2 = new vtImageGeo;
+	image2->ReadTIF("G:/Data-USA/Data-Hawaii/GeoSpecific/waimea_subset_2048.tif");
+
+	FPoint2 scale(1, -1), offset(-0.5, -0.5);
+#if 0
+	pMat->SetTexture(image2, 1);
+
+	// Force the internal format to RGBA
+	image2->setInternalTextureFormat(GL_RGBA);
+
+	pMat->SetTexGen(scale, offset, GL_DECAL, 1);	// Texture unit 1
+	pMat->SetClamp(true, 1);
+#endif
+
+	int matidx = m_Materials->AppendMaterial(pMat);
+
+	vtGeode *ball5 = CreateSphereGeom(m_Materials, matidx, VT_Normals | VT_TexCoords, 1.0f, 32);
+
+	vtMultiTexture *mt = new vtMultiTexture;
+	mt->Create(ball5, image2, scale, offset, 1, GL_DECAL);
+
+	grp->addChild(ball5);
 }
 
 void App::SetTest(int test)
@@ -315,9 +456,8 @@ void App::SetTest(int test)
 	VTLOG("Test %d\n", test);
 
 	for (size_t i = 0; i < m_Test.size(); i++)
-	{
 		m_Test[i]->SetEnabled(i == test);
-	}
+
 	switch (test)
 	{
 	case 2:

@@ -1801,7 +1801,7 @@ void vtTerrain::CreateStep1()
  */
 bool vtTerrain::CreateStep2()
 {
-	VTLOG("Step1\n");
+	VTLOG1("Step2\n");
 
 	// for GetValueFloat below
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -2007,7 +2007,7 @@ bool vtTerrain::CreateStep2()
  */
 bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 {
-	VTLOG("Step2\n");
+	VTLOG1("Step3\n");
 
 	// Remember the lightsource in case we need it later for shadows
 	m_pLightSource = pLightSource;
@@ -2040,7 +2040,7 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
  */
 bool vtTerrain::CreateStep4()
 {
-	VTLOG("Step3\n");
+	VTLOG1("Step4\n");
 
 	// if we aren't going to produce the terrain surface, nothing to do
 	if (m_Params.GetValueBool(STR_SUPPRESS))
@@ -2125,7 +2125,7 @@ bool vtTerrain::CreateFromExternal()
  */
 bool vtTerrain::CreateStep5()
 {
-	VTLOG("Step4\n");
+	VTLOG1("Step5\n");
 
 	// some algorithms need an additional stage of initialization
 	if (m_pDynGeom != NULL)
@@ -2137,6 +2137,12 @@ bool vtTerrain::CreateStep5()
 		VTLOG("CLOD construction: %.3f seconds.\n", time);
 	}
 
+	// We should also speed up our TIN if we have one.
+	if (m_pTin != NULL)
+	{
+		m_pTin->SetupTriangleBins(25);	// TODO: make this number adaptive
+	}
+
 	return true;
 }
 
@@ -2145,6 +2151,8 @@ bool vtTerrain::CreateStep5()
  */
 void vtTerrain::CreateStep6()
 {
+	VTLOG1("Step6\n");
+
 	// must have a heightfield by this point
 	if (!m_pHeightField)
 		return;
@@ -2161,6 +2169,8 @@ void vtTerrain::CreateStep6()
 
 void vtTerrain::CreateStep7()
 {
+	VTLOG1("Step7\n");
+
 	// create roads
 	if (m_Params.GetValueBool(STR_ROADS))
 		_CreateRoads();
@@ -2168,11 +2178,15 @@ void vtTerrain::CreateStep7()
 
 void vtTerrain::CreateStep8()
 {
+	VTLOG1("Step8\n");
+
 	_CreateVegetation();
 }
 
 void vtTerrain::CreateStep9()
 {
+	VTLOG1("Step9\n");
+
 	_CreateOtherCulture();
 
 	if (m_Params.GetValueBool(STR_OCEANPLANE))
