@@ -173,17 +173,17 @@ public:
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const = 0;
 
 	bool ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
-		int iGranularity, const RGBAi &nodata, bool progress_callback(int) = NULL);
+		int iGranularity, const RGBAi &nodata, bool progress_callback(int) = NULL) const;
 	bool ColorDibFromTable(vtBitmapBase *pBM, std::vector<RGBi> &table,
-		float fMin, float fMax, const RGBAi &nodata, bool progress_callback(int) = NULL);
+		float fMin, float fMax, const RGBAi &nodata, bool progress_callback(int) = NULL) const;
 
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 		float fLightFactor, float fAmbient = 0.1f, float fGamma = 1.0f,
-		bool bTrue = false, bool progress_callback(int) = NULL);
+		bool bTrue = false, bool progress_callback(int) = NULL) const;
 	void ShadeQuick(vtBitmapBase *pBM, float light_factor, bool bTrue = false,
 		bool progress_callback(int) = NULL);
 	void ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &ight_dir,
-		float fLightFactor, float fAmbient, bool progress_callback(int) = NULL);
+		float fLightFactor, float fAmbient, bool progress_callback(int) = NULL) const;
 
 protected:
 	IPoint2	m_iSize;

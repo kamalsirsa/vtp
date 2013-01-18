@@ -25,6 +25,7 @@ IslandTerrain::IslandTerrain()
 	m_pSA = NULL;
 }
 
+#if 0
 void IslandTerrain::PaintDib(bool progress_callback(int))
 {
 	if (g_bLineOfSightTest)
@@ -55,6 +56,7 @@ void IslandTerrain::PaintDib(bool progress_callback(int))
 	else
 		vtTerrain::PaintDib(progress_callback);
 }
+#endif
 
 class SpinEngine: public vtEngine
 {

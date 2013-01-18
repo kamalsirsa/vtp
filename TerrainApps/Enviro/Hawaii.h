@@ -32,9 +32,6 @@ public:
 	// methods
 	void CreateCustomCulture();
 
-	// override for texture tests
-	void PaintDib(bool progress_callback(int) = NULL);
-
 	vtGeode *make_test_cone();
 	vtGeode *make_red_cube();
 	void create_state_park();

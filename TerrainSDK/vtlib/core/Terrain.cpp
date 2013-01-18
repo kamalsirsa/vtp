@@ -1,7 +1,7 @@
 //
 // Terrain.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -47,17 +47,14 @@ vtTerrain::vtTerrain()
 	m_pContainerGroup = NULL;
 	m_pTerrainGroup = NULL;
 	m_pUnshadowedGroup = NULL;
-	m_bTextureInitialized = false;
 	m_iShadowTextureUnit = -1;
 	m_pFog = NULL;
 	m_pShadow = NULL;
 	m_bFog = false;
 	m_bShadows = false;
 
-	m_pTerrMats = new vtMaterialArray;
 	m_pEphemMats = new vtMaterialArray;
 	m_idx_water = -1;
-	m_bBothSides = false;
 
 	m_pHeightField = NULL;
 	m_bPreserveInputGrid = false;
@@ -285,202 +282,6 @@ void vtTerrain::_CreateRoads()
 }
 
 
-///////////////////
-
-void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback(int))
-{
-	TextureEnum eTex = m_Params.GetTextureEnum();
-
-	bool bRetain = m_Params.GetValueBool(STR_TEXTURE_RETAIN);
-	bool bFirstTime = !m_bTextureInitialized;
-	bool bLoadSingle = (bFirstTime || !bRetain) && (eTex == TE_SINGLE);
-
-	VTLOG("_CreateTextures(%d, first %d, retain %d)\n", eTex,
-		bFirstTime, bRetain);
-
-	// measure total texture processing time
-	clock_t c1 = clock();
-
-	vtString texture_path;
-	if (bLoadSingle)	// look for texture
-	{
-		vtString texture_fname = "GeoSpecific/";
-		texture_fname += m_Params.GetValueString(STR_TEXTUREFILE);
-
-		VTLOG("  Looking for single texture: %s\n", (const char *) texture_fname);
-		texture_path = FindFileOnPaths(vtGetDataPath(), texture_fname);
-		if (texture_path == "")
-		{
-			// failed to find texture
-			VTLOG("  Failed to find texture.\n");
-			eTex = TE_NONE;
-			bLoadSingle = false;
-		}
-		else
-			VTLOG("  Found texture, path is: %s\n", (const char *) texture_path);
-	}
-	if (bLoadSingle)		// Load the whole single texture
-	{
-		clock_t r1 = clock();
-		m_pUnshadedImage = osgDB::readImageFile((const char *)texture_path);
-		if (m_pUnshadedImage.valid())
-		{
-			VTLOG("  Loaded texture: size %d x %d, depth %d, %.2f seconds.\n",
-				m_pUnshadedImage->s(), m_pUnshadedImage->t(),
-				m_pUnshadedImage->getPixelSizeInBits(),
-				(float)(clock() - r1) / CLOCKS_PER_SEC);
-		}
-		else
-		{
-			VTLOG("  Failed to load texture.\n");
-			m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-				RGBf(0.2f, 0.2f, 0.2f), true, false);
-			eTex = TE_NONE;
-			_SetErrorMessage("Failed to load texture.");
-		}
-	}
-
-	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-
-	if (eTex == TE_DERIVED)
-	{
-		if (bFirstTime)
-		{
-			// Derive color from elevation.
-			// Determine the correct size for the derived texture: ideally as
-			// large as the input grid, but not larger than the hardware texture
-			// size limit.
-			int tmax = vtGetMaxTextureSize();
-
-			int cols, rows;
-			pHFGrid->GetDimensions(cols, rows);
-
-			int tsize = cols-1;
-			if ((tmax > 0) && (tsize > tmax))
-				tsize = tmax;
-			VTLOG("\t grid width is %d, texture max is %d, creating artificial texture of dimension %d\n",
-				cols, tmax, tsize);
-
-			vtImage *vti = new vtImage;
-			vti->Create(tsize, tsize, 24, false);
-			m_pUnshadedImage = vti;
-		}
-		if (bFirstTime || !bRetain)
-		{
-			clock_t r1 = clock();
-			// The PaintDib method is virtual to allow subclasses to customize
-			// the unshaded image.
-			PaintDib(progress_callback);
-			VTLOG("  PaintDib: %.2f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
-		}
-	}
-
-	if (bRetain)
-	{
-		// We need to copy from the retained image to a second image which will
-		//  be shaded and displayed.
-		if (eTex == TE_SINGLE || eTex == TE_DERIVED)
-			m_pSingleImage = new osg::Image(*m_pUnshadedImage);
-	}
-	else
-		// we can use the original image directly
-		m_pSingleImage = m_pUnshadedImage;
-
-	// If we get this far, we can consider the texture initialized
-	m_bTextureInitialized = true;
-
-	if (eTex == TE_NONE)	// none or failed to find texture
-	{
-		// no texture: create plain white material
-		m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-									RGBf(0.2f, 0.2f, 0.2f),
-									true, false);
-		return;
-	}
-	if (m_Params.GetValueBool(STR_PRELIGHT) && pHFGrid)
-	{
-		// apply pre-lighting (a.k.a. darkening, a.k.a. shading)
-		vtImageWrapper wrap(m_pSingleImage);
-		_ApplyPreLight(pHFGrid, &wrap, light_dir, progress_callback);
-	}
-
-	// If the user has asked for 16-bit textures to be sent down to the
-	//  card (internal memory format), then tell this Image
-	Set16BitInternal(m_pSingleImage, m_Params.GetValueBool(STR_REQUEST16BIT));
-
-	// single texture
-	if (bFirstTime)
-	{
-		// The terrain's base texture will always use unit 0
-		m_TextureUnits.ReserveTextureUnit();
-
-		bool bTransp = (GetDepth(m_pSingleImage) == 32);
-		bool bMipmap = m_Params.GetValueBool(STR_MIPMAP);
-		float ambient = 0.0f, diffuse = 1.0f, emmisive = 0.0f;
-
-		m_pTerrMats->AddTextureMaterial(m_pSingleImage,
-			!m_bBothSides,	// culling
-			false,			// lighting
-			bTransp,		// transparency blending
-			false,			// additive
-			ambient, diffuse,
-			1.0f,			// alpha
-			0.0f,			// emmisive,
-			false,			// clamp
-			bMipmap);
-	}
-	else
-	{
-		// Make sure OSG knows that the texture may have changed
-		vtMaterial *mat = m_pTerrMats->at(0);
-		mat->SetTexture(m_pSingleImage);
-		mat->ModifiedTexture();
-	}
-	VTLOG("  Total CreateTextures: %.2f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
-}
-
-//
-// This is the default implementation for PaintDib.  It colors from elevation.
-// Developer can override it.
-//
-void vtTerrain::PaintDib(bool progress_callback(int))
-{
-	m_pTextureColors.reset(new ColorMap);
-
-	// If this member hasn't been set by a subclass, then we can go ahead
-	//  and use the info from the terrain parameters
-	vtString name = m_Params.GetValueString(STR_COLOR_MAP);
-	if (name != "")
-	{
-		if (!m_pTextureColors->Load(name))
-		{
-			// Look on data paths
-			vtString name2 = "GeoTypical/";
-			name2 += name;
-			name2 = FindFileOnPaths(vtGetDataPath(), name2);
-			if (name2 != "")
-				m_pTextureColors->Load(name2);
-		}
-	}
-	// If the colors weren't provided by a subclass, and couldn't be
-	//  loaded either, then make up some default colors.
-	if (m_pTextureColors->Num() == 0)
-	{
-		m_pTextureColors->m_bRelative = true;
-		m_pTextureColors->Add(0, RGBi(0x20, 0x90, 0x20));	// medium green
-		m_pTextureColors->Add(1, RGBi(0x40, 0xE0, 0x40));	// light green
-		m_pTextureColors->Add(2, RGBi(0xE0, 0xD0, 0xC0));	// tan
-		m_pTextureColors->Add(3, RGBi(0xE0, 0x80, 0x10));	// orange
-		m_pTextureColors->Add(4, RGBi(0xE0, 0xE0, 0xE0));	// light grey
-	}
-
-	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-
-	vtImageWrapper wrap(m_pUnshadedImage);
-	pHFGrid->ColorDibFromElevation(&wrap, m_pTextureColors.get(), 4000,
-		RGBi(255,0,0), progress_callback);
-}
-
 /**
  * Set the array of colors to be used when automatically generating the
  * terrain texture from the elevation values.  This is the color map which
@@ -502,7 +303,7 @@ void vtTerrain::PaintDib(bool progress_callback(int))
  */
 void vtTerrain::SetTextureColors(ColorMap *colors)
 {
-	m_pTextureColors.reset(colors);
+	m_Texture.m_pTextureColors.reset(colors);
 }
 
 /**
@@ -517,7 +318,7 @@ void vtTerrain::SetTextureColors(ColorMap *colors)
  * \par Example:
 	\code
 	vtTerrain *pTerr = new vtTerrain;
-	pTerr->SetTextureColors(100, 4);
+	pTerr->SetTextureContours(100, 4);
 	\endcode
  *
  * \param fInterval  The vertical spacing between the contours.  For example,
@@ -553,17 +354,23 @@ void vtTerrain::SetTextureContours(float fInterval, float fSize)
 	}
 
 	// Set these as the desired color bands for the next PainDib
-	m_pTextureColors.reset(cmap);
+	m_Texture.m_pTextureColors.reset(cmap);
 }
 
 
 /**
- * Re-create the ground texture.  This is useful if you ahve changed the
+ * Re-create the ground texture.  This is useful if you have changed the
  * time of day, and want to see the lighting/shading of the terrain updated.
  */
-void vtTerrain::RecreateTextures(vtTransform *pSunLight, bool progress_callback(int))
+void vtTerrain::ReshadeTexture(vtTransform *pSunLight, bool progress_callback(int))
 {
-	_CreateTextures(pSunLight->GetDirection(), progress_callback);
+	m_Texture.CopyFromUnshaded(m_Params);
+	m_Texture.ShadeTexture(m_Params, GetHeightFieldGrid3d(), pSunLight->GetDirection(), progress_callback);
+
+	// Make sure OSG knows that the texture has changed
+	vtMaterial *mat = m_Texture.m_pMaterials->at(0);
+	mat->SetTexture(m_Texture.m_pTextureImage);
+	mat->ModifiedTexture();
 }
 
 /**
@@ -572,7 +379,7 @@ void vtTerrain::RecreateTextures(vtTransform *pSunLight, bool progress_callback(
  */
 osg::Image *vtTerrain::GetTextureImage()
 {
-	return m_pSingleImage.get();
+	return m_Texture.m_pTextureImage.get();
 }
 
 
@@ -635,7 +442,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	//
 	if (m_Params.GetTextureEnum() == TE_SINGLE)
 	{
-		vtMaterial *mat = m_pTerrMats->at(0);
+		vtMaterial *mat = m_Texture.m_pMaterials->at(0);
 		if (mat->GetTransparent())
 		{
 			osg::StateSet *sset = m_pDynGeom->getOrCreateStateSet();
@@ -644,7 +451,7 @@ bool vtTerrain::_CreateDynamicTerrain()
 	}
 
 	m_pDynGeom->SetPolygonTarget(m_Params.GetValueInt(STR_TRICOUNT));
-	m_pDynGeom->SetMaterials(m_pTerrMats);
+	m_pDynGeom->SetMaterials(m_Texture.m_pMaterials);
 
 	// build heirarchy (add terrain to scene graph)
 	m_pDynGeomScale = new vtTransform;
@@ -2213,7 +2020,18 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 	int tex = m_Params.GetValueInt(STR_TEXTURE);
 	if (type == 0 ||	// single grid
 		(type == 1 && tex == 1))	// TIN, single texture
-		_CreateTextures(pSunLight->GetDirection(), m_progress_callback);
+	{
+		// measure total texture processing time
+		clock_t c1 = clock();
+
+		m_Texture.LoadTexture(m_Params, GetHeightFieldGrid3d(), m_progress_callback);
+
+		m_Texture.ShadeTexture(m_Params, GetHeightFieldGrid3d(), pSunLight->GetDirection(),
+			m_progress_callback);
+
+		// The terrain's base texture will always use unit 0
+		m_TextureUnits.ReserveTextureUnit();
+	}
 	return true;
 }
 
@@ -2247,7 +2065,7 @@ bool vtTerrain::CreateFromTIN()
 	// for the TIN.  Otherwise, the TIN will color and texture itself.
 	int tex = m_Params.GetValueInt(STR_TEXTURE);
 	if (tex == 1)
-		m_pTin->SetTextureMaterials(m_pTerrMats);
+		m_pTin->SetTextureMaterials(m_Texture.m_pMaterials);
 
 	// Make the TIN's geometry.
 	vtGeode *geode = m_pTin->CreateGeometry(bDropShadow);
@@ -2712,38 +2530,6 @@ int vtTerrain::GetShadowTextureUnit()
 	if (m_iShadowTextureUnit == -1)
 		m_iShadowTextureUnit = m_TextureUnits.ReserveTextureUnit(true);
 	return m_iShadowTextureUnit;
-}
-
-void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *bitmap,
-							  const FPoint3 &light_dir, bool progress_callback(int))
-{
-	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
-	VTLOG("  Prelighting texture: ");
-
-	clock_t c1 = clock();
-
-	float shade_factor = m_Params.GetValueFloat(STR_PRELIGHTFACTOR);
-	bool bTrue = m_Params.GetValueBool("ShadeTrue");
-	bool bQuick = m_Params.GetValueBool("ShadeQuick");
-	float ambient = 0.25f;
-	float gamma = 0.80f;
-	if (m_Params.GetValueBool(STR_CAST_SHADOWS))
-	{
-		// A more accurate shading, still a little experimental
-		pElevGrid->ShadowCastDib(bitmap, light_dir, shade_factor, ambient, progress_callback);
-	}
-	else if (bQuick)
-		pElevGrid->ShadeQuick(bitmap, shade_factor, bTrue, progress_callback);
-	else
-		pElevGrid->ShadeDibFromElevation(bitmap, light_dir, shade_factor,
-			ambient, gamma, bTrue, progress_callback);
-
-	clock_t c2 = clock();
-
-	clock_t c3 = c2 - c1;
-	VTLOG("%.3f seconds.\n", (float)c3 / CLOCKS_PER_SEC);
 }
 
 

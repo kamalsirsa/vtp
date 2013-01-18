@@ -584,7 +584,7 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
  */
 bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	const ColorMap *cmap, int iGranularity, const RGBAi &nodata,
-	bool progress_callback(int))
+	bool progress_callback(int)) const
 {
 	if (!pBM || !cmap)
 		return false;
@@ -631,7 +631,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
  */
 bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	   std::vector<RGBi> &table, float fMin, float fMax, const RGBAi &nodata,
-	   bool progress_callback(int))
+	   bool progress_callback(int)) const
 {
 	VTLOG1(" ColorDibFromTable:");
 	const IPoint2 bitmap_size = pBM->GetSize();
@@ -703,7 +703,7 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
  * \param progress_callback	If supplied, will be called with values from 0 to 100.
  */
 void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
-	float fLightFactor, float fAmbient, float fGamma, bool bTrue, bool progress_callback(int))
+	float fLightFactor, float fAmbient, float fGamma, bool bTrue, bool progress_callback(int)) const
 {
 	// consider upward-pointing normal vector, rather than downward-pointing
 	FPoint3 light_direction = -light_dir;
@@ -963,7 +963,7 @@ inline DPoint2 GridPos(const DPoint2 &base, const DPoint2 &spacing, int i, int j
  *  Context, so that it could be re-used for quickly re-shading multiple times.
  */
 void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_dir,
-	float fLightFactor, float fAmbient, bool progress_callback(int))
+	float fLightFactor, float fAmbient, bool progress_callback(int)) const
 {
 	const IPoint2 bitmap_size = pBM->GetSize();
 

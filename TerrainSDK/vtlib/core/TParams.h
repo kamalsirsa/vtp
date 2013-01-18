@@ -19,7 +19,7 @@
 enum TextureEnum {
 	TE_NONE,
 	TE_SINGLE,
-	TE_TILED,
+	TE_OBSOLETE,
 	TE_DERIVED,
 	TE_TILESET
 };
@@ -406,6 +406,7 @@ private:
 #define STR_MIPMAP "MIP_Map"
 #define STR_REQUEST16BIT "Request_16_Bit"
 #define STR_TEXTURE_RETAIN "Texture_Retain"
+#define STR_SHOW_UNDERSIDE "Show_Underside"
 
 #define STR_DETAILTEXTURE "Detail_Texture"	// Current unused; may happen someday
 #define STR_DTEXTURE_NAME "DTexture_Name"

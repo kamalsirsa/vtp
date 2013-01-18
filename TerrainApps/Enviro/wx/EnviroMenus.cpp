@@ -1644,7 +1644,7 @@ void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 
 	EnableContinuousRendering(false);
 	OpenProgressDialog(_("Recalculating Shading"), false, this);
-	pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform(), progress_callback);
+	pTerr->ReshadeTexture(vtGetTS()->GetSunLightTransform(), progress_callback);
 	CloseProgressDialog();
 	EnableContinuousRendering(true);
 
@@ -1663,6 +1663,8 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 
 	EnableContinuousRendering(false);
 
+#if 0
+	// TODO
 	TextureDlg dlg(this, -1, _("Change Texture"));
 	dlg.SetParams(pTerr->GetParams());
 	if (dlg.ShowModal() == wxID_OK)
@@ -1677,7 +1679,7 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 		if (g_App.GetShowMapOverview())
 			g_App.TextureHasChanged();
 	}
-
+#endif
 	EnableContinuousRendering(true);
 }
 

@@ -19,6 +19,7 @@
 #include "Location.h"
 #include "Plants3d.h"	// for vtSpeciesList3d, vtPlantInstanceArray3d
 #include "Roads.h"
+#include "SurfaceTexture.h"
 #include "TextureUnitManager.h"
 #include "TiledGeom.h"
 #include "TParams.h"
@@ -145,9 +146,6 @@ public:
 	bool GetGeoExtentsFromMetadata();
 	float EstimateGroundSpacingAtPoint(const DPoint2 &p) const;
 
-	/// pass true to draw the underside of the terrain as well
-	void SetBothSides(bool bFlag) { m_bBothSides = bFlag; }
-
 	// You can use these methods to build a terrain step by step,
 	// or simply use the method vtTerrainScene::BuildTerrain.
 	void CreateStep1();
@@ -165,16 +163,12 @@ public:
 	ProgFuncPtrType m_progress_callback;
 	bool ProgressCallback(int i);
 
-	/// Set the colors to be used in a derived texture.
-	void SetTextureColors(ColorMap *colors);
-	ColorMap *GetTextureColors() { return m_pTextureColors.get(); }
-
 	/// Sets the texture colors to be a set of black contour stripes.
 	void SetTextureContours(float fInterval, float fSize);
 
-	/** Override this method to customize the Dib, before it is turned into
-	 * a vtImage.  The default implementation colors from elevation. */
-	virtual void PaintDib(bool progress_callback(int) = NULL);
+	/// Set the colors to be used in a derived texture.
+	void SetTextureColors(ColorMap *colors);
+	ColorMap *GetTextureColors() { return m_Texture.m_pTextureColors.get(); }
 
 	/// Return true if the terrain has been created.
 	bool IsCreated();
@@ -356,7 +350,7 @@ public:
 	void RedrapeCulture(const DRECT &area);
 
 	// Texture
-	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
+	void ReshadeTexture(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 	osg::Image *GetTextureImage();
 	void AddMultiTextureOverlay(vtImageLayer *im_layer);
 	osg::Node *GetTerrainSurfaceNode();
@@ -374,6 +368,7 @@ protected:
 	bool CreateFromGrid();
 	bool CreateFromTiles();
 	bool CreateFromExternal();
+
 	void _CreateOtherCulture();
 	void _CreateCulture();
 	void _CreateVegetation();
@@ -385,7 +380,6 @@ protected:
 	bool _CreateAbstractLayerFromParams(int index);
 	void _CreateImageLayers();
 	void _CreateElevLayers();
-	void _CreateTextures(const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
@@ -394,8 +388,6 @@ protected:
 	void MakeWaterMaterial();
 	void CreateWaterHeightfield(const vtString &fname);
 
-	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtBitmapBase *dib,
-		const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	void _ComputeCenterLocation();
 	void GetTerrainBounds();
 	void EnforcePageOut();
@@ -457,11 +449,8 @@ protected:
 	int		m_iPagingStructureMax;
 	float	m_fPagingStructureDist;
 
-	vtMaterialArrayPtr m_pTerrMats;		// materials for the LOD terrain
 	vtMaterialArrayPtr m_pEphemMats;	// and ephemeris
 	int				m_idx_water;
-	bool			m_bBothSides;	// show both sides of terrain materials
-
 	// abstract layers
 	vtTransform		*m_pScaledFeatures;
 	vtFeatureLoader *m_pFeatureLoader;
@@ -479,11 +468,8 @@ protected:
 	vtUtilityMap3d	m_UtilityMap;
 
 	// ground texture and shadows
-	ImagePtr		m_pUnshadedImage;
-	ImagePtr		m_pSingleImage;
+	SurfaceTexture	m_Texture;
 
-	auto_ptr<ColorMap>	m_pTextureColors;
-	bool			m_bTextureInitialized;
 	vtTextureUnitManager m_TextureUnits;
 	int				m_iShadowTextureUnit;
 	vtLightSource	*m_pLightSource;
