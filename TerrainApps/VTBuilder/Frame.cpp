@@ -196,7 +196,6 @@ MainFrame::~MainFrame()
 {
 	VTLOG1("Frame destructor\n");
 	WriteXML("VTBuilder.xml");
-	DeleteContents();
 
 	m_mgr.UnInit();
 }

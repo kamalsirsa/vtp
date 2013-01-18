@@ -118,14 +118,14 @@ Builder::~Builder()
 {
 	VTLOG1("Builder destructor\n");
 	DeleteContents();
+	FreeGlobalMaterials();
+	FreeContentFiles();
 }
 
 void Builder::DeleteContents()
 {
 	m_Layers.DeleteLayers();
 	m_pActiveLayer = NULL;
-	FreeGlobalMaterials();
-	FreeContentFiles();
 }
 
 
