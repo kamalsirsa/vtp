@@ -30,13 +30,16 @@ IMPLEMENT_APP(BuilderApp)
 
 void BuilderApp::Args(int argc, wxChar **argv)
 {
+	VTLOG("BuilderApp::Args(argc = %d)\n", argc);
 	for (int i = 0; i < argc; i++)
 	{
 		wxString str = argv[i];
 		wxCharBuffer cbuf = str.mb_str(wxConvUTF8);
+		VTLOG("  Argument %d: '%s'\n", i, (const char *) cbuf);
 		if (!strncmp(cbuf, "-locale=", 8))
 			m_locale_name = (const char *)cbuf + 8;
 	}
+	VTLOG1("  exiting Args()\n");
 }
 
 bool BuilderApp::OnInit()
@@ -72,14 +75,17 @@ bool BuilderApp::OnInit()
 #endif
 
 	// Redirect the wxWidgets log messages to our own logging stream
+	VTLOG1("Allocating a LogCatcher\n");
 	wxLog *logger = new LogCatcher;
 	wxLog::SetActiveTarget(logger);
 	wxLog::SetLogLevel(wxLOG_User);
 	wxLog::SetVerbose();
 	wxLogVerbose("wxWidgets logging enabled");
 
+	VTLOG1("Calling Args()\n");
 	Args(argc, argv);
 
+	VTLOG1("Calling SetupLocale()\n");
 	SetupLocale("VTBuilder");
 
 	VTLOG1("Testing ability to allocate a frame object.\n");

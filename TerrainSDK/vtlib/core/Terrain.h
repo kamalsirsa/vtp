@@ -157,6 +157,9 @@ public:
 	void CreateStep7();
 	void CreateStep8();
 	void CreateStep9();
+	void CreateStep10();
+	void CreateStep11();
+	void CreateStep12();
 	vtString GetLastError() { return m_strErrorMsg; }
 
 	void SetProgressCallback(ProgFuncPtrType progress_callback = NULL);

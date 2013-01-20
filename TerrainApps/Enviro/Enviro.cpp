@@ -467,18 +467,18 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	{
 		vtString name_quotes = vtString("'") + pTerr->GetName() + "'";
 		SetMessage(_("Setting up Terrain "), name_quotes);
-		UpdateProgress(m_strMessage1, m_strMessage2, 8, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
 	else if (m_iInitStep == 2)
 	{
 		if (pTerr->IsCreated())
 		{
-			m_iInitStep = 10;	// already made, skip ahead
+			m_iInitStep = 13;	// already made, skip ahead
 			return;
 		}
 		else
 			SetMessage(_("Loading Elevation"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 16, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
 	else if (m_iInitStep == 3)
 	{
@@ -506,7 +506,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			return;
 		}
 		SetMessage(_("Loading/Coloring/Prelighting Textures"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 24, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
 	else if (m_iInitStep == 4)
 	{
@@ -528,7 +528,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			return;
 		}
 		SetMessage(_("Processing Elevation"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 32, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
 	else if (m_iInitStep == 5)
 	{
@@ -539,7 +539,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			return;
 		}
 		SetMessage(_("Building CLOD"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 40, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, 25, 0);
 	}
 	else if (m_iInitStep == 6)
 	{
@@ -550,37 +550,58 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			return;
 		}
 		SetMessage(_("Creating Structures"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 48, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
 	else if (m_iInitStep == 7)
 	{
 		pTerr->CreateStep6();
 
 		SetMessage(_("Creating Roads"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 56, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
 	else if (m_iInitStep == 8)
 	{
 		pTerr->CreateStep7();
 
 		SetMessage(_("Creating Vegetation"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 64, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
 	else if (m_iInitStep == 9)
 	{
 		pTerr->CreateStep8();
 
-		SetMessage(_("Creating Water and Abstracts"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 72, 0);
+		SetMessage(_("Creating Water, UtilityMaps, HUD"));
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
 	else if (m_iInitStep == 10)
 	{
 		pTerr->CreateStep9();
 
-		SetMessage(_("Setting Camera"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 80, 0);
+		SetMessage(_("Creating Abstract Layers"));
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
 	else if (m_iInitStep == 11)
+	{
+		pTerr->CreateStep10();
+
+		SetMessage(_("Creating Image Layers"));
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
+	}
+	else if (m_iInitStep == 12)
+	{
+		pTerr->CreateStep11();
+
+		SetMessage(_("Creating Elevation Layers"));
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
+	}
+	else if (m_iInitStep == 13)
+	{
+		pTerr->CreateStep12();
+
+		SetMessage(_("Setting Camera"));
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
+	}
+	else if (m_iInitStep == 14)
 	{
 		// If we were in Earth View, hide the globe and disable the trackball
 		if (m_pGlobeContainer != NULL)
@@ -592,9 +613,9 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			m_pTrackball->SetEnabled(false);
 
 		SetMessage(_("Switching to Terrain"));
-		UpdateProgress(m_strMessage1, m_strMessage2, 88, 0);
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
-	else if (m_iInitStep == 12)
+	else if (m_iInitStep == 15)
 	{
 		// make the terrain active
 		SwitchToTerrain(pTerr);
@@ -608,8 +629,9 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		m_pTerrainPicker->SetEnabled(true);
 		SetMode(MM_NAVIGATE);
+		UpdateProgress(m_strMessage1, m_strMessage2, m_iInitStep * 100 / 16, 0);
 	}
-	else if (m_iInitStep == 13)
+	else if (m_iInitStep == 16)
 	{
 		SetMessage(_("Welcome to "), pTerr->GetName(), 5.0f);
 

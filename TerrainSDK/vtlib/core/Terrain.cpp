@@ -2205,10 +2205,25 @@ void vtTerrain::CreateStep9()
 		else
 			CreateWaterHeightfield(wpath);
 	}
+}
+
+void vtTerrain::CreateStep10()
+{
+	VTLOG1("Step10\n");
 
 	_CreateAbstractLayersFromParams();
+}
+
+void vtTerrain::CreateStep11()
+{
+	VTLOG1("Step11\n");
 
 	_CreateImageLayers();
+}
+
+void vtTerrain::CreateStep12()
+{
+	VTLOG1("Step12\n");
 
 	_CreateElevLayers();
 
