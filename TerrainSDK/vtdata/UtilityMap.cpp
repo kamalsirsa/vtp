@@ -113,17 +113,18 @@ bool vtUtilityMap::WriteOSM(const char *pathname)
 		for (uint j = 0; j < pole->NumTags(); j++)
 		{
 			fprintf(fp, "  tag k=\"%s\" v=\"%s\"/>\n",
-				pole->GetTag(j)->name, pole->GetTag(j)->value);
+				(const char *) pole->GetTag(j)->name,
+				(const char *) pole->GetTag(j)->value);
 		}
 		fprintf(fp, " </node>\n");
 	}
 	for (uint i = 0; i < m_Lines.size(); i++)
 	{
-		fprintf(fp, " <way id=\"%d\" version=\"1\">\n");
-
 		const vtLine *line = m_Lines[i];
 		const uint num_poles = line->m_poles.size();
 		const uint num_tags = line->NumTags();
+
+		fprintf(fp, " <way id=\"%d\" version=\"1\">\n", line->m_id);
 
 		for (uint j = 0; j < num_poles; j++)
 			fprintf(fp, "  <nd ref=\"%d\"/>\n", line->m_poles[j]->m_id);
@@ -133,7 +134,8 @@ bool vtUtilityMap::WriteOSM(const char *pathname)
 		for (uint j = 0; j < line->NumTags(); j++)
 		{
 			fprintf(fp, "  tag k=\"%s\" v=\"%s\"/>\n",
-				line->GetTag(j)->name, line->GetTag(j)->value);
+				(const char *) line->GetTag(j)->name,
+				(const char *) line->GetTag(j)->value);
 		}
 		fprintf(fp, " </way>\n");
 	}

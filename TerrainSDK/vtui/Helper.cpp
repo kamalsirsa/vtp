@@ -1028,7 +1028,7 @@ void DisplayAndLog(const wxString &msg)
 	if (IsGUIApp())
 		wxMessageBox(msg);
 
-	vtString msg2 = msg.ToUTF8();
+	vtString msg2 = (const char *) msg.ToUTF8();
 	VTLOG1(msg2);
 	VTLOG1("\n");
 }

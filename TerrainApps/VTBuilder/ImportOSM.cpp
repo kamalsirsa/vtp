@@ -822,7 +822,7 @@ void Builder::ImportDataFromOSM(const wxString &strFileName, LayerArray &layers,
 	//  OSM always has English punctuation
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	std::string fname_local = strFileName.ToUTF8();
+	std::string fname_local = (const char *) strFileName.ToUTF8();
 
 	VisitorOSM visitor;
 	try

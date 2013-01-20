@@ -11,6 +11,8 @@
 #include "TerrainLayers.h"
 #include "vtdata/Features.h"
 
+#include <memory>	// for auto_ptr
+
 class vtTerrain;
 
 class vtVisual
@@ -156,7 +158,7 @@ protected:
 	VizMap m_Map;
 
 	// A transform from the CRS of the featureset to the CRS of the scene they are shown in.
-	auto_ptr<OCT> m_pOCTransform;
+	std::auto_ptr<OCT> m_pOCTransform;
 
 	// Edit tracking
 	bool CreateAtOnce();

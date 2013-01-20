@@ -138,7 +138,7 @@ public:
 	// comparison
 	bool operator==(TLink &ref);
 
-	void TLink::CopyAttributesFrom(TLink *rhs);
+	void CopyAttributesFrom(TLink *rhs);
 
 	void SetNode(int n, TNode *pNode) { m_pNode[n] = pNode; }
 	void SetNodes(TNode *pNode0, TNode *pNode1) {

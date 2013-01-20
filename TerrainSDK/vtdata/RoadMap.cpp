@@ -260,8 +260,8 @@ void TNode::AdjustForLights()
 						newAngle = -newAngle;
 					}
 					printf("%i:%f, %i:%f, %f, %f",
-						i, m_fLinkAngle[i],
-						j, m_fLinkAngle[j],
+						(int) i, m_fLinkAngle[i],
+						(int) j, m_fLinkAngle[j],
 						newAngle, bestAngle);
 					if (newAngle < bestAngle) {
 						bestChoiceA = i;
