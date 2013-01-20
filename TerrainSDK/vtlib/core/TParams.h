@@ -12,6 +12,7 @@
 
 #include "vtdata/MathTypes.h"
 #include "vtdata/Content.h"
+#include "vtdata/LayerBase.h"
 
 /** \addtogroup terrain */
 /*@{*/
@@ -351,7 +352,10 @@ public:
 	void SetOverlay(const vtString &fname, int x, int y);
 	bool GetOverlay(vtString &fname, int &x, int &y) const;
 
+	// COnvenience
+	uint NumLayers() { return m_Layers.size(); }
 	int NumLayersOfType(const vtString &layer_type);
+	LayerType LayerType(int iLayerNum);
 
 public:
 	// this must be a public member (currently..)

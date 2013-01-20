@@ -1086,15 +1086,13 @@ void vtTerrain::_CreateVegetation()
 
 	clock_t r1 = clock();	// start timing
 
-	uint i, num = m_Params.m_Layers.size();
-	for (i = 0; i < num; i++)
+	for (uint i = 0; i < m_Params.NumLayers(); i++)
 	{
-		const vtTagArray &tags = m_Params.m_Layers[i];
-
-		// Look for structure layers
-		vtString ltype = tags.GetValueString("Type");
-		if (ltype != TERR_LTYPE_VEGETATION)
+		// Look for veg layers
+		if (m_Params.LayerType(i) != LT_VEG)
 			continue;
+
+		const vtTagArray &tags = m_Params.m_Layers[i];
 
 		VTLOG(" Layer %d: Vegetation\n", i);
 		vtString fname = tags.GetValueString("Filename");
@@ -1195,15 +1193,13 @@ void vtTerrain::_CreateStructures()
 	vtStructure3d::InitializeMaterialArrays();
 
 	// Create built structures
-	uint i, num = m_Params.m_Layers.size();
-	for (i = 0; i < num; i++)
+	for (uint i = 0; i < m_Params.NumLayers(); i++)
 	{
-		const vtTagArray &lay = m_Params.m_Layers[i];
-
 		// Look for structure layers
-		vtString ltype = lay.GetValueString("Type");
-		if (ltype != TERR_LTYPE_STRUCTURE)
+		if (m_Params.LayerType(i) != LT_STRUCTURE)
 			continue;
+
+		const vtTagArray &lay = m_Params.m_Layers[i];
 
 		VTLOG(" Layer %d: Structure\n", i);
 		vtString building_fname = lay.GetValueString("Filename");
@@ -1234,26 +1230,12 @@ void vtTerrain::_CreateStructures()
 			}
 		}
 	}
-	int created = 0;
-	for (i = 0; i < m_Layers.size(); i++)
+	for (uint i = 0; i < m_Layers.size(); i++)
 	{
 		vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(m_Layers[i].get());
 		if (slay)
-		{
 			CreateStructures(slay);
-			created++;
-		}
 	}
-	//if (created == 0)
-	//{
-	//	// No structures loaded, but the user might want to create some later,
-	//	//  so create a default structure set, and set the projection to match
-	//	//  the terrain.
-	//	vtStructureLayer *slay = NewStructureLayer();
-	//	slay->SetFilename("Untitled.vtst");
-	//	slay->m_proj = m_proj;
-	//	SetActiveLayer(slay);
-	//}
 }
 
 /////////////////////////
@@ -1261,14 +1243,13 @@ void vtTerrain::_CreateStructures()
 void vtTerrain::_CreateAbstractLayersFromParams()
 {
 	// Go through the layers in the terrain parameters, and try to load them
-	for (uint i = 0; i < m_Params.m_Layers.size(); i++)
+	for (uint i = 0; i < m_Params.NumLayers(); i++)
 	{
-		vtString ltype = m_Params.m_Layers[i].GetValueString("Type");
-		if (ltype != TERR_LTYPE_ABSTRACT)
-			return;
-
-		VTLOG(" Layer %d: Abstract\n", i);
-		_CreateAbstractLayerFromParams(i);
+		if (m_Params.LayerType(i) == LT_RAW)
+		{
+			VTLOG(" Layer %d: Abstract\n", i);
+			_CreateAbstractLayerFromParams(i);
+		}
 	}
 }
 
@@ -1276,7 +1257,7 @@ bool vtTerrain::_CreateAbstractLayerFromParams(int index)
 {
 	const vtTagArray &lay = m_Params.m_Layers[index];
 
-	// Look for abstract layers
+	// Show the tags
 	for (uint j = 0; j < lay.NumTags(); j++)
 	{
 		const vtTag *tag = lay.GetTag(j);
@@ -1309,9 +1290,11 @@ void vtTerrain::_CreateImageLayers()
 		return;
 
 	// Go through the layers in the terrain parameters, and try to load them
-	uint i, num = m_Params.m_Layers.size();
-	for (i = 0; i < num; i++)
+	for (uint i = 0; i < m_Params.NumLayers(); i++)
 	{
+		if (m_Params.LayerType(i) != LT_IMAGE)
+			continue;
+
 		const vtTagArray &lay = m_Params.m_Layers[i];
 
 		// Look for image layers
@@ -1422,15 +1405,13 @@ osg::Node *vtTerrain::GetTerrainSurfaceNode()
 void vtTerrain::_CreateElevLayers()
 {
 	// Go through the layers in the terrain parameters, and try to load them
-	uint i, num = m_Params.m_Layers.size();
-	for (i = 0; i < num; i++)
+	for (uint i = 0; i < m_Params.NumLayers(); i++)
 	{
-		const vtTagArray &lay = m_Params.m_Layers[i];
-
-		// Look for image layers
-		vtString ltype = lay.GetValueString("Type");
-		if (ltype != TERR_LTYPE_ELEVATION)
+		// Look for elevation layers
+		if (m_Params.LayerType(i) != LT_ELEVATION)
 			continue;
+
+		const vtTagArray &lay = m_Params.m_Layers[i];
 
 		VTLOG(" Layer %d: Elevation\n", i);
 		for (uint j = 0; j < lay.NumTags(); j++)

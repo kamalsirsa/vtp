@@ -435,6 +435,22 @@ int TParams::NumLayersOfType(const vtString &layer_type)
 	return count;
 }
 
+LayerType TParams::LayerType(int iLayerNum)
+{
+	vtString ltype = m_Layers[iLayerNum].GetValueString("Type");
+	if (ltype == TERR_LTYPE_STRUCTURE)
+		return LT_STRUCTURE;
+	if (ltype == TERR_LTYPE_ABSTRACT)
+		return LT_RAW;
+	if (ltype == TERR_LTYPE_IMAGE)
+		return LT_IMAGE;
+	if (ltype == TERR_LTYPE_VEGETATION)
+		return LT_VEG;
+	if (ltype == TERR_LTYPE_ELEVATION)
+		return LT_ELEVATION;
+	return LT_UNKNOWN;
+}
+
 void TParams::WriteOverridesToXML(FILE *fp) const
 {
 	uint i;

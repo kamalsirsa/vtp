@@ -166,7 +166,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pSingle = GetSingle();
 	m_pDerived = GetDerived();
 
-	m_pScenarioList = GetScenarioList();
 	m_iOverlayX = 0;
 	m_iOverlayY = 0;
 	m_bOverview = false;
@@ -593,12 +592,12 @@ void TParamsDlg::UpdateEnableState()
 	m_skytexture->Enable(m_bSky);
 	GetFogDistance()->Enable(m_bFog);
 
-	int iSelected = m_pScenarioList->GetSelection();
+	int iSelected = m_scenario_list->GetSelection();
 	if (iSelected != wxNOT_FOUND)
 	{
 		GetEditScenario()->Enable(true);
 		GetDeleteScenario()->Enable(true);
-		if (iSelected != (m_pScenarioList->GetCount() - 1))
+		if (iSelected != (m_scenario_list->GetCount() - 1))
 			GetMovedownScenario()->Enable(true);
 		else
 			GetMovedownScenario()->Enable(false);
@@ -618,8 +617,8 @@ void TParamsDlg::UpdateEnableState()
 
 void TParamsDlg::RefreshLocationFields()
 {
-	m_locfile->Clear();
-	m_locfile->Append(_("(default)"));
+	m_init_location->Clear();
+	m_init_location->Append(_("(default)"));
 
 	vtString locfile = (const char *)m_strLocFile.mb_str(wxConvUTF8);
 	if (locfile == "")
@@ -634,12 +633,12 @@ void TParamsDlg::RefreshLocationFields()
 	if (!saver.Read(path))
 		return;
 
-	int i, num = saver.NumLocations();
-	for (i = 0; i < num; i++)
+	int num = saver.NumLocations();
+	for (int i = 0; i < num; i++)
 	{
 		vtLocation *loc = saver.GetLocation(i);
 		wxString str(loc->m_strName.c_str(), wxConvUTF8);
-		m_locfile->Append(str);
+		m_init_location->Append(str);
 	}
 	if (num)
 	{
@@ -714,6 +713,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_filename->Clear();
 	m_filename_tin->Clear();
 	m_filename_tileset->Clear();
+	m_tfile_tileset->Clear();
 	m_filename_water->Clear();
 
 	vtStringArray &paths = vtGetDataPath();
@@ -741,10 +741,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		AddFilenamesToComboBox(m_filename_tileset, paths[i] + "Elevation", "*.ini");
 
 		// fill the "texture Tileset filename" control with available files
-		AddFilenamesToComboBox(m_filename_tileset, paths[i] + "GeoSpecific", "*.ini");
-		sel = m_filename_tileset->FindString(m_strTextureTileset);
-		if (sel != -1)
-			m_filename_tileset->SetSelection(sel);
+		AddFilenamesToComboBox(m_tfile_tileset, paths[i] + "GeoSpecific", "*.ini");
 
 		// fill the Location files
 		AddFilenamesToComboBox(m_locfile, paths[i] + "Locations", "*.loc");
@@ -775,6 +772,10 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	sel = m_filename_tileset->FindString(m_strFilenameTileset);
 	if (sel != -1)
 		m_filename_tileset->SetSelection(sel);
+
+	sel = m_tfile_tileset->FindString(m_strTextureTileset);
+	if (sel != -1)
+		m_tfile_tileset->SetSelection(sel);
 
 	sel = m_locfile->FindString(m_strLocFile);
 	if (sel != -1)
@@ -892,11 +893,11 @@ bool TParamsDlg::TransferDataToWindow()
 		m_anim_paths->Append(wxString(m_AnimPaths[i], wxConvUTF8));
 	m_anim_paths->Append(_("(double-click to add files)"));
 
-	m_pScenarioList->Clear();
+	m_scenario_list->Clear();
 	for (i = 0; i < m_Scenarios.size(); i++)
 	{
 		wxString str(m_Scenarios[i].GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
-		m_pScenarioList->Append(str);
+		m_scenario_list->Append(str);
 	}
 
 	bool result = wxDialog::TransferDataToWindow();
@@ -1228,7 +1229,7 @@ void TParamsDlg::OnNewScenario( wxCommandEvent &event )
 		Scenario.SetValueString(STR_SCENARIO_NAME,
 			(const char *) ScenarioName.mb_str(wxConvUTF8), true);
 		m_Scenarios.push_back(Scenario);
-		m_pScenarioList->SetSelection(m_pScenarioList->Append(ScenarioName));
+		m_scenario_list->SetSelection(m_scenario_list->Append(ScenarioName));
 		UpdateScenarioChoices();
 		UpdateEnableState();
 	}
@@ -1236,11 +1237,11 @@ void TParamsDlg::OnNewScenario( wxCommandEvent &event )
 
 void TParamsDlg::OnDeleteScenario( wxCommandEvent &event )
 {
-	int iSelected = m_pScenarioList->GetSelection();
+	int iSelected = m_scenario_list->GetSelection();
 
 	if (iSelected != wxNOT_FOUND)
 	{
-		m_pScenarioList->Delete(iSelected);
+		m_scenario_list->Delete(iSelected);
 		m_Scenarios.erase(m_Scenarios.begin() + iSelected);
 		UpdateScenarioChoices();
 		UpdateEnableState();
@@ -1250,7 +1251,7 @@ void TParamsDlg::OnDeleteScenario( wxCommandEvent &event )
 void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 {
 	ScenarioParamsDialog ScenarioParamsDialog(this, -1, _("Scenario Parameters"));
-	int iSelected = m_pScenarioList->GetSelection();
+	int iSelected = m_scenario_list->GetSelection();
 
 	if (iSelected != wxNOT_FOUND)
 	{
@@ -1265,9 +1266,10 @@ void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 		{
 			if (ScenarioParamsDialog.IsModified())
 			{
-				wxString str(m_Scenarios[iSelected].GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
 				m_Scenarios[iSelected] = ScenarioParamsDialog.GetParams();
-				m_pScenarioList->SetString(iSelected, str);
+				wxString str(m_Scenarios[iSelected].GetValueString(STR_SCENARIO_NAME), wxConvUTF8);
+				m_scenario_list->SetString(iSelected, str);
+				UpdateScenarioChoices();
 			}
 		}
 	}
@@ -1275,17 +1277,17 @@ void TParamsDlg::OnEditScenario( wxCommandEvent &event )
 
 void TParamsDlg::OnMoveUpScenario( wxCommandEvent &event )
 {
-	int iSelected = m_pScenarioList->GetSelection();
+	int iSelected = m_scenario_list->GetSelection();
 
 	if ((iSelected != wxNOT_FOUND) && (iSelected != 0))
 	{
 		ScenarioParams TempParams = m_Scenarios[iSelected];
-		wxString TempString = m_pScenarioList->GetString(iSelected);
-		m_pScenarioList->Delete(iSelected);
+		wxString TempString = m_scenario_list->GetString(iSelected);
+		m_scenario_list->Delete(iSelected);
 // Bug in wxWidgets
-//		m_pScenarioList->SetSelection(m_pScenarioList->Insert(TempString, iSelected - 1));
-		m_pScenarioList->Insert(TempString, iSelected - 1);
-		m_pScenarioList->SetSelection(iSelected - 1);
+//		m_scenario_list->SetSelection(m_scenario_list->Insert(TempString, iSelected - 1));
+		m_scenario_list->Insert(TempString, iSelected - 1);
+		m_scenario_list->SetSelection(iSelected - 1);
 		m_Scenarios.erase(m_Scenarios.begin() + iSelected);
 		m_Scenarios.insert(m_Scenarios.begin() + iSelected - 1,TempParams);
 		UpdateEnableState();
@@ -1294,17 +1296,17 @@ void TParamsDlg::OnMoveUpScenario( wxCommandEvent &event )
 
 void TParamsDlg::OnMoveDownSceanario( wxCommandEvent &event )
 {
-	int iSelected = m_pScenarioList->GetSelection();
+	int iSelected = m_scenario_list->GetSelection();
 
-	if ((iSelected != wxNOT_FOUND) && (iSelected != (m_pScenarioList->GetCount() - 1)))
+	if ((iSelected != wxNOT_FOUND) && (iSelected != (m_scenario_list->GetCount() - 1)))
 	{
 		ScenarioParams TempParams = m_Scenarios[iSelected];
-		wxString TempString = m_pScenarioList->GetString(iSelected);
-		m_pScenarioList->Delete(iSelected);
+		wxString TempString = m_scenario_list->GetString(iSelected);
+		m_scenario_list->Delete(iSelected);
 // Bug in wxWidgets
-//		m_pScenarioList->SetSelection(m_pScenarioList->Insert(TempString, iSelected + 1));
-		m_pScenarioList->Insert(TempString, iSelected + 1);
-		m_pScenarioList->SetSelection(iSelected + 1);
+//		m_scenario_list->SetSelection(m_scenario_list->Insert(TempString, iSelected + 1));
+		m_scenario_list->Insert(TempString, iSelected + 1);
+		m_scenario_list->SetSelection(iSelected + 1);
 		m_Scenarios.erase(m_Scenarios.begin() + iSelected);
 		m_Scenarios.insert(m_Scenarios.begin() + iSelected + 1,TempParams);
 		UpdateEnableState();
