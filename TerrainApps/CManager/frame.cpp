@@ -52,6 +52,7 @@
 #  include "bitmaps/properties.xpm"
 #  include "bitmaps/rulers.xpm"
 #  include "bitmaps/wireframe.xpm"
+#  include "bitmaps/stats.xpm"
 #endif
 
 
