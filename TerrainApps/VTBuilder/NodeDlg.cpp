@@ -97,6 +97,8 @@ void NodeDlgView::OnDraw(wxDC &dc)
 				dc.DrawEllipse(box.x, box.y, box.width, box.height);
 			}
 			break;
+		default:	// Keep picky compilers quiet.
+			break;
 		}
 
 		//draw text labels

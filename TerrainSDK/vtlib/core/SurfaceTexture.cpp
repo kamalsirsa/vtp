@@ -161,7 +161,7 @@ void SurfaceTexture::ShadeTexture(const TParams &options, const vtHeightFieldGri
 /**
   Color the texture from the elevation using the colormap.
  */
-void SurfaceTexture::MakeColorMap(const TParams &options)
+void SurfaceTexture::MakeColorMap(const vtTagArray &options)
 {
 	m_pColorMap.reset(new ColorMap);
 

@@ -95,6 +95,9 @@ void CarEngine::Eval()
 		vNext.z = m_vCurPos.z - fDeltaTime*m_fSpeed*sinf(m_fCurRotation);
 		MoveCarTo(vNext);
 		break;
+	case FOLLOW_ROAD:
+	case FOLLOW_PATH:
+		break;
 	}
 	// spin the wheels, adjusted for speed.
 	SpinWheels(fDeltaTime*m_fSpeed/m_pVehicle->GetWheelRadius());

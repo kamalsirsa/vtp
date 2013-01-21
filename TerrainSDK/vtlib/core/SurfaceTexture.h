@@ -25,7 +25,7 @@ public:
 	void ShadeTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
 		const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 
-	void MakeColorMap(const TParams &options);
+	void MakeColorMap(const vtTagArray &options);
 	void CopyFromUnshaded(const TParams &options);
 
 	ImagePtr		m_pUnshadedImage;

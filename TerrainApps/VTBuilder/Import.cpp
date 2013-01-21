@@ -428,7 +428,7 @@ vtLayer *Builder::ImportLayerFromFile(LayerType ltype, const wxString &strFileNa
 	{
 		// Cannot Open File
 		VTLOG("Couldn't open file %s\n", (const char *) fname);
-		return false;
+		return NULL;
 	}
 	bool bIsDB = (strExt.Len() == 2 && !strExt.Left(2).CmpNoCase(_T("db")));
 	if (bIsDB)
@@ -636,6 +636,8 @@ vtLayer *Builder::ImportLayerFromFile(LayerType ltype, const wxString &strFileNa
 			pLayer = ImportRawFromOGR(strFileName);
 		}
 		break;
+	default:	// Keep picky compilers quiet.
+		break;
 	}
 	if (bIsDB)
 	{
@@ -784,6 +786,8 @@ wxString GetImportFilterString(LayerType ltype)
 		break;
 	case LT_UTILITY:
 		AddType(filter, FSTRING_SHP);
+		break;
+	default:	// Keep picky compilers quiet.
 		break;
 	}
 	return filter;
@@ -1625,7 +1629,7 @@ vtLayerPtr Builder::ImportVectorsWithOGR(const wxString &strFileName, LayerType 
 		ImportDialog.SetDatasource(datasource);
 
 		if (ImportDialog.ShowModal() != wxID_OK)
-			return false;
+			return NULL;
 
 		if (ImportDialog.m_iType == 0)
 			ImportDialog.m_opt.type = ST_BUILDING;

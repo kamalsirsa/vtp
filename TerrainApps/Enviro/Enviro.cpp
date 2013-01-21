@@ -3269,7 +3269,7 @@ vtAbstractLayer *Enviro::GetLabelLayer() const
 {
 	const vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr)
-		return false;
+		return NULL;
 	const LayerSet &layers = pTerr->GetLayers();
 	for (uint i = 0; i < layers.size(); i++)
 	{

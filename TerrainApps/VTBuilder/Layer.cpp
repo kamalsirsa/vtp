@@ -236,6 +236,8 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 	case LT_VEG:
 		pLayer = new vtVegLayer;
 		break;
+	default:	// Keep picky compilers quiet.
+		break;
 	}
 	return pLayer;
 }

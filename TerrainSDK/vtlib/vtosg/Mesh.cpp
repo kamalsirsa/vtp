@@ -182,6 +182,8 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 	case osg::PrimitiveSet::POLYGON:
 		pPrimSet = new osg::DrawArrayLengths(osg::PrimitiveSet::POLYGON);
 		break;
+	default:	// Keep picky compilers quiet.
+		break;
 	}
 	addPrimitiveSet(pPrimSet);
 #else
@@ -199,6 +201,8 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 		break;
 	case osg::PrimitiveSet::QUADS:
 		pPrimSet = new osg::DrawElementsUShort(osg::PrimitiveSet::QUADS);
+		break;
+	default:	// Keep picky compilers quiet.
 		break;
 	}
 	if (NULL != pPrimSet)
@@ -1368,10 +1372,12 @@ void vtMesh::SetNormalsFromPrimitives()
 
 	switch (getPrimType())
 	{
-	case osg::PrimitiveSet::TRIANGLES:	 _AddTriangleNormals(); break;
-	case osg::PrimitiveSet::TRIANGLE_STRIP: _AddStripNormals(); break;
-	case osg::PrimitiveSet::QUADS:		 _AddQuadNormals(); break;
-	case osg::PrimitiveSet::POLYGON:		 _AddPolyNormals(); break;
+	case osg::PrimitiveSet::TRIANGLES:		_AddTriangleNormals(); break;
+	case osg::PrimitiveSet::TRIANGLE_STRIP:	_AddStripNormals(); break;
+	case osg::PrimitiveSet::QUADS:			_AddQuadNormals(); break;
+	case osg::PrimitiveSet::POLYGON:		_AddPolyNormals(); break;
+	default:	// Keep picky compilers quiet.
+		break;
 	}
 
 	for (itr = norms->begin(); itr != norms->end(); itr++)

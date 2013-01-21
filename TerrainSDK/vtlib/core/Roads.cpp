@@ -471,6 +471,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 		break;
 	case SURFT_PAVED:
 	case SURFT_RAILROAD:
+	case SURFT_STONE:
 		break;
 	}
 	do_roadside = false;	// temporary override

@@ -206,30 +206,34 @@ void MyTreeCtrl::RefreshTreeItems(Builder *pBuilder)
 		wxTreeItemId hItem;
 		switch (lp->GetType())
 		{
-			case LT_ELEVATION:
-				hItem = AppendItem(elevId, str, image, imageSel);
-				break;
-			case LT_IMAGE:
-				hItem = AppendItem(imageId, str, image, imageSel);
-				break;
-			case LT_ROAD:
-				hItem = AppendItem(roadId, str, image, imageSel);
-				break;
-			case LT_STRUCTURE:
-				hItem = AppendItem(buildId, str, image, imageSel);
-				break;
-			case LT_VEG:
-				hItem = AppendItem(vegId, str, image, imageSel);
-				break;
-			case LT_WATER:
-				hItem = AppendItem(waterId, str, image, imageSel);
-				break;
-			case LT_UTILITY:
-				hItem = AppendItem(utilityId, str, image, imageSel);
-				break;
-			case LT_RAW:
-				hItem = AppendItem(rawId, str, image, imageSel);
-				break;
+		case LT_ELEVATION:
+			hItem = AppendItem(elevId, str, image, imageSel);
+			break;
+		case LT_IMAGE:
+			hItem = AppendItem(imageId, str, image, imageSel);
+			break;
+		case LT_ROAD:
+			hItem = AppendItem(roadId, str, image, imageSel);
+			break;
+		case LT_STRUCTURE:
+			hItem = AppendItem(buildId, str, image, imageSel);
+			break;
+		case LT_VEG:
+			hItem = AppendItem(vegId, str, image, imageSel);
+			break;
+		case LT_WATER:
+			hItem = AppendItem(waterId, str, image, imageSel);
+			break;
+		case LT_UTILITY:
+			hItem = AppendItem(utilityId, str, image, imageSel);
+			break;
+		case LT_RAW:
+			hItem = AppendItem(rawId, str, image, imageSel);
+			break;
+		case LT_UNKNOWN:
+		case LAYER_TYPES:
+			// Keep picky compilers quiet.
+			break;
 		}
 		if (hItem.IsOk())
 		{

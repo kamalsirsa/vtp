@@ -233,16 +233,18 @@ void BuilderView::SetMode(LBMode m)
 
 	switch (m_ui.mode)
 	{
-		case LB_Dir:
-			vtRoadLayer::SetShowDirection(true);
+	case LB_Dir:
+		vtRoadLayer::SetShowDirection(true);
+		Refresh();
+		break;
+	case LB_Node:
+		if (!vtRoadLayer::GetDrawNodes()) {
+			vtRoadLayer::SetDrawNodes(true);
 			Refresh();
-			break;
-		case LB_Node:
-			if (!vtRoadLayer::GetDrawNodes()) {
-				vtRoadLayer::SetDrawNodes(true);
-				Refresh();
-			}
-			break;
+		}
+		break;
+	default:	// Keep picky compilers quiet.
+		break;
 	}
 
 	g_bld->OnSetMode(m);
@@ -801,41 +803,43 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 	m_world_rect = CanvasToWorld(rect);
 	switch (m_ui.mode)
 	{
-		case LB_Mag:
-			if (event.AltDown())
-				ZoomOutToRect(m_world_rect);
-			else
-				ZoomToRect(m_world_rect, 0.0f);
-			break;
-		case LB_Box:
-			DrawAreaTool(&dc, g_bld->GetAtArea());
-			g_bld->SetArea(m_world_rect);
-			DrawAreaTool(&dc, g_bld->GetAtArea());
-			break;
-		case LB_Node:
-		case LB_Link:
-			{
+	case LB_Mag:
+		if (event.AltDown())
+			ZoomOutToRect(m_world_rect);
+		else
+			ZoomToRect(m_world_rect, 0.0f);
+		break;
+	case LB_Box:
+		DrawAreaTool(&dc, g_bld->GetAtArea());
+		g_bld->SetArea(m_world_rect);
+		DrawAreaTool(&dc, g_bld->GetAtArea());
+		break;
+	case LB_Node:
+	case LB_Link:
+		{
 			// select everything in the highlighted box.
-				vtRoadLayer *pRL = g_bld->GetActiveRoadLayer();
-				if (pRL->SelectArea(m_world_rect, (m_ui.mode == LB_Node),
-							m_bCrossSelect))
-				{
-					rect = WorldToWindow(m_world_rect);
-					IncreaseRect(rect, 5);
-					if (m_bCrossSelect)
-						Refresh();
-					else
-						Refresh(TRUE, &rect);
-				}
+			vtRoadLayer *pRL = g_bld->GetActiveRoadLayer();
+			if (pRL->SelectArea(m_world_rect, (m_ui.mode == LB_Node),
+				m_bCrossSelect))
+			{
+				rect = WorldToWindow(m_world_rect);
+				IncreaseRect(rect, 5);
+				if (m_bCrossSelect)
+					Refresh();
 				else
-					DeselectAll();
+					Refresh(TRUE, &rect);
 			}
-			break;
-		case LB_Move:
-			Refresh();
-			break;
-		case LB_FSelect:
-			EndBoxFeatureSelect(event);
+			else
+				DeselectAll();
+		}
+		break;
+	case LB_Move:
+		Refresh();
+		break;
+	case LB_FSelect:
+		EndBoxFeatureSelect(event);
+	default:	// Keep picky compilers quiet.
+		break;
 	}
 }
 
@@ -1493,28 +1497,30 @@ void BuilderView::OnLeftDown(wxMouseEvent& event)
 	vtLayerPtr pL = g_bld->GetActiveLayer();
 	switch (m_ui.mode)
 	{
-		case LB_TSelect:
-			CheckForTerrainSelect(m_ui.m_DownLocation);
-			break;
+	case LB_TSelect:
+		CheckForTerrainSelect(m_ui.m_DownLocation);
+		break;
 
-		case LB_Pan:
-			BeginPan();
-			break;
+	case LB_Pan:
+		BeginPan();
+		break;
 
-		case LB_Mag:
-		case LB_Node:
-		case LB_Link:
-		case LB_FSelect:
-			BeginBox();
-			break;
+	case LB_Mag:
+	case LB_Node:
+	case LB_Link:
+	case LB_FSelect:
+		BeginBox();
+		break;
 
-		case LB_Box:
-			BeginArea();
-			break;
+	case LB_Box:
+		BeginArea();
+		break;
 
-		case LB_Dist:
-			BeginDistance();
-			break;
+	case LB_Dist:
+		BeginDistance();
+		break;
+	default:	// Keep picky compilers quiet.
+		break;
 	}
 	// Dispatch for layer-specific handling
 	if (pL)

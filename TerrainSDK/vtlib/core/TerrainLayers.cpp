@@ -7,10 +7,14 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/vtosg/MultiTexture.h"
+#include "vtlib/core/Light.h"
+
+#include "vtdata/DataPath.h"
 
 #include "TParams.h"
 #include "TerrainLayers.h"
 #include "vtTin3d.h"
+#include "SurfaceTexture.h"
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -95,6 +99,42 @@ bool vtElevLayer::Load(const vtString &path, bool progress_callback(int))
 	return true;
 }
 
+void vtElevLayer::MakeMaterials()
+{
+	const vtString color_map_name = m_Props.GetValueString(STR_COLOR_MAP);
+	const vtString geotypical_name = m_Props.GetValueString(STR_TEXTURE_GEOTYPICAL);
+
+	const float fScale = m_Props.GetValueFloat(STR_GEOTYPICAL_SCALE);
+	const float fOpacity = m_Props.GetValueFloat(STR_OPACITY);
+
+	if (color_map_name != "")
+	{
+		SurfaceTexture texture;
+		texture.MakeColorMap(m_Props);
+		// Use the color map.
+		m_pTin->SetColorMap(texture.m_pColorMap.get());
+	}
+	else if (geotypical_name)
+	{
+		vtMaterialArray *mats= new vtMaterialArray;
+		// Geotypical material
+		vtString fname = "Geotypical";
+		fname += geotypical_name;
+		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+		int idx = mats->AddTextureMaterial(path,
+			false, false,		// culling, lighting
+			false,				// the texture itself has no alpha
+			false,				// additive
+			TERRAIN_AMBIENT,	// ambient
+			1.0f,				// diffuse
+			fOpacity,			// alpha
+			TERRAIN_EMISSIVE,	// emissive
+			false,				// clamp
+			false);				// don't mipmap?
+		m_pTin->SetMaterial(mats, idx);
+	}
+
+}
 
 ////////////////////////////////////////////////////////////////////////////
 // LayerSet

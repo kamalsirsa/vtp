@@ -289,6 +289,8 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				case osg::PrimitiveSet::QUADS: mtype = "Quads"; break;
 				case osg::PrimitiveSet::QUAD_STRIP: mtype = "QuadStrip"; break;
 				case osg::PrimitiveSet::POLYGON: mtype = "Polygon"; break;
+				default:	// Keep picky compilers quiet.
+					break;
 				}
 				str.Printf(_("%d: Mesh, %hs, %d verts, %d prims"), i, mtype, iNumVert, iNumPrim);
 				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);

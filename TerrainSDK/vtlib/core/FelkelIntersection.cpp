@@ -119,7 +119,7 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 		if (v.InvalidIntersection (vl, *this))
 		{
 			d3 = CN_INFINITY;
-			m_poi == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY);
+			m_poi = C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY);
 		}
 	}
 

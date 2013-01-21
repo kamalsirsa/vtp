@@ -83,10 +83,10 @@ void vtTin::RemTri(int t)
 	m_tri.erase(m_tri.begin() + t*3, m_tri.begin() + t*3 + 3);
 }
 
-uint vtTin::AddSurfaceType(const vtString &surface_texture, bool bTiled)
+uint vtTin::AddSurfaceType(const vtString &surface_texture, float fTiling)
 {
 	m_surftypes.push_back(surface_texture);
-	m_surftype_tiled.push_back(bTiled);
+	m_surftype_tiling.push_back(fTiling);
 	return m_surftypes.size()-1;
 }
 

@@ -89,7 +89,7 @@ public:
 	bool WriteDXF(const char *fname, bool progress_callback(int) = NULL) const;
 	void FreeData();
 
-	uint AddSurfaceType(const vtString &surface_texture, bool bTiled = false);
+	uint AddSurfaceType(const vtString &surface_texture, float fTiling);
 	void SetSurfaceType(int iTri, int surface_type);
 
 	bool ComputeExtents();
@@ -143,7 +143,7 @@ protected:
 	// Surface Types
 	std::vector<int>	m_surfidx;
 	vtStringArray		m_surftypes;
-	std::vector<bool>	m_surftype_tiled;
+	std::vector<float>	m_surftype_tiling;
 
 	// These members are used only during MergeSharedVerts
 	int *m_bReplace;

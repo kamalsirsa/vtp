@@ -3,7 +3,7 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002-2011 Virtual Terrain Project
+// Copyright (c) 2002-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -78,19 +78,17 @@ void vtTin3d::MakeSurfaceMaterials()
 	}
 }
 
-vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
+vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 {
-	bool bGeoSpecific = (m_pMats != NULL);
-
 	uint iSurfTypes = m_surftypes.size();
 	bool bUseSurfaceTypes = (m_surfidx.size() > 0 && iSurfTypes > 0);
-	bool bTextured = bGeoSpecific || bUseSurfaceTypes;
 	bool bExplicitNormals = HasVertexNormals();
+	bool bUseVertexColors = (m_pColorMap != NULL);
 
 	// The first 3 materials are hard-coded, the rest are per surface type
 	int texture_base = 3;
 
-	if (!bGeoSpecific)
+	if (bUseSurfaceTypes)
 	{
 		// set up geotypical materials
 		m_pMats = new vtMaterialArray;
@@ -128,14 +126,11 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 	// most TINs are larger in the horizontal dimension than the vertical, so
 	// use horizontal extents as the basis of subdivision
 	DRECT rect = m_EarthExtents;
-	double sizex = rect.Width();
-	double sizey = rect.Height();
 
-	// make it slightly larger avoid edge condition
-	rect.left -= 0.000001;
-	sizex += 0.000002;
-	rect.bottom -= 0.000001;
-	sizey += 0.000002;
+	// make it slightly larger to avoid edge conditions
+	rect.Grow(0.000001, 0.000001);
+
+	const DPoint2 EarthSize = rect.SizeExtents();
 
 	int divx, divy;		// number of x and y divisions
 	uint dsize=0;
@@ -152,15 +147,15 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 	{
 		// take the smaller dimension and split it to ensure a minimum level
 		// of subdivision, with the larger dimension proportional
-		if (sizex < sizey)
+		if (EarthSize.x < EarthSize.y)
 		{
 			divx = divs;
-			divy = (int) (divx * sizey / sizex);
+			divy = (int) (divx * EarthSize.y / EarthSize.x);
 		}
 		else
 		{
 			divy = divs;
-			divx = (int) (divy * sizex / sizey);
+			divx = (int) (divy * EarthSize.x / EarthSize.y);
 		}
 
 		// create a 2d array of Bins
@@ -172,8 +167,8 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 		{
 			j = i * 3;
 			gp = (m_vert[m_tri[j]] + m_vert[m_tri[j+1]] + m_vert[m_tri[j+2]]) / 3;
-			bx = (int) (divx * (gp.x - rect.left) / sizex);
-			by = (int) (divy * (gp.y - rect.bottom) / sizey);
+			bx = (int) (divx * (gp.x - rect.left) / EarthSize.x);
+			by = (int) (divy * (gp.y - rect.bottom) / EarthSize.y);
 
 			Bin &bref = bins[bx * divy + by];
 			bref.push_back(i);
@@ -196,23 +191,25 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 	uint in_bin;
 	int tri, vidx;
 
+	// If the material is textured, it will use TexGen so we don't need
+	// texture coordinate per vertex.
+	int vert_type = 0;
+	if (bUseSurfaceTypes)
+	{
+		vert_type = VT_TexCoords;
+	}
+	else if (bUseVertexColors)
+		vert_type = VT_Colors;
+
+	if (bExplicitNormals)
+		vert_type |= VT_Normals;
+
 	for (i = 0; i < dsize; i++)
 	{
 		Bin &bref = bins[i];
 		in_bin = bref.size();
 		if (!in_bin)
 			continue;
-
-		int vert_type;
-		if (bTextured)
-		{
-			if (bExplicitNormals)
-				vert_type = VT_Normals|VT_TexCoords;
-			else
-				vert_type = VT_TexCoords;
-		}
-		else
-			vert_type = VT_Normals|VT_Colors;
 
 		vtMesh *pMesh = NULL;
 		if (bUseSurfaceTypes)
@@ -244,7 +241,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 			if (shade < 0)
 				shade = -shade;
 
-			bool bTiled = true;
+			float fTiling;
 			if (bUseSurfaceTypes)
 			{
 				// We mush pick a mesh based on surface type
@@ -253,7 +250,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 					pTypeMeshes[surftype] = new vtMesh(osg::PrimitiveSet::TRIANGLES,
 						vert_type, in_bin * 3);
 				pMesh = pTypeMeshes[surftype];
-				bTiled = m_surftype_tiled[surftype];
+				fTiling = m_surftype_tiling[surftype];
 			}
 
 			int vert_base = pMesh->NumVertices();
@@ -263,23 +260,16 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 
 				// This is where we actually add the vertex
 				int vert_index = pMesh->AddVertex(p[k]);
-				if (bTextured)
+				if (bUseSurfaceTypes)
 				{
 					FPoint2 uv;
-					if (bGeoSpecific || !bTiled)
-						uv.Set((m_vert[vidx].x - m_EarthExtents.left) / sizex,
-							   (m_vert[vidx].y - m_EarthExtents.bottom) / sizey);
-					else
-						uv.Set((m_vert[vidx].x - m_EarthExtents.left) / 6,
-							   (m_vert[vidx].y - m_EarthExtents.bottom) / 6);
+					uv.Set((m_vert[vidx].x - m_EarthExtents.left) / fTiling,
+							(m_vert[vidx].y - m_EarthExtents.bottom) / fTiling);
 					pMesh->SetVtxTexCoord(vert_index, uv);
-
-					if (bExplicitNormals)
-						pMesh->SetVtxNormal(vert_index, m_vert_normal[vidx]);
 				}
-				else
+				else if (bUseVertexColors)
 				{
-					pMesh->SetVtxNormal(vert_index, norm);
+//					pMesh->SetVtxNormal(vert_index, norm);
 
 					// Color by elevation.
 					const RGBi &rgb = m_pColorMap->ColorFromTable(m_z[vidx]);
@@ -287,6 +277,8 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 					color *= shade;
 					pMesh->SetVtxColor(vert_index, color);
 				}
+				if (bExplicitNormals)
+					pMesh->SetVtxNormal(vert_index, m_vert_normal[vidx]);
 			}
 			pMesh->AddTri(vert_base, vert_base+1, vert_base+2);
 		}
@@ -304,7 +296,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 		else
 		{
 			// Simple case
-			m_pGeode->AddMesh(pMesh, m_matidx);
+			m_pGeode->AddMesh(pMesh, m_MatIndex);
 			m_Meshes.Append(pMesh);
 		}
 	}

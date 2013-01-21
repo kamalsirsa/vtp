@@ -443,10 +443,9 @@ vtSpeciesList3d &vtSpeciesList3d::operator=(const vtSpeciesList &v)
 
 vtPlantSpecies3d *vtSpeciesList3d::GetSpecies(uint i) const
 {
-	if (i >= 0 && i < m_Species.GetSize())
-		return (vtPlantSpecies3d *) m_Species[i];
-	else
+	if (i >= m_Species.GetSize())
 		return NULL;
+	return (vtPlantSpecies3d *) m_Species[i];
 }
 
 
@@ -740,7 +739,7 @@ vtPlantInstanceArray3d::~vtPlantInstanceArray3d()
 
 vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(uint i) const
 {
-	if (i < 0 || i >= m_Instances3d.GetSize())
+	if (i >= m_Instances3d.GetSize())
 		return NULL;
 	return m_Instances3d[i];
 }

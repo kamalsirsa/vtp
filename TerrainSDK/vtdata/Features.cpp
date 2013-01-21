@@ -113,6 +113,9 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 				case FT_String:
 					DBFWriteStringAttribute(db, i, j, (const char *) field->m_string[i]);
 					break;
+				case FT_Unknown:
+					// Should never get here.
+					break;
 				}
 			}
 		}
@@ -361,7 +364,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromDXF(const char *filename,
 //	else if (ent.m_iType == DET_Polygon)	// TODO? Other types.
 //		pSetP2 = new vtFeatureSetPolygon;
 	else
-		return false;
+		return NULL;
 
 	int vtx = 0;
 	int polylines = 0;
@@ -388,7 +391,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromDXF(const char *filename,
 
 	// If we didn't find any polylines, we haven't got a featureset
 	if (polylines == 0)
-		return false;
+		return NULL;
 
 	return pSetP2;
 }
@@ -423,7 +426,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 
 	FILE *fp = vtFileOpen(filename, "rb");
 	if (!fp)
-		return false;
+		return NULL;
 
 	//  IGC is lat-lon with altitude
 	vtFeatureSetLineString3D *pSet = new vtFeatureSetLineString3D;
@@ -850,10 +853,12 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 
 		case wkbMultiPoint:
 		case wkbGeometryCollection:
+		default:
 			// Hopefully we won't encounter unexpected geometries, but
 			// if we do, just skip them for now.
 			continue;
 			break;
+
 		}
 
 		// In case more than one geometry was encountered, we need to add
@@ -1756,7 +1761,7 @@ void vtFeatureSet::SetValue(uint record, uint field, bool value)
 
 void vtFeatureSet::GetValueAsString(uint iRecord, uint iField, vtString &str) const
 {
-	if (iField < 0 || iField >= m_fields.GetSize())
+	if (iField >= m_fields.GetSize())
 	{
 		VTLOG("FeatureSet '%s' has %d fields, no field %d\n", (const char *)m_strFilename, m_fields.GetSize(), iField);
 		return;
@@ -1838,6 +1843,7 @@ void Field::SetNumRecords(int iNum)
 	case FT_Float:	m_float.SetSize(iNum);	break;
 	case FT_Double:	m_double.SetSize(iNum);	break;
 	case FT_String: m_string.resize(iNum);	break;
+	case FT_Unknown: break;
 	}
 }
 
@@ -1855,6 +1861,7 @@ int Field::AddRecord()
 		index = m_string.size();
 		m_string.push_back(vtString(""));
 		return index;
+	case FT_Unknown: break;
 	}
 	return -1;
 }
@@ -2007,6 +2014,8 @@ void Field::GetValueAsString(uint iRecord, vtString &str)
 	case FT_Boolean:
 		str = m_bool[iRecord] ? "true" : "false";
 		break;
+	case FT_Unknown:
+		break;
 	}
 }
 
@@ -2063,6 +2072,8 @@ void Field::SetValueFromString(uint iRecord, const char *str)
 			m_bool[iRecord] = true;
 		else
 			m_bool[iRecord] = false;
+		break;
+	case FT_Unknown:
 		break;
 	}
 }

@@ -1134,15 +1134,18 @@ double GetMetersPerUnit(LinearUnits lu)
 {
 	switch (lu)
 	{
-		case LU_DEGREES:
-		case LU_UNITEDGE:
-			return 1.0;		// actually no definition for degrees -> meters
-		case LU_METERS:
-			return 1.0;		// meters per meter
-		case LU_FEET_INT:
-			return 0.3048;		// international foot
-		case LU_FEET_US:
-			return (1200.0/3937.0);	// U.S. survey foot
+	case LU_DEGREES:
+	case LU_UNITEDGE:
+		return 1.0;		// actually no definition for degrees -> meters
+	case LU_METERS:
+		return 1.0;		// meters per meter
+	case LU_FEET_INT:
+		return 0.3048;		// international foot
+	case LU_FEET_US:
+		return (1200.0/3937.0);	// U.S. survey foot
+	case LU_UNKNOWN:
+		// keep picky compilers quiet.
+		break;
 	}
 	return 1.0;
 };
@@ -1156,6 +1159,9 @@ const char *GetLinearUnitName(LinearUnits lu)
 	case LU_FEET_INT: return "Feet";
 	case LU_FEET_US:  return "Feet (US)";
 	case LU_UNITEDGE:  return "UnitEdge";
+	case LU_UNKNOWN:
+		// keep picky compilers quiet.
+		break;
 	}
 	return "Unknown";
 }

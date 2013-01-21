@@ -111,6 +111,7 @@ public:
 	vtString GetLayerName();
 	void SetVisible(bool vis);
 	vtTin3d *GetTin() { return m_pTin.get(); }
+	void MakeMaterials();
 
 protected:
 	osg::ref_ptr<vtTin3d> m_pTin;

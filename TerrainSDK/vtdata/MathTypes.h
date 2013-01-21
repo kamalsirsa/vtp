@@ -836,6 +836,10 @@ public:
 	{
 		return DPoint2((left + right) / 2.0, (bottom + top) / 2);
 	}
+	DPoint2 SizeExtents() const
+	{
+		return DPoint2(right - left, top - bottom);
+	}
 	DPoint2 LowerLeft() const
 	{
 		return DPoint2(left, bottom);

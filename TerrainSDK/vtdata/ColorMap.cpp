@@ -129,10 +129,10 @@ int ColorMap::Num() const
 }
 
 /**
- * Generate an array of interpolated colors from this ColorMap.
+ * Tell this ColorMap to generate an internal table of interpolated colors.
+ * This sets it up to use ColorFromTable().
  *
- * \param table An empty table ready to fill with the interpolated colors.
- * \param iTableSize The desired number of elements in the resulting table.
+ * \param iTableSize The desired number of elements in the table.
  * \param fMin, fMax The elevation range to interpolate over.
  */
 void ColorMap::GenerateColorTable(int iTableSize, float fMin, float fMax)

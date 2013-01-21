@@ -355,21 +355,23 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 
 	VTLOG("OSG threading model is: ");
 	osgViewer::Viewer *vw = vtGetScene()->getViewer();
-	switch(vw->getThreadingModel() == osgViewer::Viewer::AutomaticSelection
-		? vw->suggestBestThreadingModel() : vw->getThreadingModel())
+	switch (vw->getThreadingModel() == osgViewer::Viewer::AutomaticSelection ?
+			vw->suggestBestThreadingModel() : vw->getThreadingModel())
 	{
-		case osgViewer::Viewer::SingleThreaded:
-			VTLOG("singleThreaded\n");
-			break;
-		case osgViewer::Viewer::CullDrawThreadPerContext:
-			VTLOG("CullDrawThreadPerContext\n");
-			break;
-		case osgViewer::Viewer::DrawThreadPerContext:
-			VTLOG("DrawThreadPerContext\n");
-			break;
-		case osgViewer::Viewer::CullThreadPerCameraDrawThreadPerContext:
-			VTLOG("CullThreadPerCameraDrawThreadPerContext\n");
-			break;
+	case osgViewer::Viewer::SingleThreaded:
+		VTLOG("singleThreaded\n");
+		break;
+	case osgViewer::Viewer::CullDrawThreadPerContext:
+		VTLOG("CullDrawThreadPerContext\n");
+		break;
+	case osgViewer::Viewer::DrawThreadPerContext:
+		VTLOG("DrawThreadPerContext\n");
+		break;
+	case osgViewer::Viewer::CullThreadPerCameraDrawThreadPerContext:
+		VTLOG("CullThreadPerCameraDrawThreadPerContext\n");
+		break;
+	default:	// Keep picky compilers quiet.
+		break;
 	}
 
 	// Make sure the scene knows the size of the canvas

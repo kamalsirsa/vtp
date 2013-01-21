@@ -643,8 +643,8 @@ void vtTerrain::CreateWaterHeightfield(const vtString &fname)
 	}
 
 	MakeWaterMaterial();
-	m_pWaterTin3d->SetMaterial(m_pEphemMats, 0);
-	vtGeode *wsgeom = m_pWaterTin3d->CreateGeometry(false, m_idx_water);
+	m_pWaterTin3d->SetMaterial(m_pEphemMats, m_idx_water);
+	vtGeode *wsgeom = m_pWaterTin3d->CreateGeometry(false);	// No shadow mesh.
 	wsgeom->setName("Water surface");
 	wsgeom->SetCastShadow(false);
 
@@ -1411,16 +1411,16 @@ void vtTerrain::_CreateElevLayers()
 		if (m_Params.LayerType(i) != LT_ELEVATION)
 			continue;
 
-		const vtTagArray &lay = m_Params.m_Layers[i];
+		const vtTagArray &layer_tags = m_Params.m_Layers[i];
 
 		VTLOG(" Layer %d: Elevation\n", i);
-		for (uint j = 0; j < lay.NumTags(); j++)
+		for (uint j = 0; j < layer_tags.NumTags(); j++)
 		{
-			const vtTag *tag = lay.GetTag(j);
+			const vtTag *tag = layer_tags.GetTag(j);
 			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
 		}
 
-		vtString fname = lay.GetValueString("Filename");
+		vtString fname = layer_tags.GetValueString("Filename");
 		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 		if (path == "")
 		{
@@ -1434,7 +1434,7 @@ void vtTerrain::_CreateElevLayers()
 		}
 
 		vtElevLayer *elayer = new vtElevLayer;
-		elayer->SetProps(lay);
+		elayer->SetProps(layer_tags);
 		if (!elayer->Load(path, m_progress_callback))
 		{
 			VTLOG("Couldn't read elevation from file '%s'\n", (const char *) path);
@@ -1442,10 +1442,9 @@ void vtTerrain::_CreateElevLayers()
 		}
 		VTLOG("Read elevation from file '%s'\n", (const char *) path);
 
-		MakeWaterMaterial();
+		elayer->MakeMaterials();
 
-		elayer->GetTin()->SetMaterial(m_pEphemMats, 0);
-		vtGeode *wsgeom = elayer->GetTin()->CreateGeometry(false, m_idx_water);
+		vtGeode *wsgeom = elayer->GetTin()->CreateGeometry(false);
 		wsgeom->setName("Elevation layer");
 
 		// We require that the TIN has a compatible CRS with the base
@@ -2674,6 +2673,9 @@ vtLayer *vtTerrain::GetOrCreateLayerOfType(LayerType type)
 	case LT_VEG:
 		layer = NewVegLayer();
 		layer->SetLayerName("Untitled.vf");
+		break;
+	default:
+		// We don't support the rest (..yet). Keep picky compilers quiet.
 		break;
 	}
 	return layer;

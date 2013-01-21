@@ -84,6 +84,9 @@ void vtLastMouse::OnMouse(vtMouseEvent &event)
 	case VT_DOWN:
 		m_buttons |= (int)event.button;
 		break;
+	default:
+		// Keep picky compilers quiet.
+		break;
 	}
 	m_pos = event.pos;
 	m_flags = event.flags;

@@ -399,7 +399,7 @@ void NodeExtension::SetEnabled(bool bOn)
 		if (m_bCastShadow)
 			m_pNode->setNodeMask(nm | 3);
 		else
-			m_pNode->setNodeMask(nm & ~3 | 1);
+			m_pNode->setNodeMask((nm & ~3) | 1);
 	}
 	else
 		m_pNode->setNodeMask(nm & ~3);

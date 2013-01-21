@@ -444,10 +444,10 @@ template <class E> bool vtArray<E>::RemoveAt(uint i, int n)
 	E*	elem;
 	int	shuffle;
 
-	if ((i < 0) || (i >= m_Size))		// element out of range?
+	if (i >= m_Size)				// element out of range?
 		return false;
-	if (n == 0) n = 1;					// default is one element
-	shuffle = m_Size - (i + n);			// number to shuffle up
+	if (n == 0) n = 1;				// default is one element
+	shuffle = m_Size - (i + n);		// number to shuffle up
 	elem = m_Data + i;
 	memcpy(elem, elem + n, sizeof(E) * shuffle);
 	m_Size -= n;

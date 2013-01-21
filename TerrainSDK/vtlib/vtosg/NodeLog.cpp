@@ -342,6 +342,8 @@ void LogToDot(osg::Group *pParent, osg::Node *pNode, int depth, FILE *fp, std::v
 				case osg::PrimitiveSet::QUADS: mtype = "Quads"; break;
 				case osg::PrimitiveSet::QUAD_STRIP: mtype = "QuadStrip"; break;
 				case osg::PrimitiveSet::POLYGON: mtype = "Polygon"; break;
+				default:	// Keep picky compilers quiet.
+					break;
 				}
 				sprintf(buf, "%hs, %d/%d prims", mtype, iNumVert, iNumPrim);
 				label = buf;

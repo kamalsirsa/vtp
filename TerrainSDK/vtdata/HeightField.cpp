@@ -620,8 +620,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
  * Any undefined heixels in the source will be fill with red (255,0,0).
  *
  * \param pBM			The bitmap to be colored.
- * \param table			The table of colors.
- * \param fMin, fMax	The range of valid elevation values expect in the input.
+ * \param color_map		A ColorMap which has already had GenerateColorTable() called.
  * \param nodata		The color to use for NODATA areas, where there are no elevation values.
  * \param progress_callback If supplied, this function will be called back
  *			with a value of 0 to 100 as the operation progresses.

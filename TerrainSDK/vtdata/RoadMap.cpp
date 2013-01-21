@@ -65,10 +65,9 @@ void TNode::Copy(TNode *node)
 
 TLink *TNode::GetLink(uint n) const
 {
-	if (n >= 0 && n < m_connect.size())	// safety check
-		return m_connect[n];
-	else
+	if (n >= m_connect.size())	// safety check
 		return NULL;
+	return m_connect[n];
 }
 
 int TNode::FindLink(int linkID)
@@ -179,7 +178,7 @@ int TNode::GetLinkNum(TLink *link)
 //traffic control
 bool TNode::SetIntersectType(uint linkNum, IntersectionType type)
 {
-	if (linkNum < 0 || linkNum >= m_connect.size())
+	if (linkNum >= m_connect.size())
 		return false;
 
 	m_connect[linkNum]->SetIntersectionType(this, type);
@@ -188,7 +187,7 @@ bool TNode::SetIntersectType(uint linkNum, IntersectionType type)
 
 IntersectionType TNode::GetIntersectType(uint linkNum)
 {
-	if (linkNum < 0 || linkNum >= m_connect.size())
+	if (linkNum >= m_connect.size())
 		return IT_NONE;
 
 	return m_connect[linkNum]->GetIntersectionType(this);

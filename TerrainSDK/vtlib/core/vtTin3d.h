@@ -21,9 +21,13 @@
  geometry for the TIN.  It also subclasses vtHeightField so it provides
  the ability to do height-testing and ray-picking.
 
- If you have an existing material you want the TIN to use, pass it with
- SetMaterial().  Otherwise, pass some color with SetColorMap, and those
- will be used.
+ There are three ways to apply materials to the surface.
+ 1. If you have an existing material you want the TIN to use, pass it with
+ SetMaterial(). It can be textured or not.
+ 2. Or, pass some colors with SetColorMap, and those will be used (as
+ vertex colors, no texturing.
+ 3. Or, add some surface types with vtTin::AddSurfaceType, and those
+ types will be used
  */
 class vtTin3d : public vtTin, public osg::Referenced
 {
@@ -32,7 +36,7 @@ public:
 
 	bool Read(const char *fname);
 
-	vtGeode *CreateGeometry(bool bDropShadowMesh, int m_matidx = 0);
+	vtGeode *CreateGeometry(bool bDropShadowMesh);
 	vtGeode *GetGeometry() { return m_pGeode; }
 
 	void SetMaterial(vtMaterialArray *pMats, int mat_idx);
