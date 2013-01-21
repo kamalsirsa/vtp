@@ -385,10 +385,10 @@ void vtUtilityMap3d::ComputePoleStructures()
 
 			if (tag->name == "tower:type" && tag->value == "termination")
 			{
-				if (pole->m_sStructName = "Lattice Tower")
+				if (pole->m_sStructName == "Lattice Tower")
 					pole->m_sStructName = "Lattice Deadend";
 
-				if (pole->m_sStructName = "H-Frame Tangent")
+				if (pole->m_sStructName == "H-Frame Tangent")
 					pole->m_sStructName = "H-Frame Hold Down";
 			}
 		}
