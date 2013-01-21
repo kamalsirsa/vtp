@@ -112,7 +112,7 @@ bool vtBitmap::Allocate24(const IPoint2 &size)
 	m_pBitmap->SetDepth(24);
 #else
 	// yes, we could use some error-checking here
-	m_pImage = new wxImage(iXSize, iYSize);
+	m_pImage = new wxImage(size.x, size.y);
 	if (!m_pImage->Ok())
 	{
 		delete m_pImage;
