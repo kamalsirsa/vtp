@@ -55,44 +55,41 @@ TinTextureDlg::TinTextureDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	GetSizer()->SetSizeHints(this);
 }
 
-void TinTextureDlg::SetParams(const TParams &Params)
+void TinTextureDlg::SetOptions(const vtTagArray &layer_tags)
 {
-	VTLOG("TParamsDlg::SetParams\n");
+	VTLOG("TinTextureDlg::SetOptions\n");
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// derived
-	m_strColorMap = wxString(Params.GetValueString(STR_COLOR_MAP), wxConvUTF8);
+	m_strColorMap = wxString(layer_tags.GetValueString(STR_COLOR_MAP), wxConvUTF8);
 	m_bDeriveColor = (m_strColorMap != _T(""));
-	m_strTextureGeotypical = wxString(Params.GetValueString(STR_TEXTURE_GEOTYPICAL), wxConvUTF8);
+	m_strTextureGeotypical = wxString(layer_tags.GetValueString(STR_TEXTURE_GEOTYPICAL), wxConvUTF8);
 	m_bGeotypical = (m_strTextureGeotypical != _T(""));
-	m_fGeotypicalScale = Params.GetValueFloat(STR_GEOTYPICAL_SCALE);
-	m_fOpacity = Params.GetValueFloat(STR_OPACITY);
+	m_fGeotypicalScale = layer_tags.GetValueFloat(STR_GEOTYPICAL_SCALE);
+	m_fOpacity = layer_tags.GetValueFloat(STR_OPACITY);
 
 	ValuesToSliders();
 	UpdateEnableState();
 }
 
-//
-// get the values from the dialog into the supplied paramter structure
-//
-void TinTextureDlg::GetParams(TParams &Params)
+void TinTextureDlg::GetOptions(vtTagArray &layer_tags)
 {
-	VTLOG("TinTextureDlg::GetParams\n");
+	VTLOG("TinTextureDlg::GetOptions\n");
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// derived
 	if (m_bDeriveColor)
-		Params.SetValueString(STR_COLOR_MAP, (const char *) m_strColorMap.mb_str(wxConvUTF8));
+		layer_tags.SetValueString(STR_COLOR_MAP, (const char *) m_strColorMap.mb_str(wxConvUTF8));
 	else
-		Params.SetValueString(STR_COLOR_MAP, "");
+		layer_tags.SetValueString(STR_COLOR_MAP, "");
 
 	if (m_bGeotypical)
-		Params.SetValueString(STR_TEXTURE_GEOTYPICAL, (const char *) m_strTextureGeotypical.mb_str(wxConvUTF8));
+		layer_tags.SetValueString(STR_TEXTURE_GEOTYPICAL, (const char *) m_strTextureGeotypical.mb_str(wxConvUTF8));
 	else
-		Params.SetValueString(STR_TEXTURE_GEOTYPICAL, "");
+		layer_tags.SetValueString(STR_TEXTURE_GEOTYPICAL, "");
 
-	Params.SetValueFloat(STR_GEOTYPICAL_SCALE, m_fGeotypicalScale);
-	Params.SetValueFloat(STR_OPACITY, m_fOpacity);
+	layer_tags.SetValueFloat(STR_GEOTYPICAL_SCALE, m_fGeotypicalScale);
+	layer_tags.SetValueFloat(STR_OPACITY, m_fOpacity);
 }
 
 void TinTextureDlg::UpdateColorMapChoice()

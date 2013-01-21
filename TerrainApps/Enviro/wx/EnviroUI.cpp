@@ -2172,10 +2172,6 @@ TextureDlgBase::TextureDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer247;
 	bSizer247 = new wxBoxSizer( wxVERTICAL );
 	
-	m_none = new wxRadioButton( this, ID_NONE, _("No texture"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-	m_none->SetValue( true ); 
-	bSizer247->Add( m_none, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
 	wxBoxSizer* bSizer25;
 	bSizer25 = new wxBoxSizer( wxHORIZONTAL );
 	
@@ -2253,7 +2249,7 @@ TextureDlgBase::TextureDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	m_16bit->SetValue(true); 
 	bSizer31->Add( m_16bit, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	bSizer30->Add( bSizer31, 1, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxEXPAND, 5 );
+	bSizer30->Add( bSizer31, 0, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxALIGN_CENTER_VERTICAL, 5 );
 	
 	bSizer247->Add( bSizer30, 0, wxALIGN_CENTER_VERTICAL|wxEXPAND|wxALL, 5 );
 	
@@ -2341,7 +2337,7 @@ TinTextureDlgBase::TinTextureDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	
 	bSizer2611->Add( 20, 0, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_staticText1491 = new wxStaticText( this, wxID_ANY, _("Tile size:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText1491 = new wxStaticText( this, wxID_ANY, _("Tiling:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText1491->Wrap( -1 );
 	bSizer2611->Add( m_staticText1491, 0, wxALL, 5 );
 	

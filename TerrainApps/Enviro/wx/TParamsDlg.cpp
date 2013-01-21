@@ -88,7 +88,7 @@ END_EVENT_TABLE()
 BEGIN_EVENT_TABLE(TParamsDlg,TParamsDlgBase)
 	EVT_INIT_DIALOG (TParamsDlg::OnInitDialog)
 
-	// Elevation
+	// Primary Elevation
 	EVT_RADIOBUTTON( ID_USE_GRID, TParamsDlg::OnCheckBoxElevType )
 	EVT_RADIOBUTTON( ID_USE_TIN, TParamsDlg::OnCheckBoxElevType )
 	EVT_RADIOBUTTON( ID_USE_TILESET, TParamsDlg::OnCheckBoxElevType )
@@ -98,7 +98,10 @@ BEGIN_EVENT_TABLE(TParamsDlg,TParamsDlgBase)
 	EVT_BUTTON( ID_PRIMARY_TEXTURE, TParamsDlg::OnPrimaryTexture )
 	EVT_BUTTON( ID_SET_TIN_TEXTURE, TParamsDlg::OnSetTinTexture )
 
-	// Culture
+	// Extra
+	EVT_BUTTON( ID_SET_TEXTURE, TParamsDlg::OnSetTexture )
+
+	// Plants and Roads
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_CHECK_STRUCTURE_SHADOWS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_SHADOW_LIMIT, TParamsDlg::OnCheckBox )
@@ -162,7 +165,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	m_pPreLightFactor = GetLightFactor();
 
-	m_pNone = GetNone();
 	m_pSingle = GetSingle();
 	m_pDerived = GetDerived();
 
@@ -983,6 +985,13 @@ void TParamsDlg::OnListDblClickElev( wxCommandEvent &event )
 		vtTagArray lay;
 		lay.SetValueString("Type", TERR_LTYPE_ELEVATION, true);
 		lay.SetValueString("Filename", (const char *) result.mb_str(wxConvUTF8), true);
+
+		// Defaults
+		lay.SetValueString(STR_COLOR_MAP, "default_relative.cmt");
+		lay.SetValueString(STR_TEXTURE_GEOTYPICAL, "");
+		lay.SetValueFloat(STR_GEOTYPICAL_SCALE, 10.0);
+		lay.SetValueFloat(STR_OPACITY, 1.0);
+	
 		m_Layers.push_back(lay);
 		TransferDataToWindow();
 	}
@@ -1338,10 +1347,26 @@ void TParamsDlg::OnSetTinTexture( wxCommandEvent &event )
 {
 	// Show texture dialog
 	TinTextureDlg dlg(this, -1, _("TIN Texture"));
-	dlg.SetParams(m_Params);
+	dlg.SetOptions(m_Params);
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		dlg.GetParams(m_Params);
+		dlg.GetOptions(m_Params);
 	}
 }
+
+void TParamsDlg::OnSetTexture( wxCommandEvent &event )
+{
+	vtString str = (const char *) m_elev_files->GetStringSelection().mb_str(wxConvUTF8);
+	int idx = FindLayerByFilename(str);
+	if (idx == -1)
+		return;
+
+	TinTextureDlg dlg(this, -1, _("TIN Texture"));
+	dlg.SetOptions(m_Layers[idx]);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		dlg.GetOptions(m_Layers[idx]);
+	}
+}
+
 

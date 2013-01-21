@@ -764,12 +764,11 @@ bool Builder::SampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
 	LODMap lod_existence_map(opts.cols, opts.rows);
 
 	// Pre-build a color lookup table once, rather than for each tile
-	std::vector<RGBi> color_table;
-	float color_min_elev, color_max_elev;
 	if (opts.bCreateDerivedImages)
 	{
+		float color_min_elev, color_max_elev;
 		ElevLayerArrayRange(elevs, color_min_elev, color_max_elev);
-		cmap.GenerateColors(color_table, 4000, color_min_elev, color_max_elev);
+		cmap.GenerateColorTable(4000, color_min_elev, color_max_elev);
 	}
 
 	// Time the operation
@@ -949,12 +948,12 @@ bool Builder::SampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
 				if (opts.bImageAlpha)
 				{
 					dib.Create(IPoint2(base_tilesize, base_tilesize), 32);
-					base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBAi(0,0,0,0));
+					base_lod.ColorDibFromTable(&dib, &cmap, RGBAi(0,0,0,0));	// Black transparent
 				}
 				else
 				{
 					dib.Create(IPoint2(base_tilesize, base_tilesize), 24);
-					base_lod.ColorDibFromTable(&dib, color_table, color_min_elev, color_max_elev, RGBi(255,0,0));
+					base_lod.ColorDibFromTable(&dib, &cmap, RGBi(255,0,0));		// Red
 				}
 
 				if (opts.draw.m_bShadingQuick)

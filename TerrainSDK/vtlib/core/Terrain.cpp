@@ -298,12 +298,12 @@ void vtTerrain::_CreateRoads()
 	colors->m_bRelative = false;
 	colors->Add(100, RGBi(0,255,0));
 	colors->Add(200, RGBi(255,200,150));
-	pTerr->SetTextureColors(colors);
+	pTerr->SetTextureColorMap(colors);
 	\endcode
  */
-void vtTerrain::SetTextureColors(ColorMap *colors)
+void vtTerrain::SetTextureColorMap(ColorMap *colors)
 {
-	m_Texture.m_pTextureColors.reset(colors);
+	m_Texture.m_pColorMap.reset(colors);
 }
 
 /**
@@ -354,7 +354,7 @@ void vtTerrain::SetTextureContours(float fInterval, float fSize)
 	}
 
 	// Set these as the desired color bands for the next PainDib
-	m_Texture.m_pTextureColors.reset(cmap);
+	m_Texture.m_pColorMap.reset(cmap);
 }
 
 
@@ -643,7 +643,7 @@ void vtTerrain::CreateWaterHeightfield(const vtString &fname)
 	}
 
 	MakeWaterMaterial();
-	m_pWaterTin3d->SetTextureMaterials(m_pEphemMats);
+	m_pWaterTin3d->SetMaterial(m_pEphemMats, 0);
 	vtGeode *wsgeom = m_pWaterTin3d->CreateGeometry(false, m_idx_water);
 	wsgeom->setName("Water surface");
 	wsgeom->SetCastShadow(false);
@@ -1444,7 +1444,7 @@ void vtTerrain::_CreateElevLayers()
 
 		MakeWaterMaterial();
 
-		elayer->GetTin()->SetTextureMaterials(m_pEphemMats);
+		elayer->GetTin()->SetMaterial(m_pEphemMats, 0);
 		vtGeode *wsgeom = elayer->GetTin()->CreateGeometry(false, m_idx_water);
 		wsgeom->setName("Elevation layer");
 
@@ -1999,8 +1999,8 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 
 	int type = m_Params.GetValueInt(STR_SURFACE_TYPE);
 	int tex = m_Params.GetValueInt(STR_TEXTURE);
-	if (type == 0 ||	// single grid
-		(type == 1 && tex == 1))	// TIN, single texture
+	if (type == 0 ||						// Single grid
+		(type == 1 && tex == TE_SINGLE))	// TIN, single texture
 	{
 		// measure total texture processing time
 		clock_t c1 = clock();
@@ -2012,6 +2012,10 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 
 		// The terrain's base texture will always use unit 0
 		m_TextureUnits.ReserveTextureUnit();
+	}
+	if (type == 1 && tex == TE_DERIVED)	// TIN, colormap
+	{
+		m_Texture.MakeColorMap(m_Params);
 	}
 	return true;
 }
@@ -2043,10 +2047,18 @@ bool vtTerrain::CreateFromTIN()
 	bool bDropShadow = true;
 
 	// If we are using a single texture, then use that existing texture material
-	// for the TIN.  Otherwise, the TIN will color and texture itself.
+	// for the TIN.
 	int tex = m_Params.GetValueInt(STR_TEXTURE);
-	if (tex == 1)
-		m_pTin->SetTextureMaterials(m_Texture.m_pMaterials);
+	if (tex == TE_SINGLE)
+	{
+		// Use the texture that was loaded normally. It is the first material.
+		m_pTin->SetMaterial(m_Texture.m_pMaterials, 0);
+	}
+	if (tex == TE_DERIVED)
+	{
+		// Use the color map.
+		m_pTin->SetColorMap(m_Texture.m_pColorMap.get());
+	}
 
 	// Make the TIN's geometry.
 	vtGeode *geode = m_pTin->CreateGeometry(bDropShadow);

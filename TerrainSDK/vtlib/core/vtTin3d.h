@@ -17,9 +17,13 @@
 /*@{*/
 
 /**
- * This class extends vtTin with the ability to call vtlib to create 3d
- * geometry for the TIN.  It also subclasses vtHeightField so it provides
- * the ability to do height-testing and ray-picking.
+ This class extends vtTin with the ability to call vtlib to create 3d
+ geometry for the TIN.  It also subclasses vtHeightField so it provides
+ the ability to do height-testing and ray-picking.
+
+ If you have an existing material you want the TIN to use, pass it with
+ SetMaterial().  Otherwise, pass some color with SetColorMap, and those
+ will be used.
  */
 class vtTin3d : public vtTin, public osg::Referenced
 {
@@ -30,7 +34,9 @@ public:
 
 	vtGeode *CreateGeometry(bool bDropShadowMesh, int m_matidx = 0);
 	vtGeode *GetGeometry() { return m_pGeode; }
-	void SetTextureMaterials(vtMaterialArray *pMats);
+
+	void SetMaterial(vtMaterialArray *pMats, int mat_idx);
+	void SetColorMap(ColorMap *color_map) { m_pColorMap = color_map; }
 
 	// implement HeightField3d virtual methods
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
@@ -46,8 +52,10 @@ protected:
 
 	vtArray<vtMesh*> m_Meshes;
 	vtMaterialArrayPtr m_pMats;
+	int			 m_MatIndex;
 	vtGeode		*m_pGeode;
 	vtGeode		*m_pDropGeode;
+	ColorMap	*m_pColorMap;
 };
 typedef osg::ref_ptr<vtTin3d> vtTin3dPtr;
 

@@ -2915,7 +2915,7 @@ void Enviro::SetHUDMessageText(const char *message)
 void Enviro::CreateElevationLegend()
 {
 	// Must have a color-mapped texture on the terrain to show a legend
-	const ColorMap *cmap = GetCurrentTerrain()->GetTextureColors();
+	ColorMap *cmap = GetCurrentTerrain()->GetTextureColorMap();
 	if (!cmap)
 		return;
 
@@ -2949,16 +2949,15 @@ void Enviro::CreateElevationLegend()
 	GetCurrentTerrain()->GetHeightField()->GetHeightExtents(fMin, fMax);
 
 	// Big band of color
-	std::vector<RGBi> table;
-	cmap->GenerateColors(table, in_size.y, fMin, fMax);
+	cmap->GenerateColorTable(in_size.y, fMin, fMax);
 	vtMesh *mesh1 = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
 	for (int i = 0; i < in_size.y + 1; i++)
 	{
 		const FPoint3 p1((float) cbar_left,  (float) in_base.y + i, 0.0f);
 		const FPoint3 p2((float) cbar_right, (float) in_base.y + i, 0.0f);
 		const int idx = mesh1->AddLine(p1, p2);
-		mesh1->SetVtxColor(idx, (RGBf) table[i]);
-		mesh1->SetVtxColor(idx+1, (RGBf) table[i]);
+		mesh1->SetVtxColor(idx, (RGBf) cmap->m_table[i]);
+		mesh1->SetVtxColor(idx+1, (RGBf) cmap->m_table[i]);
 	}
 	mesh1->AddStrip2((in_size.y + 1)*2, 0);
 	m_pLegendGeom->AddMesh(mesh1, white);

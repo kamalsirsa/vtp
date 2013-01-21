@@ -128,7 +128,7 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 //
 // Set this dialog's controls from a tagarray.
 //
-void StyleDlg::SetOptions(const vtTagArray &Layer)
+void StyleDlg::SetOptions(const vtTagArray &layer_tags)
 {
 	if (m_pFeatureSet)
 	{
@@ -137,7 +137,7 @@ void StyleDlg::SetOptions(const vtTagArray &Layer)
 	else
 	{
 		// without a featureset, we need the actual file location
-		vtString strFilename = Layer.GetValueString("Filename");
+		vtString strFilename = layer_tags.GetValueString("Filename");
 		m_strResolved = FindFileOnPaths(vtGetDataPath(), strFilename);
 
 		if (m_strResolved == "")
@@ -156,128 +156,128 @@ void StyleDlg::SetOptions(const vtTagArray &Layer)
 	}
 
 	// Object Geometry
-	m_bObjectGeometry = Layer.GetValueBool("ObjectGeometry");
-	if (!Layer.GetValueRGBi("ObjectGeomColor", m_ObjectGeomColor))
+	m_bObjectGeometry = layer_tags.GetValueBool("ObjectGeometry");
+	if (!layer_tags.GetValueRGBi("ObjectGeomColor", m_ObjectGeomColor))
 		m_ObjectGeomColor.Set(255,255,255);
-	m_bRadioUseObjectColorField = Layer.GetValueInt("ObjectColorFieldIndex", m_iObjectColorField);
+	m_bRadioUseObjectColorField = layer_tags.GetValueInt("ObjectColorFieldIndex", m_iObjectColorField);
 	if (!m_bRadioUseObjectColorField)
 		m_iObjectColorField = -1;
-	if (!Layer.GetValueFloat("ObjectGeomHeight", m_fObjectGeomHeight))
+	if (!layer_tags.GetValueFloat("ObjectGeomHeight", m_fObjectGeomHeight))
 		m_fObjectGeomHeight = 1;
-	if (!Layer.GetValueFloat("ObjectGeomSize", m_fObjectGeomSize))
+	if (!layer_tags.GetValueFloat("ObjectGeomSize", m_fObjectGeomSize))
 		m_fObjectGeomSize = 1;
 
 	// Line Geometry
-	m_bLineGeometry = Layer.GetValueBool("LineGeometry");
-	if (!Layer.GetValueRGBi("LineGeomColor", m_LineGeomColor))
+	m_bLineGeometry = layer_tags.GetValueBool("LineGeometry");
+	if (!layer_tags.GetValueRGBi("LineGeomColor", m_LineGeomColor))
 		m_LineGeomColor.Set(255,255,255);
-	m_bRadioUseLineColorField = Layer.GetValueInt("LineColorFieldIndex", m_iLineColorField);
+	m_bRadioUseLineColorField = layer_tags.GetValueInt("LineColorFieldIndex", m_iLineColorField);
 	if (!m_bRadioUseLineColorField)
 		m_iLineColorField = -1;
-	if (!Layer.GetValueFloat("LineGeomHeight", m_fLineGeomHeight))
+	if (!layer_tags.GetValueFloat("LineGeomHeight", m_fLineGeomHeight))
 		m_fLineGeomHeight = 1;
-	if (!Layer.GetValueFloat("LineWidth", m_fLineWidth))
+	if (!layer_tags.GetValueFloat("LineWidth", m_fLineWidth))
 		m_fLineWidth = 1;
-	m_bTessellate = Layer.GetValueBool("Tessellate");
+	m_bTessellate = layer_tags.GetValueBool("Tessellate");
 
 	// Text Labels
-	m_bTextLabels = Layer.GetValueBool("Labels");
-	if (!Layer.GetValueRGBi("LabelColor", m_LabelColor))
+	m_bTextLabels = layer_tags.GetValueBool("Labels");
+	if (!layer_tags.GetValueRGBi("LabelColor", m_LabelColor))
 		m_LabelColor.Set(255,255,255);
-	m_bRadioUseTextColorField = Layer.GetValueInt("TextColorFieldIndex", m_iTextColorField);
+	m_bRadioUseTextColorField = layer_tags.GetValueInt("TextColorFieldIndex", m_iTextColorField);
 	if (!m_bRadioUseTextColorField)
 		m_iTextColorField = -1;
-	if (!Layer.GetValueInt("TextFieldIndex", m_iTextField))
+	if (!layer_tags.GetValueInt("TextFieldIndex", m_iTextField))
 		m_iTextField = -1;
 
-	if (!Layer.GetValueFloat("LabelHeight", m_fLabelHeight))
+	if (!layer_tags.GetValueFloat("LabelHeight", m_fLabelHeight))
 		m_fLabelHeight = 0;
-	if (!Layer.GetValueFloat("LabelSize", m_fLabelSize))
+	if (!layer_tags.GetValueFloat("LabelSize", m_fLabelSize))
 		m_fLabelSize = 20;
 
 	vtString font;
-	if (Layer.GetValueString("Font", font))
+	if (layer_tags.GetValueString("Font", font))
 		m_strFont = wxString(font, wxConvUTF8);
 	else
 		m_strFont = _T("Arial.ttf");
-	m_bLabelOutline = Layer.GetValueBool("LabelOutline");
+	m_bLabelOutline = layer_tags.GetValueBool("LabelOutline");
 }
 
 //
 // Copy this dialog's controls to a tagarray.
 //
-void StyleDlg::GetOptions(vtTagArray &pLayer)
+void StyleDlg::GetOptions(vtTagArray &layer_tags)
 {
 	// Object Geometry
-	pLayer.SetValueBool("ObjectGeometry", m_bObjectGeometry, true);
+	layer_tags.SetValueBool("ObjectGeometry", m_bObjectGeometry, true);
 	if (m_bObjectGeometry)
 	{
-		pLayer.SetValueRGBi("ObjectGeomColor", m_ObjectGeomColor, true);
+		layer_tags.SetValueRGBi("ObjectGeomColor", m_ObjectGeomColor, true);
 		if (m_bRadioUseObjectColorField)
-			pLayer.SetValueInt("ObjectColorFieldIndex", m_iObjectColorField, true);
+			layer_tags.SetValueInt("ObjectColorFieldIndex", m_iObjectColorField, true);
 		else
-			pLayer.RemoveTag("ObjectColorFieldIndex");
+			layer_tags.RemoveTag("ObjectColorFieldIndex");
 		if (!GeometryTypeIs3D(m_type))
-			pLayer.SetValueFloat("ObjectGeomHeight", m_fObjectGeomHeight);
+			layer_tags.SetValueFloat("ObjectGeomHeight", m_fObjectGeomHeight);
 		else
-			pLayer.RemoveTag("ObjectGeomHeight");
-		pLayer.SetValueFloat("ObjectGeomSize", m_fObjectGeomSize);
+			layer_tags.RemoveTag("ObjectGeomHeight");
+		layer_tags.SetValueFloat("ObjectGeomSize", m_fObjectGeomSize);
 	}
 	else
 	{
-		pLayer.RemoveTag("ObjectGeomColor");
-		pLayer.RemoveTag("ObjectColorFieldIndex");
-		pLayer.RemoveTag("ObjectGeomHeight");
-		pLayer.RemoveTag("ObjectGeomSize");
+		layer_tags.RemoveTag("ObjectGeomColor");
+		layer_tags.RemoveTag("ObjectColorFieldIndex");
+		layer_tags.RemoveTag("ObjectGeomHeight");
+		layer_tags.RemoveTag("ObjectGeomSize");
 	}
 
 	// Line Geometry
-	pLayer.SetValueBool("LineGeometry", m_bLineGeometry, true);
+	layer_tags.SetValueBool("LineGeometry", m_bLineGeometry, true);
 	if (m_bLineGeometry)
 	{
-		pLayer.SetValueRGBi("LineGeomColor", m_LineGeomColor, true);
+		layer_tags.SetValueRGBi("LineGeomColor", m_LineGeomColor, true);
 		if (m_bRadioUseLineColorField)
-			pLayer.SetValueInt("LineColorFieldIndex", m_iLineColorField, true);
+			layer_tags.SetValueInt("LineColorFieldIndex", m_iLineColorField, true);
 		else
-			pLayer.RemoveTag("LineColorFieldIndex");
+			layer_tags.RemoveTag("LineColorFieldIndex");
 		if (!GeometryTypeIs3D(m_type))
-			pLayer.SetValueFloat("LineGeomHeight", m_fLineGeomHeight);
-		pLayer.SetValueFloat("LineWidth", m_fLineWidth);
-		pLayer.SetValueBool("Tessellate", m_bTessellate);
+			layer_tags.SetValueFloat("LineGeomHeight", m_fLineGeomHeight);
+		layer_tags.SetValueFloat("LineWidth", m_fLineWidth);
+		layer_tags.SetValueBool("Tessellate", m_bTessellate);
 	}
 	else
 	{
-		pLayer.RemoveTag("LineGeomColor");
-		pLayer.RemoveTag("LineColorFieldIndex");
-		pLayer.RemoveTag("LineGeomHeight");
-		pLayer.RemoveTag("LineWidth");
-		pLayer.RemoveTag("Tessellate");
+		layer_tags.RemoveTag("LineGeomColor");
+		layer_tags.RemoveTag("LineColorFieldIndex");
+		layer_tags.RemoveTag("LineGeomHeight");
+		layer_tags.RemoveTag("LineWidth");
+		layer_tags.RemoveTag("Tessellate");
 	}
 
 	// Text Labels
-	pLayer.SetValueBool("Labels", m_bTextLabels, true);
+	layer_tags.SetValueBool("Labels", m_bTextLabels, true);
 	if (m_bTextLabels)
 	{
-		pLayer.SetValueRGBi("LabelColor", m_LabelColor, true);
+		layer_tags.SetValueRGBi("LabelColor", m_LabelColor, true);
 		if (m_bRadioUseTextColorField)
-			pLayer.SetValueInt("TextColorFieldIndex", m_iTextColorField, true);
+			layer_tags.SetValueInt("TextColorFieldIndex", m_iTextColorField, true);
 		else
-			pLayer.RemoveTag("TextColorFieldIndex");
-		pLayer.SetValueInt("TextFieldIndex", m_iTextField, true);
-		pLayer.SetValueFloat("LabelHeight", m_fLabelHeight, true);
-		pLayer.SetValueFloat("LabelSize", m_fLabelSize, true);
-		pLayer.SetValueString("Font", (const char *) m_strFont.mb_str(wxConvUTF8), true);
-		pLayer.SetValueBool("LabelOutline", m_bLabelOutline, true);
+			layer_tags.RemoveTag("TextColorFieldIndex");
+		layer_tags.SetValueInt("TextFieldIndex", m_iTextField, true);
+		layer_tags.SetValueFloat("LabelHeight", m_fLabelHeight, true);
+		layer_tags.SetValueFloat("LabelSize", m_fLabelSize, true);
+		layer_tags.SetValueString("Font", (const char *) m_strFont.mb_str(wxConvUTF8), true);
+		layer_tags.SetValueBool("LabelOutline", m_bLabelOutline, true);
 	}
 	else
 	{
-		pLayer.RemoveTag("LabelColor");
-		pLayer.RemoveTag("TextColorFieldIndex");
-		pLayer.RemoveTag("TextFieldIndex");
-		pLayer.RemoveTag("LabelHeight");
-		pLayer.RemoveTag("LabelSize");
-		pLayer.RemoveTag("Font");
-		pLayer.RemoveTag("LabelOutline");
+		layer_tags.RemoveTag("LabelColor");
+		layer_tags.RemoveTag("TextColorFieldIndex");
+		layer_tags.RemoveTag("TextFieldIndex");
+		layer_tags.RemoveTag("LabelHeight");
+		layer_tags.RemoveTag("LabelSize");
+		layer_tags.RemoveTag("Font");
+		layer_tags.RemoveTag("LabelOutline");
 	}
 }
 

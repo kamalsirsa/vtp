@@ -82,11 +82,9 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_INITTIME, "104 3 21 10 0 0");	// 2004, spring equinox, 10am
 	AddTag(STR_TIMESPEED, "1");
 
-	AddTag(STR_TEXTURE, "0");
+	AddTag(STR_TEXTURE, "3");		// 3 = Derived
 	AddTag(STR_TEXTUREFILE, "");
 	AddTag(STR_COLOR_MAP, "");
-	AddTag(STR_TEXTURE_GEOTYPICAL, "");
-	AddTag(STR_GEOTYPICAL_SCALE, "10.0");
 	AddTag(STR_TEXTURE_GRADUAL, "false");
 	AddTag(STR_TEXURE_LOD_FACTOR, "0.25");
 

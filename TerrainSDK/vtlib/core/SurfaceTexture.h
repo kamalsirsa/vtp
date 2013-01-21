@@ -25,12 +25,13 @@ public:
 	void ShadeTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
 		const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 
+	void MakeColorMap(const TParams &options);
 	void CopyFromUnshaded(const TParams &options);
 
 	ImagePtr		m_pUnshadedImage;
 	ImagePtr		m_pTextureImage;
 	vtMaterialArrayPtr m_pMaterials;
-	auto_ptr<ColorMap>	m_pTextureColors;
+	auto_ptr<ColorMap>	m_pColorMap;
 
 protected:
 	void LoadSingleTexture(const TParams &options);
@@ -38,8 +39,7 @@ protected:
 		bool progress_callback(int));
 
 	/** Color from elevation. */
-	void PaintDib(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
-		bool progress_callback(int) = NULL);
+	void PaintDib(const vtHeightFieldGrid3d *pHFGrid, bool progress_callback(int) = NULL);
 };
 
 #endif  // VTLIB_SURFACE_TEXTURE_H

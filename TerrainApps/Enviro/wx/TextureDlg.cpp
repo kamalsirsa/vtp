@@ -32,7 +32,6 @@ BEGIN_EVENT_TABLE(TextureDlg,TextureDlgBase)
 	EVT_INIT_DIALOG (TextureDlg::OnInitDialog)
 
 	// Texture
-	EVT_RADIOBUTTON( ID_NONE, TextureDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_SINGLE, TextureDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_DERIVED, TextureDlg::OnRadio )
 
@@ -121,12 +120,6 @@ void TextureDlg::UpdateEnableState()
 	FindWindow(ID_TFILE_SINGLE)->Enable(m_iTexture == TE_SINGLE);
 	FindWindow(ID_CHOICE_COLORS)->Enable(m_iTexture == TE_DERIVED);
 	FindWindow(ID_EDIT_COLORS)->Enable(m_iTexture == TE_DERIVED);
-
-	FindWindow(ID_MIPMAP)->Enable(m_iTexture != TE_NONE);
-	FindWindow(ID_16BIT)->Enable(m_iTexture != TE_NONE);
-	FindWindow(ID_PRELIGHT)->Enable(m_iTexture != TE_NONE);
-	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE);
-	FindWindow(ID_CAST_SHADOWS)->Enable(m_iTexture != TE_NONE);
 }
 
 void TextureDlg::UpdateColorMapChoice()
@@ -239,7 +232,6 @@ bool TextureDlg::TransferDataToWindow()
 {
 	m_bSetting = true;
 
-	m_none->SetValue(m_iTexture == TE_NONE);
 	m_single->SetValue(m_iTexture == TE_SINGLE);
 	m_derived->SetValue(m_iTexture == TE_DERIVED);
 
@@ -251,7 +243,6 @@ bool TextureDlg::TransferDataToWindow()
 
 bool TextureDlg::TransferDataFromWindow()
 {
-	if (m_none->GetValue()) m_iTexture = TE_NONE;
 	if (m_single->GetValue()) m_iTexture = TE_SINGLE;
 	if (m_derived->GetValue()) m_iTexture = TE_DERIVED;
 

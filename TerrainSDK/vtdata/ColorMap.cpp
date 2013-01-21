@@ -1,7 +1,7 @@
 //
 // HeightField.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -135,23 +135,25 @@ int ColorMap::Num() const
  * \param iTableSize The desired number of elements in the resulting table.
  * \param fMin, fMax The elevation range to interpolate over.
  */
-void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
-							  float fMin, float fMax) const
+void ColorMap::GenerateColorTable(int iTableSize, float fMin, float fMax)
 {
 	if (m_color.size() < 2)
 		return;
 
-	float fRange = fMax - fMin;
-	float step = fRange/iTableSize;
+	m_iTableSize = iTableSize;
+	m_fMin = fMin;
+	m_fMax = fMax;
+	m_fRange = fMax - fMin;
+	float step = m_fRange/iTableSize;
 
 	int current = 0;
 	int num = Num();
 	RGBi c1, c2;
-	float base=0, next, bracket_size=0, fraction;
+	float base = 0, next, bracket_size = 0, fraction;
 
 	if (m_bRelative == true)
 	{
-		bracket_size = fRange / (num - 1);
+		bracket_size = m_fRange / (num - 1);
 		current = -1;
 	}
 
@@ -162,7 +164,7 @@ void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 		if (m_bRelative)
 		{
 			// use regular divisions
-			int bracket = (int) ((elev-fMin) / fRange * (num-1));
+			int bracket = (int) ((elev-fMin) / m_fRange * (num-1));
 			if (bracket != current)
 			{
 				current = bracket;
@@ -191,11 +193,11 @@ void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 		}
 		else
 			c3 = c1;
-		table.push_back(c3);
+		m_table.push_back(c3);
 	}
 
 	// Add one to catch top data
-	c3 = table[iTableSize-1];
-	table.push_back(c3);
+	c3 = m_table[iTableSize-1];
+	m_table.push_back(c3);
 }
 

@@ -583,7 +583,7 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
  * \return true if any invalid elevation values were encountered.
  */
 bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
-	const ColorMap *cmap, int iGranularity, const RGBAi &nodata,
+	ColorMap *cmap, int iGranularity, const RGBAi &nodata,
 	bool progress_callback(int)) const
 {
 	if (!pBM || !cmap)
@@ -604,16 +604,15 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	}
 
 	VTLOG(" table of %d values, first [%d %d %d],\n",
-		cmap->Num(), cmap->m_color[0].r, cmap->m_color[0].g, cmap->m_color[0].b);
+		cmap->Num(), cmap->Color(0).r, cmap->Color(0).g, cmap->Color(0).b);
 	VTLOG("\tmin %g, max %g, range %g, granularity %d\n",
 		fMin, fMax, fRange, iGranularity);
 
 	// Rather than look through the color map for each pixel, pre-build
 	//  a color lookup table once - should be faster in nearly all cases.
-	std::vector<RGBi> table;
-	cmap->GenerateColors(table, iGranularity, fMin, fMax);
+	cmap->GenerateColorTable(iGranularity, fMin, fMax);
 
-	return ColorDibFromTable(pBM, table, fMin, fMax, nodata, progress_callback);
+	return ColorDibFromTable(pBM, cmap, nodata, progress_callback);
 }
 
 /**
@@ -629,9 +628,8 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
  *
  * \return true if any invalid elevation values were encountered.
  */
-bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
-	   std::vector<RGBi> &table, float fMin, float fMax, const RGBAi &nodata,
-	   bool progress_callback(int)) const
+bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM, const ColorMap *color_map,
+	const RGBAi &nodata, bool progress_callback(int)) const
 {
 	VTLOG1(" ColorDibFromTable:");
 	const IPoint2 bitmap_size = pBM->GetSize();
@@ -644,8 +642,6 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 	double ratiox = (double)(m_iSize.x - 1)/(bitmap_size.x - 1),
 		   ratioy = (double)(m_iSize.y - 1)/(bitmap_size.y - 1);
 
-	const float fRange = fMax - fMin;
-	const uint iGranularity = table.size() - 1;
 	bool has_invalid = false;
 	const RGBi nodata_24bit(nodata.r, nodata.g, nodata.b);
 	float elev;
@@ -676,13 +672,11 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM,
 				has_invalid = true;
 				continue;
 			}
-			uint table_entry = (uint) ((elev - fMin) / fRange * iGranularity);
-			if (table_entry > iGranularity-1)
-				table_entry = iGranularity-1;
+			const RGBi &rgb = color_map->ColorFromTable(elev);
 			if (depth == 32)
-				pBM->SetPixel32(i, bitmap_size.y - 1 - j, table[table_entry]);
+				pBM->SetPixel32(i, bitmap_size.y - 1 - j, rgb);
 			else
-				pBM->SetPixel24(i, bitmap_size.y - 1 - j, table[table_entry]);
+				pBM->SetPixel24(i, bitmap_size.y - 1 - j, rgb);
 		}
 	}
 	VTLOG("Done.\n");

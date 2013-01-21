@@ -170,8 +170,8 @@ public:
 	void SetTextureContours(float fInterval, float fSize);
 
 	/// Set the colors to be used in a derived texture.
-	void SetTextureColors(ColorMap *colors);
-	ColorMap *GetTextureColors() { return m_Texture.m_pTextureColors.get(); }
+	void SetTextureColorMap(ColorMap *colors);
+	ColorMap *GetTextureColorMap() { return m_Texture.m_pColorMap.get(); }
 
 	/// Return true if the terrain has been created.
 	bool IsCreated();

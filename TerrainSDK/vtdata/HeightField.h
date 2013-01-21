@@ -172,10 +172,10 @@ public:
 	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const = 0;
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const = 0;
 
-	bool ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
+	bool ColorDibFromElevation(vtBitmapBase *pBM, ColorMap *cmap,
 		int iGranularity, const RGBAi &nodata, bool progress_callback(int) = NULL) const;
-	bool ColorDibFromTable(vtBitmapBase *pBM, std::vector<RGBi> &table,
-		float fMin, float fMax, const RGBAi &nodata, bool progress_callback(int) = NULL) const;
+	bool ColorDibFromTable(vtBitmapBase *pBM, const ColorMap *color_map,
+		const RGBAi &nodata, bool progress_callback(int) = NULL) const;
 
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 		float fLightFactor, float fAmbient = 0.1f, float fGamma = 1.0f,

@@ -91,7 +91,7 @@ void ColorMapDlg::UpdateItems()
 	m_imlist.Create(32, 16);
 	for (i = 0; i < num; i++)
 	{
-		RGBi c = m_cmap.m_color[i];
+		const RGBi &c = m_cmap.Color(i);
 		color.Set(c.r, c.g, c.b);
 		wxBitmap *bitmap = MakeColorBitmap(32, 16, color);
 		m_imlist.Add(*bitmap);
@@ -102,7 +102,7 @@ void ColorMapDlg::UpdateItems()
 	wxString str;
 	for (i = 0; i < num; i++)
 	{
-		str.Printf(_("%.2f meters"), m_cmap.m_elev[i]);
+		str.Printf(_("%.2f meters"), m_cmap.Elev(i));
 		int item = GetList()->InsertItem(i, str, i);
 	}
 }
@@ -223,10 +223,10 @@ void ColorMapDlg::OnDeleteColor( wxCommandEvent &event )
 
 void ColorMapDlg::OnChangeColor( wxCommandEvent &event )
 {
-	RGBi rgb = m_cmap.m_color[m_iItem];
+	RGBi rgb = m_cmap.Color(m_iItem);
 	if (AskColor(rgb))
 	{
-		m_cmap.m_color[m_iItem] = rgb;
+		m_cmap.SetColor(m_iItem, rgb);
 		UpdateItems();
 	}
 }

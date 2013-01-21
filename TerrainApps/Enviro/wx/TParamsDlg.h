@@ -167,7 +167,6 @@ public:
 	wxRadioButton* GetUseTileset()  { return (wxRadioButton*) FindWindow( ID_USE_TILESET ); }
 	wxRadioButton* GetDerived()  { return (wxRadioButton*) FindWindow( ID_DERIVED ); }
 	wxRadioButton* GetSingle()  { return (wxRadioButton*) FindWindow( ID_SINGLE ); }
-	wxRadioButton* GetNone()  { return (wxRadioButton*) FindWindow( ID_NONE ); }
 	wxTextCtrl* GetLightFactor()  { return (wxTextCtrl*) FindWindow( ID_LIGHT_FACTOR ); }
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
 
@@ -179,7 +178,6 @@ private:
 	// WDR: member variable declarations for TParamsDlg
 	wxTextCtrl* m_pPreLightFactor;
 	wxListBox* m_pImageFiles;
-	wxRadioButton* m_pNone;
 	wxRadioButton* m_pSingle;
 	wxRadioButton* m_pDerived;
 	wxRadioButton* m_pTiled;
@@ -212,6 +210,7 @@ private:
 	void OnChoiceScenario( wxCommandEvent &event );
 	void OnPrimaryTexture( wxCommandEvent &event );
 	void OnSetTinTexture( wxCommandEvent &event );
+	void OnSetTexture( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

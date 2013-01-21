@@ -39,8 +39,8 @@ public:
 		m_pFeatureSet = pSet;
 	}
 
-	void SetOptions(const vtTagArray &Layer);
-	void GetOptions(vtTagArray &pLayer);
+	void SetOptions(const vtTagArray &layer_tags);
+	void GetOptions(vtTagArray &layer_tags);
 	wxNotebook *GetNotebook() { return m_notebook; }
 
 private:

@@ -25,8 +25,8 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	void SetParams(const TParams &Params);
-	void GetParams(TParams &Params);
+	void SetOptions(const vtTagArray &layer_tags);
+	void GetOptions(vtTagArray &layer_tags);
 
 private:
 	void UpdateColorMapChoice();

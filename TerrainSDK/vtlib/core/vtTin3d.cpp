@@ -12,12 +12,16 @@
 #include "vtdata/DataPath.h"
 #include "vtTin3d.h"
 
+// We will split the TIN into chunks of geometry, each with no more than this many vertices.
+const int kMaxChunkVertices = 10000;
+const int kColorMapTableSize = 8192;
 
 vtTin3d::vtTin3d()
 {
 	m_pMats = NULL;
 	m_pGeode = NULL;
 	m_pDropGeode = NULL;
+	m_pColorMap = NULL;
 }
 
 /**
@@ -42,9 +46,10 @@ FPoint3 ComputeNormal(const FPoint3 &p1, const FPoint3 &p2, const FPoint3 &p3)
 	return cross;
 }
 
-void vtTin3d::SetTextureMaterials(vtMaterialArray *pMats)
+void vtTin3d::SetMaterial(vtMaterialArray *pMats, int mat_idx)
 {
 	m_pMats = pMats;
+	m_MatIndex = mat_idx;
 }
 
 void vtTin3d::MakeSurfaceMaterials()
@@ -73,9 +78,6 @@ void vtTin3d::MakeSurfaceMaterials()
 	}
 }
 
-
-#define MAX_CHUNK_VERTS	30000
-
 vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 {
 	bool bGeoSpecific = (m_pMats != NULL);
@@ -94,17 +96,23 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 		m_pMats = new vtMaterialArray;
 		bool lighting = false;
 
-		// White: used for vertex-colored terrain surface
+		// 0: White: used for vertex-colored terrain surface
 		m_pMats->AddRGBMaterial(RGBf(1, 1, 1), false, lighting, false);
 
-		// Grey: used for drop shadow plane
+		// 1: Grey: used for drop shadow plane
 		m_pMats->AddRGBMaterial(RGBf(0.4f, 0.4f, 0.4f), false, false, false);
 
-		// Black
+		// 2: Black
 		m_pMats->AddRGBMaterial(RGBf(0, 0, 0), false, false, false);
 
 		if (bUseSurfaceTypes)
 			MakeSurfaceMaterials();
+
+		// Rather than look through the color map for each pixel, pre-build
+		//  a color lookup table once - should be faster in nearly all cases.
+		float fMin, fMax;
+		GetHeightExtents(fMin, fMax);
+		m_pColorMap->GenerateColorTable(kColorMapTableSize, fMin, fMax);
 	}
 
 	m_pGeode = new vtGeode;
@@ -116,15 +124,12 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 	DPoint3 ep;		// earth point
 	FPoint3 wp;		// world point
 	FPoint3 p[3], norm;
-	RGBf color;
-	float r, g=1.0f, b=0.5f;
 
 	// most TINs are larger in the horizontal dimension than the vertical, so
 	// use horizontal extents as the basis of subdivision
 	DRECT rect = m_EarthExtents;
 	double sizex = rect.Width();
 	double sizey = rect.Height();
-	float height_range = (m_fMaxHeight - m_fMinHeight);
 
 	// make it slightly larger avoid edge condition
 	rect.left -= 0.000001;
@@ -176,7 +181,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 			if (newsize > most)
 				most = newsize;
 		}
-		if (most > 10000)
+		if (most > kMaxChunkVertices)
 		{
 			delete [] bins;
 			divs = divs * 3 / 2;
@@ -245,7 +250,8 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 				// We mush pick a mesh based on surface type
 				int surftype = m_surfidx[tri];
 				if (pTypeMeshes[surftype] == NULL)
-					pTypeMeshes[surftype] = new vtMesh(osg::PrimitiveSet::TRIANGLES, vert_type, in_bin * 3);
+					pTypeMeshes[surftype] = new vtMesh(osg::PrimitiveSet::TRIANGLES,
+						vert_type, in_bin * 3);
 				pMesh = pTypeMeshes[surftype];
 				bTiled = m_surftype_tiled[surftype];
 			}
@@ -273,12 +279,11 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 				}
 				else
 				{
-					// red varies by elevation
-					r = (m_z[vidx] - m_fMinHeight) / height_range;
-
 					pMesh->SetVtxNormal(vert_index, norm);
 
-					color.Set(r, g, b);
+					// Color by elevation.
+					const RGBi &rgb = m_pColorMap->ColorFromTable(m_z[vidx]);
+					RGBf color(rgb);
 					color *= shade;
 					pMesh->SetVtxColor(vert_index, color);
 				}
@@ -306,58 +311,6 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh, int m_matidx)
 
 	// Free up temp arrays
 	delete [] bins;
-
-	/*
-	int base = 0;
-	remaining = verts;
-	while (remaining)
-	{
-		int chunk = remaining;
-		if (chunk > MAX_CHUNK_VERTS)
-			chunk = MAX_CHUNK_VERTS;
-		int tris = chunk / 3;
-
-		vtMesh *pMesh = new vtMesh(GL_TRIANGLES, VT_Normals|VT_Colors, chunk);
-
-		for (i = 0; i < tris; i++)
-		{
-			for (j = 0; j < 3; j++)
-				m_Conversion.ConvertFromEarth(m_vert[base + (i*3+j)], p[j]);
-			norm = ComputeNormal(p[0], p[1], p[2]);
-
-			float shade = norm.Dot(light_dir);	// shading 0 (dark) to 1 (light)
-
-			for (j = 0; j < 3; j++)
-			{
-				r = (m_points[i*3+j].z - m_fMinHeight) / (m_fMaxHeight - m_fMinHeight);
-				pMesh->AddVertex(p[j]);
-				pMesh->SetVtxNormal(i*3+j, norm);
-
-				color.Set(r, g, b);
-				color *= shade;
-				pMesh->SetVtxColor(i*3+j, color);
-			}
-		}
-		m_pGeode->AddMesh(pMesh, 0);
-		m_Meshes.Append(pMesh);
-
-		if (bDropShadowMesh)
-		{
-			vtMesh *pShadowMesh = new vtMesh(GL_TRIANGLES, 0, chunk);
-			for (i = 0; i < chunk; i++)
-			{
-				ep = m_points[base+i];
-				ep.z = m_fMinHeight - 4.9;
-				m_Conversion.ConvertFromEarth(ep, wp);
-				pShadowMesh->AddVertex(wp);
-			}
-			m_pGeode->AddMesh(pShadowMesh, 2);
-		}
-
-		remaining -= chunk;
-		base += chunk;
-	}
-		*/
 
 	if (bDropShadowMesh)
 	{
