@@ -392,8 +392,7 @@ vtGeode *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
  * \param iMatIdx The index of the material to use.
  * \param size	  The dimensions of the block in x, y, z.
  */
-vtGeode *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
-						const FPoint3 &size)
+vtGeode *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx, const FPoint3 &size)
 {
 	vtGeode *pGeode = new vtGeode;
 	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 24);
@@ -403,7 +402,7 @@ vtGeode *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 	return pGeode;
 }
 
-void AddLineMesh(vtGeode *pGeode, int iMatIdx, FPoint3 &p0, FPoint3 &p1)
+void AddLineMesh(vtGeode *pGeode, int iMatIdx, const FPoint3 &p0, const FPoint3 &p1)
 {
 	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 2);
 	mesh->AddLine(p0, p1);

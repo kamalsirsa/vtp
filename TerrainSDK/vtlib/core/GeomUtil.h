@@ -107,7 +107,7 @@ vtGeode *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						float fTiling, int steps);
 vtGeode *CreateBlockGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint3 &size);
-void AddLineMesh(vtGeode *pGeode, int iMatIdx, FPoint3 &p0, FPoint3 &p1);
+void AddLineMesh(vtGeode *pGeode, int iMatIdx, const FPoint3 &p0, const FPoint3 &p1);
 vtGeode *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res);
 vtGeode *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
