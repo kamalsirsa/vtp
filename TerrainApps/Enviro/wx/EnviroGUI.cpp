@@ -382,6 +382,8 @@ void EnviroGUI::ShowMessage(const vtString &str)
 
 ///////////////////////////////////////////////////////////////////////
 
+#if wxUSE_JOYSTICK || WIN32
+
 vtJoystickEngine::vtJoystickEngine()
 {
 	m_fSpeed = 1.0f;
@@ -439,6 +441,8 @@ void vtJoystickEngine::Eval()
 	}
 	m_fLastTime = fTime;
 }
+
+#endif  // wxUSE_JOYSTICK || WIN32
 
 
 ///////////////////////////////////////////////////////////////////////
