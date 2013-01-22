@@ -135,6 +135,9 @@ protected:
 	void _UpdateIndicesInInBin(int bin);
 	void _CompareBins(int bin1, int bin2);
 
+	bool FindTriangleOnEarth(const DPoint2 &p, float &fAltitude,
+		int &iTriangle, bool bTrue = false) const;
+
 	DLine2				m_vert;
 	std::vector<float>	m_z;
 	std::vector<int>	m_tri;

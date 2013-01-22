@@ -1314,6 +1314,13 @@ int vtTin::MemoryNeededToLoad() const
 
 bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const
 {
+	int unused_triangle;
+	return FindTriangleOnEarth(p, fAltitude, unused_triangle, bTrue);
+}
+
+bool vtTin::FindTriangleOnEarth(const DPoint2 &p, float &fAltitude, int &iTriangle,
+	bool bTrue) const
+{
 	uint tris = NumTris();
 
 	// If we have some triangle bins, they can be used for a much faster test
@@ -1328,7 +1335,10 @@ bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) 
 		for (uint i = 0; i < bin->size(); i++)
 		{
 			if (TestTriangle(bin->at(i), p, fAltitude))
+			{
+				iTriangle = bin->at(i);
 				return true;
+			}
 		}
 		// If it was not in any of these bins, then it did not hit anything
 		return false;
@@ -1337,7 +1347,10 @@ bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) 
 	for (uint i = 0; i < tris; i++)
 	{
 		if (TestTriangle(i, p, fAltitude))
+		{
+			iTriangle = i;
 			return true;
+		}
 	}
 	return false;
 }
@@ -1349,7 +1362,31 @@ bool vtTin::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 	DPoint3 earth;
 	m_Conversion.ConvertToEarth(p3, earth);
 
-	return FindAltitudeOnEarth(DPoint2(earth.x, earth.y), fAltitude, bTrue);
+	// If we need to provide a normal, do a separate test that gets the triangle
+	if (vNormal != NULL)
+	{
+		int iTriangle;
+		const bool hit = FindTriangleOnEarth(DPoint2(earth.x, earth.y),
+			fAltitude, iTriangle, bTrue);
+		if (hit)
+		{
+			const int v0 = m_tri[iTriangle*3];
+			const int v1 = m_tri[iTriangle*3+1];
+			const int v2 = m_tri[iTriangle*3+2];
+			const DPoint2 &p1 = m_vert[v0];
+			const DPoint2 &p2 = m_vert[v1];
+			const DPoint2 &p3 = m_vert[v2];
+			FPoint3 wp0, wp1, wp2;
+			m_Conversion.ConvertFromEarth(DPoint3(p1.x, p1.y, m_z[v0]), wp0);
+			m_Conversion.ConvertFromEarth(DPoint3(p2.x, p2.y, m_z[v1]), wp1);
+			m_Conversion.ConvertFromEarth(DPoint3(p3.x, p3.y, m_z[v2]), wp2);
+			*vNormal = (wp1 - wp0).Cross(wp2 - wp0);
+			vNormal->Normalize();
+		}
+		return hit;
+	}
+	else
+		return FindAltitudeOnEarth(DPoint2(earth.x, earth.y), fAltitude, bTrue);
 }
 
 bool vtTin::ConvertProjection(const vtProjection &proj_new)

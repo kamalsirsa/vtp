@@ -110,6 +110,7 @@ Enviro::Enviro() : vtTerrainScene()
 
 	// There are more buildings with all right angles than those without..
 	m_bConstrainAngles = true;
+	m_bShowVerticalLine = false;
 }
 
 Enviro::~Enviro()
@@ -700,10 +701,10 @@ void Enviro::DoCursorOnTerrain()
 		m_EarthPos = earthpos;
 
 		// Attempt to scale the 3d cursor, for ease of use.
-		// Rather than keeping it the same size in world space (it would
-		// be too small in the distance) or the same size in screen space
-		// (would look confusing without the spatial distance cue) we
-		// compromise and scale it based on the square root of distance.
+		// Rather than keeping it the same size in world space (it would be too
+		// small in the distance) or the same size in screen space (would look
+		// confusing without the spatial distance cue) we compromise and scale
+		// it based on the square root of distance.
 		FPoint3 gpos;
 		if (m_pTerrainPicker->GetCurrentPoint(gpos))
 		{
@@ -718,6 +719,9 @@ void Enviro::DoCursorOnTerrain()
 
 		// Inform GUI, in case it cares.
 		EarthPosUpdated();
+
+		if (m_bShowVerticalLine)
+			UpdateVerticalLine();
 	}
 }
 
@@ -2149,7 +2153,7 @@ bool Enviro::OnMouseCompass(vtMouseEvent &event)
 }
 
 
-void Enviro::SetupArcMesh()
+void Enviro::SetupArcMaterials()
 {
 	if (!m_pArcMats)
 	{
@@ -2158,6 +2162,12 @@ void Enviro::SetupArcMesh()
 		m_pArcMats->AddRGBMaterial(RGBf(1, 0, 0), false, false); // red
 		m_pArcMats->AddRGBMaterial(RGBf(1, 0.5f, 0), true, true); // orange lit
 	}
+}
+
+void Enviro::SetupArcMesh()
+{
+	SetupArcMaterials();
+
 	// create geometry container, if needed
 	if (!m_pArc)
 	{
@@ -2183,10 +2193,7 @@ void Enviro::FreeArc()
 void Enviro::FreeArcMesh()
 {
 	if (m_pArc)
-	{
-		for (int i = m_pArc->NumMeshes()-1; i >= 0; i--)
-			m_pArc->RemoveMesh(m_pArc->GetMesh(i));
-	}
+		m_pArc->RemoveAllMeshes();
 }
 
 void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
@@ -2910,6 +2917,99 @@ void Enviro::SetHUDMessageText(const char *message)
 	}
 	if (m_pHUDMessage)
 		m_pHUDMessage->SetText(message);
+}
+
+void Enviro::ShowVerticalLine(bool bShow)
+{
+	if (bShow)
+		MakeVerticalLine();
+	m_bShowVerticalLine = bShow;
+}
+
+bool Enviro::GetShowVerticalLine()
+{
+	return m_bShowVerticalLine;
+}
+
+void Enviro::MakeVerticalLine()
+{
+	// Share materials with the Arc
+	SetupArcMaterials();
+
+	// create geometry container, if needed
+	if (!m_pVertLine)
+	{
+		m_pVertLine = new vtGeode;
+		if (m_state == AS_Terrain)
+			GetCurrentTerrain()->GetTopGroup()->addChild(m_pVertLine);
+		m_pVertLine->SetMaterials(m_pArcMats);
+	}
+}
+
+void Enviro::UpdateVerticalLine()
+{
+	MakeVerticalLine();
+	m_pVertLine->RemoveAllMeshes();
+
+	vtTerrain *pTerr = GetCurrentTerrain();
+	LayerSet &layers = pTerr->GetLayers();
+
+	FPoint3 world_pos;
+	if (!m_pTerrainPicker->GetCurrentPoint(world_pos))
+		return;
+
+	std::vector<float> samples;
+	std::vector<FPoint3> normals;
+	float fMin = world_pos.y, fMax = world_pos.y;
+	for (uint i = 0; i < layers.size(); i++)
+	{
+		if (layers[i]->GetType() == LT_ELEVATION)
+		{
+			vtElevLayer *pEL = dynamic_cast<vtElevLayer *>(layers[i].get());
+
+			float fAlt;
+			FPoint3 normal;
+			if (pEL->GetTin()->FindAltitudeAtPoint(world_pos, fAlt, true, 0, &normal))
+			{
+				samples.push_back(fAlt);
+				normals.push_back(normal);
+				if (fAlt < fMin) fMin = fAlt;
+				if (fAlt > fMax) fMax = fAlt;
+			}
+		}
+	}
+
+	// One yellow bar going through all the points.
+	vtMesh *mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, 2);
+	mesh->AddLine(FPoint3(world_pos.x, fMin, world_pos.z),
+				  FPoint3(world_pos.x, fMax, world_pos.z));
+	m_pVertLine->AddMesh(mesh, 0);	// yellow
+	mesh->SetLineWidth(2);
+
+	// A red cross at the surface of each elevation layer.
+	mesh = new vtMesh(osg::PrimitiveSet::LINES, 0, samples.size() * 4);
+	m_pVertLine->AddMesh(mesh, 1);	// red
+	mesh->SetLineWidth(3);
+
+	// Make them large enough to see at distance
+	const float distance = (m_pNormalCamera->GetTrans() - world_pos).Length();
+	float length = sqrt(distance);
+	if (length < 3) length = 3.0f;
+
+	for (uint j = 0; j < samples.size(); j++)
+	{
+		const FPoint3 &normal = normals[j];
+		const FPoint3 right(1, 0, 0);
+		FPoint3 v1 = normal.Cross(right);
+		v1.Normalize();
+		FPoint3 v2 = normal.Cross(v1);
+
+		const FPoint3 p(world_pos.x, samples[j], world_pos.z);
+		v1 *= length;
+		v2 *= length;
+		mesh->AddLine(p - v1, p + v1);
+		mesh->AddLine(p - v2, p + v2);
+	}
 }
 
 void Enviro::CreateElevationLegend()

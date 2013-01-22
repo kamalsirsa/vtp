@@ -680,11 +680,7 @@ void vtFence3d::DestroyGeometry()
 	if (m_pFenceGeom.valid())
 	{
 		// Destroy the meshes so they can be re-made
-		while (m_pFenceGeom->NumMeshes())
-		{
-			vtMesh *pMesh = m_pFenceGeom->GetMesh(0);
-			m_pFenceGeom->RemoveMesh(pMesh);
-		}
+		m_pFenceGeom->RemoveAllMeshes();
 		m_pHighlightMesh = NULL;
 	}
 	m_bBuilt = false;

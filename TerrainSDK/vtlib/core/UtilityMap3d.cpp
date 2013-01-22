@@ -109,12 +109,7 @@ void vtLine3d::CreateGeometry(vtHeightField3d *pHeightField, int matidx)
 void vtLine3d::DestroyGeometry()
 {
 	// Destroy the meshes so they can be re-made
-	while (m_pWireGeom->NumMeshes())
-	{
-		vtMesh *pMesh = m_pWireGeom->GetMesh(0);
-		m_pWireGeom->RemoveMesh(pMesh);
-	}
-
+	m_pWireGeom->RemoveAllMeshes();
 	m_bBuilt = false;
 }
 

@@ -136,6 +136,8 @@ EVT_MENU(ID_VIEW_COMPASS,			EnviroFrame::OnViewCompass)
 EVT_UPDATE_UI(ID_VIEW_COMPASS,		EnviroFrame::OnUpdateViewCompass)
 EVT_MENU(ID_VIEW_MAP_OVERVIEW,		EnviroFrame::OnViewMapOverView)
 EVT_UPDATE_UI(ID_VIEW_MAP_OVERVIEW,	EnviroFrame::OnUpdateViewMapOverView)
+EVT_MENU(ID_VIEW_VERT_LINE,			EnviroFrame::OnViewVertLine)
+EVT_UPDATE_UI(ID_VIEW_VERT_LINE,	EnviroFrame::OnUpdateViewVertLine)
 EVT_MENU(ID_VIEW_DRIVE,				EnviroFrame::OnViewDrive)
 EVT_UPDATE_UI(ID_VIEW_DRIVE,		EnviroFrame::OnUpdateViewDrive)
 EVT_MENU(ID_VIEW_SETTINGS,			EnviroFrame::OnViewSettings)
@@ -189,7 +191,7 @@ EVT_UPDATE_UI(ID_TIME_DIALOG,	EnviroFrame::OnUpdateInOrbitOrTerrain)
 EVT_UPDATE_UI(ID_TIME_STOP,		EnviroFrame::OnUpdateInOrbitOrTerrain)
 EVT_UPDATE_UI(ID_TIME_FASTER,	EnviroFrame::OnUpdateInOrbitOrTerrain)
 
-EVT_MENU(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnDynamic)
+EVT_MENU(ID_TERRAIN_SURFACE,	EnviroFrame::OnSurface)
 EVT_MENU(ID_TERRAIN_CULLEVERY,	EnviroFrame::OnCullEvery)
 EVT_MENU(ID_TERRAIN_CULLONCE,	EnviroFrame::OnCullOnce)
 EVT_MENU(ID_TERRAIN_SKY,		EnviroFrame::OnSky)
@@ -208,7 +210,7 @@ EVT_MENU(ID_TERRAIN_DISTRIB_VEHICLES,	EnviroFrame::OnTerrainDistribVehicles)
 EVT_MENU(ID_TERRAIN_WRITE_ELEVATION,	EnviroFrame::OnTerrainWriteElevation)
 EVT_MENU(ID_TERRAIN_ADD_CONTOUR,	EnviroFrame::OnTerrainAddContour)
 
-EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	EnviroFrame::OnUpdateDynamic)
+EVT_UPDATE_UI(ID_TERRAIN_SURFACE,	EnviroFrame::OnUpdateSurface)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, EnviroFrame::OnUpdateCullEvery)
 EVT_UPDATE_UI(ID_TERRAIN_CULLONCE,	EnviroFrame::OnUpdateIsDynTerrain)
 EVT_UPDATE_UI(ID_TERRAIN_SKY,		EnviroFrame::OnUpdateSky)
@@ -358,6 +360,7 @@ void EnviroFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_ELEV_LEGEND, _("Elevation Legend"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_COMPASS, _("Compass"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_MAP_OVERVIEW, _("Overview"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_VERT_LINE, _("Vertical Measure Line"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_DRIVE, _("Drive Vehicle"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
@@ -395,12 +398,9 @@ void EnviroFrame::CreateMenus()
 		m_pNavMenu->Append(0, _("Navigation Style"), navstyleMenu);
 
 	m_pTerrainMenu = new wxMenu;
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _("LOD Terrain Surface\tF3"));
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_CULLEVERY, _("Cull every frame"));
-	m_pTerrainMenu->Append(ID_TERRAIN_CULLONCE, _("Cull once"));
-	m_pTerrainMenu->AppendSeparator();
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_SURFACE, _("Show Terrain Surface\tF3"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _("Show Sky\tF4"));
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _("Show Ocean\tF5"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _("Show Ocean Plane\tF5"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_PLANTS, _("Show Plants\tF6"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_STRUCTURES, _("Show Structures\tF7"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _("Show Roads\tF8"));
@@ -416,6 +416,9 @@ void EnviroFrame::CreateMenus()
 	m_pTerrainMenu->Append(ID_TERRAIN_DISTRIB_VEHICLES, _("&Distribute Vehicles (test)"));
 	m_pTerrainMenu->Append(ID_TERRAIN_WRITE_ELEVATION, _("Write Elevation to BT"));
 	m_pTerrainMenu->Append(ID_TERRAIN_ADD_CONTOUR, _("Add Contours"));
+	m_pTerrainMenu->AppendSeparator();
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_CULLEVERY, _("Cull every frame"));
+	m_pTerrainMenu->Append(ID_TERRAIN_CULLONCE, _("Cull once"));
 	m_pMenuBar->Append(m_pTerrainMenu, _("Te&rrain"));
 
 	if (m_bEnableEarth)
@@ -686,6 +689,25 @@ void EnviroFrame::OnUpdateViewMapOverView(wxUpdateUIEvent& event)
 	}
 	event.Enable(bEnable);
 	event.Check(g_App.GetShowMapOverview());
+}
+
+void EnviroFrame::OnViewVertLine(wxCommandEvent& event)
+{
+	g_App.ShowVerticalLine(!g_App.GetShowVerticalLine());
+}
+
+void EnviroFrame::OnUpdateViewVertLine(wxUpdateUIEvent& event)
+{
+	// Only supported in Terrain View with multiple elevation layers
+	bool bEnable = false;
+	vtTerrain *curr = g_App.GetCurrentTerrain();
+	if (curr)
+	{
+		int elev_layers = curr->NumLayersOfType(LT_ELEVATION);
+		bEnable = (elev_layers > 0);
+	}
+	event.Enable(bEnable);
+	event.Check(g_App.GetShowVerticalLine());
 }
 
 void EnviroFrame::OnViewDrive(wxCommandEvent& event)
@@ -1435,7 +1457,7 @@ void EnviroFrame::OnTimeFaster(wxCommandEvent& event)
 
 /////////////////////// Terrain menu ///////////////////////////
 
-void EnviroFrame::OnDynamic(wxCommandEvent& event)
+void EnviroFrame::OnSurface(wxCommandEvent& event)
 {
 	vtTerrain *t = g_App.GetCurrentTerrain();
 	if (!t) return;
@@ -1444,37 +1466,11 @@ void EnviroFrame::OnDynamic(wxCommandEvent& event)
 	t->SetFeatureVisible(TFT_TERRAINSURFACE, !on);
 }
 
-void EnviroFrame::OnUpdateDynamic(wxUpdateUIEvent& event)
+void EnviroFrame::OnUpdateSurface(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = g_App.GetCurrentTerrain();
 	event.Check(t && t->GetFeatureVisible(TFT_TERRAINSURFACE));
 	event.Enable(t != NULL);
-}
-
-void EnviroFrame::OnCullEvery(wxCommandEvent& event)
-{
-	vtTerrain *t = g_App.GetCurrentTerrain();
-	if (!t) return;
-
-	m_bCulleveryframe = !m_bCulleveryframe;
-	t->GetDynTerrain()->SetCull(m_bCulleveryframe);
-}
-
-void EnviroFrame::OnUpdateCullEvery(wxUpdateUIEvent& event)
-{
-	vtTerrain *t = g_App.GetCurrentTerrain();
-	event.Enable(t && t->GetDynTerrain());
-	event.Check(m_bCulleveryframe);
-}
-
-void EnviroFrame::OnCullOnce(wxCommandEvent& event)
-{
-	vtTerrain *t = g_App.GetCurrentTerrain();
-	if (!t) return;
-	vtDynTerrainGeom *pTerr = t->GetDynTerrain();
-	if (!pTerr) return;
-
-	pTerr->CullOnce();
 }
 
 void EnviroFrame::OnSky(wxCommandEvent& event)
@@ -1837,6 +1833,32 @@ void EnviroFrame::OnUpdateIsDynTerrain(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = g_App.GetCurrentTerrain();
 	event.Enable(t && t->GetDynTerrain());
+}
+
+void EnviroFrame::OnCullEvery(wxCommandEvent& event)
+{
+	vtTerrain *t = g_App.GetCurrentTerrain();
+	if (!t) return;
+
+	m_bCulleveryframe = !m_bCulleveryframe;
+	t->GetDynTerrain()->SetCull(m_bCulleveryframe);
+}
+
+void EnviroFrame::OnUpdateCullEvery(wxUpdateUIEvent& event)
+{
+	vtTerrain *t = g_App.GetCurrentTerrain();
+	event.Enable(t && t->GetDynTerrain());
+	event.Check(m_bCulleveryframe);
+}
+
+void EnviroFrame::OnCullOnce(wxCommandEvent& event)
+{
+	vtTerrain *t = g_App.GetCurrentTerrain();
+	if (!t) return;
+	vtDynTerrainGeom *pTerr = t->GetDynTerrain();
+	if (!pTerr) return;
+
+	pTerr->CullOnce();
 }
 
 

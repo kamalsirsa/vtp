@@ -244,6 +244,8 @@ public:
 	// UI
 	void UpdateCompass();
 	void SetHUDMessageText(const char *message);
+	void ShowVerticalLine(bool bShow);
+	bool GetShowVerticalLine();
 
 	// global state
 	AppState	m_state;
@@ -269,6 +271,7 @@ public:
 	IPoint2		m_MouseDown, m_MouseLast;
 	float		m_StartRotation;
 	bool		m_bConstrainAngles;
+	bool		m_bShowVerticalLine;
 
 	// The following can be overridden by GUI code, to handle situations
 	//  in which the GUI may need to be informed of what happens.
@@ -318,6 +321,7 @@ protected:
 	void SetupGlobe();
 	void LookUpTerrainLocations();
 	void SetupTerrain(vtTerrain *pTerr);
+	void SetupArcMaterials();
 	void SetupArcMesh();
 	void FreeArc();
 	void FreeArcMesh();
@@ -331,6 +335,8 @@ protected:
 	void FlyInStage2();
 	bool IsFlyingInFromSpace() { return (m_iFlightStage != 0); }
 	void SetWindowBox(const IPoint2 &ul, const IPoint2 &lr);
+	void MakeVerticalLine();
+	void UpdateVerticalLine();
 
 	// plants
 	vtSpeciesList3d	*m_pSpeciesList;
@@ -360,6 +366,9 @@ protected:
 	float		m_fDistToolHeight;
 	bool		m_bMeasurePath;
 	DLine2		m_distance_path;
+
+	// vertical line
+	vtGeode		*m_pVertLine;
 
 	// view and navigation
 	vtCameraPtr	m_pNormalCamera;

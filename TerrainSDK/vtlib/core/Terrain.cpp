@@ -2665,6 +2665,17 @@ vtLayer *vtTerrain::GetOrCreateLayerOfType(LayerType type)
 	return layer;
 }
 
+uint vtTerrain::NumLayersOfType(LayerType type)
+{
+	uint count = 0;
+	for (uint i = 0; i < m_Layers.size(); i++)
+	{
+		if (m_Layers[i]->GetType() == type)
+			count++;
+	}
+	return count;
+}
+
 
 ///////////////////////////////////////////////////////////////////////
 // Plants

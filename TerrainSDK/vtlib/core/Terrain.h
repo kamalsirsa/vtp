@@ -212,6 +212,7 @@ public:
 	void SetActiveLayer(vtLayer *lay) { m_pActiveLayer = lay; }
 	vtLayer *GetActiveLayer() { return m_pActiveLayer; }
 	vtLayer *GetOrCreateLayerOfType(LayerType type);
+	uint NumLayersOfType(LayerType type);
 
 	// plants
 	vtVegLayer *GetVegLayer();

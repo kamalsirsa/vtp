@@ -131,6 +131,7 @@ protected:
 	void OnViewElevLegend(wxCommandEvent& event);
 	void OnViewCompass(wxCommandEvent& event);
 	void OnViewMapOverView(wxCommandEvent& event);
+	void OnViewVertLine(wxCommandEvent& event);
 	void OnViewDrive(wxCommandEvent& event);
 	void OnViewSettings(wxCommandEvent& event);
 	void OnViewLocations(wxCommandEvent& event);
@@ -153,6 +154,7 @@ protected:
 	void OnUpdateViewElevLegend(wxUpdateUIEvent& event);
 	void OnUpdateViewCompass(wxUpdateUIEvent& event);
 	void OnUpdateViewMapOverView(wxUpdateUIEvent& event);
+	void OnUpdateViewVertLine(wxUpdateUIEvent& event);
 	void OnUpdateViewDrive(wxUpdateUIEvent& event);
 	void OnUpdateViewLocations(wxUpdateUIEvent& event);
 	void OnUpdateViewStatusBar(wxUpdateUIEvent& event);
@@ -228,7 +230,7 @@ protected:
 	void OnTimeStop(wxCommandEvent& event);
 	void OnTimeFaster(wxCommandEvent& event);
 
-	void OnDynamic(wxCommandEvent& event);
+	void OnSurface(wxCommandEvent& event);
 	void OnCullEvery(wxCommandEvent& event);
 	void OnCullOnce(wxCommandEvent& event);
 	void OnSky(wxCommandEvent& event);
@@ -247,7 +249,7 @@ protected:
 	void OnTerrainWriteElevation(wxCommandEvent& event);
 	void OnTerrainAddContour(wxCommandEvent& event);
 
-	void OnUpdateDynamic(wxUpdateUIEvent& event);
+	void OnUpdateSurface(wxUpdateUIEvent& event);
 	void OnUpdateCullEvery(wxUpdateUIEvent& event);
 	void OnUpdateSky(wxUpdateUIEvent& event);
 	void OnUpdateOcean(wxUpdateUIEvent& event);

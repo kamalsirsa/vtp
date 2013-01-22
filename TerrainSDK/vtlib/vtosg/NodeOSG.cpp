@@ -1484,6 +1484,12 @@ void vtGeode::RemoveMesh(vtMesh *pMesh)
 	removeDrawable(pMesh);
 }
 
+void vtGeode::RemoveAllMeshes()
+{
+	// This is a vector of ref_ptrs, so it will free meshes as appropriate.
+	_drawables.clear();
+}
+
 uint vtGeode::NumMeshes() const
 {
 	return getNumDrawables();

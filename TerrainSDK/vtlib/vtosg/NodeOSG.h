@@ -305,6 +305,10 @@ public:
 		currently contained. */
 	void RemoveMesh(vtMesh *pMesh);
 
+	/** Remove all meshes from the geomtry. They are refcounted so there is no
+		need to worry about freeing them. */
+	void RemoveAllMeshes();
+
 	/** Add a text mesh to this geometry.
 		\param pMesh The mesh to add
 		\param iMatIdx The material index for this mesh, which is an index
