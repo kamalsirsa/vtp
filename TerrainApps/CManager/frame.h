@@ -26,24 +26,6 @@ class vtGeode;
 class vtTransform;
 class ItemGroup;
 
-class Splitter2 : public wxSplitterWindow
-{
-public:
-	Splitter2(wxWindow *parent, wxWindowID id = -1,
-			  const wxPoint& pos = wxDefaultPosition,
-			  const wxSize& size = wxDefaultSize,
-			  long style = wxSP_3D|wxCLIP_CHILDREN,
-			  const wxString& name = _T("splitter")) :
-		wxSplitterWindow(parent, id, pos, size, style, name)
-	{
-		bResetting = false;
-	}
-	virtual void SizeWindows();
-
-	bool bResetting;
-	int m_last;
-};
-
 class vtFrame: public wxFrame
 {
 public:
@@ -102,7 +84,7 @@ public:
 	wxToolBar		*m_pToolbar;
 
 	wxSplitterWindow *m_splitter;
-	Splitter2		 *m_splitter2;
+	wxSplitterWindow *m_splitter2;
 	wxWindow		*m_blank;
 	MyTreeCtrl		*m_pTree;		// left child of splitter
 

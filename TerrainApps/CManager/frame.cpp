@@ -74,23 +74,6 @@ END_EVENT_TABLE()
 
 
 //////////////////////////////////////////////////////////////////////////
-// Splitter window management
-
-void Splitter2::SizeWindows()
-{
-	if (!bResetting)
-	{
-		int pos = GetSashPosition();
-		if (pos != 0) m_last = pos;
-//		int w, h;
-//		GetClientSize(&w, &h);
-//		if (h > 190)
-//			SetSashPosition(h - 180, false);
-	}
-	wxSplitterWindow::SizeWindows();
-}
-
-//////////////////////////////////////////////////////////////////////////
 // vtFrame class implementation
 //
 
@@ -181,7 +164,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	// splitters
 	m_splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition,
 		wxDefaultSize, wxSP_3D /*| wxSP_LIVE_UPDATE*/);
-	m_splitter2 = new Splitter2(m_splitter, wxID_ANY, wxDefaultPosition,
+	m_splitter2 = new wxSplitterWindow(m_splitter, wxID_ANY, wxDefaultPosition,
 		wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
 	m_blank = new Blank(m_splitter2); // (wxWindowID) -1, _T("blank"), wxDefaultPosition);
 
