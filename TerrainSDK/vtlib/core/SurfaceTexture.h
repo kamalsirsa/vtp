@@ -31,7 +31,7 @@ public:
 	ImagePtr		m_pUnshadedImage;
 	ImagePtr		m_pTextureImage;
 	vtMaterialArrayPtr m_pMaterials;
-	auto_ptr<ColorMap>	m_pColorMap;
+	std::shared_ptr<ColorMap>	m_pColorMap;
 
 protected:
 	void LoadSingleTexture(const TParams &options);
@@ -41,5 +41,8 @@ protected:
 	/** Color from elevation. */
 	void PaintDib(const vtHeightFieldGrid3d *pHFGrid, bool progress_callback(int) = NULL);
 };
+
+// Helper
+ColorMap *LoadColorMap(const vtString &fname);
 
 #endif  // VTLIB_SURFACE_TEXTURE_H

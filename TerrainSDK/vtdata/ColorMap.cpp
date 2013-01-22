@@ -17,6 +17,10 @@ ColorMap::ColorMap()
 	m_bRelative = true;
 }
 
+ColorMap::~ColorMap()
+{
+}
+
 bool ColorMap::Save(const char *fname) const
 {
 	// watch out for %f

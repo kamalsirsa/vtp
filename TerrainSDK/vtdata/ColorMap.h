@@ -18,6 +18,8 @@ class ColorMap
 {
 public:
 	ColorMap();
+	~ColorMap();
+
 	bool Save(const char *fname) const;
 	bool Load(const char *fname);
 	void Add(float elev, const RGBi &color);

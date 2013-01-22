@@ -49,7 +49,7 @@ TinTextureDlg::TinTextureDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	AddValidator(this, ID_GEOTYPICAL, &m_bGeotypical);
 	AddValidator(this, ID_TFILE_GEOTYPICAL, &m_strTextureGeotypical);
 	AddNumValidator(this, ID_GEOTYPICAL_SCALE, &m_fGeotypicalScale);
-	AddNumValidator(this, ID_OPACITY, &m_fOpacity);
+	AddNumValidator(this, ID_OPACITY, &m_fOpacity, 2);
 	AddValidator(this, ID_OPACITY_SLIDER, &m_iOpacity);
 
 	GetSizer()->SetSizeHints(this);
@@ -137,8 +137,9 @@ void TinTextureDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	m_bSetting = true;
 
-	vtStringArray &paths = vtGetDataPath();
+	m_tfile_geotypical->Clear();
 
+	vtStringArray &paths = vtGetDataPath();
 	for (uint i = 0; i < paths.size(); i++)
 	{
 		// fill the "geotypical" control with available bitmap files

@@ -369,7 +369,7 @@ void vtTerrain::ReshadeTexture(vtTransform *pSunLight, bool progress_callback(in
 
 	// Make sure OSG knows that the texture has changed
 	vtMaterial *mat = m_Texture.m_pMaterials->at(0);
-	mat->SetTexture(m_Texture.m_pTextureImage);
+	mat->SetTexture2D(m_Texture.m_pTextureImage);
 	mat->ModifiedTexture();
 }
 
@@ -1997,9 +1997,7 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 		return true;
 
 	int type = m_Params.GetValueInt(STR_SURFACE_TYPE);
-	int tex = m_Params.GetValueInt(STR_TEXTURE);
-	if (type == 0 ||						// Single grid
-		(type == 1 && tex == TE_SINGLE))	// TIN, single texture
+	if (type == 0)		// Single grid
 	{
 		// measure total texture processing time
 		clock_t c1 = clock();
@@ -2012,9 +2010,9 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 		// The terrain's base texture will always use unit 0
 		m_TextureUnits.ReserveTextureUnit();
 	}
-	if (type == 1 && tex == TE_DERIVED)	// TIN, colormap
+	if (type == 1)	// TIN
 	{
-		m_Texture.MakeColorMap(m_Params);
+		m_pTin->MakeMaterialsFromOptions(m_Params);
 	}
 	return true;
 }
@@ -2043,21 +2041,7 @@ bool vtTerrain::CreateStep4()
 
 bool vtTerrain::CreateFromTIN()
 {
-	bool bDropShadow = true;
-
-	// If we are using a single texture, then use that existing texture material
-	// for the TIN.
-	int tex = m_Params.GetValueInt(STR_TEXTURE);
-	if (tex == TE_SINGLE)
-	{
-		// Use the texture that was loaded normally. It is the first material.
-		m_pTin->SetMaterial(m_Texture.m_pMaterials, 0);
-	}
-	if (tex == TE_DERIVED)
-	{
-		// Use the color map.
-		m_pTin->SetColorMap(m_Texture.m_pColorMap.get());
-	}
+	bool bDropShadow = false;
 
 	// Make the TIN's geometry.
 	vtGeode *geode = m_pTin->CreateGeometry(bDropShadow);

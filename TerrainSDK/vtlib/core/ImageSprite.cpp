@@ -118,7 +118,7 @@ void vtImageSprite::SetImage(osg::Image *pImage)
 	if (!m_pMats)
 		return;
 	vtMaterial *mat = m_pMats->at(0).get();
-	mat->SetTexture(pImage);
+	mat->SetTexture2D(pImage);
 }
 
 

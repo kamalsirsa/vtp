@@ -520,7 +520,7 @@ bool vtSkyDome::SetTexture(const char *filename)
 	if (m_pTextureMat)
 	{
 		// if it hasn't changed, return
-		osg::Image *image = m_pTextureMat->GetTexture();
+		osg::Image *image = m_pTextureMat->GetTextureImage();
 		if (filename && image->getFileName() == filename)
 			return true;
 

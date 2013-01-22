@@ -89,7 +89,7 @@ int vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor 
 	vtMaterial *pMat = MakeMaterial(descriptor, color);
 
 	vtString path = FindFileOnPaths(vtGetDataPath(), descriptor->GetTextureFilename());
-	pMat->SetTexture(osgDB::readImageFile((const char *)path));
+	pMat->SetTexture2D(osgDB::readImageFile((const char *)path));
 	pMat->SetClamp(false);	// material needs to repeat
 
 	if (descriptor->GetBlending())
@@ -125,7 +125,7 @@ int vtMaterialDescriptorArray3d::CreateColorableTextureMaterial(vtMaterialDescri
 		return -1;
 
 	vtMaterial *pMat = MakeMaterial(descriptor, color);
-	pMat->SetTexture(img);
+	pMat->SetTexture2D(img);
 	pMat->SetMipMap(true);
 	pMat->SetClamp(false);
 	if (descriptor->GetBlending())

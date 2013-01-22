@@ -19,7 +19,7 @@
 /*@{*/
 
 typedef osg::ref_ptr<osg::Image> ImagePtr;
-typedef osg::ref_ptr<osg::Texture2D> TexturePtr;
+typedef osg::ref_ptr<osg::Texture> TexturePtr;
 
 /**
  A material is a description of how geometry (typically, a surface) should be
@@ -61,12 +61,17 @@ public:
 	void SetWireframe(bool bOn);
 	bool GetWireframe() const;
 
-	void SetTexture(osg::Image *pImage, int unit = 0);
-	osg::Image	*GetTexture(int unit = 0) const;
+	void SetTexture1D(osg::Image *pImage, int unit = 0);
+	void SetTexture2D(osg::Image *pImage, int unit = 0);
+
+	osg::Image	*GetTextureImage(int unit = 0) const;
 	void ModifiedTexture(int unit = 0);
 
-	void SetTexGen(const FPoint2 &scale, const FPoint2 &offset,
-		int iTextureMode, int unit = 0);
+	void SetTexGen1D(const FPoint3 &scale, float offset, int unit = 0);
+	void SetTexGen2D(const FPoint2 &scale, const FPoint2 &offset, int unit = 0);
+
+	void SetTextureMode(int iTextureMode, int unit = 0);
+	uint NextAvailableTextureUnit();
 
 	void SetClamp(bool bClamp, int unit = 0);
 	bool GetClamp(int unit = 0) const;
@@ -85,6 +90,7 @@ public:
 
 	void SetEmission(const RGBf &c) { SetEmission(c.r, c.g, c.b); }
 	void SetEmission(float f) { SetEmission(f, f, f); }
+
 
 	// global option
 	static bool s_bTextureCompression;

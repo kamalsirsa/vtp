@@ -7,7 +7,7 @@
 
 #include "vtlib/vtlib.h"
 #include <osg/PolygonMode>
-
+#include <osg/Texture1D>
 
 ///////////////////////////////////
 
@@ -239,19 +239,12 @@ bool vtMaterial::GetWireframe() const
 /**
  * Set the texture for this material.
  */
-void vtMaterial::SetTexture(osg::Image *pImage, int unit)
+void vtMaterial::SetTexture2D(osg::Image *pImage, int unit)
 {
-	if (unit >= (int) m_Textures.size())
-		m_Textures.resize(unit+1);
-	m_Textures[unit] = new osg::Texture2D;
+	osg::Texture2D *texture2d = new osg::Texture2D;
 
 	// this stores a reference so that it won't get deleted without this material's permission
-	m_Textures[unit]->setImage(pImage);
-
-	// also store a reference pointer
-	if (unit >= (int) m_Images.size())
-		m_Images.resize(unit+1);
-	m_Images[unit] = pImage;
+	texture2d->setImage(pImage);
 
 	/** "Note, If the mode is set USE_IMAGE_DATA_FORMAT, USE_ARB_COMPRESSION,
 	 * USE_S3TC_COMPRESSION the internalFormat is automatically selected, and
@@ -259,7 +252,7 @@ void vtMaterial::SetTexture(osg::Image *pImage, int unit)
 //	m_pTexture->setInternalFormatMode(osg::Texture::USE_S3TC_DXT1_COMPRESSION);
 	if (s_bTextureCompression)
 		//m_pTexture->setInternalFormatMode(osg::Texture::USE_ARB_COMPRESSION);
-		m_Textures[unit]->setInternalFormatMode(osg::Texture::USE_S3TC_DXT3_COMPRESSION);
+		texture2d->setInternalFormatMode(osg::Texture::USE_S3TC_DXT3_COMPRESSION);
 
 	// From the OSG list: "Why doesn't the OSG deallocate image buffer right
 	// *after* a glTextImage2D?
@@ -272,13 +265,45 @@ void vtMaterial::SetTexture(osg::Image *pImage, int unit)
 	//  footprint:
 //	m_pTexture->setUnRefImageDataAfterApply(true);
 
-	setTextureAttributeAndModes(unit, m_Textures[unit].get(), SA_ON);
+	setTextureAttributeAndModes(unit, texture2d, SA_ON);
+
+	// Remember for later
+	if (unit >= (int) m_Textures.size())
+		m_Textures.resize(unit+1);
+	m_Textures[unit] = texture2d;
+
+	// also store a refpointer to the image
+	if (unit >= (int) m_Images.size())
+		m_Images.resize(unit+1);
+	m_Images[unit] = pImage;
+}
+
+/**
+ * Set the texture for this material.
+ */
+void vtMaterial::SetTexture1D(osg::Image *pImage, int unit)
+{
+	osg::Texture1D *texture1d = new osg::Texture1D;
+
+	texture1d->setImage(pImage);
+
+	// Remember for later
+	if (unit >= (int) m_Textures.size())
+		m_Textures.resize(unit+1);
+	m_Textures[unit] = texture1d;
+
+	// also store a refpointer to the image
+	if (unit >= (int) m_Images.size())
+		m_Images.resize(unit+1);
+	m_Images[unit] = pImage;
+
+	setTextureAttributeAndModes(unit, texture1d, SA_ON);
 }
 
 /**
  * Returns the texture (image) associated with a material.
  */
-osg::Image *vtMaterial::GetTexture(int unit) const
+osg::Image *vtMaterial::GetTextureImage(int unit) const
 {
 	// It is valid to return a non-const pointer to the image, since the image
 	//  can be modified entirely independently of the material.
@@ -299,22 +324,41 @@ void vtMaterial::ModifiedTexture(int unit)
 	m_Textures[unit]->dirtyTextureObject();
 
 	// OSG calls a modified image 'dirty'
-	m_Textures[unit]->getImage()->dirty();
+	osg::Texture *texture = m_Textures[unit];
+	osg::Texture1D *texture1D = dynamic_cast<osg::Texture1D *>(texture);
+	osg::Texture2D *texture2D = dynamic_cast<osg::Texture2D *>(texture);
+	if (texture1D)
+		texture1D->getImage()->dirty();
+	if (texture2D)
+		texture2D->getImage()->dirty();
 }
 
-void vtMaterial::SetTexGen(const FPoint2 &scale, const FPoint2 &offset, int iTextureMode, int unit)
+void vtMaterial::SetTexGen1D(const FPoint3 &scale, float offset, int unit)
 {
-	// Set up the texgen
 	osg::ref_ptr<osg::TexGen> pTexgen = new osg::TexGen;
 
 	pTexgen->setMode(osg::TexGen::EYE_LINEAR);
-	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(scale.x, 0.0f, 0.0f, -offset.x));
-	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, scale.y, -offset.y));
+	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(scale.x, scale.y, scale.z, offset));
+	
+	setTextureAttributeAndModes(unit, pTexgen.get(), osg::StateAttribute::ON);
+	setTextureMode(unit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
+}
+
+void vtMaterial::SetTexGen2D(const FPoint2 &scale, const FPoint2 &offset,  int unit)
+{
+	osg::ref_ptr<osg::TexGen> pTexgen = new osg::TexGen;
+
+	pTexgen->setMode(osg::TexGen::EYE_LINEAR);
+	pTexgen->setPlane(osg::TexGen::S, osg::Vec4(scale.x, 0.0f, 0.0f, offset.x));
+	pTexgen->setPlane(osg::TexGen::T, osg::Vec4(0.0f, 0.0f, scale.y, offset.y));
 	
 	setTextureAttributeAndModes(unit, pTexgen.get(), osg::StateAttribute::ON);
 	setTextureMode(unit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
 	setTextureMode(unit, GL_TEXTURE_GEN_T,  osg::StateAttribute::ON);
+}
 
+void vtMaterial::SetTextureMode(int iTextureMode, int unit)
+{
 	osg::TexEnv::Mode mode;
 	if (iTextureMode == GL_ADD) mode = osg::TexEnv::ADD;
 	if (iTextureMode == GL_BLEND) mode = osg::TexEnv::BLEND;
@@ -324,6 +368,12 @@ void vtMaterial::SetTexGen(const FPoint2 &scale, const FPoint2 &offset, int iTex
 	osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(mode);
 	setTextureAttributeAndModes(unit, pTexEnv.get(), osg::StateAttribute::ON);
 }
+
+uint vtMaterial::NextAvailableTextureUnit()
+{
+	return m_Textures.size();
+}
+
 
 /**
  * Set the texture clamping property for this material.
@@ -458,7 +508,7 @@ int vtMaterialArray::AddTextureMaterial(osg::Image *pImage,
 						 bool bClamp, bool bMipMap)
 {
 	vtMaterial *pMat = new vtMaterial;
-	pMat->SetTexture(pImage);
+	pMat->SetTexture2D(pImage);
 	pMat->SetCulling(bCulling);
 	pMat->SetLighting(bLighting);
 	pMat->SetTransparent(bTransp, bAdditive);
@@ -643,7 +693,7 @@ int vtMaterialArray::FindByImage(const osg::Image *image) const
 {
 	for (uint i = 0; i < size(); i++)
 	{
-		const osg::Image *tex = at(i)->GetTexture();
+		const osg::Image *tex = at(i)->GetTextureImage();
 		if (tex == image)
 			return i;
 	}

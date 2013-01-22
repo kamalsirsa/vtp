@@ -395,12 +395,13 @@ void App::MakeTest9()
 
 	vtMaterial *pMat = new vtMaterial;
 	pMat->SetAmbient(1,1,1);
-	pMat->SetTexture(image);
+	pMat->SetTexture2D(image);
 	pMat->SetCulling(true);
 	pMat->SetLighting(false);
 
-	FPoint2 scale(1, 1), offset(-0.5, -0.5);
-	pMat->SetTexGen(scale, offset, GL_DECAL);
+	FPoint2 scale(1, 1), offset(0.5, 0.5);
+	pMat->SetTexGen2D(scale, offset);
+	pMat->SetTextureMode(GL_DECAL);
 	pMat->SetClamp(true);
 
 	int matidx = m_Materials->AppendMaterial(pMat);
@@ -419,7 +420,7 @@ void App::MakeTest10()
 	osg::Image *image1 = osgDB::readImageFile("G:/Data-Testing/Culture/modulate.jpg");
 
 	vtMaterial *pMat = new vtMaterial;
-	pMat->SetTexture(image1, 0);
+	pMat->SetTexture2D(image1, 0);
 	pMat->SetCulling(true);
 	pMat->SetLighting(false);
 
@@ -436,7 +437,7 @@ void App::MakeTest10()
 	// Force the internal format to RGBA
 	image2->setInternalTextureFormat(GL_RGBA);
 
-	pMat->SetTexGen(scale, offset, GL_DECAL, 1);	// Texture unit 1
+	pMat->SetTexGen2D(scale, offset, GL_DECAL, 1);	// Texture unit 1
 	pMat->SetClamp(true, 1);
 #endif
 

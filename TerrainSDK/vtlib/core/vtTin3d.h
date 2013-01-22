@@ -1,7 +1,7 @@
 //
 // vtTin3d.h
 //
-// Copyright (c) 2002-2011 Virtual Terrain Project
+// Copyright (c) 2002-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,7 @@
 
 #include "vtdata/vtTin.h"
 #include "vtdata/HeightField.h"
+#include "TParams.h"
 
 /** \defgroup tin TINs
  * These classes are used Triangulated Irregular Networks (TINs).
@@ -40,7 +41,7 @@ public:
 	vtGeode *GetGeometry() { return m_pGeode; }
 
 	void SetMaterial(vtMaterialArray *pMats, int mat_idx);
-	void SetColorMap(ColorMap *color_map) { m_pColorMap = color_map; }
+	void SetColorMap(ColorMap *color_map) { m_pColorMap.reset(color_map); }
 
 	// implement HeightField3d virtual methods
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
@@ -50,16 +51,19 @@ public:
 		FPoint3 &result) const;
 
 	FPoint3 FindVectorToClosestVertex(const FPoint3 &pos);
+	void MakeMaterialsFromOptions(const vtTagArray &options);
+	void MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale, float fOpacity);
 
 protected:
 	virtual void MakeSurfaceMaterials();
 
 	vtArray<vtMesh*> m_Meshes;
 	vtMaterialArrayPtr m_pMats;
-	int			 m_MatIndex;
+	int			 m_MatIndex, m_ShadowMatIndex;
 	vtGeode		*m_pGeode;
 	vtGeode		*m_pDropGeode;
-	ColorMap	*m_pColorMap;
+	std::shared_ptr<ColorMap>	m_pColorMap;
+	int			m_StartOfSurfaceMaterials;
 };
 typedef osg::ref_ptr<vtTin3d> vtTin3dPtr;
 

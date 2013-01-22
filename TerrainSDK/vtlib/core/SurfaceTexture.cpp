@@ -159,37 +159,44 @@ void SurfaceTexture::ShadeTexture(const TParams &options, const vtHeightFieldGri
 }
 
 /**
-  Color the texture from the elevation using the colormap.
+  Load the colormap from the options, or (if that fails) make a default colormap.
  */
 void SurfaceTexture::MakeColorMap(const vtTagArray &options)
 {
-	m_pColorMap.reset(new ColorMap);
+	vtString name = options.GetValueString(STR_COLOR_MAP);
+	m_pColorMap.reset(LoadColorMap(name));
+}
+
+ColorMap *LoadColorMap(const vtString &fname)
+{
+	ColorMap *cmap = new ColorMap;
 
 	// Use the info from the terrain parameters
-	vtString name = options.GetValueString(STR_COLOR_MAP);
-	if (name != "")
+	if (fname != "")
 	{
-		if (!m_pColorMap->Load(name))
+		if (!cmap->Load(fname))
 		{
 			// Look on data paths
 			vtString name2 = "GeoTypical/";
-			name2 += name;
+			name2 += fname;
 			name2 = FindFileOnPaths(vtGetDataPath(), name2);
 			if (name2 != "")
-				m_pColorMap->Load(name2);
+				cmap->Load(name2);
 		}
 	}
 	// If the colors couldn't be loaded, then make up some default colors.
-	if (m_pColorMap->Num() == 0)
+	if (cmap->Num() == 0)
 	{
-		m_pColorMap->m_bRelative = true;
-		m_pColorMap->Add(0, RGBi(0x20, 0x90, 0x20));	// medium green
-		m_pColorMap->Add(1, RGBi(0x40, 0xE0, 0x40));	// light green
-		m_pColorMap->Add(2, RGBi(0xE0, 0xD0, 0xC0));	// tan
-		m_pColorMap->Add(3, RGBi(0xE0, 0x80, 0x10));	// orange
-		m_pColorMap->Add(4, RGBi(0xE0, 0xE0, 0xE0));	// light grey
+		cmap->m_bRelative = true;
+		cmap->Add(0, RGBi(0x20, 0x90, 0x20));	// medium green
+		cmap->Add(1, RGBi(0x40, 0xE0, 0x40));	// light green
+		cmap->Add(2, RGBi(0xE0, 0xD0, 0xC0));	// tan
+		cmap->Add(3, RGBi(0xE0, 0x80, 0x10));	// orange
+		cmap->Add(4, RGBi(0xE0, 0xE0, 0xE0));	// light grey
 	}
+	return cmap;
 }
+
 
 /**
   Color the texture from the elevation using the colormap.

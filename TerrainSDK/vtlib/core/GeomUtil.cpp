@@ -604,7 +604,7 @@ vtOBJFile *OBJFileBegin(vtGeode *geode, const char *filename)
 			fprintf(fp2, "Kd %f %f %f\n", dif.r, dif.g, dif.b);
 			fprintf(fp2, "Ks %f %f %f\n", spe.r, spe.g, spe.b);
 
-			osg::Image *tex = mat->GetTexture();
+			osg::Image *tex = mat->GetTextureImage();
 			if (tex)
 			{
 				vtString texfname = tex->getFileName().c_str();
