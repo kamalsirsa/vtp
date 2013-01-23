@@ -325,7 +325,8 @@ void vtHeightFieldGrid3d::WorldToGrid(const FPoint3 &pos, IPoint2 &ipos)
  * \param findex_x Floating point index, from 0 to width in heixels.
  * \param findex_y Floating point index, from 0 to height in heixels.
  */
-float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double findex_y) const
+float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double findex_y,
+	bool bTrue) const
 {
 	// Require the point to be inside the grid
 	if (findex_x < 0 || findex_x > m_iSize.x-1)
@@ -352,10 +353,10 @@ float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double find
 		diff_y = 1.0f;
 	}
 
-	const float fDataBL = GetElevation(index_x, index_y);
-	const float fDataBR = GetElevation(index_x+1, index_y);
-	const float fDataTL = GetElevation(index_x, index_y+1);
-	const float fDataTR = GetElevation(index_x+1, index_y+1);
+	const float fDataBL = GetElevation(index_x, index_y, bTrue);
+	const float fDataBR = GetElevation(index_x+1, index_y, bTrue);
+	const float fDataTL = GetElevation(index_x, index_y+1, bTrue);
+	const float fDataTR = GetElevation(index_x+1, index_y+1, bTrue);
 
 	int valid = 0;
 	if (fDataBL != INVALID_ELEVATION)
@@ -659,9 +660,9 @@ bool vtHeightFieldGrid3d::ColorDibFromTable(vtBitmapBase *pBM, const ColorMap *c
 			const double y = j * ratioy;
 
 			if (bExact)
-				elev = GetElevation(i, j);
+				elev = GetElevation(i, j, true);	// Always use true elevation
 			else
-				elev = GetInterpolatedElevation(x, y);
+				elev = GetInterpolatedElevation(x, y, true);	// Always use true elevation
 			if (elev == INVALID_ELEVATION)
 			{
 				if (depth == 32)

@@ -166,7 +166,7 @@ public:
 	void EarthToGrid(const DPoint2 &epos, IPoint2 &ipos);
 	void WorldToGrid(const FPoint3 &pos, IPoint2 &ipos);
 
-	float GetInterpolatedElevation(double findex_x, double findex_y) const;
+	float GetInterpolatedElevation(double findex_x, double findex_y, bool bTrue = false) const;
 	int FindNumUnknown();
 
 	// all grids must be able to return the elevation at a grid point
