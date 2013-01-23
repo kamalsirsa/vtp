@@ -18,11 +18,11 @@
 /*@{*/
 
 enum TextureEnum {
-	TE_NONE,
+	TE_OBSOLETE0,
 	TE_SINGLE,
-	TE_OBSOLETE,
+	TE_OBSOLETE2,
 	TE_DERIVED,
-	TE_TILESET
+	TE_OBSOLETE4
 };
 
 /**
@@ -397,7 +397,7 @@ private:
 #define STR_INITTIME "Init_Time"
 #define STR_TIMESPEED "Time_Speed"
 
-#define STR_TEXTURE "Texture"	// 0=none, 1=single, 3=derived, 4=tileset
+#define STR_TEXTURE "Texture"	// 1=single, 3=derived
 #define STR_TEXTUREFILE "Texture_Filename"
 #define STR_COLOR_MAP "Color_Map"
 #define STR_TEXTURE_GEOTYPICAL "Texture_Geotypical"

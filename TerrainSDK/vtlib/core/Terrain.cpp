@@ -2013,13 +2013,16 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 		// measure total texture processing time
 		clock_t c1 = clock();
 
-		m_Texture.LoadTexture(m_Params, GetHeightFieldGrid3d(), m_progress_callback);
+		bool success = m_Texture.LoadTexture(m_Params, GetHeightFieldGrid3d(), m_progress_callback);
 
-		m_Texture.ShadeTexture(m_Params, GetHeightFieldGrid3d(), pSunLight->GetDirection(),
-			m_progress_callback);
+		if (success)
+		{
+			m_Texture.ShadeTexture(m_Params, GetHeightFieldGrid3d(), pSunLight->GetDirection(),
+				m_progress_callback);
 
-		// The terrain's base texture will always use unit 0
-		m_TextureUnits.ReserveTextureUnit();
+			// The terrain's base texture will always use unit 0
+			m_TextureUnits.ReserveTextureUnit();
+		}
 	}
 	if (type == 1)	// TIN
 	{

@@ -25,7 +25,7 @@ SurfaceTexture::~SurfaceTexture()
 	delete m_pColorMap;
 }
 
-void SurfaceTexture::LoadTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
+bool SurfaceTexture::LoadTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
 	bool progress_callback(int))
 {
 	const TextureEnum eTex = options.GetTextureEnum();
@@ -42,7 +42,7 @@ void SurfaceTexture::LoadTexture(const TParams &options, const vtHeightFieldGrid
 		// no texture: create plain white material
 		m_pMaterials->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 			RGBf(0.2f, 0.2f, 0.2f), true, false);
-		return;
+		return false;
 	}
 
 	// If the user has asked for 16-bit textures to be sent down to the
@@ -66,6 +66,7 @@ void SurfaceTexture::LoadTexture(const TParams &options, const vtHeightFieldGrid
 		0.0f,			// emmisive,
 		false,			// clamp
 		bMipmap);
+	return true;
 }
 
 void SurfaceTexture::LoadSingleTexture(const TParams &options)
@@ -94,12 +95,7 @@ void SurfaceTexture::LoadSingleTexture(const TParams &options)
 			(float)(clock() - r1) / CLOCKS_PER_SEC);
 	}
 	else
-	{
 		VTLOG("  Failed to load texture.\n");
-		m_pMaterials->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-			RGBf(0.2f, 0.2f, 0.2f), true, false);
-		//_SetErrorMessage("Failed to load texture.");
-	}
 }
 	
 void SurfaceTexture::MakeDerivedTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
@@ -137,6 +133,10 @@ void SurfaceTexture::ShadeTexture(const TParams &options, const vtHeightFieldGri
 	const FPoint3 &light_dir, bool progress_callback(int))
 {	
 	if (!options.GetValueBool(STR_PRELIGHT) || !pHFGrid)
+		return;
+
+	// Safety check
+	if (m_pTextureImage == NULL)
 		return;
 
 	// Apply shading (a.k.a. pre-lighting). We only have an osg::Image, so
@@ -189,6 +189,10 @@ void SurfaceTexture::PaintDib(const vtHeightFieldGrid3d *pHFGrid,
 
 void SurfaceTexture::CopyFromUnshaded(const TParams &options)
 {
+	// Safety check
+	if (m_pUnshadedImage.get() == NULL)
+		return;
+
 	if (options.GetValueBool(STR_PRELIGHT))
 	{
 		// We need to copy from the retained image to a second image which will

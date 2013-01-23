@@ -72,8 +72,7 @@ void TextureDlg::SetParams(const TParams &Params)
 	m_iTexture =		Params.GetTextureEnum();
 
 	// single
-	if (m_iTexture != TE_TILESET)
-		m_strTextureSingle = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
+	m_strTextureSingle = wxString(Params.GetValueString(STR_TEXTUREFILE), wxConvUTF8);
 
 	// derived
 	m_strColorMap = wxString(Params.GetValueString(STR_COLOR_MAP), wxConvUTF8);
@@ -99,8 +98,7 @@ void TextureDlg::GetParams(TParams &Params)
 	Params.SetTextureEnum((enum TextureEnum)m_iTexture);
 
 	// single
-	if (m_iTexture != TE_TILESET)
-		Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle.mb_str(wxConvUTF8));
+	Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle.mb_str(wxConvUTF8));
 
 	// geotypical
 	Params.SetValueString(STR_TEXTURE_GEOTYPICAL, (const char *) m_strTextureGeotypical.mb_str(wxConvUTF8));

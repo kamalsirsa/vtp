@@ -374,6 +374,14 @@ bool TParams::LoadFromXML(const char *fname)
 		RemoveTag("Trees");
 		RemoveTag("Tree_File");
 	}
+
+	// Some texture types are obsolete
+	int tex_type = GetValueInt(STR_TEXTURE);
+	if (tex_type == TE_OBSOLETE0 ||
+		tex_type == TE_OBSOLETE2 ||
+		tex_type == TE_OBSOLETE4)
+		SetValueInt(STR_TEXTURE, TE_SINGLE);
+
 	return true;
 }
 
