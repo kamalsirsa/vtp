@@ -186,7 +186,8 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 	vtString str1 = (const char *) fname_in.mb_str(wxConvUTF8);
 	vtString str2 = (const char *) prepend_path.mb_str(wxConvUTF8);
 
-	OpenProgressDialog(_("Expanding archive"), false, m_pParentWindow);
+	OpenProgressDialog(_("Expanding archive"), wxString::FromUTF8((const char *) str1),
+		false, m_pParentWindow);
 	int num_files;
 	if (bTGZip)
 		num_files = ExpandTGZ(str1, str2);
@@ -217,10 +218,10 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		}
 
 		// try to load, or import it
-		vtLayer *pLayer = LoadLayer(fname);
-		if (pLayer)
+		Builder::LoadResult result = LoadLayer(fname);
+		if (result == Builder::LOADED)
 			layer_count = 1;
-		else
+		else if (result == Builder::NOT_NATIVE)
 		{
 			// Otherwise, try importing
 			LayerArray layers;
@@ -243,6 +244,8 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 				layer_count = num_imported;
 			}
 		}
+		else if (result == CANCELLED || result == FAILED)
+			layer_count = 0;
 	}
 	else if (num_files > 1)
 	{
@@ -379,7 +382,8 @@ bool Builder::ImportLayersFromFile(LayerType ltype, const wxString &strFileName,
 	// Is it a kind of file we might get multiple layers from?
 	if (!strExt.CmpNoCase(_T("osm")))
 	{
-		OpenProgressDialog(_("Importing from OpenStreetMap"), false, m_pParentWindow);
+		OpenProgressDialog(_("Importing from OpenStreetMap"), strFileName,
+			false, m_pParentWindow);
 		UpdateProgressDialog(0, strFileName);
 		ImportDataFromOSM(strFileName, layers, progress_callback);
 		CloseProgressDialog();
@@ -454,13 +458,8 @@ vtLayer *Builder::ImportLayerFromFile(LayerType ltype, const wxString &strFileNa
 	}
 	fclose(fp);
 
-	wxString msg = _("Importing Data from ");
-	msg += strFileName;
-	VTLOG(msg.mb_str(wxConvUTF8));
-	VTLOG("...\n");
-
 	if (m_pParentWindow)
-		OpenProgressDialog(msg, true, m_pParentWindow);
+		OpenProgressDialog(_("Importing Data"), strFileName, true, m_pParentWindow);
 
 	// call the appropriate reader
 	vtLayerPtr pLayer = NULL;
@@ -967,8 +966,9 @@ vtLayerPtr Builder::ImportFromDXF(const wxString &strFileName, LayerType ltype)
 {
 	if (ltype == LT_ELEVATION)
 	{
+		vtElevError err;
 		vtElevLayer *pEL = new vtElevLayer;
-		if (pEL->ImportFromFile(strFileName))
+		if (pEL->ImportFromFile(strFileName, NULL, &err))
 			return pEL;
 		else
 			return NULL;
@@ -998,7 +998,8 @@ vtLayerPtr Builder::ImportElevation(const wxString &strFileName, bool bWarn)
 {
 	vtElevLayer *pElev = new vtElevLayer;
 
-	bool success = pElev->ImportFromFile(strFileName, progress_callback);
+	vtElevError err;
+	bool success = pElev->ImportFromFile(strFileName, progress_callback, &err);
 
 	if (success)
 		return pElev;
@@ -1007,9 +1008,7 @@ vtLayerPtr Builder::ImportElevation(const wxString &strFileName, bool bWarn)
 		if (bWarn)
 		{
 			// Try getting descriptive message from the grid
-			vtString msg;
-			if (pElev->GetGrid())
-				msg = pElev->GetGrid()->GetErrorMsg();
+			vtString msg = err.message;
 			if (msg == "")
 				msg = "Couldn't import data from that file.";
 			DisplayAndLog(msg);
@@ -1757,7 +1756,7 @@ int Builder::ImportDataFromTIGER(const wxString &strDirName)
 		}
 
 		// Progress Dialog
-		OpenProgressDialog(_("Importing from TIGER..."));
+		OpenProgressDialog(_("Importing from TIGER..."), strDirName);
 
 		int index_cfcc = defn->GetFieldIndex("CFCC");
 		int fcount = 0;
@@ -1893,7 +1892,7 @@ void Builder::ImportDataFromNTF(const wxString &strFileName, LayerArray &layers)
 		return;
 
 	// Progress Dialog
-	OpenProgressDialog(_("Importing from NTF..."));
+	OpenProgressDialog(_("Importing from NTF..."), strFileName);
 
 	OGRFeature *pFeature;
 	OGRGeometry		*pGeom;
@@ -2087,7 +2086,7 @@ void Builder::ImportDataFromS57(const wxString &strDirName)
 		}
 
 		// Progress Dialog
-		OpenProgressDialog(_("Importing from S-57..."));
+		OpenProgressDialog(_("Importing from S-57..."), strDirName);
 
 		// Get line features
 		const char *layer_name = defn->GetName();
@@ -2170,7 +2169,7 @@ int Builder::ImportDataFromSCC(const char *filename)
 	vtPlantSpecies *ps = m_SpeciesList.GetSpecies(id);
 
 	// Progress Dialog
-	OpenProgressDialog(_("Importing from SCC..."));
+	OpenProgressDialog(_("Importing from SCC..."), wxString::FromUTF8((const char *) filename));
 
 	vtTin2d *tin = new vtTin2d;
 
@@ -2378,7 +2377,8 @@ bool Builder::ImportDataFromDXF(const char *filename)
 	std::vector<DxfEntity> entities;
 	std::vector<DxfLayer> layers;
 
-	OpenProgressDialog(_("Parsing DXF"), true, m_pParentWindow);
+	OpenProgressDialog(_("Parsing DXF"), wxString::FromUTF8((const char *) filename),
+		true, m_pParentWindow);
 	DxfParser parser(filename, entities, layers);
 	bool bSuccess = parser.RetrieveEntities(progress_callback);
 	CloseProgressDialog();

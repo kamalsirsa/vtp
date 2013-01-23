@@ -819,7 +819,7 @@ void vtFrame::OnItemSave(wxCommandEvent& event)
 	if (fname == "")
 		return;
 
-	OpenProgressDialog(_T("Writing file"), false, this);
+	OpenProgressDialog(_T("Writing file"), path, false, this);
 
 	// OSG/IVE has a different axis convention that VTLIB does (Z up, not Y up)
 	//  So we must rotate before saving, then rotate back again
@@ -998,10 +998,8 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	// stop rendering while progress dialog is open
 	m_canvas->m_bRunning = false;
 
-	OpenProgressDialog(_T("Reading file"), false, this);
-
 	wxString str(model->m_filename, wxConvUTF8);
-	UpdateProgressDialog(1, str);
+	OpenProgressDialog(_T("Reading file"), str, false, this);
 
 	NodePtr pNode;
 	vtString fullpath = FindFileOnPaths(vtGetDataPath(), model->m_filename);

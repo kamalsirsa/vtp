@@ -1600,12 +1600,12 @@ void EnviroFrame::OnToggleFoundations(wxCommandEvent& event)
 
 	if (s_bBuilt)
 	{
-		OpenProgressDialog(_("Adding Foundations"));
+		OpenProgressDialog(_("Adding Foundations"), _T(""));
 		sa->AddFoundations(pTerr->GetHeightField(), progress_callback);
 	}
 	else
 	{
-		OpenProgressDialog(_("Removing Foundations"));
+		OpenProgressDialog(_("Removing Foundations"), _T(""));
 		sa->RemoveFoundations();
 	}
 	int i, size = sa->size(), selected = sa->NumSelected();
@@ -1639,7 +1639,7 @@ void EnviroFrame::OnTerrainReshade(wxCommandEvent& event)
 		return;
 
 	EnableContinuousRendering(false);
-	OpenProgressDialog(_("Recalculating Shading"), false, this);
+	OpenProgressDialog(_("Recalculating Shading"), _T(""), false, this);
 	pTerr->ReshadeTexture(vtGetTS()->GetSunLightTransform(), progress_callback);
 	CloseProgressDialog();
 	EnableContinuousRendering(true);
@@ -1737,7 +1737,7 @@ void EnviroFrame::OnTerrainWriteElevation(wxCommandEvent& event)
 		return;
 
 	EnableContinuousRendering(false);
-	OpenProgressDialog(_("Write Elevation to BT"), false, this);
+	OpenProgressDialog(_("Write Elevation to BT"), saveFile.GetPath(), false, this);
 
 	// Get the properties of the dynamic terrain, make an elevation grid like it
 	vtDynTerrainGeom *dtg = pTerr->GetDynTerrain();
@@ -1971,7 +1971,7 @@ void EnviroFrame::OnEarthClouds2(wxCommandEvent& event)
 	ReqContext cl;
 	cl.SetProgressCallback(progress_callback);
 
-	OpenProgressDialog(_T("Downloading"), false, this);
+	OpenProgressDialog(_T("Downloading"), wxString::FromUTF8((const char *) url), false, this);
 	bool success = cl.GetURL(url, data);
 	CloseProgressDialog();
 

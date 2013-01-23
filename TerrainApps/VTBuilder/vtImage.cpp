@@ -1270,7 +1270,7 @@ bool vtImage::SaveToFile(const char *fname) const
 	CPLFree( pszSRS_WKT );
 
 	if (size.x * size.y > 512*512)
-		OpenProgressDialog(_("Writing file"), false);
+		OpenProgressDialog(_("Writing file"), wxString::FromUTF8((const char *) fname), false);
 
 	// TODO: ask Frank if there is a way to gave GDAL write the file without
 	// having to make another entire copy in memory, as it does now:
@@ -1418,7 +1418,7 @@ bool vtImage::LoadFromGDAL(const char *fname)
 		SetupBitmapInfo(Size);
 
 		if (Size.x * Size.y > 512*512)
-			OpenProgressDialog(_("Reading file"), false);
+			OpenProgressDialog(_("Reading file"), wxString::FromUTF8((const char *) fname), false);
 
 		m_linebuf.Setup(m_pDataset);
 		for (int i = 0; i < m_linebuf.m_iViewCount && i < (int) m_Bitmaps.size(); i++)

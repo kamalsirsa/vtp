@@ -11,6 +11,7 @@
 #include <limits.h>			// for SHRT_MIN
 #include "LocalConversion.h"
 #include "ColorMap.h"
+#include "ElevError.h"
 
 class vtBitmapBase;
 #define INVALID_ELEVATION	SHRT_MIN

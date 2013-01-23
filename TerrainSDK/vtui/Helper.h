@@ -72,7 +72,8 @@ enum wxLanguage GetLangFromName(const wxString &name);
 // Helper methods which provide a progress dialog.
 
 extern bool progress_callback(int amount);
-void OpenProgressDialog(const wxString &title, bool bCancellable = false, wxWindow *pParent = NULL);
+void OpenProgressDialog(const wxString &title, const wxString &message,
+	bool bCancellable = false, wxWindow *pParent = NULL);
 void SetProgressDialogParent(wxWindow *pParent);
 void CloseProgressDialog();
 bool UpdateProgressDialog(int amount, const wxString& newmsg = wxT(""));

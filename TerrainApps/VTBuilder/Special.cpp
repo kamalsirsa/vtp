@@ -190,7 +190,7 @@ void MainFrame::DoProcessBillboard()
 	str = dlg3.GetPath();
 	vtString fname_out = (const char *) str.mb_str(wxConvUTF8);
 
-	OpenProgressDialog(_T("Processing"));
+	OpenProgressDialog(_T("Processing"), _T(""));
 
 	ProcessBillboardTexture(fname_in, fname_out, bg, progress_callback);
 
@@ -657,7 +657,7 @@ void MainFrame::DoDymaxTexture()
 	vtDIB img;
 	wxString path = dlg.GetPath();
 
-	OpenProgressDialog(_T("Reading file"), false, this);
+	OpenProgressDialog(_T("Reading file"), path, false, this);
 	bool success = img.Read(path.mb_str(wxConvUTF8), progress_callback);
 	CloseProgressDialog();
 	if (!success)
@@ -772,10 +772,7 @@ void MainFrame::DoDymaxMap()
 	vtDIB img;
 	VTLOG("Reading Input: %s\n", (const char *) path.mb_str());
 
-	wxString msg = _T("Reading file: ");
-	msg += path;
-	msg += _T("........................");
-	OpenProgressDialog(msg, false, this);
+	OpenProgressDialog(_T("Reading file"), path, false, this);
 	bool success = img.Read(path.mb_str(wxConvUTF8), progress_callback);
 	CloseProgressDialog();
 	if (!success)
@@ -820,6 +817,7 @@ void MainFrame::DoDymaxMap()
 	uchar value;
 	RGBi rgb;
 	RGBAi rgba;
+	wxString msg;
 
 	prog.Update(1, _T(""));
 

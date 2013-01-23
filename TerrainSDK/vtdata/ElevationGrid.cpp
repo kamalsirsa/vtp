@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project.
+// Copyright (c) 2001-2013 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -114,7 +114,7 @@ bool vtElevationGrid::CopyHeaderFrom(const vtElevationGrid &rhs)
 	m_proj = rhs.m_proj;
 	m_strOriginalDEMName = rhs.m_strOriginalDEMName;
 
-	return _AllocateArray();
+	return AllocateGrid();
 }
 
 bool vtElevationGrid::CopyDataFrom(const vtElevationGrid &rhs)
@@ -161,7 +161,7 @@ vtElevationGrid::~vtElevationGrid()
  * The grid will initially have no data in it (all values are INVALID_ELEVATION).
  */
 bool vtElevationGrid::Create(const DRECT &area, const IPoint2 &size,
-	bool bFloat, const vtProjection &proj)
+	bool bFloat, const vtProjection &proj, vtElevError *err)
 {
 	vtHeightFieldGrid3d::Initialize(proj.GetUnits(), area, INVALID_ELEVATION,
 		INVALID_ELEVATION, size.x, size.y);
@@ -174,7 +174,7 @@ bool vtElevationGrid::Create(const DRECT &area, const IPoint2 &size,
 	m_fVMeters = 1.0f;
 	m_fVerticalScale = 1.0f;
 
-	return _AllocateArray();
+	return AllocateGrid(err);
 }
 
 /**
@@ -242,7 +242,8 @@ void vtElevationGrid::Invalidate()
  * \return True if successful.
  */
 bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
-	const vtProjection &NewProj, float bUpgradeToFloat, bool progress_callback(int))
+	const vtProjection &NewProj, float bUpgradeToFloat, bool progress_callback(int),
+	vtElevError *err)
 {
 	// Create conversion object
 	const vtProjection *pSource, *pDest;
@@ -253,7 +254,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	if (!trans)
 	{
 		// inconvertible projections
-		m_strError = "Couldn't convert between coordinate systems.";
+		SetError(err, vtElevError::CONVERT_CRS, "Couldn't convert between coordinate systems.");
 		return false;
 	}
 
@@ -268,7 +269,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 		{
 			// inconvertible projections
 			delete trans;
-			m_strError = "Couldn't convert between coordinate systems.";
+			SetError(err, vtElevError::CONVERT_CRS, "Couldn't convert between coordinate systems.");
 			return false;
 		}
 		m_Corners[i] = point;
@@ -324,9 +325,10 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	m_iSize.Set((int)(fColumns + 0.999), (int)(fRows + 0.999));
 
 	// do safety checks
-	if (m_iSize.x < 1 || m_iSize.y < 1 || m_iSize.x > 40000 || m_iSize.y > 40000)
+	if (m_iSize.x < 1 || m_iSize.y < 1 || m_iSize.x > 60000 || m_iSize.y > 60000)
 	{
-		m_strError = "Grid is too small or too large.";
+		SetError(err, vtElevError::GRID_SIZE, "Grid size (%d x %d) is too small or too large.",
+			m_iSize.x, m_iSize.y);
 		return false;
 	}
 
@@ -343,7 +345,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	// Others are on the parent class:
 	vtHeightFieldGrid3d::Initialize(NewProj.GetUnits(), m_EarthExtents, INVALID_ELEVATION,
 		INVALID_ELEVATION, m_iSize.x, m_iSize.y);
-	if (!_AllocateArray())
+	if (!AllocateGrid(err))
 		return false;
 
 	// Convert each bit of data from the old array to the new
@@ -352,7 +354,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	if (!trans)
 	{
 		// inconvertible projections
-		m_strError = "Couldn't convert between coordinate systems.";
+		SetError(err, vtElevError::CONVERT_CRS, "Couldn't convert between coordinate systems.");
 		return false;
 	}
 	const DPoint2 step = GetSpacing();
@@ -1261,29 +1263,33 @@ void vtElevationGrid::ComputeCornersFromExtents()
 //
 // Allocates a data array big enough to contain the grid data.
 //
-bool vtElevationGrid::_AllocateArray()
+bool vtElevationGrid::AllocateGrid(vtElevError *err)
 {
 	if (m_bFloatMode)
 	{
+		const long long size = m_iSize.x * m_iSize.y * sizeof(float);
 		m_pData = NULL;
-		m_pFData = (float *)malloc(m_iSize.x * m_iSize.y * sizeof(float));
+		m_pFData = (float *)malloc((size_t) size);
 		if (!m_pFData)
 		{
-			m_strError.Format("Could not allocate a floating-point elevation grid of size %d x %d (%d MB)\n",
-				m_iSize.x, m_iSize.y, (m_iSize.x * m_iSize.y * 4) / (1024 * 1024));
-			VTLOG(m_strError);
+			const int megabytes = (int) (size / (1024 * 1024));
+			SetError(err, vtElevError::ALLOCATE,
+				"Could not allocate a floating-point elevation grid of size %d x %d (%d MB)",
+				m_iSize.x, m_iSize.y, megabytes);
 			return false;
 		}
 	}
 	else
 	{
-		m_pData = (short *)malloc(m_iSize.x * m_iSize.y * sizeof(short));
+		const long long size = m_iSize.x * m_iSize.y * sizeof(short);
+		m_pData = (short *)malloc((size_t) size);
 		m_pFData = NULL;
 		if (!m_pData)
 		{
-			m_strError.Format("Could not allocate a short-integer elevation grid of size %d x %d (%d MB)\n",
-				m_iSize.x, m_iSize.y, (m_iSize.x * m_iSize.y * 2) / (1024 * 1024));
-			VTLOG(m_strError);
+			const int megabytes = (int) (size / (1024 * 1024));
+			SetError(err, vtElevError::ALLOCATE,
+				"Could not allocate a short-integer elevation grid of size %d x %d (%d MB)",
+				m_iSize.x, m_iSize.y, megabytes);
 			return false;
 		}
 	}
@@ -1664,3 +1670,24 @@ bool vtElevationGrid::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 
 	return true;
 }
+
+void vtElevationGrid::SetError(vtElevError *err, vtElevError::ErrorType type,
+	const char *szFormat, ...)
+{
+	vtString msg;
+
+	va_list argList;
+	va_start(argList, szFormat);
+	msg.FormatV(szFormat, argList);
+	va_end(argList);
+
+	VTLOG1(msg);
+	VTLOG1("\n");
+
+	if (err)
+	{
+		err->type = type;
+		err->message = msg;
+	}
+}
+

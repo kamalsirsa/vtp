@@ -655,7 +655,7 @@ void LayerDlg::OnLayerRemove( wxCommandEvent &event )
 		if (data->m_alay)
 			g_App.OnSetDelete(data->m_alay->GetFeatureSet());
 
-		OpenProgressDialog(_T("Deleting layer"), false, this);
+		OpenProgressDialog(_T("Deleting layer"), _T(""), false, this);
 		m_pTerrain->RemoveLayer(data->m_layer, progress_callback);
 		CloseProgressDialog();
 	}

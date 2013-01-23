@@ -112,15 +112,14 @@ bool vtElevLayer::OnSave(bool progress_callback(int))
 
 bool vtElevLayer::OnLoad()
 {
-	OpenProgressDialog(_("Loading Elevation Layer"));
-
 	bool success = false;
 	vtElevError err;
 
 	wxString fname = GetLayerFilename();
 	vtString fname_utf8 = (const char *) fname.mb_str(wxConvUTF8);
 
-	if (fname.Contains(_T(".bt")) || fname.Contains(_T(".BT")))
+	if (!fname.Right(3).CmpNoCase(_T(".bt")) ||
+		!fname.Right(6).CmpNoCase(_T(".bt.gz")))
 	{
 		// remember whether this layer was read from a compressed file
 		if (!fname.Right(6).CmpNoCase(_T(".bt.gz")))
@@ -133,6 +132,15 @@ bool vtElevLayer::OnLoad()
 		{
 			m_pGrid->SetupConversion(1.0f);
 		}
+		else
+		{
+			wxString str;
+			if (err.message != "")
+				str = wxString::FromUTF8((const char *) err.message);
+			else
+				str = wxString::Format(_("Couldn't load elevation"));
+			wxMessageBox(str);
+		}
 	}
 	else if (!fname.Right(4).CmpNoCase(_T(".tin")) ||
 			 !fname.Right(4).CmpNoCase(_T(".itf")))
@@ -140,7 +148,7 @@ bool vtElevLayer::OnLoad()
 		m_pTin = new vtTin2d;
 		success = ElevCacheOpen(this, fname_utf8, &err);
 	}
-	if (!success && err == EGE_READ_CRS)
+	if (!success && err.type == vtElevError::READ_CRS)
 	{
 		// Missing prj file
 		wxString str = _("CRS file");
@@ -152,7 +160,6 @@ bool vtElevLayer::OnLoad()
 		wxMessageBox(str);
 	}
 
-	CloseProgressDialog();
 	return success;
 }
 
@@ -204,8 +211,9 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 			// actually re-project the grid elements
 			vtElevationGrid *grid_new = new vtElevationGrid;
 
+			vtElevError err;
 			success = grid_new->ConvertProjection(m_pGrid, proj_new,
-				bUpgradeToFloat, progress_callback);
+				bUpgradeToFloat, progress_callback, &err);
 
 			if (success)
 			{
@@ -215,7 +223,7 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 			}
 			else
 			{
-				wxString msg(grid_new->GetErrorMsg(), wxConvUTF8);
+				wxString msg((const char *) err.message, wxConvUTF8);
 				wxMessageBox(msg, _("Error"));
 				delete grid_new;
 			}
@@ -822,7 +830,7 @@ void vtElevLayer::SetProjection(const vtProjection &proj)
 }
 
 bool vtElevLayer::ImportFromFile(const wxString &strFileName,
-	bool progress_callback(int))
+	bool progress_callback(int), vtElevError *err)
 {
 	// Avoid trouble with '.' and ',' in Europe - all the file readers assume
 	//  the default "C" locale.
@@ -900,7 +908,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 			if (first == '*')
 				success = m_pGrid->LoadFromMicroDEM(fname, progress_callback);
 			else
-				success = m_pGrid->LoadFromDEM(fname, progress_callback);
+				success = m_pGrid->LoadFromDEM(fname, progress_callback, err);
 		}
 	}
 	else if (!strExt.CmpNoCase(_T("asc")))
@@ -1024,7 +1032,14 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 
 	// We should ask for a CRS before asking for extents
 	if (!g_bld->ConfirmValidCRS(pProj))
+	{
+		if (err)
+		{
+			err->type = vtElevError::CANCELLED;
+			err->message = "Cancelled";
+		}
 		return false;
+	}
 
 	if (m_pGrid != NULL)
 	{
@@ -1065,7 +1080,14 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 				m_pGrid->SetEarthExtents(ext);
 			}
 			if (res == wxCANCEL)
+			{
+				if (err)
+				{
+					err->type = vtElevError::CANCELLED;
+					err->message = "Cancelled";
+				}
 				return false;
+			}
 		}
 		m_pGrid->SetupConversion(1.0f);
 	}
@@ -1249,7 +1271,7 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 	if (!m_pTin)
 		return;
 
-	OpenProgressDialog(_("Merging shared vertices"));
+	OpenProgressDialog(_("Merging shared vertices"), _T(""));
 
 	int before = m_pTin->NumVerts();
 	m_pTin->MergeSharedVerts(progress_callback);
@@ -1930,10 +1952,20 @@ bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, vtElevError *err)
 	}
 	else
 	{
+		bool success;
 		if (pLayer->GetGrid())
-			return pLayer->GetGrid()->LoadFromBT(fname, progress_callback, err);
+		{
+			OpenProgressDialog(_("Loading Elevation Grid"), wxString::FromUTF8(fname));
+			success = pLayer->GetGrid()->LoadFromBT(fname, progress_callback, err);
+			CloseProgressDialog();
+		}
 		else
-			return pLayer->GetTin()->Read(fname);
+		{
+			OpenProgressDialog(_("Loading TIN"), wxString::FromUTF8(fname));
+			success = pLayer->GetTin()->Read(fname, progress_callback);
+			CloseProgressDialog();
+		}
+		return success;
 	}
 }
 

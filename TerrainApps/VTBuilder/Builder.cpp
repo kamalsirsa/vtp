@@ -293,15 +293,17 @@ bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 //
 // Load a layer from a file without knowing its type
 //
-vtLayer *Builder::LoadLayer(const wxString &fname_in)
+Builder::LoadResult Builder::LoadLayer(const wxString &fname_in)
 {
 	// check file extension
 	wxString fname = fname_in;
 	wxString ext = fname.AfterLast('.');
+	bool bNative = false;
 
 	vtLayer *pLayer = NULL;
 	if (ext.CmpNoCase(_T("rmf")) == 0)
 	{
+		bNative = true;
 		vtRoadLayer *pRL = new vtRoadLayer;
 		if (pRL->Load(fname))
 			pLayer = pRL;
@@ -313,6 +315,7 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 		ext.CmpNoCase(_T("itf")) == 0 ||
 		fname.Right(6).CmpNoCase(_T(".bt.gz")) == 0)
 	{
+		bNative = true;
 		vtElevLayer *pEL = new vtElevLayer;
 		if (pEL->Load(fname))
 			pLayer = pEL;
@@ -322,6 +325,7 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 	if (ext.CmpNoCase(_T("vtst")) == 0 ||
 		fname.Right(8).CmpNoCase(_T(".vtst.gz")) == 0)
 	{
+		bNative = true;
 		vtStructureLayer *pSL = new vtStructureLayer;
 		if (pSL->Load(fname))
 			pLayer = pSL;
@@ -330,6 +334,7 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 	}
 	if (ext.CmpNoCase(_T("vf")) == 0)
 	{
+		bNative = true;
 		// Make sure we have some species first.
 		if (GetSpeciesList()->NumSpecies() == 0)
 		{
@@ -339,7 +344,7 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 			if (species_path == "")
 			{
 				wxMessageBox(msg);
-				return NULL;
+				return Builder::FAILED;
 			}
 			msg += _T("\n");
 			msg += _("Do you want to load the default species file from:");
@@ -349,24 +354,16 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 			if (ret == wxYES)
 			{
 				if (!LoadSpeciesFile(species_path))
-					return NULL;
+					return Builder::FAILED;
 			}
 			else // No.
-				return NULL;
+				return Builder::CANCELLED;
 		}
 		vtVegLayer *pVL = new vtVegLayer;
 		if (pVL->Load(fname))
 			pLayer = pVL;
 		else
 			delete pVL;
-	}
-	if (ext.CmpNoCase(_T("utl")) == 0)
-	{
-		vtUtilityLayer *pTR = new vtUtilityLayer;
-		if(pTR->Load(fname))
-			pLayer = pTR;
-		else
-			delete pTR;
 	}
 	if (ext.CmpNoCase(_T("shp")) == 0 ||
 		ext.CmpNoCase(_T("gml")) == 0 ||
@@ -379,6 +376,7 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 		else
 			delete pRL;
 	}
+#if 0 // doesn't this belong in import?
 	if (ext.CmpNoCase(_T("img")) == 0)
 	{
 		vtImageLayer *pIL = new vtImageLayer;
@@ -387,6 +385,7 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 		else
 			delete pIL;
 	}
+#endif
 	if (ext.CmpNoCase(_T("tif")) == 0)
 	{
 		// If it's a 8-bit or 24-bit TIF, then it's likely to be an image.
@@ -400,6 +399,7 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 		}
 		else if (depth == 8 || depth == 24 || depth == 32)
 		{
+			bNative = true;
 			vtImageLayer *pIL = new vtImageLayer;
 			if (pIL->Load(fname))
 				pLayer = pIL;
@@ -413,12 +413,18 @@ vtLayer *Builder::LoadLayer(const wxString &fname_in)
 		if (success)
 		{
 			AddToMRU(m_LayerFiles, (const char *) fname_in.mb_str(wxConvUTF8));
-			return pLayer;
+			return Builder::LOADED;
 		}
 		else
+		{
 			delete pLayer;
+			return Builder::CANCELLED;
+		}
 	}
-	return NULL;
+	if (bNative)
+		return Builder::FAILED;
+	else
+		return Builder::NOT_NATIVE;
 }
 
 void Builder::AddLayer(vtLayer *lp)
@@ -471,7 +477,7 @@ bool Builder::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 			if (ret == wxYES)
 			{
 				VTLOG1("  Reprojecting..\n");
-				OpenProgressDialog(_("Reprojecting"), false, m_pParentWindow);
+				OpenProgressDialog(_("Reprojecting"), _T(""), false, m_pParentWindow);
 				bool success = pLayer->TransformCoords(m_proj);
 				CloseProgressDialog();
 
@@ -791,7 +797,7 @@ bool Builder::SampleCurrentTerrains(vtElevLayer *pTarget)
 	const IPoint2 Size = pTarget->GetGrid()->GetDimensions();
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_("Sampling Elevation Layers"), true);
+	OpenProgressDialog(_("Sampling Elevation Layers"), _T(""), true);
 
 	// Determine which source elevation layers overlap our desired area
 	std::vector<vtElevLayer*> elevs;
@@ -880,7 +886,7 @@ uint Builder::ElevLayerArray(std::vector<vtElevLayer*> &elevs)
 bool Builder::FillElevGaps(vtElevLayer *el, DRECT *area, int iMethod)
 {
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_("Filling Gaps"), true);
+	OpenProgressDialog(_("Filling Gaps"), _T(""), true);
 
 	bool bGood;
 
@@ -948,7 +954,7 @@ vtElevLayer *Builder::ComputeDifference(vtElevLayer *pElev)
 	vtElevationGrid *diffgrid = new vtElevationGrid(*grid);
 	diffgrid->Invalidate();
 
-	OpenProgressDialog(_("Comparing Elevation Layers"), false);
+	OpenProgressDialog(_("Comparing Elevation Layers"), _T(""), false);
 
 	DPoint2 p;
 	for (int i = 0; i < xsize; i++)
@@ -1007,7 +1013,7 @@ void Builder::CarveWithCulture(vtElevLayer *pElev, float margin)
 	float shoulder = margin / 2;
 	float fade = margin;
 
-	OpenProgressDialog(_("Scanning Grid against Roads"));
+	OpenProgressDialog(_("Scanning Grid against Roads"), _T(""));
 
 	if (pR)
 	{
@@ -1190,7 +1196,7 @@ bool Builder::SampleCurrentImages(vtImageLayer *pTargetLayer)
 	const IPoint2 Size = pTarget->GetDimensions();
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_("Sampling Image Layers"), true);
+	OpenProgressDialog(_("Sampling Image Layers"), _T(""), true);
 
 	vtImage **images = new vtImage *[LayersOfType(LT_IMAGE)];
 	int g, num_image = 0;
@@ -1423,7 +1429,7 @@ void Builder::AreaSampleElevation(BuilderView *pView)
 		AddLayerWithCheck(pOutput);
 	else if (dlg.m_bToFile)
 	{
-		OpenProgressDialog(_("Writing file"), true);
+		OpenProgressDialog(_("Writing file"), dlg.m_strToFile, true);
 
 		wxString fname = dlg.m_strToFile;
 		bool gzip = (fname.Right(3).CmpNoCase(_T(".gz")) == 0);
@@ -1499,7 +1505,7 @@ void Builder::AreaSampleImages(BuilderView *pView)
 		AddLayerWithCheck(pOutputLayer);
 	else if (dlg.m_bToFile)
 	{
-		OpenProgressDialog(_("Writing file"), true);
+		OpenProgressDialog(_("Writing file"), dlg.m_strToFile, true);
 		vtString fname = (const char *) dlg.m_strToFile.mb_str(wxConvUTF8);
 		success = pOutput->SaveToFile(fname);
 		delete pOutput;
@@ -1523,7 +1529,7 @@ void Builder::AreaSampleImages(BuilderView *pView)
 void Builder::GenerateVegetation(const char *vf_file, DRECT area,
 	VegGenOptions &opt)
 {
-	OpenProgressDialog(_("Generating Vegetation"), true);
+	OpenProgressDialog(_("Generating Vegetation"), wxString::FromUTF8(vf_file), true);
 
 	clock_t time1 = clock();
 

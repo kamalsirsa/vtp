@@ -407,7 +407,7 @@ void EnviroApp::RefreshTerrainList()
 
 	bool bShowProgess = paths.size() > 1;
 	if (bShowProgess)
-		OpenProgressDialog(_("Scanning data paths for terrains"), false, NULL);
+		OpenProgressDialog(_("Scanning data paths for terrains"), _T(""), false, NULL);
 	for (uint i = 0; i < paths.size(); i++)
 	{
 		vtString directory = paths[i] + "Terrains";

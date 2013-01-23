@@ -854,7 +854,7 @@ void EnviroFrame::LoadClouds(const char *fname)
 					img2->SetPixel32(i, j, rgba);
 				}
 
-			OpenProgressDialog(_T("Processing Images"), false, this);
+			OpenProgressDialog(_T("Processing Images"), _T(""), false, this);
 			g_App.MakeOverlayGlobe(img2, progress_callback);
 			CloseProgressDialog();
 		}
@@ -1453,7 +1453,7 @@ void EnviroFrame::CarveTerrainToFitNode(osg::Node *node)
 		{
 			// Update the (entire) shading and culture
 			EnableContinuousRendering(false);
-			OpenProgressDialog(_("Recalculating Shading"), false, this);
+			OpenProgressDialog(_("Recalculating Shading"), _T(""), false, this);
 
 			terr->ReshadeTexture(vtGetTS()->GetSunLightTransform(), progress_callback);
 			DRECT area;

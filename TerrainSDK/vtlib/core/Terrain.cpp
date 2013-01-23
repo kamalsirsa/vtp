@@ -1855,12 +1855,7 @@ bool vtTerrain::CreateStep2()
 		bool status = m_pElevGrid->LoadFromBT(elev_path, m_progress_callback, &err);
 		if (status == false)
 		{
-			if (err == EGE_READ_CRS)
-				_SetErrorMessage("Grid load failed: couldn't read projection");
-			else if (err == EGE_UNSUPPORTED_VERSION)
-				_SetErrorMessage("Grid load failed: unsupported version");
-			else if (err == EGE_FILE_OPEN)
-				_SetErrorMessage("Grid load failed: couldn't open");
+			_SetErrorMessage(err.message);
 			return false;
 		}
 		VTLOG("\tGrid load succeeded.\n");

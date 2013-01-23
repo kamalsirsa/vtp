@@ -1102,8 +1102,8 @@ void MainFrame::OnDrop(const wxString &str)
 		LoadProject(str);
 	else
 	{
-		vtLayer *layer = LoadLayer(str);
-		if (!layer)
+		Builder::LoadResult result = LoadLayer(str);
+		if (result == Builder::NOT_NATIVE)
 		{
 			// try importing
 			if (ImportDataFromArchive(LT_UNKNOWN, str, true))

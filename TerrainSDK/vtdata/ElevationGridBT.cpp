@@ -4,7 +4,7 @@
 // This modules contains the implementations of the BT file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2007 Virtual Terrain Project.
+// Copyright (c) 2001-2013 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -30,8 +30,8 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevError *err)
 	gzFile fp = vtGZOpen(szFileName, "rb");
 	if (!fp)
 	{
-		if (err) *err = EGE_FILE_OPEN;
-		return false;		// Cannot Open File
+		SetError(err, vtElevError::FILE_OPEN, "Couldn't open file '%s'", szFileName);
+		return false;
 	}
 
 	char buf[11];
@@ -41,7 +41,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevError *err)
 	if (strncmp(buf, "binterr", 7))
 	{
 		gzclose(fp);
-		if (err) *err = EGE_NOT_FORMAT;
+		SetError(err, vtElevError::NOT_FORMAT, "Not a BT file");
 		return false;		// Not a current BT file
 	}
 
@@ -129,8 +129,8 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevError *err)
 	}
 	else
 	{
-		// unsupported version
-		if (err) *err = EGE_UNSUPPORTED_VERSION;
+		SetError(err, vtElevError::UNSUPPORTED_VERSION, "Unsupported BT version %d.%d",
+			iMajor, iMinor);
 		return false;
 	}
 
@@ -146,7 +146,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName, vtElevError *err)
 		// Read external projection (.prj) file
 		if (!m_proj.ReadProjFile(szFileName))
 		{
-			if (err) *err = EGE_READ_CRS;
+			SetError(err, vtElevError::READ_CRS, "Couldn't read CRS from file '%s'", szFileName);
 			return false;
 		}
 	}
@@ -193,15 +193,14 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 	gzFile fp = vtGZOpen(szFileName, "rb");
 	if (!fp)
 	{
-		if (err) *err = EGE_FILE_OPEN;
-		VTLOG(" LoadBTData: can't open '%s'\n", szFileName);
-		return false;		// Cannot Open File
+		SetError(err, vtElevError::FILE_OPEN, "Couldn't open file '%s'", szFileName);
+		return false;
 	}
 
 	// elevation data always starts at offset 256
 	gzseek(fp, 256, SEEK_SET);
 
-	if (!_AllocateArray())
+	if (!AllocateGrid(err))
 	{
 		gzclose(fp);
 		return false;
@@ -240,7 +239,7 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 				if (progress_callback(i * 100 / m_iSize.y))
 				{
 					// Cancel
-					if (err) *err = EGE_CANCELLED;
+					SetError(err, vtElevError::CANCELLED, "Cancelled loading '%s'", szFileName);
 					gzclose(fp);
 					return false;
 				}
@@ -249,7 +248,7 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 				fp, BO_LITTLE_ENDIAN);
 			if (nitems != m_iSize.x)
 			{
-				if (err) *err = EGE_READ_DATA;
+				SetError(err, vtElevError::READ_DATA, "Error reading data from file '%s'", szFileName);
 				gzclose(fp);
 				return false;
 			}
@@ -264,7 +263,7 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 				if (progress_callback(i * 100 / m_iSize.y))
 				{
 					// Cancel
-					if (err) *err = EGE_CANCELLED;
+					SetError(err, vtElevError::CANCELLED, "Cancelled loading '%s'", szFileName);
 					gzclose(fp);
 					return false;
 				}
@@ -273,7 +272,7 @@ bool vtElevationGrid::LoadBTData(const char *szFileName, bool progress_callback(
 				fp, BO_LITTLE_ENDIAN);
 			if (nitems != m_iSize.x)
 			{
-				if (err) *err = EGE_READ_DATA;
+				SetError(err, vtElevError::READ_DATA, "Error reading data from file '%s'", szFileName);
 				gzclose(fp);
 				return false;
 			}

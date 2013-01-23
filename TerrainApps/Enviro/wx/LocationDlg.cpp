@@ -624,7 +624,7 @@ void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
 	if (wxMessageBox(msg, _("Animation"), wxOK+wxCANCEL) == wxCANCEL)
 		return;
 
-	OpenProgressDialog(_("Output"), true, this);
+	OpenProgressDialog(_("Output"), _T(""), true, this);
 
 	PlayToDiskEngine *eng = new PlayToDiskEngine;
 	eng->bReady = false;

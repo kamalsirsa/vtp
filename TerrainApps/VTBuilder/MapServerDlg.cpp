@@ -144,10 +144,11 @@ void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 {
 #if SUPPORT_CURL
 	VTLOG1("OnQueryLayers\n");
-	OpenProgressDialog(_("Querying server..."), false, this);
 
 	wxString val = GetBaseUrl()->GetValue();
 	vtString url = (const char *) val.mb_str(wxConvUTF8);
+	
+	OpenProgressDialog(_("Querying server..."), val, false, this);
 
 	VTLOG("  from base URL: %s\n", (const char *)url);
 

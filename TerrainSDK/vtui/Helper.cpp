@@ -599,7 +599,7 @@ enum wxLanguage GetLangFromName(const wxString &name)
 // Shared Progress Dialog Functionality
 //
 
-static bool s_bOpen = false;
+static bool s_bOpen = false, s_bShown = false;
 wxProgressDialog *g_pProg = NULL;
 wxWindow *g_pProgParent = NULL;
 
@@ -615,12 +615,20 @@ void YieldForIdle()
 bool progress_callback(int amount)
 {
 	bool value = false;
-	// Update() returns false if the Cancel button has been pushed
-	// but this functions return _true_ if user wants to cancel
 	if (g_pProg)
 	{
-		value = (g_pProg->Update(amount) == false);
-		YieldForIdle();
+		if (!s_bShown && amount > 0)
+		{
+			g_pProg->Show(true);
+			s_bShown = true;
+		}
+		if (s_bShown)
+		{
+			// Update() returns false if the Cancel button has been pushed
+			// but this functions return _true_ if user wants to cancel
+			value = (g_pProg->Update(amount) == false);
+			//YieldForIdle();
+		}
 	}
 	return value;
 }
@@ -630,7 +638,8 @@ void SetProgressDialogParent(wxWindow *pParent)
 	g_pProgParent = pParent;
 }
 
-void OpenProgressDialog(const wxString &title, bool bCancellable, wxWindow *pParent)
+void OpenProgressDialog(const wxString &title, const wxString &message,
+	bool bCancellable, wxWindow *pParent)
 {
 	VTLOG1("OpenProgressDialog: ");
 	if (s_bOpen)
@@ -645,17 +654,22 @@ void OpenProgressDialog(const wxString &title, bool bCancellable, wxWindow *pPar
 	if (!pParent)
 		pParent = g_pProgParent;
 
-	// force the window to be wider by giving a dummy string
-	wxString message = _T("___________________________________");
+	wxString msg = message;
+	if (msg == _T(""))
+	{
+		// force the window to be wider by giving a dummy string
+		msg = _T("___________________________________");
+	}
 	int style = wxPD_AUTO_HIDE | wxPD_APP_MODAL;
 	if (bCancellable)
 		style |= wxPD_CAN_ABORT;
 	style |= wxPD_SMOOTH;
 
 	s_bOpen = true;
-	g_pProg = new wxProgressDialog(title, message, 100, pParent, style);
-	g_pProg->Show(true);
-	g_pProg->Update(0, _T(" "));
+	s_bShown = false;
+	g_pProg = new wxProgressDialog(title, msg, 100, pParent, style);
+	//g_pProg->Show(true);
+	//g_pProg->Update(0, _T(" "));
 }
 
 void CloseProgressDialog()
@@ -666,6 +680,7 @@ void CloseProgressDialog()
 		g_pProg->Destroy();
 		g_pProg = NULL;
 		s_bOpen = false;
+		s_bShown = false;
 	}
 }
 

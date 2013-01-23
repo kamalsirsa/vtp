@@ -120,11 +120,11 @@ bool vtTin::_ReadTinOld(FILE *fp)
 	return true;
 }
 
-bool vtTin::_ReadTin(FILE *fp)
+bool vtTin::_ReadTin(FILE *fp, bool progress_callback(int))
 {
 	if (!_ReadTinHeader(fp))
 		return false;
-	if (!_ReadTinBody(fp))
+	if (!_ReadTinBody(fp, progress_callback))
 		return false;
 	return true;
 }
@@ -168,7 +168,7 @@ bool vtTin::_ReadTinHeader(FILE *fp)
 	return true;
 }
 
-bool vtTin::_ReadTinBody(FILE *fp)
+bool vtTin::_ReadTinBody(FILE *fp, bool progress_callback(int))
 {
 	fseek(fp, m_file_data_start, SEEK_SET);
 
@@ -181,6 +181,9 @@ bool vtTin::_ReadTinBody(FILE *fp)
 	float z;
 	for (int i = 0; i < m_file_verts; i++)
 	{
+		if (progress_callback != NULL && (i % 1024) == 0)
+			progress_callback(i * 49 / m_file_verts);
+
 		fread(&p.x, 8, 2, fp);	// 2 doubles
 		fread(&z, 4, 1, fp);	// 1 float
 		AddVert(p, z);
@@ -189,6 +192,9 @@ bool vtTin::_ReadTinBody(FILE *fp)
 	int tribuf[3];
 	for (int i = 0; i < m_file_tris; i++)
 	{
+		if (progress_callback != NULL && (i % 1024) == 0)
+			progress_callback(50 + i * 49 / m_file_tris);
+
 		fread(tribuf, 4, 3, fp);	// 3 ints
 		AddTri(tribuf[0], tribuf[1], tribuf[2]);
 	}
@@ -198,14 +204,14 @@ bool vtTin::_ReadTinBody(FILE *fp)
 /**
  * Read the TIN from a native TIN format (.itf) file.
  */
-bool vtTin::Read(const char *fname)
+bool vtTin::Read(const char *fname, bool progress_callback(int))
 {
 	// first read the point from the .tin file
 	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
-	bool success = _ReadTin(fp);
+	bool success = _ReadTin(fp, progress_callback);
 	fclose(fp);
 
 	if (!success)
@@ -240,14 +246,14 @@ bool vtTin::ReadHeader(const char *fname)
  * Read the TIN body from a native TIN format (.itf) file.  You should
  * first call ReadHeader() if you are doing a two-part read.
  */
-bool vtTin::ReadBody(const char *fname)
+bool vtTin::ReadBody(const char *fname, bool progress_callback(int))
 {
 	// first read the point from the .tin file
 	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)
 		return false;
 
-	bool success = _ReadTinBody(fp);
+	bool success = _ReadTinBody(fp, progress_callback);
 	fclose(fp);
 
 	if (!success)

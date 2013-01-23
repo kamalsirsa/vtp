@@ -567,7 +567,7 @@ void vtRoadLayer::DoClean()
 	bool bDegrees = (proj.IsGeographic() != 0);
 
 	int count;
-	OpenProgressDialog(_("Cleaning RoadMap"));
+	OpenProgressDialog(_("Cleaning RoadMap"), _T(""));
 
 	UpdateProgressDialog(10, _("Removing unused nodes"));
 	count = RemoveUnusedNodes();

@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.h
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project.
+// Copyright (c) 2001-2013 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,15 +16,6 @@
 
 class vtDIB;
 class OGRDataSource;
-
-enum vtElevError {
-	EGE_FILE_OPEN,			/// Could not open file.
-	EGE_NOT_FORMAT,			/// Not the correct file format.
-	EGE_UNSUPPORTED_VERSION,/// File is an unsupported version.
-	EGE_READ_CRS,			/// Could not read the CRS.
-	EGE_READ_DATA,			/// Could not read the file data.
-	EGE_CANCELLED			/// User cancelled the file read.
-};
 
 /**
  * The vtElevationGrid class represents a generic grid of elevation data.
@@ -55,13 +46,14 @@ public:
 	bool CopyDataFrom(const vtElevationGrid &rhs);
 
 	bool Create(const DRECT &area, const IPoint2 &size, bool bFloat,
-		const vtProjection &proj);
+		const vtProjection &proj, vtElevError *err = NULL);
 	void FreeData();
 
 	void Clear();
 	void Invalidate();
 	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj,
-		float bUpgradeToFloat, bool progress_callback(int) = NULL);
+		float bUpgradeToFloat, bool progress_callback(int) = NULL,
+		vtElevError *err = NULL);
 	bool ReprojectExtents(const vtProjection &proj_new);
 	void Scale(float fScale, bool bDirect, bool bRecomputeExtents = true);
 	void VertOffset(float fAmount);
@@ -75,12 +67,13 @@ public:
 	int FillGapsByRegionGrowing(int radius, bool progress_callback(int) = NULL);
 
 	// Load from unknown file format
-	bool LoadFromFile( const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromFile( const char *szFileName, bool progress_callback(int) = NULL,
+		vtElevError *err = NULL);
 
 	// Load from a specific kind of file
 	bool LoadFrom3TX(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromASC(const char *szFileName, bool progress_callback(int) = NULL);
-	bool LoadFromDEM(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromDEM(const char *szFileName, bool progress_callback(int) = NULL, vtElevError *err = NULL);
 	bool LoadFromTerragen(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromCDF(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromDTED(const char *szFileName, bool progress_callback(int) = NULL);
@@ -103,13 +96,11 @@ public:
 		vtElevError *err = NULL);
 
 	// Use GDAL to read a file
-	bool LoadWithGDAL(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadWithGDAL(const char *szFileName, bool progress_callback(int) = NULL,
+		vtElevError *err = NULL);
 
 	// Use OGR to read a file
 	bool LoadFromNTF5(const char *szFileName, bool progress_callback(int) = NULL);
-
-	// If there was a load error, this method should return a description
-	vtString GetErrorMsg() { return m_strError; }
 
 	// Save
 	bool SaveTo3TX(const char *szFileName, bool progress_callback(int) = NULL) const;
@@ -200,13 +191,13 @@ protected:
 	bool ParseNTF5(OGRDataSource *pDatasource, vtString &msg, bool progress_callback(int));
 	bool GetXYZLine(const char *buf, const char *pattern, const char *format,
 					int components, double *x, double *y, double *z);
+	void SetError(vtElevError *err, vtElevError::ErrorType type, const char *szFormat, ...);
 
 	DPoint2		m_Corners[4];	// data corners, in the CRS of this terrain
 	vtProjection	m_proj;		// a grid always has some CRS
 
-	bool	_AllocateArray();
+	bool	AllocateGrid(vtElevError *err = NULL);
 	vtString	m_strOriginalDEMName;
-	vtString	m_strError;
 };
 
 #endif	// ELEVATIONGRIDH

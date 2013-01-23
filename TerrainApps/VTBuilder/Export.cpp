@@ -234,7 +234,8 @@ void Builder::ExportChunkLOD()
 	const float vertical_scale = CHUNKLOD_MAX_HEIGHT / 32767.0f;
 	const float input_vertical_scale = 1.0f;
 
-	OpenProgressDialog(_T("Writing ChunkLOD"), false, m_pParentWindow);
+	OpenProgressDialog(_T("Writing ChunkLOD"), wxString::FromUTF8((const char *) fname),
+		false, m_pParentWindow);
 
 	// Process the data.
 	HeightfieldChunker hc;
@@ -517,9 +518,13 @@ void Builder::ImageExportTiles(BuilderView *pView)
 
 	dlg.GetTilingOptions(m_tileopts);
 
-	OpenProgressDialog(_("Writing tiles"), true);
+	OpenProgressDialog(_("Writing tiles"),
+		wxString::FromUTF8((const char *) m_tileopts.fname), true);
+
 	bool success = pIL->GetImage()->WriteTileset(m_tileopts, pView);
+
 	CloseProgressDialog();
+
 	if (success)
 		DisplayAndLog("Successfully wrote to '%s'", (const char *) m_tileopts.fname);
 	else
@@ -674,7 +679,7 @@ void Builder::AreaSampleImageTileset(BuilderView *pView)
 bool Builder::DoSampleImageryToTileset(BuilderView *pView, TilingOptions &opts,
 									   bool bShowGridMarks)
 {
-	OpenProgressDialog(_T("Writing tiles"), true);
+	OpenProgressDialog(_T("Writing tiles"), _T(""), true);
 	bool success = SampleImageryToTileset(pView, m_tileopts);
 	if (bShowGridMarks && pView)
 		pView->HideGridMarks();

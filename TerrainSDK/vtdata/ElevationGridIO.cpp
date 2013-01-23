@@ -79,18 +79,25 @@ typedef struct
  * \returns \c true if successful.
  */
 bool vtElevationGrid::LoadFromFile(const char *szFileName,
-								   bool progress_callback(int))
+								   bool progress_callback(int), vtElevError *err)
 {
 	vtString FileExt = GetExtension(szFileName);
 
 	if (FileExt == "")
+	{
+		SetError(err, vtElevError::UNKNOWN_FORMAT, "Couldn't determine the file format of '%s'",
+			szFileName);
 		return false;
+	}
 
 	// The first character in the file is useful for telling which format
 	// the file really is.
 	FILE *fp = vtFileOpen(szFileName, "rb");
 	if (!fp)
+	{
+		SetError(err, vtElevError::FILE_OPEN, "Couldn't open file '%s'", szFileName);
 		return false;
+	}
 	int FirstChar = fgetc(fp);
 	fclose(fp);
 
@@ -105,11 +112,11 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	}
 	else if (!FileExt.CompareNoCase(".bil"))
 	{
-		Success = LoadWithGDAL(szFileName, progress_callback);
+		Success = LoadWithGDAL(szFileName, progress_callback, err);
 	}
 	else if ((!FileExt.CompareNoCase(".bt")) || (!FileExt.CompareNoCase(".bt.gz")))
 	{
-		Success = LoadFromBT(szFileName, progress_callback);
+		Success = LoadFromBT(szFileName, progress_callback, err);
 	}
 	else if (!FileExt.CompareNoCase(".cdf"))
 	{
@@ -127,7 +134,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 			if (FirstChar == '*')
 				Success = LoadFromMicroDEM(szFileName, progress_callback);
 			else
-				Success = LoadFromDEM(szFileName, progress_callback);
+				Success = LoadFromDEM(szFileName, progress_callback, err);
 		}
 	}
 	else if (!FileExt.CompareNoCase(".dte") ||
@@ -148,7 +155,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 		if (!Success)
 		{
 			// Might be 'Arc Binary Grid', try GDAL
-			Success = LoadWithGDAL(szFileName, progress_callback);
+			Success = LoadWithGDAL(szFileName, progress_callback, err);
 		}
 	}
 	else if (!FileExt.CompareNoCase(".hdr"))
@@ -171,7 +178,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 			 !FileExt.CompareNoCase(".png") ||
 			 !FileExt.CompareNoCase(".adf"))
 	{
-		Success = LoadWithGDAL(szFileName, progress_callback);
+		Success = LoadWithGDAL(szFileName, progress_callback, err);
 	}
 	else if (!FileExt.CompareNoCase(".pgm"))
 	{
@@ -281,7 +288,7 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 	m_iSize.y = dimension[1];
 
 	m_bFloatMode = false;
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 	if (progress_callback != NULL) progress_callback(80);
 
@@ -344,7 +351,7 @@ bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
 
 	m_iSize.Set(1201, 1201);
 	m_bFloatMode = false;
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	// elevationdata one per line in column-first order from the SW
@@ -466,7 +473,7 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	m_EarthExtents.bottom = yllcorner;
 
 	ComputeCornersFromExtents();
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	int i, j;
@@ -588,7 +595,7 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 			if (fread(&HeightScale, 2, 1, fp) != 1) return false;
 			if (fread(&BaseHeight, 2, 1, fp) != 1) return false;
 
-			if (!_AllocateArray())
+			if (!AllocateGrid())
 				return false;
 			for (j = 0; j < m_iSize.y; j++)
 			{
@@ -789,7 +796,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 		fseek(fp, 1+24, SEEK_CUR);
 	}
 
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	// REF: record header length + (2 * number of rows) + checksum length
@@ -955,7 +962,7 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 	// set up for an array of the indicated size
 	m_iSize.Set(gh.NumCols, gh.NumRows);
 
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	// read the file
@@ -1093,7 +1100,7 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
 
 	ComputeCornersFromExtents();
 
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	// read the file
@@ -1154,7 +1161,7 @@ bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callbac
 
 	m_iSize.Set(nx, ny);
 
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	float z;
@@ -1298,7 +1305,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 
 	m_iSize.Set(nx, ny);
 
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	float z;
@@ -1506,7 +1513,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 
 	m_iSize.Set(xsize, ysize);
 
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	if (bBinary)
@@ -1787,19 +1794,17 @@ bool vtElevationGrid::SaveToBMP(const char *szFileName) const
  * \returns True if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
-								   bool progress_callback(int))
+								   bool progress_callback(int), vtElevError *err)
 {
-	GDALDataset  *poDataset;
-
 	g_GDALWrapper.RequestGDALFormats();
 
 	// GDAL doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(szFileName);
 
-	poDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
+	GDALDataset  *poDataset = (GDALDataset *) GDALOpen(fname_local, GA_ReadOnly);
 	if (poDataset == NULL)
 	{
-		// failed.
+		SetError(err, vtElevError::FILE_OPEN, "Couldn't open GDAL dataset from '%s'", szFileName);
 		return false;
 	}
 	m_iSize.x = poDataset->GetRasterXSize();
@@ -1808,8 +1813,8 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	// Get the projection information
 	const char *str1 = poDataset->GetProjectionRef();
 	char *str2 = (char *) str1;
-	OGRErr err = m_proj.importFromWkt(&str2);
-	if (err != OGRERR_NONE)
+	OGRErr ogr_err = m_proj.importFromWkt(&str2);
+	if (ogr_err != OGRERR_NONE)
 	{
 		// No projection info; just assume that it's geographic
 		m_proj.Clear();
@@ -1867,7 +1872,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	//  because most allocations are fine-grained and will degrade gracefully
 	//  on a modern OS.  However, some singular large allocation, such as
 	//  huge elevation grids, should be checked.
-	bool success = _AllocateArray();
+	bool success = AllocateGrid(err);
 	if (!success)
 		return false;
 
@@ -1922,6 +1927,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 			{
 				// Cancel
 				delete poDataset;
+				SetError(err, vtElevError::CANCELLED, "Cancelled");
 				return false;
 			}
 		}
@@ -2058,7 +2064,7 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
 	m_EarthExtents.bottom = Extent.MinY;
 	ComputeCornersFromExtents();
 
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	// Time Test
@@ -2135,20 +2141,12 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 	vtString msg;
 	bool bSuccess = false;
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(fname_local);
-	if (NULL == pDatasource)
-		msg = "No datasource";
-	else
+	if (pDatasource)
 		bSuccess = ParseNTF5(pDatasource, msg, progress_callback);
-
-	VTLOG("LoadFromNTF5 result: %s.\n", (const char *) msg);
-
-	if (!bSuccess)
-		m_strError = msg;
 
 	delete pDatasource;
 	return bSuccess;
 }
-
 
 /**
  * Loads from a RAW file (a naked array of elevation values).
@@ -2199,7 +2197,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 	else
 		m_bFloatMode = false;
 
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	ByteOrder order;
@@ -2414,7 +2412,7 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_cal
 
 	m_iSize.Set(xsize, ysize);
 
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 	for (i = 0; i < xsize; i++)
@@ -2733,7 +2731,7 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback
 		m_iSize.x = m_iSize.y = 3601;
 	else
 		m_iSize.x = m_iSize.y = 1201;
-	if (!_AllocateArray())
+	if (!AllocateGrid())
 		return false;
 
 #define SWAP_2(x) ( (((x) & 0xff) << 8) | ((unsigned short)(x) >> 8) )

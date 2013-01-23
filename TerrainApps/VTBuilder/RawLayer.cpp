@@ -325,7 +325,7 @@ bool vtRawLayer::OnLoad()
 	vtString ext = fname_utf8.Right(4);
 	VTLOG("vtRawLayer::OnLoad, extension is '%s'\n", (const char *) ext);
 
-	OpenProgressDialog(_("Loading"), false);
+	OpenProgressDialog(_("Loading"), fname, false);
 
 	if (!ext.CompareNoCase(".gml") ||
 		!ext.CompareNoCase(".xml") ||

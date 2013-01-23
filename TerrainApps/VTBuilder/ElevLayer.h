@@ -77,7 +77,8 @@ public:
 	void Offset(const DPoint2 &p);
 	float GetElevation(const DPoint2 &p);
 	bool GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
-	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL);
+	bool ImportFromFile(const wxString &strFileName, bool progress_callback(int) = NULL,
+		vtElevError *err = NULL);
 	bool CreateFromPoints(vtFeatureSet *set, const IPoint2 &size, float fDistanceRatio);
 
 	// grid operations
@@ -131,7 +132,7 @@ FPoint3 LightDirection(float angle, float direction);
 bool MatchTilingToResolution(const DRECT &original_area, const DPoint2 &resolution,
 							int &iTileSize, bool bGrow, bool bShrink, DRECT &new_area,
 							IPoint2 &tiling);
-bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, enum vtElevError *err);
+bool ElevCacheOpen(vtElevLayer *pLayer, const char *fname, vtElevError *err);
 bool ElevCacheLoadData(vtElevLayer *elev);
 void ElevCacheRemove(vtElevLayer *elev);
 

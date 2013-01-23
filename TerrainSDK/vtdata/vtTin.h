@@ -71,9 +71,9 @@ public:
 	void RemTri(int t);
 
 	// Native file I/O.
-	bool Read(const char *fname);
+	bool Read(const char *fname, bool progress_callback(int) = NULL);
 	bool ReadHeader(const char *fname);
-	bool ReadBody(const char *fname);
+	bool ReadBody(const char *fname, bool progress_callback(int) = NULL);
 	bool Write(const char *fname, bool progress_callback(int) = NULL) const;
 
 	// Import/Export.
@@ -127,9 +127,9 @@ public:
 
 protected:
 	bool TestTriangle(int tri, const DPoint2 &p, float &fAltitude) const;
-	bool _ReadTin(FILE *fp);
+	bool _ReadTin(FILE *fp, bool progress_callback(int));
 	bool _ReadTinHeader(FILE *fp);
-	bool _ReadTinBody(FILE *fp);
+	bool _ReadTinBody(FILE *fp, bool progress_callback(int));
 	bool _ReadTinOld(FILE *fp);
 
 	void _UpdateIndicesInInBin(int bin);

@@ -230,7 +230,7 @@ bool vtStructureLayer::OnLoad()
 		bShowProgress = (size > 1024*50);	// 50 KB
 
 	if (bShowProgress)
-		OpenProgressDialog(_("Loading Structures"), false);
+		OpenProgressDialog(_("Loading Structures"), wxString::FromUTF8((const char *) fname), false);
 
 	bool success = ReadXML(fname, progress_callback);
 

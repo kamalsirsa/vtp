@@ -147,7 +147,7 @@ void FeatureTableDlg::ShowSelected()
 	}
 	bool bProgress = (selected > 500);
 	if (bProgress)
-		OpenProgressDialog(_("Populating table"), false, this);
+		OpenProgressDialog(_("Populating table"), _T(""), false, this);
 	int i, num = m_pFeatures->NumEntities();
 	for (i = 0; i < num; i++)
 	{
@@ -197,7 +197,7 @@ void FeatureTableDlg::ShowAll()
 	}
 	bool bProgress = (num > 500);
 	if (bProgress)
-		OpenProgressDialog(_("Populating table"), false, this);
+		OpenProgressDialog(_("Populating table"), _T(""), false, this);
 	for (i = 0; i < num; i++)
 	{
 		if (bProgress && (i%20)==0)

@@ -72,7 +72,7 @@ bool vtImageLayer::TransformCoords(vtProjection &proj_new)
 
 		int iSampleN = g_Options.GetValueInt(TAG_SAMPLING_N);
 
-		OpenProgressDialog(_("Converting Image CRS"));
+		OpenProgressDialog(_("Converting Image CRS"), _T(""));
 		success = img_new->ConvertProjection(m_pImage, proj_new, iSampleN,
 			progress_callback);
 

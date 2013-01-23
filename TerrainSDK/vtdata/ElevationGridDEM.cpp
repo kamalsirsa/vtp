@@ -4,7 +4,7 @@
 // This modules contains the implementations of the DEM file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2008 Virtual Terrain Project.
+// Copyright (c) 2001-2013 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -68,7 +68,7 @@ bool IConvert(FILE *fp, int length, int &value)
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromDEM(const char *szFileName,
-								  bool progress_callback(int))
+								  bool progress_callback(int), vtElevError *err)
 {
 	// Free buffers to prepare to receive new data
 	FreeData();
@@ -77,7 +77,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 	FILE *fp = vtFileOpen(szFileName,"rb");
 	if (!fp)		// Cannot Open File
+	{
+		SetError(err, vtElevError::FILE_OPEN, "Couldn't open file '%s'", szFileName);
 		return false;
+	}
 
 	// check for version of DEM format
 	int		iRow, iColumn;
@@ -85,7 +88,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 	fseek(fp, 864, 0);
 	if (fread(buffer, 144, 1, fp) != 1)
+	{
+		SetError(err, vtElevError::READ_DATA, "Couldn't read DEM data from '%s'", szFileName);
 		return false;
+	}
 	bool bOldFormat = (strncmp(buffer, "     1     1", 12) == 0);
 	bool bNewFormat = false;
 	bool bFixedLength = true;
@@ -112,7 +118,11 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			//  of its first profile, "     1     1"
 			fseek(fp, 865, 0);
 			if (fread(buffer, 158, 1, fp) != 1)
+			{
+				SetError(err, vtElevError::READ_DATA, "Couldn't read DEM data from '%s'", szFileName);
+				fclose(fp);
 				return false;
+			}
 			for (i = 0; i < 158-12; i++)
 			{
 				if (!strncmp(buffer+i, "     1     1", 12))
@@ -126,6 +136,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			if (i == 158-12)
 			{
 				// Not a DEM file
+				SetError(err, vtElevError::READ_DATA, "Couldn't read DEM data from '%s'", szFileName);
 				fclose(fp);
 				return false;
 			}
@@ -335,7 +346,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 	// We must have a functional CRS, or it will sebsequently fail
 	if (!bSuccessfulCRS)
+	{
+		SetError(err, vtElevError::READ_CRS, "Couldn't determine CRS of DEM file");
 		return false;
+	}
 
 	double dElevMin, dElevMax;
 	DConvert(fp, 24, dElevMin, DEBUG_DEM);
@@ -386,7 +400,11 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			// We cannot use IConvert here, because there *might* be a spurious LF
 			// after the number - seen in some rare files.
 			if (fscanf(fp, "%d", &iRow) != 1)
+			{
+				SetError(err, vtElevError::READ_DATA, "Error reading DEM at profile %d of %d",
+					i, iProfiles);
 				return false;
+			}
 			IConvert(fp, 6, iColumn);
 			// assert(iColumn == i+1);
 			IConvert(fp, 6, iProfileRows);
@@ -443,10 +461,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// safety check
-	if (m_iSize.y > 10000)
+	if (m_iSize.y > 20000)
 		return false;
 
-	if (!_AllocateArray())
+	if (!AllocateGrid(err))
 		return false;
 
 	// jump to start of actual data

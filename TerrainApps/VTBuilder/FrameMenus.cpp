@@ -1273,7 +1273,8 @@ void MainFrame::OnLayerImportOSM(wxCommandEvent &event)
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
-	OpenProgressDialog(_("Importing from OpenStreetMap"), false, m_pParentWindow);
+	OpenProgressDialog(_("Importing from OpenStreetMap"), loadFile.GetPath(),
+		false, m_pParentWindow);
 	UpdateProgressDialog(0, loadFile.GetPath());
 
 	LayerArray layers;
@@ -1331,7 +1332,7 @@ void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
-	OpenProgressDialog(_T("Importing"));
+	OpenProgressDialog(_T("Importing"), loadFile.GetPath());
 
 	wxString str = loadFile.GetPath();
 	ImportDataPointsFromTable(str.mb_str(wxConvUTF8), progress_callback);
@@ -1474,7 +1475,7 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 	{
 		vtLayer *lp = m_Layers[i];
 
-		OpenProgressDialog(_("Reprojecting"), false, this);
+		OpenProgressDialog(_("Reprojecting"), _T(""), false, this);
 		bool success = lp->TransformCoords(proj);
 		CloseProgressDialog();
 
@@ -2193,42 +2194,42 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 			fname = pEL->GetExportFilename(FSTRING_GMS);
 			if (fname == "")
 				return;
-			OpenProgressDialog(_T("Writing TIN"), false, this);
+			OpenProgressDialog(_T("Writing TIN"), wxString::FromUTF8((const char *) fname), false, this);
 			success = pEL->GetTin()->WriteGMS(fname, progress_callback);
 			break;
 		case 1:
 			fname = pEL->GetExportFilename(FSTRING_DXF);
 			if (fname == "")
 				return;
-			OpenProgressDialog(_T("Writing DXF"), false, this);
+			OpenProgressDialog(_T("Writing DXF"), wxString::FromUTF8((const char *) fname), false, this);
 			success = pEL->GetTin()->WriteDXF(fname, progress_callback);
 			break;
 		case 2:
 			fname = pEL->GetExportFilename(FSTRING_DAE);
 			if (fname == "")
 				return;
-			OpenProgressDialog(_T("Writing DAE"), false, this);
+			OpenProgressDialog(_T("Writing DAE"), wxString::FromUTF8((const char *) fname), false, this);
 			success = pEL->GetTin()->WriteDAE(fname, progress_callback);
 			break;
 		case 3:
 			fname = pEL->GetExportFilename(FSTRING_WRL);
 			if (fname == "")
 				return;
-			OpenProgressDialog(_T("Writing WRL"), false, this);
+			OpenProgressDialog(_T("Writing WRL"), wxString::FromUTF8((const char *) fname), false, this);
 			success = pEL->GetTin()->WriteWRL(fname, progress_callback);
 			break;
 		case 4:
 			fname = pEL->GetExportFilename(FSTRING_OBJ);
 			if (fname == "")
 				return;
-			OpenProgressDialog(_T("Writing OBJ"), false, this);
+			OpenProgressDialog(_T("Writing OBJ"), wxString::FromUTF8((const char *) fname), false, this);
 			success = pEL->GetTin()->WriteOBJ(fname, progress_callback);
 			break;
 		case 5:
 			fname = pEL->GetExportFilename(FSTRING_PLY);
 			if (fname == "")
 				return;
-			OpenProgressDialog(_T("Writing PLY"), false, this);
+			OpenProgressDialog(_T("Writing PLY"), wxString::FromUTF8((const char *) fname), false, this);
 			success = pEL->GetTin()->WritePLY(fname, progress_callback);
 			break;
 		}
@@ -2268,7 +2269,7 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 
-	OpenProgressDialog(_("Generating Bitmap"));
+	OpenProgressDialog(_("Generating Bitmap"), _T(""));
 	ExportBitmap(GetActiveElevLayer(), dlg);
 	CloseProgressDialog();
 }
@@ -2473,7 +2474,7 @@ void MainFrame::OnImageCreateOverviews(wxCommandEvent& event)
 {
 	vtImageLayer *pIL = GetActiveImageLayer();
 
-	OpenProgressDialog(_("Creating Overviews"), false, this);
+	OpenProgressDialog(_("Creating Overviews"), _T(""), false, this);
 
 	pIL->GetImage()->CreateOverviews();
 
@@ -2482,7 +2483,7 @@ void MainFrame::OnImageCreateOverviews(wxCommandEvent& event)
 
 void MainFrame::OnImageCreateOverviewsAll(wxCommandEvent& event)
 {
-	OpenProgressDialog(_("Creating Overviews"), false, this);
+	OpenProgressDialog(_("Creating Overviews"), _T(""), false, this);
 	for (uint i = 0; i < NumLayers(); i++)
 	{
 		vtImageLayer *pIL = dynamic_cast<vtImageLayer *>(GetLayer(i));
@@ -2496,7 +2497,7 @@ void MainFrame::OnImageCreateMipMaps(wxCommandEvent& event)
 {
 	vtImageLayer *pIL = GetActiveImageLayer();
 
-	OpenProgressDialog(_("Creating MipMaps"), false, this);
+	OpenProgressDialog(_("Creating MipMaps"), _T(""), false, this);
 
 	pIL->GetImage()->AllocMipMaps();
 	pIL->GetImage()->DrawMipMaps();
@@ -2697,7 +2698,7 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 
 	// Bring down the WMS data
 	VTLOG1("  Requesting data\n");
-	OpenProgressDialog(_("Requesting data"), false, this);
+	OpenProgressDialog(_("Requesting data"), _T(""), false, this);
 
 	vtString url = (const char*)m_pMapServerDlg->m_strQueryURL.mb_str(wxConvUTF8);
 	VTLOG("  URL: %s\n", (const char *)url);
@@ -2779,7 +2780,7 @@ void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)
 	if (dlg.m_strToFile == _T(""))
 		return;
 
-	OpenProgressDialog(_("Requesting data from Terraserver..."));
+	OpenProgressDialog(_("Requesting data from Terraserver..."), _T(""));
 
 	vtImageLayer *pIL = new vtImageLayer;
 	bool success = pIL->GetImage()->ReadFeaturesFromTerraserver(m_area, dlg.m_iTheme,
@@ -3934,7 +3935,7 @@ void MainFrame::OnRawGenElevation(wxCommandEvent& event)
 
 	vtElevLayer *el = new vtElevLayer;
 
-	OpenProgressDialog(_T("Creating Grid"), true);
+	OpenProgressDialog(_T("Creating Grid"), _T(""), true);
 	int xsize = 800;
 	int ysize = 300;
 	if (el->CreateFromPoints(pSet, dlg.m_Size, dlg.m_fDistanceCutoff))
@@ -4194,7 +4195,7 @@ void MainFrame::OnLayerOverviewDisk(wxCommandEvent& event)
 		return;
 	vtImageLayer *pIL = (vtImageLayer *) data->m_pLayer;
 
-	OpenProgressDialog(_("Creating Overviews"), false, this);
+	OpenProgressDialog(_("Creating Overviews"), _T(""), false, this);
 
 	pIL->GetImage()->CreateOverviews();
 
@@ -4209,7 +4210,7 @@ void MainFrame::OnLayerOverviewMem(wxCommandEvent& event)
 		return;
 	vtImageLayer *pIL = (vtImageLayer *) data->m_pLayer;
 
-	OpenProgressDialog(_("Creating MipMaps"), false, this);
+	OpenProgressDialog(_("Creating MipMaps"), _T(""), false, this);
 
 	pIL->GetImage()->AllocMipMaps();
 	pIL->GetImage()->DrawMipMaps();

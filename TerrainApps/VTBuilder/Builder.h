@@ -33,6 +33,7 @@ class vtElevationGrid;
 // dialogs
 class InstanceDlg;
 
+
 /**
 * The main frame is the central class of the whole terrain builder.
 * Not only does it represent the top window of the application, but it also
@@ -40,6 +41,14 @@ class InstanceDlg;
 */
 class Builder
 {
+public:
+	enum LoadResult {
+		LOADED,
+		NOT_NATIVE,
+		CANCELLED,
+		FAILED
+	};
+
 public:
 	Builder();
 	~Builder();
@@ -54,7 +63,7 @@ public:
 	// Layer methods
 	uint NumLayers() const { return m_Layers.size(); }
 	vtLayer *GetLayer(int i) const { return m_Layers[i]; }
-	vtLayer *LoadLayer(const wxString &fname);
+	LoadResult LoadLayer(const wxString &fname);
 	void AddLayer(vtLayer *lp);
 	virtual bool AddLayerWithCheck(vtLayer *pLayer, bool bRefresh = true);
 	virtual void RemoveLayer(vtLayer *lp);

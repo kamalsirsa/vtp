@@ -142,7 +142,7 @@ void MainFrame::DoGeocode()
 	if (!fname.Right(3).CmpNoCase(_T("shp")))
 	{
 		shpname = fname;
-		OpenProgressDialog(_T("Reading"), false);
+		OpenProgressDialog(_T("Reading"), fname, false);
 		success = feat.LoadFromSHP(shpname.mb_str(wxConvUTF8), progress_callback);
 		CloseProgressDialog();
 	}
@@ -210,12 +210,12 @@ void MainFrame::DoGeocode()
 	bool bHaveGNS = false;
 	if (dlg.m_bGNS)
 	{
-		OpenProgressDialog(_T("Reading GNS file..."), false);
+		OpenProgressDialog(_T("Reading GNS file..."), fname, false);
 		bHaveGNS = countries.ReadGCF(dlg.m_strGNS.mb_str(wxConvUTF8), progress_callback);
 		CloseProgressDialog();
 	}
 
-	OpenProgressDialog(_T("Geocoding"), true);
+	OpenProgressDialog(_T("Geocoding"), fname, true);
 	bool bFound;
 	for (rec = 0; rec < iRecords; rec++)
 	{
@@ -299,7 +299,7 @@ void MainFrame::DoGeocode()
 		if (saveFile.ShowModal() == wxID_OK)
 		{
 			shpname = saveFile.GetPath();
-			OpenProgressDialog(_T("Saving"), false);
+			OpenProgressDialog(_T("Saving"), shpname, false);
 			feat.SaveToSHP(shpname.mb_str(wxConvUTF8), progress_callback);
 			CloseProgressDialog();
 		}
@@ -307,7 +307,7 @@ void MainFrame::DoGeocode()
 
 	if (bHaveGNS)
 	{
-		OpenProgressDialog(_T("Freeing GNS data..."), false);
+		OpenProgressDialog(_T("Freeing GNS data..."), _T(""), false);
 		countries.Free(progress_callback);
 		CloseProgressDialog();
 	}
