@@ -838,7 +838,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	UpdateTimeString();
 
-	m_iInitLocation = m_locfile->FindString(m_strInitLocation);
+	m_iInitLocation = m_init_location->FindString(m_strInitLocation);
 	if (m_iInitLocation == -1)
 		m_iInitLocation = 0;
 
@@ -1149,7 +1149,7 @@ void TParamsDlg::OnChoiceLocFile( wxCommandEvent &event )
 void TParamsDlg::OnChoiceInitLocation( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	m_strInitLocation = m_locfile->GetString(m_iInitLocation);
+	m_strInitLocation = m_init_location->GetString(m_iInitLocation);
 }
 
 void TParamsDlg::OnSetInitTime( wxCommandEvent &event )
