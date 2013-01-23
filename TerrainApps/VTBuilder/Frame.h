@@ -301,7 +301,6 @@ protected:
 	void OnAreaVegDensity(wxCommandEvent& event);
 	void OnAreaRequestWFS(wxCommandEvent& event);
 	void OnAreaRequestWMS(wxCommandEvent& event);
-	void OnAreaRequestTServe(wxCommandEvent& event);
 
 	void OnUpdateAreaZoomAll(wxUpdateUIEvent& event);
 	void OnUpdateAreaZoomLayer(wxUpdateUIEvent& event);

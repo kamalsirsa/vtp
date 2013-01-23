@@ -257,26 +257,20 @@ class NodeDlgView;
 #define ID_TC_SQUISH_FAST 1212
 #define ID_TC_SQUISH_SLOW 1213
 #define ID_TC_JPEG 1214
-#define ID_TOWER_XY 1215
-#define ID_TOWER_TYPE 1216
-#define ID_TOWER_MATERIAL 1217
-#define ID_TOWER_ELEV 1218
-#define ID_THEME 1219
-#define ID_MPP 1220
-#define ID_USE_SPECIES 1221
-#define ID_SPECIES_CHOICE 1222
-#define ID_SPECIES_USE_FIELD 1223
-#define ID_SPECIES_FIELD 1224
-#define ID_SPECIES_ID 1225
-#define ID_SPECIES_NAME 1226
-#define ID_COMMON_NAME 1227
-#define ID_BIOTYPE_INT 1228
-#define ID_BIOTYPE_STRING 1229
-#define ID_HEIGHT_RANDOM 1230
-#define ID_HEIGHT_FIXED 1231
-#define ID_HEIGHT_FIXED_VALUE 1232
-#define ID_HEIGHT_USE_FIELD 1233
-#define ID_HEIGHT_FIELD 1234
+#define ID_USE_SPECIES 1215
+#define ID_SPECIES_CHOICE 1216
+#define ID_SPECIES_USE_FIELD 1217
+#define ID_SPECIES_FIELD 1218
+#define ID_SPECIES_ID 1219
+#define ID_SPECIES_NAME 1220
+#define ID_COMMON_NAME 1221
+#define ID_BIOTYPE_INT 1222
+#define ID_BIOTYPE_STRING 1223
+#define ID_HEIGHT_RANDOM 1224
+#define ID_HEIGHT_FIXED 1225
+#define ID_HEIGHT_FIXED_VALUE 1226
+#define ID_HEIGHT_USE_FIELD 1227
+#define ID_HEIGHT_FIELD 1228
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ChunkDlgBase
@@ -1155,57 +1149,6 @@ class TileDlgBase : public wxDialog
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Class TowerDlgBase
-///////////////////////////////////////////////////////////////////////////////
-class TowerDlgBase : public wxDialog 
-{
-	private:
-	
-	protected:
-		wxStaticText* m_text22;
-		wxTextCtrl* m_tower_xy;
-		wxStaticText* m_text23;
-		wxChoice* m_tower_type;
-		wxStaticText* m_text24;
-		wxChoice* m_tower_material;
-		wxCheckBox* m_tower_elev;
-		wxButton* m_ok;
-		wxButton* m_cancel;
-	
-	public:
-		
-		TowerDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
-		~TowerDlgBase();
-	
-};
-
-///////////////////////////////////////////////////////////////////////////////
-/// Class TSDlgBase
-///////////////////////////////////////////////////////////////////////////////
-class TSDlgBase : public wxDialog 
-{
-	private:
-	
-	protected:
-		wxStaticText* m_text23;
-		wxChoice* m_theme;
-		wxStaticText* m_text24;
-		wxChoice* m_mpp;
-		wxRadioButton* m_radio_create_new;
-		wxRadioButton* m_radio_to_file;
-		wxTextCtrl* m_text_to_file;
-		wxButton* m_dotdotdot;
-		wxButton* m_ok;
-		wxButton* m_cancel;
-	
-	public:
-		
-		TSDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 307,219 ), long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
-		~TSDlgBase();
-	
-};
-
-///////////////////////////////////////////////////////////////////////////////
 /// Class VegFieldsDlgBase
 ///////////////////////////////////////////////////////////////////////////////
 class VegFieldsDlgBase : public wxDialog 
@@ -1234,6 +1177,32 @@ class VegFieldsDlgBase : public wxDialog
 		
 		VegFieldsDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE|wxTAB_TRAVERSAL );
 		~VegFieldsDlgBase();
+	
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class ElevMathDlgBase
+///////////////////////////////////////////////////////////////////////////////
+class ElevMathDlgBase : public wxDialog 
+{
+	private:
+	
+	protected:
+		wxStaticText* m_staticText118;
+		wxChoice* m_layer1;
+		wxChoice* m_operation;
+		wxChoice* m_layer2;
+		wxStaticText* m_staticText119;
+		wxTextCtrl* m_spacing_x;
+		wxTextCtrl* m_spacing_y;
+		wxStdDialogButtonSizer* m_sdbSizer1;
+		wxButton* m_sdbSizer1OK;
+		wxButton* m_sdbSizer1Cancel;
+	
+	public:
+		
+		ElevMathDlgBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
+		~ElevMathDlgBase();
 	
 };
 

@@ -1,5 +1,5 @@
 //
-// VegDlg.h
+// VegDlg.cpp
 //
 // Copyright (c) 2001-2011 Virtual Terrain Project
 // Free for all uses, see license.txt for details.

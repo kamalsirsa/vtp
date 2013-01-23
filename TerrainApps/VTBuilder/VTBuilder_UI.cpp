@@ -3113,158 +3113,6 @@ TileDlgBase::~TileDlgBase()
 {
 }
 
-TowerDlgBase::TowerDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxBoxSizer* bSizer34;
-	bSizer34 = new wxBoxSizer( wxVERTICAL );
-	
-	wxFlexGridSizer* fgSizer2;
-	fgSizer2 = new wxFlexGridSizer( 0, 2, 0, 0 );
-	fgSizer2->SetFlexibleDirection( wxBOTH );
-	fgSizer2->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	m_text22 = new wxStaticText( this, ID_TEXT, _("Tower Position"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text22->Wrap( -1 );
-	fgSizer2->Add( m_text22, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_tower_xy = new wxTextCtrl( this, ID_TOWER_XY, wxEmptyString, wxDefaultPosition, wxSize( 150,-1 ), 0 );
-	fgSizer2->Add( m_tower_xy, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_text23 = new wxStaticText( this, ID_TEXT, _("Tower Type"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text23->Wrap( -1 );
-	fgSizer2->Add( m_text23, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	wxArrayString m_tower_typeChoices;
-	m_tower_type = new wxChoice( this, ID_TOWER_TYPE, wxDefaultPosition, wxSize( 150,-1 ), m_tower_typeChoices, 0 );
-	m_tower_type->SetSelection( 0 );
-	fgSizer2->Add( m_tower_type, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_text24 = new wxStaticText( this, ID_TEXT, _("Tower Material"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text24->Wrap( -1 );
-	fgSizer2->Add( m_text24, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	wxArrayString m_tower_materialChoices;
-	m_tower_material = new wxChoice( this, ID_TOWER_MATERIAL, wxDefaultPosition, wxSize( 150,-1 ), m_tower_materialChoices, 0 );
-	m_tower_material->SetSelection( 0 );
-	fgSizer2->Add( m_tower_material, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer34->Add( fgSizer2, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_tower_elev = new wxCheckBox( this, ID_TOWER_ELEV, _("Tower Elevated"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_tower_elev->SetValue(true); 
-	bSizer34->Add( m_tower_elev, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	wxBoxSizer* bSizer35;
-	bSizer35 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_ok = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_ok->SetDefault(); 
-	bSizer35->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer35->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer34->Add( bSizer35, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	this->SetSizer( bSizer34 );
-	this->Layout();
-	bSizer34->Fit( this );
-	
-	this->Centre( wxBOTH );
-}
-
-TowerDlgBase::~TowerDlgBase()
-{
-}
-
-TSDlgBase::TSDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxBoxSizer* bSizer111;
-	bSizer111 = new wxBoxSizer( wxVERTICAL );
-	
-	wxBoxSizer* bSizer112;
-	bSizer112 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text23 = new wxStaticText( this, ID_TEXT, _("Theme:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text23->Wrap( 0 );
-	bSizer112->Add( m_text23, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	wxArrayString m_themeChoices;
-	m_theme = new wxChoice( this, ID_THEME, wxDefaultPosition, wxSize( 100,-1 ), m_themeChoices, 0 );
-	m_theme->SetSelection( 0 );
-	bSizer112->Add( m_theme, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer111->Add( bSizer112, 0, wxALIGN_CENTER|wxALL, 0 );
-	
-	wxBoxSizer* bSizer113;
-	bSizer113 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_text24 = new wxStaticText( this, ID_TEXT, _("Meters per pixel:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_text24->Wrap( -1 );
-	bSizer113->Add( m_text24, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	wxArrayString m_mppChoices;
-	m_mpp = new wxChoice( this, ID_MPP, wxDefaultPosition, wxSize( 100,-1 ), m_mppChoices, 0 );
-	m_mpp->SetSelection( 0 );
-	bSizer113->Add( m_mpp, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer111->Add( bSizer113, 0, wxALIGN_CENTER|wxALL, 0 );
-	
-	wxStaticBoxSizer* sbSizer24;
-	sbSizer24 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Output") ), wxVERTICAL );
-	
-	m_radio_create_new = new wxRadioButton( this, ID_RADIO_CREATE_NEW, _("Create new layer"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-	m_radio_create_new->SetValue( true ); 
-	m_radio_create_new->Enable( false );
-	
-	sbSizer24->Add( m_radio_create_new, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
-	wxBoxSizer* bSizer114;
-	bSizer114 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_radio_to_file = new wxRadioButton( this, ID_RADIO_TO_FILE, _("To file"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_radio_to_file->SetValue( true ); 
-	bSizer114->Add( m_radio_to_file, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	m_text_to_file = new wxTextCtrl( this, ID_TEXT_TO_FILE, wxEmptyString, wxDefaultPosition, wxSize( 180,-1 ), 0 );
-	bSizer114->Add( m_text_to_file, 1, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_dotdotdot = new wxButton( this, ID_DOTDOTDOT, _("..."), wxDefaultPosition, wxSize( 24,-1 ), 0 );
-	m_dotdotdot->SetDefault(); 
-	m_dotdotdot->SetFont( wxFont( 11, 72, 90, 90, false, wxEmptyString ) );
-	
-	bSizer114->Add( m_dotdotdot, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	sbSizer24->Add( bSizer114, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
-	
-	bSizer111->Add( sbSizer24, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-	
-	wxBoxSizer* bSizer115;
-	bSizer115 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_ok = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_ok->SetDefault(); 
-	bSizer115->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer115->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer111->Add( bSizer115, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	this->SetSizer( bSizer111 );
-	this->Layout();
-	
-	this->Centre( wxBOTH );
-}
-
-TSDlgBase::~TSDlgBase()
-{
-}
-
 VegFieldsDlgBase::VegFieldsDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -3385,5 +3233,66 @@ VegFieldsDlgBase::VegFieldsDlgBase( wxWindow* parent, wxWindowID id, const wxStr
 }
 
 VegFieldsDlgBase::~VegFieldsDlgBase()
+{
+}
+
+ElevMathDlgBase::ElevMathDlgBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxBoxSizer* bSizer176;
+	bSizer176 = new wxBoxSizer( wxVERTICAL );
+	
+	m_staticText118 = new wxStaticText( this, wxID_ANY, _("Create new elevation grid layer from:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText118->Wrap( -1 );
+	bSizer176->Add( m_staticText118, 0, wxALL, 5 );
+	
+	wxArrayString m_layer1Choices;
+	m_layer1 = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_layer1Choices, 0 );
+	m_layer1->SetSelection( 0 );
+	bSizer176->Add( m_layer1, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxEXPAND, 5 );
+	
+	wxString m_operationChoices[] = { _("+ (plus)"), _("- (minus)") };
+	int m_operationNChoices = sizeof( m_operationChoices ) / sizeof( wxString );
+	m_operation = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( 70,-1 ), m_operationNChoices, m_operationChoices, 0 );
+	m_operation->SetSelection( 0 );
+	bSizer176->Add( m_operation, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	
+	wxArrayString m_layer2Choices;
+	m_layer2 = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_layer2Choices, 0 );
+	m_layer2->SetSelection( 0 );
+	bSizer176->Add( m_layer2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxEXPAND, 5 );
+	
+	m_staticText119 = new wxStaticText( this, wxID_ANY, _("Sample spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText119->Wrap( -1 );
+	bSizer176->Add( m_staticText119, 0, wxALL, 5 );
+	
+	wxBoxSizer* bSizer177;
+	bSizer177 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_spacing_x = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer177->Add( m_spacing_x, 0, wxALL, 5 );
+	
+	m_spacing_y = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer177->Add( m_spacing_y, 0, wxALL, 5 );
+	
+	bSizer176->Add( bSizer177, 1, wxEXPAND, 5 );
+	
+	m_sdbSizer1 = new wxStdDialogButtonSizer();
+	m_sdbSizer1OK = new wxButton( this, wxID_OK );
+	m_sdbSizer1->AddButton( m_sdbSizer1OK );
+	m_sdbSizer1Cancel = new wxButton( this, wxID_CANCEL );
+	m_sdbSizer1->AddButton( m_sdbSizer1Cancel );
+	m_sdbSizer1->Realize();
+	bSizer176->Add( m_sdbSizer1, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 10 );
+	
+	this->SetSizer( bSizer176 );
+	this->Layout();
+	bSizer176->Fit( this );
+	
+	this->Centre( wxBOTH );
+}
+
+ElevMathDlgBase::~ElevMathDlgBase()
 {
 }

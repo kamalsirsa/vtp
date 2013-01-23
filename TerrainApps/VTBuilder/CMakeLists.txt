@@ -46,12 +46,12 @@ set(VTBUILDER_DIALOG_SOURCE_FILES
 	DistanceDlg2d.cpp DistribVegDlg.cpp FeatInfoDlg.cpp GenGridDlg.cpp
 	GeocodeDlg.cpp ImageMapDlg.cpp LayerPropDlg.cpp MapServerDlg.cpp
 	MatchDlg.cpp NodeDlg.cpp OptionsDlg.cpp PrefDlg.cpp RenderDlg.cpp
-	SelectDlg.cpp	TSDlg.cpp VegDlg.cpp)
+	SelectDlg.cpp VegDlg.cpp)
 set(VTBUILDER_HEADER_FILES
 	App.h DistanceDlg2d.h DistribVegDlg.h FeatInfoDlg.h Frame.h
 	GenGridDlg.h GeocodeDlg.h ImageMapDlg.h LayerPropDlg.h MapServerDlg.h
 	MatchDlg.h MenuEnum.h OptionsDlg.h PrefDlg.h RenderDlg.h RoadMapEdit.h
-	SelectDlg.h StatusBar.h TreeView.h TSDlg.h VegDlg.h VegPointOptions.h)
+	SelectDlg.h StatusBar.h TreeView.h VegDlg.h VegPointOptions.h)
 set(VTBUILDER_RC_FILES
 	VTBuilder.rc)
 if(MSVC)

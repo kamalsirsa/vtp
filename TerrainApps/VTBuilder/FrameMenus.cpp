@@ -69,7 +69,6 @@
 #include "PrefDlg.h"
 #include "RenderDlg.h"
 #include "SelectDlg.h"
-#include "TSDlg.h"
 #include "VegDlg.h"
 
 DECLARE_APP(BuilderApp)
@@ -332,7 +331,6 @@ EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 EVT_MENU(ID_AREA_VEG_DENSITY,		MainFrame::OnAreaVegDensity)
 EVT_MENU(ID_AREA_REQUEST_WFS,		MainFrame::OnAreaRequestWFS)
 EVT_MENU(ID_AREA_REQUEST_WMS,		MainFrame::OnAreaRequestWMS)
-EVT_MENU(ID_AREA_REQUEST_TSERVE,	MainFrame::OnAreaRequestTServe)
 
 EVT_UPDATE_UI(ID_AREA_ZOOM_ALL,		MainFrame::OnUpdateAreaZoomAll)
 EVT_UPDATE_UI(ID_AREA_ZOOM_LAYER,	MainFrame::OnUpdateAreaZoomLayer)
@@ -642,7 +640,6 @@ void MainFrame::CreateMenus()
 #if SUPPORT_CURL
 	areaMenu->Append(ID_AREA_REQUEST_WFS, _("Request Layer from WFS"));
 	areaMenu->Append(ID_AREA_REQUEST_WMS, _("Request Image from WMS"));
-	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _("Request Image from Terraserver"));
 #endif // SUPPORT_CURL
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_SAMPLE_ELEV_OPT, _("Sample Elevation to Tileset"),
@@ -2759,55 +2756,6 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 void MainFrame::OnUpdateAreaRequestWMS(wxUpdateUIEvent& event)
 {
 	event.Enable(!m_area.IsEmpty() && SUPPORT_CURL);
-}
-
-void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)
-{
-	int zone = m_proj.GetUTMZone();
-	if (zone == 0 || m_area.IsEmpty())
-	{
-		wxMessageBox(
-			_T("In order to request data from Terraserver, first set your CRS to\n")
-			_T("a UTM zone (4 through 19) and use the Area Tool to indicate the\n")
-			_T("area that you want to download."),
-			_T("Note"));
-		return;
-	}
-
-	TSDialog dlg(this, -1, _("Terraserver"));
-	if (dlg.ShowModal() != wxID_OK)
-		return;
-	if (dlg.m_strToFile == _T(""))
-		return;
-
-	OpenProgressDialog(_("Requesting data from Terraserver..."), _T(""));
-
-	vtImageLayer *pIL = new vtImageLayer;
-	bool success = pIL->GetImage()->ReadFeaturesFromTerraserver(m_area, dlg.m_iTheme,
-		dlg.m_iMetersPerPixel, m_proj.GetUTMZone(), dlg.m_strToFile.mb_str(wxConvUTF8));
-
-	CloseProgressDialog();
-
-	if (success)
-		wxMessageBox(_("Successfully wrote file."));
-	if (!success)
-	{
-		wxMessageBox(_("Unable to download."));
-	}
-	delete pIL;
-	return;
-#if 0
-	if (dlg.m_bNewLayer)
-	{
-		if (!AddLayerWithCheck(pIL))
-			delete pIL;
-	}
-	else
-	{
-		pIL->SaveToFile(dlg.m_strToFile.mb_str(wxConvUTF8));
-		delete pIL;
-	}
-#endif
 }
 
 
