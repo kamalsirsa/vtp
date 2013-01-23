@@ -1371,24 +1371,28 @@ bool vtTin::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		const bool hit = FindTriangleOnEarth(DPoint2(earth.x, earth.y),
 			fAltitude, iTriangle, bTrue);
 		if (hit)
-		{
-			const int v0 = m_tri[iTriangle*3];
-			const int v1 = m_tri[iTriangle*3+1];
-			const int v2 = m_tri[iTriangle*3+2];
-			const DPoint2 &p1 = m_vert[v0];
-			const DPoint2 &p2 = m_vert[v1];
-			const DPoint2 &p3 = m_vert[v2];
-			FPoint3 wp0, wp1, wp2;
-			m_Conversion.ConvertFromEarth(DPoint3(p1.x, p1.y, m_z[v0]), wp0);
-			m_Conversion.ConvertFromEarth(DPoint3(p2.x, p2.y, m_z[v1]), wp1);
-			m_Conversion.ConvertFromEarth(DPoint3(p3.x, p3.y, m_z[v2]), wp2);
-			*vNormal = (wp1 - wp0).Cross(wp2 - wp0);
-			vNormal->Normalize();
-		}
+			*vNormal = GetTriangleNormal(iTriangle);
 		return hit;
 	}
 	else
 		return FindAltitudeOnEarth(DPoint2(earth.x, earth.y), fAltitude, bTrue);
+}
+
+FPoint3 vtTin::GetTriangleNormal(int iTriangle) const
+{
+	const int v0 = m_tri[iTriangle*3];
+	const int v1 = m_tri[iTriangle*3+1];
+	const int v2 = m_tri[iTriangle*3+2];
+	const DPoint2 &p1 = m_vert[v0];
+	const DPoint2 &p2 = m_vert[v1];
+	const DPoint2 &p3 = m_vert[v2];
+	FPoint3 wp0, wp1, wp2;
+	m_Conversion.ConvertFromEarth(DPoint3(p1.x, p1.y, m_z[v0]), wp0);
+	m_Conversion.ConvertFromEarth(DPoint3(p2.x, p2.y, m_z[v1]), wp1);
+	m_Conversion.ConvertFromEarth(DPoint3(p3.x, p3.y, m_z[v2]), wp2);
+	FPoint3 norm = (wp1 - wp0).Cross(wp2 - wp0);
+	norm.Normalize();
+	return norm;
 }
 
 bool vtTin::ConvertProjection(const vtProjection &proj_new)

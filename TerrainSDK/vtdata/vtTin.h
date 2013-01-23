@@ -109,6 +109,11 @@ public:
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		bool bTrue = false, int iCultureFlags=0, FPoint3 *vNormal = NULL) const;
 
+	// This method also gives you the triangle of intersection.
+	bool FindTriangleOnEarth(const DPoint2 &p, float &fAltitude,
+		int &iTriangle, bool bTrue = false) const;
+	FPoint3 GetTriangleNormal(int iTriangle) const;
+
 	// Avoid implementing HeightField3d virtual methods
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const { return false; }
@@ -134,9 +139,6 @@ protected:
 
 	void _UpdateIndicesInInBin(int bin);
 	void _CompareBins(int bin1, int bin2);
-
-	bool FindTriangleOnEarth(const DPoint2 &p, float &fAltitude,
-		int &iTriangle, bool bTrue = false) const;
 
 	DLine2				m_vert;
 	std::vector<float>	m_z;

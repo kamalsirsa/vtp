@@ -2970,13 +2970,18 @@ void Enviro::UpdateVerticalLine()
 		if (layers[i]->GetType() == LT_ELEVATION)
 		{
 			vtElevLayer *pEL = dynamic_cast<vtElevLayer *>(layers[i].get());
+			const vtTin *tin = pEL->GetTin();
 
 			float fAlt;
-			FPoint3 normal;
-			if (pEL->GetTin()->FindAltitudeAtPoint(world_pos, fAlt, true, 0, &normal))
+			int triangle;
+			const DPoint2 p2(m_EarthPos.x, m_EarthPos.y);
+			if (tin->FindTriangleOnEarth(p2, fAlt, triangle, true))
 			{
 				samples.push_back(fAlt);
+
+				FPoint3 normal = tin->GetTriangleNormal(triangle);
 				normals.push_back(normal);
+
 				if (fAlt < fMin) fMin = fAlt;
 				if (fAlt > fMax) fMax = fAlt;
 			}
