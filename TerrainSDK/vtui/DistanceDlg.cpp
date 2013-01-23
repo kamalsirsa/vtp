@@ -81,8 +81,7 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 DistanceDlg::~DistanceDlg()
 {
-	if (m_pTransformToGeo)
-		delete m_pTransformToGeo;
+	delete m_pTransformToGeo;
 }
 
 void DistanceDlg::Zero()
@@ -112,8 +111,7 @@ void DistanceDlg::SetProjection(const vtProjection &proj)
 	if (!bIsGeo)
 	{
 		// Free previous object
-		if (m_pTransformToGeo)
-			delete m_pTransformToGeo;
+		delete m_pTransformToGeo;
 
 		// We may need degrees later, but don't have them, prepare to compute them.
 		vtProjection geo;

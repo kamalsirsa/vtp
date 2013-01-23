@@ -126,10 +126,8 @@ BuilderView::BuilderView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 BuilderView::~BuilderView()
 {
 	delete m_pCursorPan;
-	if (m_pMapToCurrent)
-		delete m_pMapToCurrent;
-	if (m_pCurrentToMap)
-		delete m_pCurrentToMap;
+	delete m_pMapToCurrent;
+	delete m_pCurrentToMap;
 }
 
 ////////////////////////////////////////////////////////////
@@ -461,17 +459,10 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	OGRFree(str4);
 #endif
 
-	// Create conversion object
-	if (m_pMapToCurrent)
-	{
-		delete m_pMapToCurrent;
-		m_pMapToCurrent = NULL;
-	}
-	if (m_pCurrentToMap)
-	{
-		delete m_pCurrentToMap;
-		m_pCurrentToMap = NULL;
-	}
+	// (Re-)create conversion object
+	delete m_pMapToCurrent;
+	delete m_pCurrentToMap;
+
 	m_pMapToCurrent = CreateCoordTransform(&Source, &proj);
 	m_pCurrentToMap = CreateCoordTransform(&proj, &Source);
 
@@ -1337,7 +1328,7 @@ void BuilderView::DeselectAll()
 	vtRoadLayer *pRL = g_bld->GetActiveRoadLayer();
 	if (pRL)
 	{
-		DRECT* world_bounds;
+		DRECT *world_bounds;
 		wxRect bound;
 		int n;
 

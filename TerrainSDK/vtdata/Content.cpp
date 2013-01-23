@@ -686,8 +686,11 @@ void vtContentManager::Clear()
 void vtContentManager::RemoveItem(vtItem *item)
 {
 	int i = m_items.Find(item);
-	m_items.RemoveAt(i);
-	delete item;
+	if (i != -1)
+	{
+		m_items.RemoveAt(i);
+		delete item;
+	}
 }
 
 vtItem *vtContentManager::FindItemByName(const char *name)

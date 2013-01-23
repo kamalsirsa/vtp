@@ -54,9 +54,7 @@ vtPlantSpecies::vtPlantSpecies()
 vtPlantSpecies::~vtPlantSpecies()
 {
 	for (uint i = 0; i < m_Apps.GetSize(); i++)
-	{
 		delete m_Apps[i];
-	}
 }
 
 
@@ -115,9 +113,7 @@ vtSpeciesList::vtSpeciesList()
 vtSpeciesList::~vtSpeciesList()
 {
 	for (uint i = 0; i < m_Species.GetSize(); i++)
-	{
 		delete m_Species[i];
-	}
 }
 
 bool vtSpeciesList::WriteXML(const char *fname) const
@@ -441,9 +437,7 @@ vtBioRegion::vtBioRegion()
 vtBioRegion::~vtBioRegion()
 {
 	for (uint i = 0; i < m_Types.GetSize(); i++)
-	{
 		delete m_Types[i];
-	}
 }
 
 bool vtBioRegion::Read(const char *fname, const vtSpeciesList &species)

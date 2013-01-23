@@ -189,16 +189,11 @@ void LineBufferGDAL::FindMaxBlockSize(GDALDataset *pDataset)
 
 void LineBufferGDAL::Cleanup()
 {
-	if (NULL != m_pBlock)
-		delete m_pBlock;
-	if (NULL != m_pRedBlock)
-		delete m_pRedBlock;
-	if (NULL != m_pGreenBlock)
-		delete m_pGreenBlock;
-	if (NULL != m_pBlueBlock)
-		delete m_pBlueBlock;
-	if (NULL != m_pAlphaBlock)
-		delete m_pAlphaBlock;
+	delete m_pBlock;
+	delete m_pRedBlock;
+	delete m_pGreenBlock;
+	delete m_pBlueBlock;
+	delete m_pAlphaBlock;
 
 	m_pBlock = NULL;
 	m_pRedBlock = NULL;
@@ -212,8 +207,7 @@ void LineBufferGDAL::Cleanup()
 
 	for (int i = 0; i < BUF_SCANLINES; i++)
 	{
-		if (m_row[i].m_data)
-			delete m_row[i].m_data;
+		delete m_row[i].m_data;
 		m_row[i].m_data = NULL;
 	}
 }
@@ -408,10 +402,8 @@ vtImage::vtImage(const DRECT &area, const IPoint2 &size,
 vtImage::~vtImage()
 {
 	for (uint i = 0; i < m_Bitmaps.size(); i++)
-	{
-		if (m_Bitmaps[i].m_pBitmap != NULL)
-			delete m_Bitmaps[i].m_pBitmap;
-	}
+		delete m_Bitmaps[i].m_pBitmap;
+
 	if (NULL != m_pDataset)
 		GDALClose(m_pDataset);
 }

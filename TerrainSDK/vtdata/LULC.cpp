@@ -145,14 +145,12 @@ vtLULCFile::vtLULCFile(const char *fname)
 	fclose(fp);
 }
 
-
 //
 // destructor
 vtLULCFile::~vtLULCFile()
 {
 	delete [] m_pSection;
 }
-
 
 LULCSection::~LULCSection()
 {

@@ -48,11 +48,8 @@ SRTerrain::SRTerrain() : vtDynTerrainGeom()
 
 SRTerrain::~SRTerrain()
 {
-	if (m_pMini)
-	{
-		delete m_pMini;
-		m_pMini = NULL;
-	}
+	delete m_pMini;
+	m_pMini = NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -4,4 +4,4 @@
 //  rest of the software all builds on vtdata.
 //
 
-#define VTP_VERSION "1.47"
+#define VTP_VERSION "1.48"

@@ -327,8 +327,7 @@ void EnviroFrame::CreateToolbar()
 	if (m_bVerticalToolbar)
 		style |= wxTB_VERTICAL;
 
-	if (m_pToolbar != NULL)
-		delete m_pToolbar;
+	delete m_pToolbar;
 
 	// Create
 	m_pToolbar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,

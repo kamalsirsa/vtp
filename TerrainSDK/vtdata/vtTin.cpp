@@ -1100,11 +1100,8 @@ void vtTin::FreeData()
 	m_tri.clear();
 
 	// The bins must be cleared when the triangles are freed
-	if (m_trianglebins)
-	{
-		delete m_trianglebins;
-		m_trianglebins = NULL;
-	}
+	delete m_trianglebins;
+	m_trianglebins = NULL;
 }
 
 /**
@@ -1266,8 +1263,7 @@ void vtTin::SetupTriangleBins(int bins, bool progress_callback(int))
 	m_BinSize.x = rect.Width() / bins;
 	m_BinSize.y = rect.Height() / bins;
 
-	if (m_trianglebins)
-		delete m_trianglebins;
+	delete m_trianglebins;
 	m_trianglebins = new BinArray(bins, bins);
 
 	uint tris = NumTris();

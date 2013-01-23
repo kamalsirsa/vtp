@@ -30,8 +30,7 @@ vtTin3d::vtTin3d()
 
 vtTin3d::~vtTin3d()
 {
-	if (m_pColorMap)
-		delete m_pColorMap;
+	delete m_pColorMap;
 }
 
 /**

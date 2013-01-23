@@ -479,7 +479,6 @@ vtTiledGeom::~vtTiledGeom()
 	//  vtTiledGeom, so we aren't handling thread deletion correctly yet.
 	// TODO: fix this so that threads are correctly exited and freed.
 	//threadexit();
-
 	delete m_pDataCloud;
 #endif
 
@@ -489,9 +488,7 @@ vtTiledGeom::~vtTiledGeom()
 #endif
 
 	delete m_pMiniLoad;
-
 	delete m_pPlainMaterial;
-
 	delete m_pReqContext;
 }
 

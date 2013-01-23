@@ -1192,10 +1192,8 @@ void EnviroFrame::OnVIAPlot(wxCommandEvent& event)
 	int iYSize = (int)((EarthExtents.top - EarthExtents.bottom)/fYSampleInterval);
 
 	GDALDataset *pDataset = pDriver->Create((const char *)RasterFileDialog.GetPath().mb_str(wxConvUTF8), iXSize, iYSize, 1, (GDALDataType)iType, ppArgv);
-	if (NULL != ppArgv)
-		delete ppArgv;
-	if (NULL != pArgs)
-		delete pArgs;
+	delete [] ppArgv;
+	delete [] pArgs;
 	if (NULL == pDataset)
 		return;
 

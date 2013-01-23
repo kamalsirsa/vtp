@@ -40,7 +40,8 @@ class SentenceMatch : public vtArray<MatchToken *>
 public:
 	virtual ~SentenceMatch() { Clear(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
 	void DestructItems(uint first, uint last) {
-		for (uint i = first; i <= last; i++) delete GetAt(i);
+		for (uint i = first; i <= last; i++)
+			delete GetAt(i);
 	}
 	MatchToken *AddLiteral(bool required, const char *str1,
 		const char *str2 = NULL, const char *str3 = NULL, const char *str4 = NULL);

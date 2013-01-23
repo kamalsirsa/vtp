@@ -387,7 +387,7 @@ void DoubleProgressDialog::ReenableOtherWindows()
 	if ( GetWindowStyle() & wxPD_APP_MODAL )
 	{
 		delete m_winDisabler;
-		m_winDisabler = (wxWindowDisabler *)NULL;
+		m_winDisabler = NULL;
 	}
 	else
 	{

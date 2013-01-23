@@ -44,7 +44,7 @@ vtPlantAppearance3d::vtPlantAppearance3d(AppearType type, const char *filename,
 vtPlantAppearance3d::~vtPlantAppearance3d()
 {
 #if SUPPORT_XFROG
-	if (m_pFrogModel) delete m_pFrogModel;
+	delete m_pFrogModel;
 #endif
 }
 

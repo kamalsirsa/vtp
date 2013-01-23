@@ -91,10 +91,8 @@ vtElevLayer::~vtElevLayer()
 		delete m_pBitmap;
 		m_pBitmap = NULL;
 	}
-	if (m_pGrid)
-		delete m_pGrid;
-	if (m_pTin)
-		delete m_pTin;
+	delete m_pGrid;
+	delete m_pTin;
 
 	// Make sure we don't have it in the cache
 	ElevCacheRemove(this);
@@ -720,11 +718,8 @@ void vtElevLayer::ReRender()
 
 void vtElevLayer::ReImage()
 {
-	if (m_pBitmap)
-	{
-		delete m_pBitmap;
-		m_pBitmap = NULL;
-	}
+	delete m_pBitmap;
+	m_pBitmap = NULL;
 	m_bBitmapRendered = false;
 }
 
@@ -1180,10 +1175,8 @@ bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, const IPoint2 &size,
 
 void vtElevLayer::SetGrid(vtElevationGrid *grid)
 {
-	if (m_pTin)
-		delete m_pTin;
-	if (m_pGrid)
-		delete m_pGrid;
+	delete m_pTin;
+	delete m_pGrid;
 	m_pTin = NULL;
 	m_pGrid = grid;
 	m_pGrid->SetupConversion(1.0f);

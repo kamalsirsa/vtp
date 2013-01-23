@@ -68,7 +68,7 @@ bool AttribMap::Load(const char *fname_att, const char *fname_bmp)
 
 AttribMap::~AttribMap()
 {
-	if (m_AttribTable) delete m_AttribTable;
+	delete m_AttribTable;
 }
 
 int AttribMap::GetAttribute(float utm_x, float utm_y)

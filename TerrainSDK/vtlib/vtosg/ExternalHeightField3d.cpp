@@ -18,8 +18,7 @@ vtExternalHeightField3d::vtExternalHeightField3d(void)
 
 vtExternalHeightField3d::~vtExternalHeightField3d(void)
 {
-	if (NULL != m_pHat)
-		delete m_pHat;
+	delete m_pHat;
 }
 
 bool vtExternalHeightField3d::Initialize(const char *external_data)

@@ -140,6 +140,7 @@ void Enviro::Shutdown()
 	VTLOG1("Shutdown.\n");
 
 	delete m_pSpeciesList;
+	m_pSpeciesList = NULL;
 
 	m_pTopDownCamera = NULL;
 
@@ -148,7 +149,10 @@ void Enviro::Shutdown()
 	CleanupScene();
 
 	delete m_pIcoGlobe;
+	m_pIcoGlobe = NULL;
+
 	delete m_pOverlayGlobe;
+	m_pOverlayGlobe = NULL;
 }
 
 void Enviro::StartupArgument(int i, const char *str)

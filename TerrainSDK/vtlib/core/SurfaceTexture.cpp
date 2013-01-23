@@ -22,8 +22,7 @@ SurfaceTexture::SurfaceTexture()
 
 SurfaceTexture::~SurfaceTexture()
 {
-	if (m_pColorMap)
-		delete m_pColorMap;
+	delete m_pColorMap;
 }
 
 void SurfaceTexture::LoadTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,

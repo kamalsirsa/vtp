@@ -26,14 +26,10 @@ void CubicSpline::Cleanup()
 	if (m_veclist.size() > 0)
 		m_veclist.erase(m_veclist.begin(), m_veclist.end());
 
-	if (m_pCoeff0!=NULL)
-		delete [] m_pCoeff0;
-	if (m_pCoeff1!=NULL)
-		delete [] m_pCoeff1;
-	if (m_pCoeff2!=NULL)
-		delete [] m_pCoeff2;
-	if (m_pCoeff3!=NULL)
-		delete [] m_pCoeff3;
+	delete [] m_pCoeff0;
+	delete [] m_pCoeff1;
+	delete [] m_pCoeff2;
+	delete [] m_pCoeff3;
 	m_pCoeff0 = m_pCoeff1 = m_pCoeff2 = m_pCoeff3 = NULL;
 
 	m_iPoints = 0;

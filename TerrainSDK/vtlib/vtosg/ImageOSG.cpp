@@ -957,16 +957,11 @@ bool vtImageGeo::ReadTIF(const char *filename, bool progress_callback(int))
 
 	if (NULL != pDataset)
 		GDALClose(pDataset);
-	if (NULL != pScanline)
-		delete pScanline;
-	if (NULL != pRedline)
-		delete pRedline;
-	if (NULL != pGreenline)
-		delete pGreenline;
-	if (NULL != pBlueline)
-		delete pBlueline;
-	if (NULL != pAlphaline)
-		delete pAlphaline;
+	delete pScanline;
+	delete pRedline;
+	delete pGreenline;
+	delete pBlueline;
+	delete pAlphaline;
 
 	return bRet;
 }

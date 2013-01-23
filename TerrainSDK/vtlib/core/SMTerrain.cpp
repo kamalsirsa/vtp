@@ -266,8 +266,7 @@ void SMTerrain::Init2()
 
 void SMTerrain::AllocatePool()
 {
-	if (m_TriPool)
-		delete m_TriPool;
+	delete m_TriPool;
 	m_iTriPoolSize = m_iPolygonTarget * 3;
 	m_TriPool = new BinTri[m_iTriPoolSize];
 }

@@ -38,8 +38,7 @@ BruteTerrain::BruteTerrain() : vtDynTerrainGeom()
 
 BruteTerrain::~BruteTerrain()
 {
-	if (m_pData)
-		delete m_pData;
+	delete m_pData;
 }
 
 

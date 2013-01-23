@@ -40,11 +40,9 @@ vtBitmap::vtBitmap()
 
 vtBitmap::~vtBitmap()
 {
-	if (m_pBitmap)
-		delete m_pBitmap;
+	delete m_pBitmap;
 #if !USE_DIBSECTIONS
-	if (m_pImage)
-		delete m_pImage;
+	delete m_pImage;
 #endif
 }
 
@@ -201,8 +199,7 @@ void vtBitmap::ContentsChanged()
 	VTLOG("Updating Bitmap Contents from Image Data\n");
 	if (!m_pImage)
 		return;
-	if (m_pBitmap)
-		delete m_pBitmap;
+	delete m_pBitmap;
 	m_pBitmap = new wxBitmap(*m_pImage);
 #endif
 }
