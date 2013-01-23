@@ -14,6 +14,18 @@
 
 ///////////////////
 
+SurfaceTexture::SurfaceTexture()
+{
+	m_pMaterials = new vtMaterialArray;
+	m_pColorMap = NULL;
+}
+
+SurfaceTexture::~SurfaceTexture()
+{
+	if (m_pColorMap)
+		delete m_pColorMap;
+}
+
 void SurfaceTexture::LoadTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
 	bool progress_callback(int))
 {
@@ -153,9 +165,7 @@ void SurfaceTexture::ShadeTexture(const TParams &options, const vtHeightFieldGri
 		pHFGrid->ShadeDibFromElevation(&wrapper, light_dir, shade_factor,
 			ambient, gamma, true, progress_callback);
 
-	//clock_t c3 = c2 - c1;
-	//VTLOG("%.3f seconds.\n", (float)c3 / CLOCKS_PER_SEC);	}
-	//VTLOG("  Total CreateTextures: %.2f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
+	VTLOG("%.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
 }
 
 /**
@@ -164,9 +174,42 @@ void SurfaceTexture::ShadeTexture(const TParams &options, const vtHeightFieldGri
 void SurfaceTexture::MakeColorMap(const vtTagArray &options)
 {
 	vtString name = options.GetValueString(STR_COLOR_MAP);
-	m_pColorMap.reset(LoadColorMap(name));
+	m_pColorMap = LoadColorMap(name);
 }
 
+/**
+  Color the texture from the elevation using the colormap.
+ */
+void SurfaceTexture::PaintDib(const vtHeightFieldGrid3d *pHFGrid,
+	bool progress_callback(int))
+{
+	vtImageWrapper wrap(m_pUnshadedImage);
+	pHFGrid->ColorDibFromElevation(&wrap, m_pColorMap, 4000,
+		RGBi(255,0,0), progress_callback);
+}
+
+void SurfaceTexture::CopyFromUnshaded(const TParams &options)
+{
+	if (options.GetValueBool(STR_PRELIGHT))
+	{
+		// We need to copy from the retained image to a second image which will
+		//  be shaded and displayed.
+		m_pTextureImage = new osg::Image(*m_pUnshadedImage);
+	}
+	else
+	{
+		// We won't shade, so we don't need to make a copy, we can use the original.
+		m_pTextureImage = m_pUnshadedImage;
+	}
+}
+
+/**
+ Create a colormap from the given file.  It may be a full path, or found in any
+ "GeoTyppical" folder on the data path.
+
+ If the file coulnd't be loaded, a colormap containing a few default colors is
+ made, so this method always succeeds.
+ */
 ColorMap *LoadColorMap(const vtString &fname)
 {
 	ColorMap *cmap = new ColorMap;
@@ -195,32 +238,5 @@ ColorMap *LoadColorMap(const vtString &fname)
 		cmap->Add(4, RGBi(0xE0, 0xE0, 0xE0));	// light grey
 	}
 	return cmap;
-}
-
-
-/**
-  Color the texture from the elevation using the colormap.
- */
-void SurfaceTexture::PaintDib(const vtHeightFieldGrid3d *pHFGrid,
-	bool progress_callback(int))
-{
-	vtImageWrapper wrap(m_pUnshadedImage);
-	pHFGrid->ColorDibFromElevation(&wrap, m_pColorMap.get(), 4000,
-		RGBi(255,0,0), progress_callback);
-}
-
-void SurfaceTexture::CopyFromUnshaded(const TParams &options)
-{
-	if (options.GetValueBool(STR_PRELIGHT))
-	{
-		// We need to copy from the retained image to a second image which will
-		//  be shaded and displayed.
-		m_pTextureImage = new osg::Image(*m_pUnshadedImage);
-	}
-	else
-	{
-		// We won't shade, so we don't need to make a copy, we can use the original.
-		m_pTextureImage = m_pUnshadedImage;
-	}
 }
 

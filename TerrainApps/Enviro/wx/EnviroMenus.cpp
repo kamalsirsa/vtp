@@ -1659,24 +1659,23 @@ void EnviroFrame::OnTerrainChangeTexture(wxCommandEvent& event)
 
 	EnableContinuousRendering(false);
 
-#if 0
-	// TODO
 	TextureDlg dlg(this, -1, _("Change Texture"));
 	dlg.SetParams(pTerr->GetParams());
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		dlg.GetParams(pTerr->GetParams());
 
-		OpenProgressDialog(_("Changing Texture"), false, this);
-		pTerr->RecreateTextures(vtGetTS()->GetSunLightTransform(), progress_callback);
+		OpenProgressDialog(_("Changing Texture"), _T(""), false, this);
+		pTerr->RecreateTexture(vtGetTS()->GetSunLightTransform(), progress_callback);
 		CloseProgressDialog();
 
 		// Also update the overview, if there is one.
 		if (g_App.GetShowMapOverview())
 			g_App.TextureHasChanged();
 	}
-#endif
+
 	EnableContinuousRendering(true);
+	m_canvas->Refresh(false);
 }
 
 void EnviroFrame::OnUpdateIsTerrainView(wxUpdateUIEvent& event)

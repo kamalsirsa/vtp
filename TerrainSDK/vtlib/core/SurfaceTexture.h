@@ -14,10 +14,8 @@
 class SurfaceTexture
 {
 public:
-	SurfaceTexture()
-	{
-		m_pMaterials = new vtMaterialArray;
-	}
+	SurfaceTexture();
+	~SurfaceTexture();
 
 	void LoadTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
 		bool progress_callback(int) = NULL);
@@ -31,7 +29,7 @@ public:
 	ImagePtr		m_pUnshadedImage;
 	ImagePtr		m_pTextureImage;
 	vtMaterialArrayPtr m_pMaterials;
-	std::shared_ptr<ColorMap>	m_pColorMap;
+	ColorMap		*m_pColorMap;
 
 protected:
 	void LoadSingleTexture(const TParams &options);

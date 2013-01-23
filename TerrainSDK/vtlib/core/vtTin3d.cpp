@@ -12,7 +12,7 @@
 #include "vtdata/DataPath.h"
 
 #include "vtTin3d.h"
-#include "SurfaceTexture.h"
+#include "SurfaceTexture.h"		// For LoadColorMap
 #include "Light.h"
 
 // We will split the TIN into chunks of geometry, each with no more than this many vertices.
@@ -26,6 +26,12 @@ vtTin3d::vtTin3d()
 	m_pGeode = NULL;
 	m_pDropGeode = NULL;
 	m_pColorMap = NULL;
+}
+
+vtTin3d::~vtTin3d()
+{
+	if (m_pColorMap)
+		delete m_pColorMap;
 }
 
 /**

@@ -303,7 +303,7 @@ void vtTerrain::_CreateRoads()
  */
 void vtTerrain::SetTextureColorMap(ColorMap *colors)
 {
-	m_Texture.m_pColorMap.reset(colors);
+	m_Texture.m_pColorMap = colors;
 }
 
 /**
@@ -354,18 +354,34 @@ void vtTerrain::SetTextureContours(float fInterval, float fSize)
 	}
 
 	// Set these as the desired color bands for the next PainDib
-	m_Texture.m_pColorMap.reset(cmap);
+	m_Texture.m_pColorMap = cmap;
 }
 
-
 /**
- * Re-create the ground texture.  This is useful if you have changed the
- * time of day, and want to see the lighting/shading of the terrain updated.
+	Re-shade the ground texture.  This is useful if you have changed the
+	time of day, and want to see the lighting/shading of the terrain updated.
  */
 void vtTerrain::ReshadeTexture(vtTransform *pSunLight, bool progress_callback(int))
 {
 	m_Texture.CopyFromUnshaded(m_Params);
 	m_Texture.ShadeTexture(m_Params, GetHeightFieldGrid3d(), pSunLight->GetDirection(), progress_callback);
+
+	// Make sure OSG knows that the texture has changed
+	vtMaterial *mat = m_Texture.m_pMaterials->at(0);
+	mat->SetTexture2D(m_Texture.m_pTextureImage);
+	mat->ModifiedTexture();
+}
+
+/**
+	Re-create the ground texture.  It is completely made again (reloaded from disk,
+	or regenerated from a colormap).
+ */
+void vtTerrain::RecreateTexture(vtTransform *pSunLight, bool progress_callback(int))
+{
+	m_Texture.LoadTexture(m_Params, GetHeightFieldGrid3d(), m_progress_callback);
+
+	m_Texture.ShadeTexture(m_Params, GetHeightFieldGrid3d(), pSunLight->GetDirection(),
+		m_progress_callback);
 
 	// Make sure OSG knows that the texture has changed
 	vtMaterial *mat = m_Texture.m_pMaterials->at(0);

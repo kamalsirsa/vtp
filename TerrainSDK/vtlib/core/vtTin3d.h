@@ -34,6 +34,7 @@ class vtTin3d : public vtTin, public osg::Referenced
 {
 public:
 	vtTin3d();
+	~vtTin3d();
 
 	bool Read(const char *fname);
 
@@ -41,7 +42,9 @@ public:
 	vtGeode *GetGeometry() { return m_pGeode; }
 
 	void SetMaterial(vtMaterialArray *pMats, int mat_idx);
-	void SetColorMap(ColorMap *color_map) { m_pColorMap.reset(color_map); }
+
+	/** Takes ownership of the colormap you provide */
+	void SetColorMap(ColorMap *color_map) { m_pColorMap = color_map; }
 
 	// implement HeightField3d virtual methods
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
@@ -62,7 +65,7 @@ protected:
 	int			 m_MatIndex, m_ShadowMatIndex;
 	vtGeode		*m_pGeode;
 	vtGeode		*m_pDropGeode;
-	std::shared_ptr<ColorMap>	m_pColorMap;
+	ColorMap	*m_pColorMap;
 	int			m_StartOfSurfaceMaterials;
 };
 typedef osg::ref_ptr<vtTin3d> vtTin3dPtr;

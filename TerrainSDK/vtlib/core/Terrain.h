@@ -171,7 +171,7 @@ public:
 
 	/// Set the colors to be used in a derived texture.
 	void SetTextureColorMap(ColorMap *colors);
-	ColorMap *GetTextureColorMap() { return m_Texture.m_pColorMap.get(); }
+	ColorMap *GetTextureColorMap() { return m_Texture.m_pColorMap; }
 
 	/// Return true if the terrain has been created.
 	bool IsCreated();
@@ -358,6 +358,7 @@ public:
 	osg::Image *GetTextureImage();
 	void AddMultiTextureOverlay(vtImageLayer *im_layer);
 	osg::Node *GetTerrainSurfaceNode();
+	void RecreateTexture(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 
 	/********************** Public Data ******************/
 
