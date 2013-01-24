@@ -1,7 +1,7 @@
 //
 // DataPath.h
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,5 +15,6 @@ vtStringArray &vtGetDataPath();
 bool vtLoadDataPath(const char *user_config_dir = NULL,
 					const char *config_dir = NULL);
 bool vtSaveDataPath(const char *fname = NULL);
+bool MakeRelativeToDataPath(vtString &fname, const vtString &folder);
 
 #endif // __DataPath_h__

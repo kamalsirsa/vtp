@@ -50,6 +50,8 @@
 
 /**
  * The dir_iter class provides a cross-platform way to read directories.
+ * It is addapted from the 'boost' library, without encurring the huge overhead
+ * of adding boost as a dependency.
  */
 #if WIN32
 

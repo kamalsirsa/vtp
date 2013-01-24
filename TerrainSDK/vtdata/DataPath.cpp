@@ -1,7 +1,7 @@
 //
 // DataPath.cpp
 //
-// Copyright (c) 2007 Virtual Terrain Project
+// Copyright (c) 2007-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -160,3 +160,29 @@ bool vtSaveDataPath(const char *fname)
 	fclose(fp);
 	return true;
 }
+
+/**
+ Takes an absolute path to a file.  Determines if that file is on the data
+ path, and if so it shortens the filename and returns true.
+
+ \param fname The absolute path to a file.
+ \param folder The folder within the datapath to look.
+ \return true if the file was found and the filename was shortened.
+ */
+bool MakeRelativeToDataPath(vtString &fname, const vtString &folder)
+{
+	vtString file = StartOfFilename(fname);
+
+	vtString search = file;
+	if (folder)
+		search = folder + "/" + file;
+
+	vtString full = FindFileOnPaths(vtGetDataPath(), search);
+	if (full != "")
+	{
+		fname = file;
+		return true;
+	}
+	return false;
+}
+
