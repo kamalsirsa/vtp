@@ -741,14 +741,13 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 {
 	VTLOG1("LayerDlg::OnLayerLoad\n");
 
-	bool bTerrain = (g_App.m_state == AS_Terrain);
-
 	wxString filter = _("Layer Formats|");
 	AddType(filter, FSTRING_SHP);
-	if (bTerrain)
+	if (g_App.m_state == AS_Terrain)
 	{
 		AddType(filter, FSTRING_VTST);
 		AddType(filter, FSTRING_VF);
+		AddType(filter, FSTRING_TIN);
 	}
 
 	wxFileDialog loadFile(NULL, _("Load Layer"), _T(""), _T(""), filter, wxFD_OPEN);
@@ -762,55 +761,7 @@ void LayerDlg::OnLayerLoad( wxCommandEvent &event )
 	VTLOG1(fname);
 	VTLOG1("\n");
 
-	if (bTerrain)
-	{
-		vtLayer *lay = m_pTerrain->LoadLayer(fname);
-
-		if (!lay)
-		{
-			VTLOG1(" OnLayerLoad exit.\n");
-			return;
-		}
-
-		// Abstract layers aren't constructed yet, giving us a chance to ask
-		// for styling.
-		vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
-		if (alay)
-		{
-			// Ask style for the newly loaded layer
-			vtTagArray &props = alay->Props();
-
-			StyleDlg dlg(NULL, -1, _("Style"), wxDefaultPosition, wxDefaultSize,
-				wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-			dlg.SetFeatureSet(alay->GetFeatureSet());
-			dlg.SetOptions(props);
-			if (dlg.ShowModal() != wxID_OK)
-			{
-				// The layer is reference-counted, so it will be freed when we remove it
-				m_pTerrain->GetLayers().Remove(alay);
-				return;
-			}
-			// Copy all the style attributes to the new featureset
-			VTLOG1("  Setting featureset properties.\n");
-			dlg.GetOptions(props);
-
-			m_pTerrain->CreateAbstractLayerVisuals(alay);
-		}
-
-		if (lay)
-			RefreshTreeContents();
-	}
-	else
-	{
-		// earth view
-		int ret = g_App.AddGlobeAbstractLayer(fname);
-		if (ret == -1)
-			wxMessageBox(_("Couldn't open"));
-		else if (ret == -2)
-			wxMessageBox(_("That file isn't point data."));
-		else
-			RefreshTreeContents();
-	}
+	GetFrame()->LoadLayer(fname);
 }
 
 void LayerDlg::OnLayerSave( wxCommandEvent &event )
@@ -1144,6 +1095,12 @@ void LayerDlg::UpdateEnabling()
 		// We can save a vegetation layer
 		if (data->m_type == LT_VEG)
 			bRemovable = bSaveable = true;
+
+		if (data->m_type == LT_ELEVATION)
+		{
+			bRemovable = true;
+			bSaveable = false;
+		}
 	}
 
 	m_pToolbar->EnableTool(ID_LAYER_TABLE, (data && data->m_alay));

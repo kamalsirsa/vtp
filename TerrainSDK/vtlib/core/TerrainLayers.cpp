@@ -10,6 +10,7 @@
 #include "vtlib/core/Light.h"
 
 #include "vtdata/DataPath.h"
+#include "vtdata/vtLog.h"
 
 #include "TParams.h"
 #include "TerrainLayers.h"
@@ -64,7 +65,13 @@ void vtImageLayer::SetVisible(bool vis)
 
 vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 {
+	VTLOG1("vtElevLayer constructor\n");
 	m_Props.SetValueString("Type", TERR_LTYPE_ELEVATION);
+}
+
+vtElevLayer::~vtElevLayer()
+{
+	VTLOG1("vtElevLayer destructor\n");
 }
 
 void vtElevLayer::SetLayerName(const vtString &fname)
@@ -86,15 +93,25 @@ void vtElevLayer::SetVisible(bool vis)
 	vtLayerBase::SetVisible(vis);
 }
 
-bool vtElevLayer::Load(const vtString &path, bool progress_callback(int))
+bool vtElevLayer::Load(bool progress_callback(int))
 {
+	vtString fname = m_Props.GetValueString("Filename");
+	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+	if (path == "")
+	{
+		vtString prefix = "Elevation/";
+		path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
+	}
+	if (path == "")
+	{
+		VTLOG("Couldn't find elevation layer file '%s'\n", (const char *) fname);
+		return false;
+	}
+
 	m_pTin = new vtTin3d;
 	if (!m_pTin->Read(path))
 		return false;
-
-	vtGeode *geode = m_pTin->CreateGeometry(false);
-	geode->SetCastShadow(false);
-//	m_pTerrainGroup->addChild(geode);
+	VTLOG("Read elevation layer from file '%s'\n", (const char *) path);
 
 	return true;
 }
@@ -103,6 +120,19 @@ void vtElevLayer::MakeMaterials()
 {
 	m_pTin->MakeMaterialsFromOptions(m_Props);
 }
+
+vtTransform *vtElevLayer::CreateGeometry()
+{
+	bool drop_shadow = false;
+	m_pGeode = m_pTin->CreateGeometry(drop_shadow);
+	m_pGeode->SetCastShadow(false);
+
+	m_pTransform = new vtTransform;
+	m_pTransform->addChild(m_pGeode);
+
+	return m_pTransform;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 // LayerSet

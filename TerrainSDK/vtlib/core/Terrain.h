@@ -208,11 +208,13 @@ public:
 	LayerSet &GetLayers() { return m_Layers; }
 	const LayerSet &GetLayers() const { return m_Layers; }
 	void RemoveLayer(vtLayer *lay, bool progress_callback(int) = NULL);
-	vtLayer *LoadLayer(const char *fname);
 	void SetActiveLayer(vtLayer *lay) { m_pActiveLayer = lay; }
 	vtLayer *GetActiveLayer() { return m_pActiveLayer; }
 	vtLayer *GetOrCreateLayerOfType(LayerType type);
 	uint NumLayersOfType(LayerType type);
+
+	// elev layers
+	bool CreateElevLayerFromTags(const vtTagArray &layer_tags);
 
 	// plants
 	vtVegLayer *GetVegLayer();

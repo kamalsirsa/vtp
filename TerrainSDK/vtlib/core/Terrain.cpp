@@ -1427,58 +1427,45 @@ void vtTerrain::_CreateElevLayers()
 		if (m_Params.LayerType(i) != LT_ELEVATION)
 			continue;
 
-		const vtTagArray &layer_tags = m_Params.m_Layers[i];
-
 		VTLOG(" Layer %d: Elevation\n", i);
-		for (uint j = 0; j < layer_tags.NumTags(); j++)
-		{
-			const vtTag *tag = layer_tags.GetTag(j);
-			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
-		}
-
-		vtString fname = layer_tags.GetValueString("Filename");
-		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
-		if (path == "")
-		{
-			vtString prefix = "Elevation/";
-			path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
-		}
-		if (path == "")
-		{
-			VTLOG("Couldn't find elevation layer file '%s'\n", (const char *) fname);
-			continue;
-		}
-
-		vtElevLayer *elayer = new vtElevLayer;
-		elayer->SetProps(layer_tags);
-		if (!elayer->Load(path, m_progress_callback))
-		{
-			VTLOG("Couldn't read elevation from file '%s'\n", (const char *) path);
-			continue;
-		}
-		VTLOG("Read elevation from file '%s'\n", (const char *) path);
-
-		elayer->MakeMaterials();
-
-		vtGeode *wsgeom = elayer->GetTin()->CreateGeometry(false);
-		wsgeom->setName("Elevation layer");
-
-		// We require that the TIN has a compatible CRS with the base
-		//  terrain, but the extents may be different.  If they are,
-		//  we may need to offset the TIN to be in the correct place.
-		DRECT ext1 = m_pHeightField->GetEarthExtents();
-		DRECT ext2 = elayer->GetTin()->GetEarthExtents();
-		DPoint2 offset = ext2.LowerLeft() - ext1.LowerLeft();
-		float x, z;
-		GetLocalConversion().ConvertVectorFromEarth(offset, x, z);
-		
-		vtTransform *xform = new vtTransform;
-		xform->Translate(FPoint3(x, 0, z));
-		xform->addChild(wsgeom);
-		m_pUnshadowedGroup->addChild(xform);
-
-		m_Layers.push_back(elayer);
+		CreateElevLayerFromTags(m_Params.m_Layers[i]);
 	}
+}
+
+bool vtTerrain::CreateElevLayerFromTags(const vtTagArray &layer_tags)
+{
+	for (uint j = 0; j < layer_tags.NumTags(); j++)
+	{
+		const vtTag *tag = layer_tags.GetTag(j);
+		VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
+	}
+
+	vtElevLayer *elayer = new vtElevLayer;
+	elayer->SetProps(layer_tags);
+
+	if (!elayer->Load(m_progress_callback))
+		return false;
+
+	elayer->MakeMaterials();
+
+	vtTransform *top_node = elayer->CreateGeometry();
+	top_node->setName("Elevation layer");
+
+	// We require that the TIN has a compatible CRS with the base
+	//  terrain, but the extents may be different.  If they are,
+	//  we may need to offset the TIN to be in the correct place.
+	DRECT ext1 = m_pHeightField->GetEarthExtents();
+	DRECT ext2 = elayer->GetTin()->GetEarthExtents();
+	DPoint2 offset = ext2.LowerLeft() - ext1.LowerLeft();
+	float x, z;
+	GetLocalConversion().ConvertVectorFromEarth(offset, x, z);
+		
+	top_node->Translate(FPoint3(x, 0, z));
+	m_pUnshadowedGroup->addChild(top_node);
+
+	m_Layers.push_back(elayer);
+
+	return true;
 }
 
 /**
@@ -2573,6 +2560,7 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 	vtStructureLayer *slay = dynamic_cast<vtStructureLayer*>(lay);
 	vtAbstractLayer *alay = dynamic_cast<vtAbstractLayer*>(lay);
 	vtVegLayer *vlay = dynamic_cast<vtVegLayer*>(lay);
+	vtElevLayer *elay = dynamic_cast<vtElevLayer*>(lay);
 	if (slay)
 	{
 		// Remove each structure from the terrain
@@ -2598,6 +2586,12 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 			vlay->Select(i, true);
 		DeleteSelectedPlants(vlay);
 	}
+	else if (elay)
+	{
+		vtTransform *xform = elay->GetTopNode();
+		if (xform)
+			m_pUnshadowedGroup->removeChild(xform);
+	}
 
 	// If that was the active layer, deal with it
 	if (lay == GetActiveLayer())
@@ -2605,45 +2599,6 @@ void vtTerrain::RemoveLayer(vtLayer *lay, bool progress_callback(int))
 
 	// Removing the reference-counted layer causes it to be deleted
 	m_Layers.Remove(lay);
-}
-
-/**
- * Currently handled by this method: structure, vegetation, abstract layers.
- */
-vtLayer *vtTerrain::LoadLayer(const char *fname)
-{
-	VTLOG1("vtTerrain::LoadLayer\n");
-
-	vtString ext = GetExtension(fname);
-	if (!ext.CompareNoCase(".vtst"))
-	{
-		vtStructureLayer *st_layer = LoadStructuresFromXML(fname);
-		if (st_layer)
-			CreateStructures(st_layer);
-		return st_layer;
-	}
-	else if (!ext.CompareNoCase(".vf"))
-	{
-		return LoadVegetation(fname);
-	}
-	else if (!ext.CompareNoCase(".shp"))
-	{
-		vtAbstractLayer *ab_layer = NewAbstractLayer();
-		ab_layer->SetLayerName(fname);
-
-		// TODO here: progress dialog on load?
-		if (ab_layer->Load(GetProjection(), NULL))
-		{
-			VTLOG("Successfully read features from file '%s'\n", fname);
-			return ab_layer;
-		}
-		else
-		{
-			VTLOG("Couldn't read features from file '%s'\n", fname);
-			RemoveLayer(ab_layer);
-		}
-	}
-	return NULL;
 }
 
 vtLayer *vtTerrain::GetOrCreateLayerOfType(LayerType type)

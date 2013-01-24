@@ -435,7 +435,8 @@ int TParams::NumLayersOfType(const vtString &layer_type)
 	for (uint i = 0; i < m_Layers.size(); i++)
 	{
 		const vtTagArray &lay = m_Layers[i];
-		if (lay.GetValueString("Type") == layer_type)
+		const vtString type = lay.GetValueString("Type");
+		if (type == layer_type)
 			count++;
 	}
 	return count;

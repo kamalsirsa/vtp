@@ -105,15 +105,23 @@ class vtElevLayer : public vtLayer
 {
 public:
 	vtElevLayer();
+	~vtElevLayer();
 
-	bool Load(const vtString &path, bool progress_callback(int) = NULL);
+	bool Load(bool progress_callback(int) = NULL);
+	void MakeMaterials();
+	vtTransform *CreateGeometry();
+
 	void SetLayerName(const vtString &fname);
 	vtString GetLayerName();
 	void SetVisible(bool vis);
 	vtTin3d *GetTin() { return m_pTin.get(); }
-	void MakeMaterials();
+
+	vtTransform *GetTopNode() { return m_pTransform; }
 
 protected:
+	vtGeode *m_pGeode;
+	vtTransform *m_pTransform;
+
 	osg::ref_ptr<vtTin3d> m_pTin;
 };
 

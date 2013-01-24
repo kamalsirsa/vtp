@@ -25,6 +25,7 @@
 
 #include "vtdata/vtLog.h"
 #include "vtdata/Content.h"
+#include "vtdata/DataPath.h"
 #include "vtdata/FileFilters.h"
 #include "vtui/Helper.h"	// for progress dialog
 #include "wxosg/GraphicsWindowWX.h"
@@ -44,6 +45,8 @@
 #include "LODDlg.h"
 #include "PlantDlg.h"
 #include "ScenarioSelectDialog.h"
+#include "StyleDlg.h"
+#include "TinTextureDlg.h"
 #include "UtilDlg.h"
 #include "VehicleDlg.h"
 #include "VIADlg.h"
@@ -1188,15 +1191,109 @@ void EnviroFrame::OnDrop(const wxString &str)
 	{
 		g_App.ImportModelFromKML(utf8);
 	}
-	if (!str.Right(5).CmpNoCase(_T(".vtst")) ||
-		!str.Right(3).CmpNoCase(_T(".vf")))
+	else
+		LoadLayer(utf8);
+}
+
+void EnviroFrame::LoadLayer(vtString &fname)
+{
+	bool success = false;
+
+	if (g_App.m_state == AS_Terrain)
 	{
-		if (g_App.GetCurrentTerrain())
+		vtTerrain *pTerr = g_App.GetCurrentTerrain();
+
+		VTLOG1("EnviroFrame::LoadLayer\n");
+
+		vtString ext = GetExtension(fname);
+		if (!ext.CompareNoCase(".vtst"))
 		{
-			if (g_App.GetCurrentTerrain()->LoadLayer(utf8))
-				m_pLayerDlg->RefreshTreeContents();
+			MakeRelativeToDataPath(fname, "BuildingData");
+
+			vtStructureLayer *st_layer = pTerr->LoadStructuresFromXML(fname);
+			if (st_layer)
+			{
+				pTerr->CreateStructures(st_layer);
+				success = true;
+			}
+		}
+		else if (!ext.CompareNoCase(".vf"))
+		{
+			MakeRelativeToDataPath(fname, "PlantData");
+
+			vtVegLayer *v_layer = pTerr->LoadVegetation(fname);
+			if (v_layer)
+				success = true;
+		}
+		else if (!ext.CompareNoCase(".shp"))
+		{
+			vtAbstractLayer *ab_layer = pTerr->NewAbstractLayer();
+			ab_layer->SetLayerName(fname);
+
+			// TODO here: progress dialog on load?
+			if (ab_layer->Load(pTerr->GetProjection(), NULL))
+			{
+				VTLOG("Successfully read features from file '%s'\n", fname);
+
+				// Abstract layers aren't constructed yet, giving us a chance to ask
+				// for styling.
+				vtTagArray &props = ab_layer->Props();
+
+				StyleDlg dlg(NULL, -1, _("Style"), wxDefaultPosition, wxDefaultSize,
+					wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+				dlg.SetFeatureSet(ab_layer->GetFeatureSet());
+				dlg.SetOptions(props);
+				if (dlg.ShowModal() != wxID_OK)
+				{
+					// The layer is reference-counted, so it will be freed when we remove it
+					pTerr->GetLayers().Remove(ab_layer);
+					return;
+				}
+				// Copy all the style attributes to the new featureset
+				VTLOG1("  Setting featureset properties.\n");
+				dlg.GetOptions(props);
+
+				pTerr->CreateAbstractLayerVisuals(ab_layer);
+				success = true;
+			}
+			else
+			{
+				VTLOG("Couldn't read features from file '%s'\n", fname);
+				pTerr->RemoveLayer(ab_layer);
+			}
+		}
+		else if (!ext.CompareNoCase(".itf"))
+		{
+			MakeRelativeToDataPath(fname, "Elevation");
+
+			vtTagArray tags;
+			tags.SetValueString("Type", TERR_LTYPE_ELEVATION);
+			tags.SetValueString("Filename", fname);
+			tags.SetValueFloat(STR_OPACITY, 1.0f);
+			tags.SetValueFloat(STR_GEOTYPICAL_SCALE, 10.0f);
+
+			TinTextureDlg dlg(this, -1, _("TIN Texture"));
+			dlg.SetOptions(tags);
+			if (dlg.ShowModal() == wxID_OK)
+			{
+				dlg.GetOptions(tags);
+				success = pTerr->CreateElevLayerFromTags(tags);
+			}
 		}
 	}
+	else if (g_App.m_state == AS_Orbit)
+	{
+		// earth view
+		int ret = g_App.AddGlobeAbstractLayer(fname);
+		if (ret == -1)
+			wxMessageBox(_("Couldn't open"));
+		else if (ret == -2)
+			wxMessageBox(_("That file isn't point data."));
+		else
+			success = true;
+	}
+	if (success)
+		m_pLayerDlg->RefreshTreeContents();
 }
 
 void EnviroFrame::UpdateStatus()
