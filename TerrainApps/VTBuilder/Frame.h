@@ -178,7 +178,7 @@ protected:
 
 	void OnElevSelect(wxCommandEvent& event);
 	void OnElevRemoveRange(wxCommandEvent& event);
-	void OnElevComputeDiff(wxCommandEvent& event);
+	void OnElevArithmetic(wxCommandEvent& event);
 	void OnElevSetUnknown(wxCommandEvent& event);
 	void OnFillFast(wxCommandEvent& event);
 	void OnFillSlow(wxCommandEvent& event);
@@ -201,6 +201,7 @@ protected:
 	void OnUpdateElevTrimTin(wxUpdateUIEvent& event);
 	void OnUpdateIsElevation(wxUpdateUIEvent& event);
 	void OnUpdateIsGrid(wxUpdateUIEvent& event);
+	void OnUpdateArithmetic(wxUpdateUIEvent& event);
 
 	void OnImageReplaceRGB(wxCommandEvent& event);
 	void OnImageCreateOverviews(wxCommandEvent& event);

@@ -414,7 +414,7 @@ bool Builder::ImportLayersFromFile(LayerType ltype, const wxString &strFileName,
  * \return	The layer imported, or NULL if we got nothing.
  */
 vtLayer *Builder::ImportLayerFromFile(LayerType ltype, const wxString &strFileName,
-									 bool bRefresh, bool bWarn)
+									  bool bRefresh, bool bWarn)
 {
 	VTLOG1("ImportDataFromFile '");
 	VTLOG1(strFileName.ToUTF8());

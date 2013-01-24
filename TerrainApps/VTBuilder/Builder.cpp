@@ -923,70 +923,59 @@ void Builder::FlagStickyLayers(const std::vector<vtElevLayer*> &elevs)
 }
 
 /*
- Given an elevation layer, produce another layer which contains the difference
- between it and any other elevation layers that it overlaps.
+ Given two elevation layer, add or subtract them to produce a new grid layer.
+ Both layers are sampled at the given spacing.
 
- This is useful for comparing two elevations grids A and B.  The resulting grid
+ This is useful for comparing two elevations A and B.  E.g. the resulting grid
  will be positive where the height of A is greater than B, and negative where
  A is less than B.
  */
-vtElevLayer *Builder::ComputeDifference(vtElevLayer *pElev)
+vtElevLayer *Builder::ElevationMath(vtElevLayer *pElev1, vtElevLayer *pElev2,
+									const DRECT &extent, const DPoint2 &spacing, bool plus)
 {
-	vtElevationGrid	*grid = pElev->GetGrid();
-	if (!grid)
-		return NULL;
+	// Consider sampling.
+	IPoint2 grid_size;
+	grid_size.x = extent.Width() / spacing.x;
+	grid_size.y = extent.Height() / spacing.y;
 
-	int xsize, ysize;
-	grid->GetDimensions(xsize, ysize);
-
-	// Make an array of pointers to all the visible existing elevation layers
-	//  other than this one.
-	std::vector<vtElevLayer*> elevs;
-	for (uint l = 0; l < NumLayers(); l++)
-	{
-		vtLayer *lp = GetLayer(l);
-		if (lp->GetType() == LT_ELEVATION && lp->GetVisible() && lp != pElev)
-			elevs.push_back((vtElevLayer *)lp);
-	}
-	uint elays = elevs.size();
-
-	// Make layer for difference value; initially copy from source
-	vtElevationGrid *diffgrid = new vtElevationGrid(*grid);
-	diffgrid->Invalidate();
+	vtElevationGrid *grid = new vtElevationGrid;
+	vtElevError err;
+	grid->Create(extent, grid_size, true, m_proj, &err);
 
 	OpenProgressDialog(_("Comparing Elevation Layers"), _T(""), false);
 
 	DPoint2 p;
-	for (int i = 0; i < xsize; i++)
+	for (int j = 0; j < grid_size.y; j++)
 	{
-		UpdateProgressDialog(i * 100 / xsize);
+		UpdateProgressDialog(j * 100 / grid_size.y);
 
-		for (int j = 0; j < ysize; j++)
+		for (int i = 0; i < grid_size.x; i++)
 		{
-			grid->GetEarthPoint(i, j, p);
+			p.Set(extent.left + i * spacing.x, extent.bottom + j * spacing.y);
 
-			float val1 = grid->GetFValue(i, j);
-			if (val1 == INVALID_ELEVATION)
-				continue;
+			const float val1 = pElev1->GetElevation(p);
+			const float val2 = pElev2->GetElevation(p);
+			float val;
 
-			float val2 = INVALID_ELEVATION;
-			for (uint e = 0; e < elays; e++)
+			if (val1 == INVALID_ELEVATION || val2 == INVALID_ELEVATION)
+				val = INVALID_ELEVATION;
+			else
 			{
-				val2 = elevs[e]->GetElevation(p);
-				if (val2 != INVALID_ELEVATION)
-					break;
+				if (plus)
+					val = val1 + val2;
+				else
+					val = val1 - val2;
 			}
-			if (val2 == INVALID_ELEVATION)
-				continue;
-
-			float dz = val1 - val2;
-			diffgrid->SetFValue(i, j, dz);
+			grid->SetFValue(i, j, val);
 		}
 	}
 	CloseProgressDialog();
 
-	vtElevLayer *pNewLayer = new vtElevLayer(diffgrid);
-	pNewLayer->SetLayerFilename(_("difference"));
+	vtElevLayer *pNewLayer = new vtElevLayer(grid);
+	if (plus)
+		pNewLayer->SetLayerFilename(_("sum"));
+	else
+		pNewLayer->SetLayerFilename(_("difference"));
 	AddLayer(pNewLayer);
 	return pNewLayer;
 }

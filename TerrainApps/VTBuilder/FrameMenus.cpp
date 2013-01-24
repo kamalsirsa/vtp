@@ -58,6 +58,7 @@
 // Dialogs
 #include "DistanceDlg2d.h"
 #include "DistribVegDlg.h"
+#include "ElevMathDlg.h"
 #include "ExtentDlg.h"
 #include "FeatInfoDlg.h"
 #include "GenGridDlg.h"
@@ -180,7 +181,7 @@ EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateRoadShowNodes)
 
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
 EVT_MENU(ID_ELEV_REMOVERANGE,		MainFrame::OnElevRemoveRange)
-EVT_MENU(ID_ELEV_COMPUTE_DIFF,		MainFrame::OnElevComputeDiff)
+EVT_MENU(ID_ELEV_ARITHMETIC,		MainFrame::OnElevArithmetic)
 EVT_MENU(ID_ELEV_SETUNKNOWN,		MainFrame::OnElevSetUnknown)
 EVT_MENU(ID_ELEV_FILL_FAST,			MainFrame::OnFillFast)
 EVT_MENU(ID_ELEV_FILL_SLOW,			MainFrame::OnFillSlow)
@@ -200,7 +201,7 @@ EVT_MENU(ID_ELEV_TRIMTIN,			MainFrame::OnElevTrimTin)
 
 EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
 EVT_UPDATE_UI(ID_ELEV_REMOVERANGE,	MainFrame::OnUpdateIsGrid)
-EVT_UPDATE_UI(ID_ELEV_COMPUTE_DIFF,	MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_ARITHMETIC,	MainFrame::OnUpdateArithmetic)
 EVT_UPDATE_UI(ID_ELEV_SETUNKNOWN,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILL_FAST,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILL_SLOW,	MainFrame::OnUpdateIsGrid)
@@ -515,7 +516,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_SCALE, _("Sc&ale Elevation"));
 	elevMenu->Append(ID_ELEV_VERT_OFFSET, _("Offset Elevation Vertically"));
 	elevMenu->Append(ID_ELEV_REMOVERANGE, _("&Remove Elevation Range..."));
-	elevMenu->Append(ID_ELEV_COMPUTE_DIFF, _("&Compute Difference Layer"));
+	elevMenu->Append(ID_ELEV_ARITHMETIC, _("&Create Layer from Arithmetic"));
 
 	wxMenu *fillMenu = new wxMenu;
 	fillMenu->Append(ID_ELEV_FILL_FAST, _("Fast"));
@@ -1942,6 +1943,12 @@ void MainFrame::OnUpdateIsGrid(wxUpdateUIEvent& event)
 	event.Enable(pEL && pEL->IsGrid());
 }
 
+void MainFrame::OnUpdateArithmetic(wxUpdateUIEvent& event)
+{
+	// Must have at least two elevation layers to do arithmetic on them.
+	event.Enable(LayersOfType(LT_ELEVATION) > 1);
+}
+
 void MainFrame::OnElevSelect(wxCommandEvent& event)
 {
 	m_pView->SetMode(LB_TSelect);
@@ -1980,21 +1987,24 @@ void MainFrame::OnElevRemoveRange(wxCommandEvent &event)
 	}
 }
 
-void MainFrame::OnElevComputeDiff(wxCommandEvent &event)
+void MainFrame::OnElevArithmetic(wxCommandEvent &event)
 {
-	vtElevLayer *t = GetActiveElevLayer();
-	if (!t && !t->GetGrid())
+	ElevMathDlg dlg(this, -1, _("Arithmetic"));
+	int res = dlg.ShowModal();
+	if (res != wxID_OK)
 		return;
 
-	vtElevLayer *t2 = ComputeDifference(t);
+	vtElevLayer *t = GetActiveElevLayer();
+	vtElevLayer *result = ElevationMath(dlg.m_pLayer1, dlg.m_pLayer2,
+		dlg.m_extent, dlg.m_spacing, dlg.m_iOperation == 0);
 
-	if (t2)
+	if (result)
 	{
-		SetActiveLayer(t2);
-		m_pView->SetActiveLayer(t2);
+		SetActiveLayer(result);
+		m_pView->SetActiveLayer(result);
 		RefreshTreeView();
 		RefreshToolbars();
-		RefreshLayerInView(t2);
+		RefreshLayerInView(result);
 	}
 }
 

@@ -271,6 +271,13 @@ class NodeDlgView;
 #define ID_HEIGHT_FIXED_VALUE 1226
 #define ID_HEIGHT_USE_FIELD 1227
 #define ID_HEIGHT_FIELD 1228
+#define ID_LAYER1 1229
+#define ID_OPERATION 1230
+#define ID_LAYER2 1231
+#define ID_SPACING_X 1232
+#define ID_SPACING_Y 1233
+#define ID_GRID_X 1234
+#define ID_GRID_Y 1235
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ChunkDlgBase
@@ -1195,6 +1202,9 @@ class ElevMathDlgBase : public wxDialog
 		wxStaticText* m_staticText119;
 		wxTextCtrl* m_spacing_x;
 		wxTextCtrl* m_spacing_y;
+		wxStaticText* m_staticText1191;
+		wxTextCtrl* m_grid_x;
+		wxTextCtrl* m_grid_y;
 		wxStdDialogButtonSizer* m_sdbSizer1;
 		wxButton* m_sdbSizer1OK;
 		wxButton* m_sdbSizer1Cancel;

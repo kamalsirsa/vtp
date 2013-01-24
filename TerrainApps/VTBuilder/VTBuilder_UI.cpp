@@ -3248,35 +3248,47 @@ ElevMathDlgBase::ElevMathDlgBase( wxWindow* parent, wxWindowID id, const wxStrin
 	bSizer176->Add( m_staticText118, 0, wxALL, 5 );
 	
 	wxArrayString m_layer1Choices;
-	m_layer1 = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_layer1Choices, 0 );
+	m_layer1 = new wxChoice( this, ID_LAYER1, wxDefaultPosition, wxDefaultSize, m_layer1Choices, 0 );
 	m_layer1->SetSelection( 0 );
 	bSizer176->Add( m_layer1, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxEXPAND, 5 );
 	
 	wxString m_operationChoices[] = { _("+ (plus)"), _("- (minus)") };
 	int m_operationNChoices = sizeof( m_operationChoices ) / sizeof( wxString );
-	m_operation = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( 70,-1 ), m_operationNChoices, m_operationChoices, 0 );
+	m_operation = new wxChoice( this, ID_OPERATION, wxDefaultPosition, wxSize( 70,-1 ), m_operationNChoices, m_operationChoices, 0 );
 	m_operation->SetSelection( 0 );
 	bSizer176->Add( m_operation, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
 	
 	wxArrayString m_layer2Choices;
-	m_layer2 = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_layer2Choices, 0 );
+	m_layer2 = new wxChoice( this, ID_LAYER2, wxDefaultPosition, wxDefaultSize, m_layer2Choices, 0 );
 	m_layer2->SetSelection( 0 );
 	bSizer176->Add( m_layer2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxEXPAND, 5 );
 	
+	wxFlexGridSizer* fgSizer11;
+	fgSizer11 = new wxFlexGridSizer( 2, 3, 0, 0 );
+	fgSizer11->SetFlexibleDirection( wxBOTH );
+	fgSizer11->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
 	m_staticText119 = new wxStaticText( this, wxID_ANY, _("Sample spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText119->Wrap( -1 );
-	bSizer176->Add( m_staticText119, 0, wxALL, 5 );
+	fgSizer11->Add( m_staticText119, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	wxBoxSizer* bSizer177;
-	bSizer177 = new wxBoxSizer( wxHORIZONTAL );
+	m_spacing_x = new wxTextCtrl( this, ID_SPACING_X, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+	fgSizer11->Add( m_spacing_x, 0, wxALL, 5 );
 	
-	m_spacing_x = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer177->Add( m_spacing_x, 0, wxALL, 5 );
+	m_spacing_y = new wxTextCtrl( this, ID_SPACING_Y, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+	fgSizer11->Add( m_spacing_y, 0, wxALL, 5 );
 	
-	m_spacing_y = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer177->Add( m_spacing_y, 0, wxALL, 5 );
+	m_staticText1191 = new wxStaticText( this, wxID_ANY, _("Grid size:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText1191->Wrap( -1 );
+	fgSizer11->Add( m_staticText1191, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	bSizer176->Add( bSizer177, 1, wxEXPAND, 5 );
+	m_grid_x = new wxTextCtrl( this, ID_GRID_X, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+	fgSizer11->Add( m_grid_x, 0, wxALL, 5 );
+	
+	m_grid_y = new wxTextCtrl( this, ID_GRID_Y, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+	fgSizer11->Add( m_grid_y, 0, wxALL, 5 );
+	
+	bSizer176->Add( fgSizer11, 1, wxEXPAND, 5 );
 	
 	m_sdbSizer1 = new wxStdDialogButtonSizer();
 	m_sdbSizer1OK = new wxButton( this, wxID_OK );
