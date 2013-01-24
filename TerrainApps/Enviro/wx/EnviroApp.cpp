@@ -216,6 +216,7 @@ void EnviroApp::StartLog()
 	g_App.Startup();	// starts log
 
 	VTLOG("Specific application name: %s\n", STRING_APPNAME);
+	VTLOG("VTP version: %s\n", VTP_VERSION);
 	VTLOG("Application framework: wxWidgets v" wxVERSION_NUM_DOT_STRING "\n");
 #if WIN32
 	VTLOG1(" Running on: ");

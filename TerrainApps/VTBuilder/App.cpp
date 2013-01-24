@@ -12,12 +12,15 @@
 #include "wx/wx.h"
 #endif
 
-#include "Frame.h"
-#include "BuilderView.h"
+#include "gdal_priv.h"
+
+#include "vtdata/Version.h"
 #include "vtui/Helper.h"
 #include "vtui/LogCatcher.h"
-#include "gdal_priv.h"
+
 #include "App.h"
+#include "BuilderView.h"
+#include "Frame.h"
 
 #define HEAPBUSTER 0
 
@@ -60,6 +63,7 @@ bool BuilderApp::OnInit()
 	VTLOG(" Unicode");
 #endif
 	VTLOG("\n");
+	VTLOG("VTP version: %s\n", VTP_VERSION);
 #if WIN32
 	VTLOG(" Running on: ");
 	LogWindowsVersion();
