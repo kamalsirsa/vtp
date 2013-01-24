@@ -141,14 +141,14 @@ void vtTin3d::MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale,
 	// Grey: used for drop shadow plane
 	m_ShadowMatIndex = m_pMats->AddRGBMaterial(RGBf(0.4f, 0.4f, 0.4f), false, false, false);
 
+	vtMaterial *pMat = m_pMats->at(m_MatIndex);
+
 	if (cmap)
 	{
 		SetColorMap(cmap);
 
 		// Setup TexGen for a 1D texture.
-		vtMaterial *mat = m_pMats->at(m_MatIndex);
-
-		int unit = mat->NextAvailableTextureUnit();
+		int unit = pMat->NextAvailableTextureUnit();
 
 		// Rather than look through the color map for each pixel, pre-build
 		//  a color lookup table once - should be faster in nearly all cases.
@@ -156,64 +156,34 @@ void vtTin3d::MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale,
 		GetHeightExtents(fMin, fMax);
 		m_pColorMap->GenerateColorTable(4096, fMin, fMax);
 
-		// A 1D texture to color by elevation
-		osg::Image *image = new osg::Image();
-		image->allocateImage(4096, 1, 1, GL_RGB, GL_UNSIGNED_BYTE);
+		// A 1D texture to color by elevation: copy from colormap to an image.
+		osg::Image *image1d = new osg::Image;
+		image1d->allocateImage(4096, 1, 1, GL_RGB, GL_UNSIGNED_BYTE);
 		for (int i = 0; i < 4096; i++)
 		{
 			RGBi rgb = m_pColorMap->m_table[i];
 
 			int x = i, y = 0;
-			uchar *buf = image->data(x, y);
+			uchar *buf = image1d->data(x, y);
 			buf[0] = rgb.r;
 			buf[1] = rgb.g;
 			buf[2] = rgb.b;
 		}
-		mat->SetTexture1D(image, unit);
+		pMat->SetTexture1D(image1d, unit);
 
 		// Set TexGen to scale from min to max
 		float fRange = fMax - fMin;
-		mat->SetTexGen1D(FPoint3(0, 1/fRange, 0), -fMin / fRange, unit);
-		mat->SetTextureMode(GL_MODULATE, unit);
-#if 0
-		// Set up the texgen
-		int unit = 0;
-		osg::TexGen *pTexgen = new osg::TexGen;
-
-		pTexgen->setMode(osg::TexGen::EYE_LINEAR);
-		pTexgen->setPlane(osg::TexGen::S, osg::Vec4(0.0f, 1/fRange, 0.0f, -fMin / fRange));
-	
-		mat->setTextureAttributeAndModes(unit, pTexgen, osg::StateAttribute::ON);
-		mat->setTextureMode(unit, GL_TEXTURE_GEN_S,  osg::StateAttribute::ON);
-
-		osg::ref_ptr<osg::TexEnv> pTexEnv = new osg::TexEnv(osg::TexEnv::MODULATE);
-		mat->setTextureAttributeAndModes(unit, pTexEnv.get(), osg::StateAttribute::ON);
-#endif
+		pMat->SetTexGen1D(FPoint3(0, 1/fRange, 0), -fMin / fRange, unit);
+		pMat->SetTextureMode(GL_MODULATE, unit);
 	}
-	else if (image)
+	if (image)
 	{
-		vtMaterial *pMat = new vtMaterial;
-
 		int unit = pMat->NextAvailableTextureUnit();
 		pMat->SetTexture2D(image, unit, bTextureCompression);
-		pMat->SetCulling(culling);
-		pMat->SetLighting(lighting);
-		pMat->SetClamp(false);
-		pMat->SetDiffuse(1.0f, 1.0f, 1.0f, fOpacity);
-		pMat->SetMipMap(false);
-		m_MatIndex = m_pMats->AppendMaterial(pMat);
-
-		if (m_MatIndex == -1)
-		{
-			// In case of error, fall back on something reasonable.
-			m_MatIndex = m_pMats->AddRGBMaterial(RGBf(1,1,0), false, false, true);
-		}
-		else
-		{
-			// A geotypical texture.  Setup TexGen.
-			pMat->SetTexGen2D(FPoint2(1.0f/fScale, 1.0f/fScale), FPoint2(0, 0), unit);
-			pMat->SetTextureMode(GL_MODULATE, unit);
-		}
+		pMat->SetClamp(false, unit);
+		// A geotypical texture.  Setup TexGen.
+		pMat->SetTexGen2D(FPoint2(1.0f/fScale, 1.0f/fScale), FPoint2(0, 0), unit);
+		pMat->SetTextureMode(GL_MODULATE, unit);
 	}
 }
 
