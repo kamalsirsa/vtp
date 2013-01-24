@@ -25,7 +25,7 @@
 #define ROAD_AMBIENT 0.6	// brighter than terrain ambient
 #define ROAD_DIFFUSE 0.4
 #define TEXTURE_ARGS(alpha)		true, true, alpha, false, ROAD_AMBIENT, \
-	ROAD_DIFFUSE, 1.0f, TERRAIN_EMISSIVE, false, false
+	ROAD_DIFFUSE, 1.0f, TERRAIN_EMISSIVE
 
 #define ROADTEXTURE_4WD		"GeoTypical/road_4wd2.png"
 #define ROADTEXTURE_TRAIL	"GeoTypical/trail2.png"
@@ -875,22 +875,22 @@ void vtRoadMap3d::_CreateMaterials(bool do_texture)
 		vtString path;
 
 		path = FindFileOnPaths(paths, "GeoTypical/roadside_32.png");
-		m_mi_roadside = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
+		m_mi_roadside = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
 
 		path = FindFileOnPaths(paths, "GeoTypical/pavement_256.jpg");
-		m_mi_pavement = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
+		m_mi_pavement = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
 
 		path = FindFileOnPaths(paths, ROAD_FILENAME);
-		m_mi_roads = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(false));
+		m_mi_roads = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(false));
 
 		path = FindFileOnPaths(paths, ROADTEXTURE_4WD);
-		m_mi_4wd = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
+		m_mi_4wd = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
 
 		path = FindFileOnPaths(paths, ROADTEXTURE_TRAIL);
-		m_mi_trail = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
+		m_mi_trail = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
 
 		path = FindFileOnPaths(paths, ROADTEXTURE_GRAVEL);
-		m_mi_gravel = m_pMats->AddTextureMaterial(path, TEXTURE_ARGS(true));
+		m_mi_gravel = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
 
 		m_vt[VTI_MARGIN].m_idx = m_mi_roads;
 		m_vt[VTI_MARGIN].m_rect.SetRect(960.0f/ROAD_REZ, 1, 992.0f/ROAD_REZ, 0);
@@ -941,7 +941,7 @@ void vtRoadMap3d::_CreateMaterials(bool do_texture)
 		m_mi_4wd = m_pMats->AddRGBMaterial(RGBf(0.5f, 0.5f, 0.5f), true, false);	// 2 grey
 		m_mi_trail = m_pMats->AddRGBMaterial(RGBf(1.0f, 0.3f, 1.0f), true, false);	// 3 light purple
 	}
-	m_mi_red = m_pMats->AddRGBMaterial(RGBf(1.0f, 0.0f, 0.0f), RGBf(0.2f, 0.0f, 0.0f),
+	m_mi_red = m_pMats->AddRGBMaterial(RGBf(1.0f, 0.0f, 0.0f),
 		true, true, false, 0.4f);	// red-translucent
 }
 

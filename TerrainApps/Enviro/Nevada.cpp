@@ -107,7 +107,7 @@ void NevadaTerrain::CreateWater()
 
 	int id;
 
-	id = m_pMats->AddTextureMaterial(str,
+	id = m_pMats->AddTextureMaterial(LoadOsgImage(str),
 		false, true,	// cull, light
 		false, false,	// transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
@@ -120,7 +120,7 @@ void NevadaTerrain::CreateWater()
 	m_pWaterShape->setName("WaterSurface");
 	addNode(m_pWaterShape);
 
-	id = m_pMats->AddTextureMaterial(str,
+	id = m_pMats->AddTextureMaterial(LoadOsgImage(str),
 		false, true,	// cull, light
 		true, false,	// transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 0.6f, TERRAIN_EMISSIVE);

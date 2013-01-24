@@ -116,9 +116,9 @@ bool vtElevLayer::Load(bool progress_callback(int))
 	return true;
 }
 
-void vtElevLayer::MakeMaterials()
+void vtElevLayer::MakeMaterials(bool bTextureCompression)
 {
-	m_pTin->MakeMaterialsFromOptions(m_Props);
+	m_pTin->MakeMaterialsFromOptions(m_Props, bTextureCompression);
 }
 
 vtTransform *vtElevLayer::CreateGeometry()

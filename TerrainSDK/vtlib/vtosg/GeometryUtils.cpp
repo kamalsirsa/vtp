@@ -577,17 +577,21 @@ bool GeometryBuilder::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 		return false;
 	}
 
-	// !!!!!! TODO we should probably search for this image rather than just adding it each time it is used
-	int MaterialIndex = GetSharedMaterialArray()->AddTextureMaterial(fname,
+	// TODO? We should probably search for this image rather than just adding
+	// it each time it is used.
+	osg::Image *image = LoadOsgImage(fname);
+	if (!image)
+		return false;
+	int MaterialIndex = GetSharedMaterialArray()->AddTextureMaterial(image,
 			true, true, false, false,
 			TERRAIN_AMBIENT,
 			TERRAIN_DIFFUSE,
 			1.0f,		// alpha
 			TERRAIN_EMISSIVE);
 
-	vtMaterial* pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
+	vtMaterial *pMaterial = GetSharedMaterialArray()->at(MaterialIndex);
 
-	DALTriangleFan* pTriangleFan = m_pPrimitiveCache->FindOrCreateDALTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
+	DALTriangleFan *pTriangleFan = m_pPrimitiveCache->FindOrCreateDALTriangleFan(VT_Normals|VT_TexCoords, pMaterial);
 
 	float v = (float) stories;
 	pTriangleFan->m_Vertices->push_back(osg::Vec3(quad[0].x, quad[0].y, quad[0].z));

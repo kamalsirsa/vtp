@@ -223,8 +223,8 @@ vtMaterialArray *vtIcoGlobe::CreateMaterialsFromFiles(const vtString &strImagePr
 				index = mats->AddTextureMaterial(img,
 							bCulling, bLighting,
 							GetDepth(img) == 32, false,	// transp, additive
-							0.1f, 1.0f, 1.0f, 0.0f,		// ambient, diffuse, alpha, emmisive
-							true, false);		// clamp, mipmap
+							0.1f, 1.0f, 1.0f, 0.0f);	// ambient, diffuse, alpha, emmisive
+				mats->at(index)->SetClamp(true);
 			}
 			else
 				index = -1;
@@ -251,8 +251,8 @@ vtMaterialArray *vtIcoGlobe::CreateMaterialsFromImages(vtImage **images)
 		int index = mats->AddTextureMaterial(img,
 					 bCulling, bLighting,
 					 img->GetDepth() == 32, false,	// transp, additive
-					 0.1f, 1.0f, 1.0f, 0.0f,		// ambient, diffuse, alpha, emmisive
-					 true, false);					// clamp, mipmap
+					 0.1f, 1.0f, 1.0f, 0.0f);		// ambient, diffuse, alpha, emmisive
+		mats->at(index)->SetClamp(true);
 		m_globe_mat[pair] = index;
 	}
 	return mats;
@@ -1709,8 +1709,9 @@ vtMovGeode *CreateSimpleEarth(const vtString &strDataPath)
 	bool bCulling = false;
 	bool bLighting = false;
 	bool bTransp = false;
-	pMats->AddTextureMaterial(strDataPath + "WholeEarth/earth2k_free.jpg",
-						 bCulling, bLighting, bTransp);
+
+	osg::Image *image = LoadOsgImage(strDataPath + "WholeEarth/earth2k_free.jpg");
+	pMats->AddTextureMaterial(image, bCulling, bLighting, bTransp);
 	geode->SetMaterials(pMats);
 
 	geode->AddMesh(mesh, 0);

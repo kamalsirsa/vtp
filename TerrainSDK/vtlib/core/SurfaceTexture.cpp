@@ -25,8 +25,8 @@ SurfaceTexture::~SurfaceTexture()
 	delete m_pColorMap;
 }
 
-bool SurfaceTexture::LoadTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
-	bool progress_callback(int))
+bool SurfaceTexture::MakeTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
+	bool bTextureCompression, bool progress_callback(int))
 {
 	const TextureEnum eTex = options.GetTextureEnum();
 
@@ -40,8 +40,7 @@ bool SurfaceTexture::LoadTexture(const TParams &options, const vtHeightFieldGrid
 	if (m_pUnshadedImage.get() == NULL)	// none or failed to find texture
 	{
 		// no texture: create plain white material
-		m_pMaterials->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-			RGBf(0.2f, 0.2f, 0.2f), true, false);
+		m_pMaterials->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f), true, false);
 		return false;
 	}
 
@@ -56,16 +55,16 @@ bool SurfaceTexture::LoadTexture(const TParams &options, const vtHeightFieldGrid
 	const bool bBothSides = options.GetValueBool(STR_SHOW_UNDERSIDE);
 	const float ambient = 0.0f, diffuse = 1.0f, emmisive = 0.0f;
 
-	m_pMaterials->AddTextureMaterial(m_pTextureImage,
+	int idx = m_pMaterials->AddTextureMaterial(m_pTextureImage,
 		!bBothSides,	// culling
 		false,			// lighting
 		bTransp,		// transparency blending
 		false,			// additive
 		ambient, diffuse,
-		1.0f,			// alpha
-		0.0f,			// emmisive,
-		false,			// clamp
-		bMipmap);
+		1.0, 0.0,		// alpha, emissive
+		bTextureCompression);
+	if (bMipmap)
+		m_pMaterials->at(idx)->SetMipMap(bMipmap);
 	return true;
 }
 

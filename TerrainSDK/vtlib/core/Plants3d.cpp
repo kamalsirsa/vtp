@@ -121,7 +121,8 @@ void vtPlantAppearance3d::LoadAndCreate()
 		m_pMats = new vtMaterialArray;
 
 		// create textured appearance
-		m_iMatIdx = m_pMats->AddTextureMaterial(fname,
+		osg::Image *image = LoadOsgImage(fname);
+		m_iMatIdx = m_pMats->AddTextureMaterial(image,
 			false, true, true, false,	// cull, lighting, transp, additive
 			TREE_AMBIENT, TREE_DIFFUSE,
 			1.0f,		// alpha (material is opaque, alpha is in the texture)

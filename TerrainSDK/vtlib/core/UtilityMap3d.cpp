@@ -399,9 +399,8 @@ void vtUtilityMap3d::CreateMaterials()
 
 	// add wire material (0)
 	m_mi_wire = m_pMaterials->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
-//		RGBf(0.5f, 0.5f, 0.5f),	// ambient grey
-		RGBf(1.5f, 1.5f, 1.5f),	// ambient bright white
 		false, true, false,		// culling, lighting, wireframe
 		1.0f);					// alpha
+	m_pMaterials->at(m_mi_wire)->SetAmbient(RGBf(1.0f, 1.0f, 1.0f)); // bright white
 }
 

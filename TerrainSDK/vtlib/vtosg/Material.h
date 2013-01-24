@@ -62,7 +62,7 @@ public:
 	bool GetWireframe() const;
 
 	void SetTexture1D(osg::Image *pImage, int unit = 0);
-	void SetTexture2D(osg::Image *pImage, int unit = 0);
+	void SetTexture2D(osg::Image *pImage, int unit = 0, bool bCompression = false);
 
 	osg::Image	*GetTextureImage(int unit = 0) const;
 	void ModifiedTexture(int unit = 0);
@@ -91,10 +91,6 @@ public:
 	void SetEmission(const RGBf &c) { SetEmission(c.r, c.g, c.b); }
 	void SetEmission(float f) { SetEmission(f, f, f); }
 
-
-	// global option
-	static bool s_bTextureCompression;
-
 	// remember any texture images, by unit, for convenience and referencing
 	std::vector<ImagePtr> m_Images;
 
@@ -119,17 +115,7 @@ public:
 						   bool bTransp = false, bool bAdditive = false,
 						   float fAmbient = 0.0f, float fDiffuse = 1.0f,
 						   float fAlpha = 1.0f, float fEmissive = 0.0f,
-						   bool bClamp = false, bool bMipMap = false);
-	int AddTextureMaterial(const char *fname,
-						   bool bCulling, bool bLighting,
-						   bool bTransp = false, bool bAdditive = false,
-						   float fAmbient = 0.0f, float fDiffuse = 1.0f,
-						   float fAlpha = 1.0f, float fEmissive = 0.0f,
-						   bool bClamp = false, bool bMipMap = false);
-	int AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient,
-					   bool bCulling = true, bool bLighting= true,
-					   bool bWireframe = false, float fAlpha = 1.0f,
-					   float fEmissive = 0.0f);
+						   bool bCompression = false);
 	int AddRGBMaterial(const RGBf &diffuse,
 					   bool bCulling = true, bool bLighting= true,
 					   bool bWireframe = false, float fAlpha = 1.0f,
@@ -145,6 +131,9 @@ public:
 	int AppendMaterial(vtMaterial *pMat);
 };
 typedef osg::ref_ptr<vtMaterialArray> vtMaterialArrayPtr;
+
+/// Convenience method.
+osg::Image *LoadOsgImage(const char *fname);
 
 /*@}*/	// Group sg
 

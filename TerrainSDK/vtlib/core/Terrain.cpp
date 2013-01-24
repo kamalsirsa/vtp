@@ -88,6 +88,7 @@ vtTerrain::vtTerrain()
 	m_progress_callback = NULL;
 
 	m_pExternalHeightField = NULL;
+	m_bTextureCompression = false;
 }
 
 vtTerrain::~vtTerrain()
@@ -378,7 +379,8 @@ void vtTerrain::ReshadeTexture(vtTransform *pSunLight, bool progress_callback(in
  */
 void vtTerrain::RecreateTexture(vtTransform *pSunLight, bool progress_callback(int))
 {
-	m_Texture.LoadTexture(m_Params, GetHeightFieldGrid3d(), m_progress_callback);
+	m_Texture.MakeTexture(m_Params, GetHeightFieldGrid3d(),
+		m_bTextureCompression, m_progress_callback);
 
 	m_Texture.ShadeTexture(m_Params, GetHeightFieldGrid3d(), pSunLight->GetDirection(),
 		m_progress_callback);
@@ -633,17 +635,17 @@ void vtTerrain::MakeWaterMaterial()
 	{
 		// Water material: texture waves
 		vtString fname = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
-		m_idx_water = m_pEphemMats->AddTextureMaterial(fname,
+		osg::Image *image = LoadOsgImage(fname);
+		m_idx_water = m_pEphemMats->AddTextureMaterial(image,
 			false, false,		// culling, lighting
 			false,				// the texture itself has no alpha
 			false,				// additive
 			TERRAIN_AMBIENT,	// ambient
 			1.0f,				// diffuse
 			0.5,				// alpha
-			TERRAIN_EMISSIVE,	// emissive
-			false,				// clamp
-			false);				// don't mipmap: allowing texture aliasing to
-								// occur, it actually looks more water-like
+			TERRAIN_EMISSIVE);	// emissive
+		// Don't mipmap: allowing texture aliasing to occur, it actually looks
+		// more water-like.
 	}
 }
 
@@ -1446,7 +1448,7 @@ bool vtTerrain::CreateElevLayerFromTags(const vtTagArray &layer_tags)
 	if (!elayer->Load(m_progress_callback))
 		return false;
 
-	elayer->MakeMaterials();
+	elayer->MakeMaterials(m_bTextureCompression);
 
 	vtTransform *top_node = elayer->CreateGeometry();
 	top_node->setName("Elevation layer");
@@ -2000,7 +2002,8 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 		// measure total texture processing time
 		clock_t c1 = clock();
 
-		bool success = m_Texture.LoadTexture(m_Params, GetHeightFieldGrid3d(), m_progress_callback);
+		bool success = m_Texture.MakeTexture(m_Params, GetHeightFieldGrid3d(),
+			m_bTextureCompression, m_progress_callback);
 
 		if (success)
 		{
@@ -2013,7 +2016,7 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 	}
 	if (type == 1)	// TIN
 	{
-		m_pTin->MakeMaterialsFromOptions(m_Params);
+		m_pTin->MakeMaterialsFromOptions(m_Params, m_bTextureCompression);
 	}
 	return true;
 }

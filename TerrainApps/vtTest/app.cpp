@@ -178,7 +178,7 @@ bool App::CreateScene()
 	m_Materials->AddRGBMaterial(RGBf(1,0,0),true,false,true);	// wire
 	m_Materials->AddRGBMaterial(RGBf(0,1,0),true,false,true);	// wire
 	m_Materials->AddRGBMaterial(RGBf(0,0,1),true,false,true);	// wire
-	m_Materials->AddRGBMaterial(RGBf(0,0,1),RGBf(0,0,1),true,true,false,0.6f,0.5f);
+	m_Materials->AddRGBMaterial(RGBf(0,0,1),true,true,false,0.6f,0.5f);
 	m_Materials->AddRGBMaterial(RGBf(1,1,1),true,false,true);	// wire
 
 	// Reference grid (always there)
@@ -374,7 +374,8 @@ void App::MakeTest8()
 	// Test 8: Single texture
 	vtGroup *grp = MakeTestGroup(8);
 
-	int matidx = m_Materials->AddTextureMaterial("G:/Data-Testing/Culture/modulate.jpg", true, false);
+	osg::Image *image = LoadOsgImage("G:/Data-Testing/Culture/modulate.jpg");
+	int matidx = m_Materials->AddTextureMaterial(image, true, false);
 
 	vtGeode *ball3 = CreateSphereGeom(m_Materials, matidx, VT_Normals | VT_TexCoords, 1.0f, 32);
 
@@ -386,7 +387,6 @@ void App::MakeTest9()
 	// Test 9: Single texture, using TexGen
 	vtGroup *grp = MakeTestGroup(9);
 
-//	osg::Image *image = osgDB::readImageFile("G:/Data-Testing/Culture/modulate.jpg");
 	vtImageGeo *image = new vtImageGeo;
 	image->ReadTIF("G:/Data-USA/Data-Hawaii/GeoSpecific/waimea_subset_2048.tif");
 

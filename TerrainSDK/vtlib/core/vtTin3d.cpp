@@ -84,15 +84,18 @@ void vtTin3d::MakeSurfaceMaterials()
 			path = FindFileOnPaths(vtGetDataPath(), relpath);
 		}
 
-		m_pMats->AddTextureMaterial(path, false, bLighting, false, false,
-			fAmbient, 1.0f, 1.0f, 0.0f, false, true);	// No clamp, yes mipmap.
+		osg::Image *image = LoadOsgImage(path);
+		int idx = m_pMats->AddTextureMaterial(image, false, bLighting, false, false,
+			fAmbient, 1.0f, 1.0f, 0.0f);
+		if (idx != -1)
+			m_pMats->at(idx)->SetMipMap(true);
 	}
 }
 
 /**
  High-level method to make materials from layer options.
  */
-void vtTin3d::MakeMaterialsFromOptions(const vtTagArray &options)
+void vtTin3d::MakeMaterialsFromOptions(const vtTagArray &options, bool bTextureCompression)
 {
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");	// for GetValueFloat
 
@@ -118,13 +121,14 @@ void vtTin3d::MakeMaterialsFromOptions(const vtTagArray &options)
 		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 		image = osgDB::readImageFile((const char *) path);
 	}
-	MakeMaterials(cmap, image, fScale, fOpacity);
+	MakeMaterials(cmap, image, fScale, fOpacity, bTextureCompression);
 }
 
 /**
  Lower-level method to make materials.
  */
-void vtTin3d::MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale, float fOpacity)
+void vtTin3d::MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale,
+	float fOpacity, bool bTextureCompression)
 {
 	// set up geotypical materials
 	m_pMats = new vtMaterialArray;
@@ -191,7 +195,7 @@ void vtTin3d::MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale, flo
 		vtMaterial *pMat = new vtMaterial;
 
 		int unit = pMat->NextAvailableTextureUnit();
-		pMat->SetTexture2D(image, unit);
+		pMat->SetTexture2D(image, unit, bTextureCompression);
 		pMat->SetCulling(culling);
 		pMat->SetLighting(lighting);
 		pMat->SetClamp(false);

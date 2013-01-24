@@ -296,8 +296,8 @@ void Enviro::MakeDemoGlobe()
 
 	vtGeode *geode = new vtGeode;
 	vtMaterialArray *mats = new vtMaterialArray;
-	mats->AddTextureMaterial("Planetwork/logo3.png", false, false, true);
-	mats->AddTextureMaterial("Planetwork/logo2.png", false, false, true);
+	mats->AddTextureMaterial(LoadOsgImage("Planetwork/logo3.png"), false, false, true);
+	mats->AddTextureMaterial(LoadOsgImage("Planetwork/logo2.png"), false, false, true);
 	geode->SetMaterials(mats);
 
 	float width = 1.9, height = .22;

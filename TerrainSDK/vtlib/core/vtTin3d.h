@@ -54,8 +54,9 @@ public:
 		FPoint3 &result) const;
 
 	FPoint3 FindVectorToClosestVertex(const FPoint3 &pos);
-	void MakeMaterialsFromOptions(const vtTagArray &options);
-	void MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale, float fOpacity);
+	void MakeMaterialsFromOptions(const vtTagArray &options, bool bTextureCompression);
+	void MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale,
+		float fOpacity, bool bTextureCompression);
 
 protected:
 	virtual void MakeSurfaceMaterials();

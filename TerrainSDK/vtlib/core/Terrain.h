@@ -361,6 +361,7 @@ public:
 	void AddMultiTextureOverlay(vtImageLayer *im_layer);
 	osg::Node *GetTerrainSurfaceNode();
 	void RecreateTexture(vtTransform *pSunLight, bool progress_callback(int) = NULL);
+	void SetTextureCompression(bool compress) { m_bTextureCompression = compress; }
 
 	/********************** Public Data ******************/
 
@@ -476,6 +477,7 @@ protected:
 
 	// ground texture and shadows
 	SurfaceTexture	m_Texture;
+	bool			m_bTextureCompression;
 
 	vtTextureUnitManager m_TextureUnits;
 	int				m_iShadowTextureUnit;

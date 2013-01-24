@@ -230,6 +230,7 @@ void Enviro::LoadTerrainDescriptions(const vtString &path)
 		else
 			pTerr = new vtTerrain;
 
+		pTerr->SetTextureCompression(g_Options.m_bTextureCompression);
 		pTerr->SetParamFile(directory + "/" + name);
 		if (pTerr->LoadParams())
 		{
@@ -736,7 +737,6 @@ void Enviro::SetupScene1()
 
 	// Set some global properties
 	m_fCatenaryFactor = g_Options.m_fCatenaryFactor;
-	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
 	g_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
 
 	vtScene *pScene = vtGetScene();

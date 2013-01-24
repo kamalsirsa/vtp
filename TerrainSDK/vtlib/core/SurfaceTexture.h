@@ -17,8 +17,8 @@ public:
 	SurfaceTexture();
 	~SurfaceTexture();
 
-	bool LoadTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
-		bool progress_callback(int) = NULL);
+	bool MakeTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
+		bool bTextureCompression, bool progress_callback(int) = NULL);
 
 	void ShadeTexture(const TParams &options, const vtHeightFieldGrid3d *pHFGrid,
 		const FPoint3 &light_dir, bool progress_callback(int) = NULL);

@@ -11,8 +11,6 @@
 
 ///////////////////////////////////
 
-bool vtMaterial::s_bTextureCompression = false;
-
 #define SA_ON	osg::StateAttribute::ON
 #define SA_OFF	osg::StateAttribute::OFF
 
@@ -239,31 +237,15 @@ bool vtMaterial::GetWireframe() const
 /**
  * Set the texture for this material.
  */
-void vtMaterial::SetTexture2D(osg::Image *pImage, int unit)
+void vtMaterial::SetTexture2D(osg::Image *pImage, int unit, bool bCompression)
 {
 	osg::Texture2D *texture2d = new osg::Texture2D;
 
 	// this stores a reference so that it won't get deleted without this material's permission
 	texture2d->setImage(pImage);
 
-	/** "Note, If the mode is set USE_IMAGE_DATA_FORMAT, USE_ARB_COMPRESSION,
-	 * USE_S3TC_COMPRESSION the internalFormat is automatically selected, and
-	 * will overwrite the previous _internalFormat. */
-//	m_pTexture->setInternalFormatMode(osg::Texture::USE_S3TC_DXT1_COMPRESSION);
-	if (s_bTextureCompression)
-		//m_pTexture->setInternalFormatMode(osg::Texture::USE_ARB_COMPRESSION);
+	if (bCompression)
 		texture2d->setInternalFormatMode(osg::Texture::USE_S3TC_DXT3_COMPRESSION);
-
-	// From the OSG list: "Why doesn't the OSG deallocate image buffer right
-	// *after* a glTextImage2D?
-	// By default the OSG doesn't do it bacause the user may actually want to
-	// do things with the image after its been bound.  You can make the
-	// osg::Texture classes unref their images automatically by doing:
-	// texture->setUnRefImageDataAfterApply(true);
-
-	// So i tried this, but it doesn't seem to have any affect on runtime memory
-	//  footprint:
-//	m_pTexture->setUnRefImageDataAfterApply(true);
 
 	setTextureAttributeAndModes(unit, texture2d, SA_ON);
 
@@ -505,98 +487,37 @@ int vtMaterialArray::AddTextureMaterial(osg::Image *pImage,
 						 bool bTransp, bool bAdditive,
 						 float fAmbient, float fDiffuse,
 						 float fAlpha, float fEmissive,
-						 bool bClamp, bool bMipMap)
+						 bool bCompression)
 {
+	if (pImage == NULL)
+		return -1;
+
 	vtMaterial *pMat = new vtMaterial;
-	pMat->SetTexture2D(pImage);
+	pMat->SetTexture2D(pImage, 0, bCompression);
 	pMat->SetCulling(bCulling);
 	pMat->SetLighting(bLighting);
 	pMat->SetTransparent(bTransp, bAdditive);
 	pMat->SetAmbient(fAmbient, fAmbient, fAmbient);
 	pMat->SetDiffuse(fDiffuse, fDiffuse, fDiffuse, fAlpha);
 	pMat->SetEmission(fEmissive, fEmissive, fEmissive);
-	pMat->SetClamp(bClamp);
-	pMat->SetMipMap(bMipMap);
 
 	return AppendMaterial(pMat);
 }
 
 /**
- * Create and add a simple textured material.  This method takes a a filename
- * of the texture image to use.
- *
- * See the other AddTextureMaterial() for a description of the parameters, which
- * lets you control many other aspects of the material.
- *
- * \return The index of the added material if successful, or -1 on failure.
+ * Load an image.
  */
-int vtMaterialArray::AddTextureMaterial(const char *fname,
-						 bool bCulling, bool bLighting,
-						 bool bTransp, bool bAdditive,
-						 float fAmbient, float fDiffuse,
-						 float fAlpha, float fEmissive,
-						 bool bClamp, bool bMipMap)
+osg::Image *LoadOsgImage(const char *fname)
 {
-	// check for common mistake
-	if (*fname == 0)
-		return -1;
+	// safety checks
+	if (fname == NULL || *fname == 0)
+		return NULL;
 
-	ImagePtr image = osgDB::readImageFile(fname);
-	if (!image.valid())
-		return -1;
+	osg::Image *image = osgDB::readImageFile(fname);
+	if (!image)
+		return NULL;
 
-	int index = AddTextureMaterial(image, bCulling, bLighting,
-		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive,
-		bClamp, bMipMap);
-
-	return index;
-}
-
-/**
- * Create and add a simple colored material.  This method takes diffuse
- * and ambient color and let you control several other aspects of the material.
- *
- * \param diffuse The Diffuse color component of the material.
- *
- * \param ambient The Ambient color component of the material.
- *
- * \param bCulling  true to cull backfaces (only the front side
- *		of each polygon is rendered.)
- *
- * \param bLighting  true to "light" the material.  This means it will
- *		use the material's color values, and any active lights to
- *		determine the color of the drawn geometry.  If false, then
- *		only the material's diffuse color is used, and it is not affected
- *		by any lights.
- *
- * \param bWireframe True for a material which will render only the edges
- *		of polygons.
- *
- * \param fAlpha	Alpha value (opacity), ranges from 0 (completely
- *		transparent) to 1 (opaque).  Default is 1.  If transparency is
- *		not enabled, this value is ignored.
- *
- * \param fEmissive  Emmisive material value, ranges from 0 to 1 (default 0).
- *		If lighting is enabled, this value is added to the combined
- *		effect of each existing light.  This is useful for geometry which
- *		is brighter than the existing light level, such as illuminated
- *		objects at night.
- *
- * \return The index of the added material.
- */
-int vtMaterialArray::AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient,
-					 bool bCulling, bool bLighting, bool bWireframe,
-					 float fAlpha, float fEmissive)
-{
-	vtMaterial *pMat = new vtMaterial;
-	pMat->SetCulling(bCulling);
-	pMat->SetLighting(bLighting);
-	pMat->SetWireframe(bWireframe);
-	pMat->SetDiffuse(diffuse.r, diffuse.g, diffuse.b, fAlpha);
-	pMat->SetSpecular(0.0f, 0.0f, 0.0f);
-	pMat->SetAmbient(ambient.r, ambient.g, ambient.b);
-	pMat->SetEmission(fEmissive, fEmissive, fEmissive);
-	return AppendMaterial(pMat);
+	return image;
 }
 
 /**
@@ -635,8 +556,15 @@ int vtMaterialArray::AddRGBMaterial(const RGBf &diffuse,
 				 bool bCulling, bool bLighting, bool bWireframe,
 				 float fAlpha, float fEmissive)
 {
-	return AddRGBMaterial(diffuse, diffuse/4, bCulling, bLighting, bWireframe,
-		fAlpha, fEmissive);
+	vtMaterial *pMat = new vtMaterial;
+	pMat->SetCulling(bCulling);
+	pMat->SetLighting(bLighting);
+	pMat->SetWireframe(bWireframe);
+	pMat->SetDiffuse(diffuse.r, diffuse.g, diffuse.b, fAlpha);
+	pMat->SetSpecular(0.0f, 0.0f, 0.0f);
+	pMat->SetAmbient(diffuse.r / 4, diffuse.g / 4, diffuse.b / 4);
+	pMat->SetEmission(fEmissive, fEmissive, fEmissive);
+	return AppendMaterial(pMat);
 }
 
 /**

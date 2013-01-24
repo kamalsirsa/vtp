@@ -50,9 +50,9 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 
 	// wire material
 	m_wire = m_pMaterials->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
-		RGBf(0.4f, 0.4f, 0.4f),	// ambient
 		false, true, false,		// culling, lighting, wireframe
 		0.6f);					// alpha
+	m_pMaterials->at(m_wire)->SetAmbient(RGBf(0.4f, 0.4f, 0.4f));
 }
 
 int vtMaterialDescriptorArray3d::CreateColoredMaterial(vtMaterialDescriptor *descriptor,

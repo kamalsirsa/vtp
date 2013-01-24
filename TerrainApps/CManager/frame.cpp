@@ -1277,7 +1277,6 @@ void vtFrame::OnTestXML(wxCommandEvent& event)
 	osg::ref_ptr<osg::State> state = new osg::State;
 
 	// get OpenGL driver to create texture from image.
-	vtMaterial::s_bTextureCompression = true;
 	vtMaterial *mat = new vtMaterial;
 	mat->SetTexture(image);
 	mat->m_pTexture->apply(*state);

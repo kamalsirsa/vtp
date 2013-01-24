@@ -108,7 +108,7 @@ public:
 	~vtElevLayer();
 
 	bool Load(bool progress_callback(int) = NULL);
-	void MakeMaterials();
+	void MakeMaterials(bool bTextureCompression);
 	vtTransform *CreateGeometry();
 
 	void SetLayerName(const vtString &fname);
