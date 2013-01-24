@@ -1248,7 +1248,19 @@ float Enviro::GetFlightSpeed()
 	else if (m_pCurrentFlyer != NULL)
 		return m_pCurrentFlyer->GetSpeed();
 	else
-		return 0.0f;
+	{
+		// We may not be navigating, but determine the speed of the navigator
+		// that would be active if we were.
+		if (m_nav == NT_Normal)
+			return m_pTFlyer->GetSpeed();
+		if (m_nav == NT_Velo)
+			return m_pVFlyer->GetSpeed();
+		if (m_nav == NT_Grab)
+			return m_pGFlyer->GetSpeed();
+		if (m_nav == NT_Pano || m_nav == NT_Dummy)
+			return m_pPanoFlyer->GetSpeed();
+	}
+	return 0.0f;
 }
 
 void Enviro::SetNavDamping(float factor)
