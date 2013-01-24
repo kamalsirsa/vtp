@@ -1202,7 +1202,7 @@ void Enviro::StoreTerrainParameters()
 	par.SetValueBool(STR_OVERVIEW, GetShowMapOverview());
 	par.SetValueBool(STR_COMPASS, GetShowCompass());
 
-	// Layers: copy back from the current set of layers to the set of
+	// Layers: copy back from the terrain's set of layers, to the set of
 	//  layers in the parameters.
 	const LayerSet &set = terr->GetLayers();
 	par.m_Layers.clear();

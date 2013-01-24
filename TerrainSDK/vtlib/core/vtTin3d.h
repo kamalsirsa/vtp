@@ -36,7 +36,7 @@ public:
 	vtTin3d();
 	~vtTin3d();
 
-	bool Read(const char *fname);
+	bool Read(const char *fname, bool progress_callback(int) = NULL);
 
 	vtGeode *CreateGeometry(bool bDropShadowMesh);
 	vtGeode *GetGeometry() { return m_pGeode; }
