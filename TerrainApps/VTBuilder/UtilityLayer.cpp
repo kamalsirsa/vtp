@@ -149,8 +149,9 @@ bool vtUtilityLayer::AppendDataFrom(vtLayer *pL)
 	return true;
 }
 
-void vtUtilityLayer::Offset(DPoint2 p)
+void vtUtilityLayer::Offset(const DPoint2 &delta)
 {
+	vtUtilityMap::Offset(delta);
 }
 
 void vtUtilityLayer::DeselectAll()

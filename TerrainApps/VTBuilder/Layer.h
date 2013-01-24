@@ -60,7 +60,7 @@ public:
 	/// Set the CRS, which does not reproject
 	virtual void SetProjection(const vtProjection &proj) = 0;
 	/// Shift all the coordinates by a horizontal offset
-	virtual void Offset(const DPoint2 &p);
+	virtual void Offset(const DPoint2 &delta);
 
 	// these may be optionally implemented:
 	virtual bool SetExtent(const DRECT &rect) { return false; }

@@ -26,7 +26,7 @@ public:
 	void GetProjection(vtProjection &proj);
 	void SetProjection(const vtProjection &proj);
 	bool AppendDataFrom(vtLayer *pL);
-	void Offset(DPoint2 p);
+	void Offset(const DPoint2 &delta);
 
 	void DeselectAll();
 	void InvertSelection();

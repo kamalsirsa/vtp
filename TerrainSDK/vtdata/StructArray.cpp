@@ -347,7 +347,7 @@ void vtStructureArray::Offset(const DPoint2 &delta)
 		vtFence *fen = str->GetFence();
 		if (fen)
 		{
-			DLine2 line = fen->GetFencePoints();
+			DLine2 &line = fen->GetFencePoints();
 			for (j = 0; j < line.GetSize(); j++)
 				line[j] += delta;
 		}

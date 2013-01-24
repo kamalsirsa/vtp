@@ -413,3 +413,13 @@ bool vtUtilityMap::TransformTo(vtProjection &proj)
 
 	return true;
 }
+
+void vtUtilityMap::Offset(const DPoint2 &delta)
+{
+	for (uint i = 0; i < m_Poles.size(); i++)
+	{
+		vtPole *pole = m_Poles[i];
+		pole->m_p += delta;
+	}
+}
+

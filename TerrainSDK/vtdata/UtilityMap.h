@@ -77,6 +77,7 @@ public:
 
 	void SetProjection(const vtProjection &proj);
 	bool TransformTo(vtProjection &proj);
+	void Offset(const DPoint2 &delta);
 
 protected:
 	vtPole *ClosestPole(const DPoint2 &p);
