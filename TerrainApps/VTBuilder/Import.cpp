@@ -264,10 +264,13 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 			ltype = LT_STRUCTURE;
 
 		// look for an SDTS catalog file
+		wxString fname_cat;
+		wxString fname_hdr;
 		bool found_cat = false;
 		bool found_hdr = false;
 		bool found_rt1 = false;
-		wxString fname2;
+		bool found_dem = false;
+		bool found_bil = false;
 
 		std::string pathname = (const char *) path.mb_str(wxConvUTF8);
 		VTLOG(" Looking at contents of folder: '%s'\n", pathname.c_str());
@@ -275,33 +278,41 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 		for (dir_iter it(pathname); it != dir_iter(); ++it)
 		{
 			if (it.is_directory()) continue;
-			fname2 = wxString(it.filename().c_str(), wxConvUTF8);
+			wxString fname2 = wxString(it.filename().c_str(), wxConvUTF8);
 
 			if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
 			{
-				fname = prepend_path;
-				fname += fname2;
+				fname_cat = prepend_path;
+				fname_cat += fname2;
 				found_cat = true;
 				break;
 			}
 			if (fname2.Right(4).CmpNoCase(_T(".hdr")) == 0)
 			{
 				ltype = LT_ELEVATION;
-				fname = prepend_path;
-				fname += fname2;
+				fname_hdr = prepend_path;
+				fname_hdr += fname2;
 				found_hdr = true;
 				break;
 			}
+			if (fname2.Right(4).CmpNoCase(_T(".dem")) == 0)
+				found_dem = true;
+			if (fname2.Right(4).CmpNoCase(_T(".bil")) == 0)
+				found_bil = true;
 			if (fname2.Right(4).CmpNoCase(_T(".rt1")) == 0)
-			{
 				found_rt1 = true;
-				break;
-			}
 		}
-		if (found_cat || found_hdr)
+		wxString single_file_import;
+		if (found_cat)
+			single_file_import = fname_cat;
+		if (found_hdr && found_dem)
+			single_file_import = fname_hdr;
+		if (found_hdr && found_bil)
+			single_file_import = fname_hdr;
+		if (single_file_import != _T(""))
 		{
-			// We expect a single layer from SDTS or BIL/HDR.
-			pLayer = ImportLayerFromFile(ltype, fname, bRefresh, true);
+			// We expect a single layer from SDTS or BIL/HDR or DEM/HDR (GTOPO30)
+			pLayer = ImportLayerFromFile(ltype, single_file_import, bRefresh, true);
 			if (pLayer)
 			{
 				bool success = AddLayerWithCheck(pLayer, true);
@@ -310,7 +321,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 					delete pLayer;
 					return 0;	// no layers created
 				}
-				pLayer->SetLayerFilename(fname2);
+				pLayer->SetLayerFilename(single_file_import);
 				LoadedLayers.Append(pLayer);
 				layer_count++;
 			}
@@ -326,7 +337,7 @@ int Builder::ImportDataFromArchive(LayerType ltype, const wxString &fname_in,
 			for (dir_iter it(path); it != dir_iter(); ++it)
 			{
 				if (it.is_directory()) continue;
-				fname2 = wxString(it.filename().c_str(), wxConvUTF8);
+				wxString fname2 = wxString(it.filename().c_str(), wxConvUTF8);
 
 				fname = prepend_path;
 				fname += fname2;
