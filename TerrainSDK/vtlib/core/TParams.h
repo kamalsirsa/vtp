@@ -352,10 +352,10 @@ public:
 	void SetOverlay(const vtString &fname, int x, int y);
 	bool GetOverlay(vtString &fname, int &x, int &y) const;
 
-	// COnvenience
+	// Convenience
 	uint NumLayers() { return m_Layers.size(); }
 	int NumLayersOfType(const vtString &layer_type);
-	LayerType LayerType(int iLayerNum);
+	LayerType GetLayerType(int iLayerNum);
 
 public:
 	// this must be a public member (currently..)

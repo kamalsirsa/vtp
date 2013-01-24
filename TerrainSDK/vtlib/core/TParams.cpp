@@ -442,7 +442,7 @@ int TParams::NumLayersOfType(const vtString &layer_type)
 	return count;
 }
 
-LayerType TParams::LayerType(int iLayerNum)
+LayerType TParams::GetLayerType(int iLayerNum)
 {
 	vtString ltype = m_Layers[iLayerNum].GetValueString("Type");
 	if (ltype == TERR_LTYPE_STRUCTURE)
