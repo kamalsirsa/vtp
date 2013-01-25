@@ -23,8 +23,6 @@
 #define DOOR_WIDTH		1.0f
 #define DOOR_TOP		0.7f
 
-vtLocalConversion vtBuilding::s_Conv;
-
 /////////////////////////////////////
 
 vtEdgeFeature::vtEdgeFeature()
@@ -484,7 +482,7 @@ bool vtLevel::IsUniform() const
 	return true;
 }
 
-void vtLevel::DetermineLocalFootprint(float fHeight)
+void vtLevel::DetermineLocalFootprint(float fHeight, const vtLocalConversion &local_cs)
 {
 	const uint rings = m_Foot.size();
 	FPoint3 lp;
@@ -500,7 +498,7 @@ void vtLevel::DetermineLocalFootprint(float fHeight)
 		for (unsigned i = 0; i < edges; i++)
 		{
 			const DPoint2 &p = dline2[i];
-			vtBuilding::s_Conv.ConvertFromEarth(p, lp.x, lp.z);
+			local_cs.ConvertFromEarth(p, lp.x, lp.z);
 			lp.y = fHeight;
 			fline3.SetAt(i, lp);
 		}
@@ -1129,7 +1127,7 @@ bool vtBuilding::GetExtents(DRECT &rect) const
 	if (levs == 0)
 		return false;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	rect.SetInsideOut();
 	for (uint i = 0; i < levs; i++)
 	{
 		vtLevel *lev = m_Levels[i];
@@ -1416,7 +1414,8 @@ void vtBuilding::DetermineLocalFootprints()
 	GetBaseLevelCenter(center);
 
 	// The local conversion will be use to make the local footprints.
-	s_Conv.Setup(m_pCRS->GetUnits(), center);
+	vtLocalConversion local_cs;
+	local_cs.Setup(m_pCRS->GetUnits(), center);
 
 	int i;
 	int levs = m_Levels.GetSize();
@@ -1425,7 +1424,7 @@ void vtBuilding::DetermineLocalFootprints()
 	for (i = 0; i < levs; i++)
 	{
 		vtLevel *lev = m_Levels[i];
-		lev->DetermineLocalFootprint(fHeight);
+		lev->DetermineLocalFootprint(fHeight, local_cs);
 		fHeight += (lev->m_iStories * lev->m_fStoryHeight);
 	}
 }

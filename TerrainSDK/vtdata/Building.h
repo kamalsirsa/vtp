@@ -169,7 +169,7 @@ public:
 	DLine2 &GetOuterFootprint() { return m_Foot[0]; }
 	const DLine2 &GetOuterFootprint() const { return m_Foot[0]; }
 
-	void DetermineLocalFootprint(float fHeight);
+	void DetermineLocalFootprint(float fHeight, const vtLocalConversion &local_cs);
 	const FPolygon3 &GetLocalFootprint() const { return m_LocalFootprint; }
 
 private:
@@ -252,7 +252,6 @@ public:
 	void DetermineLocalFootprints();
 	const FPolygon3 &GetLocalFootprint(int i) const { return m_Levels[i]->GetLocalFootprint(); }
 
-	static vtLocalConversion s_Conv;
 	static const char *GetEdgeFeatureString(int edgetype);
 	static int		   GetEdgeFeatureValue(const char *value);
 
