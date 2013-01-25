@@ -14,8 +14,10 @@
 class vtScaledView : public wxScrolledWindow
 {
 public:
-	vtScaledView(wxWindow *parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = _T(""));
+	vtScaledView(wxWindow *parent, wxWindowID id = -1,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL,
+		const wxString& name = _T(""));
 
 	void SetScale(double scale);
 	double GetScale();
@@ -34,23 +36,23 @@ public:
 	wxRect PointsToRect(const wxPoint &p1, const wxPoint &p2);
 
 	// transform object space -> screen space
-	int	sx(double x) { return (int)(x*m_dScale - m_limits.left); }
-	int	sy(double y) { return (int)(-y*m_dScale - m_limits.top); }
-	double	sxD(double x) { return x*m_dScale - m_limits.left; }
-	double	syD(double y) { return -y*m_dScale - m_limits.top; }
+	int	sx(double x) const { return (int)(x*m_dScale - m_limits.x); }
+	int	sy(double y) const { return (int)(-y*m_dScale - m_limits.y); }
+	double	sxD(double x) const { return x*m_dScale - m_limits.x; }
+	double	syD(double y) const { return -y*m_dScale - m_limits.y; }
 	void screen(const DPoint2 &p, wxPoint &sp) const
 	{
-		sp.x = (int)(p.x*m_dScale - m_limits.left);
-		sp.y = (int)(-p.y*m_dScale - m_limits.top);
+		sp.x = (int)(p.x*m_dScale - m_limits.x);
+		sp.y = (int)(-p.y*m_dScale - m_limits.y);
 	}
 	void screen(const OGRPoint *p, wxPoint &sp) const
 	{
-		sp.x = (int)(p->getX()*m_dScale - m_limits.left);
-		sp.y = (int)(-(p->getY())*m_dScale - m_limits.top);
+		sp.x = (int)(p->getX()*m_dScale - m_limits.x);
+		sp.y = (int)(-(p->getY())*m_dScale - m_limits.y);
 	}
 	// transform object space -> screen space (relative delta)
-	int	sdx(double x) { return (int)(x*m_dScale); }
-	int	sdy(double y) { return (int)(-y*m_dScale); }
+	int	sdx(double x) const { return (int)(x*m_dScale); }
+	int	sdy(double y) const { return (int)(-y*m_dScale); }
 
 	wxPoint screen_delta(const DPoint2 &p) const
 	{
@@ -61,17 +63,17 @@ public:
 	}
 
 	// transform screen space -> object space
-	double ox(int x) { return (x + m_limits.left) / m_dScale; }
-	double oy(int y) { return -(y + m_limits.top) / m_dScale; }
+	double ox(int x) const { return (x + m_limits.x) / m_dScale; }
+	double oy(int y) const { return -(y + m_limits.y) / m_dScale; }
 	void object(const wxPoint &sp, DPoint2 &p) const
 	{
-		p.x = (sp.x + m_limits.left) / m_dScale;
-		p.y = -(sp.y + m_limits.top) / m_dScale;
+		p.x = (sp.x + m_limits.x) / m_dScale;
+		p.y = -(sp.y + m_limits.y) / m_dScale;
 	}
 
 	// transform screen space -> object space (relative delta)
-	double odx(int x) { return x/m_dScale; }
-	double ody(int y) { return -y/m_dScale; }
+	double odx(int x) const { return x/m_dScale; }
+	double ody(int y) const { return -y/m_dScale; }
 
 	int ProjectPolyline(wxDC *pDC, const DLine2 &dline, bool bClose);
 	void DrawLine(wxDC *pDC, const DPoint2 &p0, const DPoint2 &p1);
@@ -88,7 +90,7 @@ protected:
 	void UpdateRanges();
 
 	double	m_dScale;	// pixels per UTM meter/pixel per degree
-	DRECT	m_limits;	// allowed range of m_offset
+	wxRect	m_limits;	// allowed range of m_offset
 };
 
 #define SCREENBUF_SIZE 32000

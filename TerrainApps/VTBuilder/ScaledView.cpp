@@ -26,8 +26,8 @@ vtScaledView::vtScaledView(wxWindow *parent, wxWindowID id, const wxPoint& pos,
 						 const wxSize& size, long style, const wxString& name) :
 	wxScrolledWindow(parent, id, pos, size, style, name )
 {
-	m_limits.left = m_limits.top = -100;
-	m_limits.right = m_limits.bottom = 100;
+	m_limits.x = m_limits.y = -100;
+	m_limits.width = m_limits.height = 200;
 	m_dScale = 1.0f;
 }
 
@@ -101,8 +101,8 @@ void vtScaledView::ZoomToPoint(const DPoint2 &p)
 
 	// this avoids the calls to ScrollWindow which cause undesireable
 	//  extra redrawing
-	m_xScrollPosition = offset.x - m_limits.left;
-	m_yScrollPosition = offset.y - m_limits.top;
+	m_xScrollPosition = offset.x - m_limits.x;
+	m_yScrollPosition = offset.y - m_limits.y;
 	SetScrollPos( wxHORIZONTAL, m_xScrollPosition, TRUE );
 	SetScrollPos( wxVERTICAL, m_yScrollPosition, TRUE );
 	Refresh();
@@ -206,22 +206,21 @@ void vtScaledView::UpdateRanges()
 	int w, h;
 	GetClientSize(&w, &h);
 
+	// Scroll range should encompass all the current data
 	DRECT extents = g_bld->GetExtents();
 
-	m_limits.left = sdx(extents.left);
-	m_limits.right = sdx(extents.right);
-	m_limits.top = sdy(extents.top);
-	m_limits.bottom = sdy(extents.bottom);
+	m_limits.x = sdx(extents.left);
+	m_limits.width = sdx(extents.right) - sdx(extents.left);
+	m_limits.y = sdy(extents.top);
+	m_limits.height = sdy(extents.bottom) - sdy(extents.top);
 
-	m_limits.left -= (w/2);
-	m_limits.top -= (h/2);
+	// Expand a little
+	m_limits.x -= (w/2);
+	m_limits.y -= (h/2);
+	m_limits.width += w;
+	m_limits.height += h;
 
-	m_limits.right += (w/2);
-	m_limits.bottom += (h/2);
-
-	int h_range = m_limits.right - m_limits.left;
-	int v_range = m_limits.bottom - m_limits.top;
-	SetScrollbars(1, 1, h_range, v_range, 0, 0, TRUE);
+	SetScrollbars(1, 1, m_limits.width, m_limits.height, 0, 0, TRUE);
 }
 
 void vtScaledView::GetCanvasPosition(const wxMouseEvent &event, wxPoint &pos)
