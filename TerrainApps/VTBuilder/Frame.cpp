@@ -743,16 +743,7 @@ void MainFrame::UpdateDistance(const DLine2 &path)
 {
 	DistanceDlg2d *pDlg = ShowDistanceDlg();
 	if (pDlg)
-	{
 		pDlg->SetPath(path, true);
-		//float h1 = GetHeightFromTerrain(p1);
-		//float h2 = GetHeightFromTerrain(p2);
-		//float diff = FLT_MIN;
-		//if (h1 != INVALID_ELEVATION && h2 != INVALID_ELEVATION)
-		//	diff = h2 - h1;
-		//if (pDlg)
-		//	pDlg->SetGroundAndVertical(FLT_MIN, diff, false);
-	}
 
 	ProfileDlg *pDlg2 = m_pProfileDlg;
 	if (pDlg2)

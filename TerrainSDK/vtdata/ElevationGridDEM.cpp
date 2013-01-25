@@ -381,7 +381,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	else
 	{
 		VTLOG("DEM scanning to compute extents\n");
-		m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
+		m_EarthExtents.SetInsideOut();
 
 		if (!bFixedLength)
 			fseek(fp, iDataStartOffset, 0);

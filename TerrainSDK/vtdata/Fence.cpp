@@ -314,7 +314,7 @@ bool vtFence::GetExtents(DRECT &rect) const
 	if (size == 0)
 		return false;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	rect.SetInsideOut();
 	for (uint i = 0; i < size; i++)
 		rect.GrowToContainPoint(m_pFencePts[i]);
 	return true;

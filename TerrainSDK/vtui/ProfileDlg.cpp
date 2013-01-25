@@ -1699,7 +1699,8 @@ void ProfileDlg::DrawTraceToDXF(FILE *fp)
 		return;
 
 	// Gather extents of the area we're going to write
-	DRECT ext(1E9, -1E9, -1E9, 1E9);
+	DRECT ext;
+	ext.SetInsideOut();
 	ext.GrowToContainLine(m_path);
 
 	// Enforce minimum ratio of width to height

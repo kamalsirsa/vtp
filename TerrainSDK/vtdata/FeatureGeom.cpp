@@ -43,7 +43,7 @@ bool vtFeatureSetPoint2D::ComputeExtent(DRECT &rect) const
 	if (!entities)
 		return false;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	rect.SetInsideOut();
 	for (i = 0; i < entities; i++)
 		rect.GrowToContainPoint(m_Point2[i]);
 
@@ -200,7 +200,7 @@ void vtFeatureSetPoint2D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 
 bool vtFeatureSetPoint2D::EarthExtents(DRECT &ext) const
 {
-	ext.SetRect(1E9,-1E9,-1E9,1E9);
+	ext.SetInsideOut();
 
 	if (m_Point2.IsEmpty())
 		return false;
@@ -241,7 +241,7 @@ bool vtFeatureSetPoint3D::ComputeExtent(DRECT &rect) const
 	if (!entities)
 		return false;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	rect.SetInsideOut();
 	DPoint2 p;
 	for (i = 0; i < entities; i++)
 	{
@@ -380,7 +380,7 @@ void vtFeatureSetPoint3D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 
 bool vtFeatureSetPoint3D::EarthExtents(DRECT &ext) const
 {
-	ext.SetRect(1E9,-1E9,-1E9,1E9);
+	ext.SetInsideOut();
 
 	if (m_Point3.IsEmpty())
 		return false;
@@ -421,7 +421,7 @@ bool vtFeatureSetLineString::ComputeExtent(DRECT &rect) const
 	if (!entities)
 		return false;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	rect.SetInsideOut();
 	for (i = 0; i < entities; i++)
 		rect.GrowToContainLine(m_Line[i]);
 
@@ -630,7 +630,7 @@ void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callb
 
 bool vtFeatureSetLineString::EarthExtents(DRECT &ext) const
 {
-	ext.SetRect(1E9,-1E9,-1E9,1E9);
+	ext.SetInsideOut();
 
 	if (m_Line.size() == 0)
 		return false;
@@ -675,7 +675,7 @@ bool vtFeatureSetLineString3D::ComputeExtent(DRECT &rect) const
 	if (!entities)
 		return false;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	rect.SetInsideOut();
 	for (i = 0; i < entities; i++)
 		rect.GrowToContainLine(m_Line[i]);
 
@@ -873,7 +873,7 @@ void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_cal
 
 bool vtFeatureSetLineString3D::EarthExtents(DRECT &ext) const
 {
-	ext.SetRect(1E9,-1E9,-1E9,1E9);
+	ext.SetInsideOut();
 
 	if (m_Line.size() == 0)
 		return false;
@@ -919,7 +919,7 @@ bool vtFeatureSetPolygon::ComputeExtent(DRECT &rect) const
 	if (!entities)
 		return false;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	rect.SetInsideOut();
 	for (i = 0; i < entities; i++)
 	{
 		// we only test the first, outer ring since it contains the rest
@@ -1380,7 +1380,7 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback
 
 bool vtFeatureSetPolygon::EarthExtents(DRECT &ext) const
 {
-	ext.SetRect(1E9,-1E9,-1E9,1E9);
+	ext.SetInsideOut();
 
 	if (m_Poly.size() == 0)
 		return false;

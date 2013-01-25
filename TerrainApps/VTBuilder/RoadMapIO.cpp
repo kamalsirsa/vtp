@@ -221,8 +221,8 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		for (j = 0; j < actual_coords; j++)
 			pL->SetAt(j, buffer[j]);
 
-		//set bounding box for the link
-		pL->ComputeExtent();
+		// update bounding box for the link
+		pL->Dirtied();
 
 		pL->m_iHwy = dline.HighwayNumber();
 		pL->m_fLength = pL->Length();
@@ -508,8 +508,8 @@ void RoadMapEdit::AddElementsFromSHP(const wxString &filename, const vtProjectio
 			pL->GetAt(j).y = psShape->padfY[j];
 		}
 
-		//set bounding box for the link
-		pL->ComputeExtent();
+		// update bounding box for the link
+		pL->Dirtied();
 
 		pL->m_fLength = pL->Length();
 
@@ -712,7 +712,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				int enid = pFeature->GetFieldAsInteger(index_enid);
 				pL->ConnectNodes(pNodeLookup[snid], pNodeLookup[enid]);
 #endif
-				pL->ComputeExtent();
+				pL->Dirtied();
 			}
 		}
 		else if (!bIsSDTS)
@@ -871,7 +871,7 @@ void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
 	// point link to nodes
 	pL->ConnectNodes(pN1, pN2);
 
-	//set bounding box for the link
-	pL->ComputeExtent();
+	// update bounding box for the link
+	pL->Dirtied();
 }
 

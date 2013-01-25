@@ -76,7 +76,7 @@ bool vtRoadLayer::OnLoad()
 		pL->m_fLength = pL->Length();
 
 		//set the bounding box for the link
-		pL->ComputeExtent();
+		pL->Dirtied();
 
 		// clean up link direction info
 		if ((pL->m_iFlags & (RF_FORWARD|RF_REVERSE)) == 0)
@@ -185,16 +185,10 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 	{
 		for (uint i = 0; i < l->GetSize(); i++)
 			trans->Transform(1, &(l->GetAt(i).x), &(l->GetAt(i).y));
+		l->Dirtied();
 	}
 	for (n = GetFirstNode(); n; n=n->GetNext())
 		trans->Transform(1, &(n->Pos().x), &(n->Pos().y));
-
-	// recompute link extents
-	for (l = GetFirstLink(); l; l=l->GetNext())
-	{
-		l->ComputeExtent();
-		l->m_bSidesComputed = false;
-	}
 
 	// set the vtRoadMap projection
 	m_proj = proj_new;
@@ -259,7 +253,7 @@ void vtRoadLayer::Offset(const DPoint2 &p)
 
 	// recompute link extents
 	for (LinkEdit *r2 = GetFirstLink(); r2; r2=r2->GetNext())
-		r2->ComputeExtent();
+		r2->Dirtied();
 
 	m_bValidExtents = false;
 }

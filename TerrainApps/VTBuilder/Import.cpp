@@ -1813,7 +1813,7 @@ int Builder::ImportDataFromTIGER(const wxString &strDirName)
 				r->ConnectNodes(n1, n2);
 
 				//set bounding box for the road
-				r->ComputeExtent();
+				r->Dirtied();
 			}
 
 			if (!strncmp(cfcc, "H", 1))

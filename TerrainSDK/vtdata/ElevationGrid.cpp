@@ -260,7 +260,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 
 	// find where the extent corners are going to be in the new terrain
 	int success;
-	m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
+	m_EarthExtents.SetInsideOut();
 	for (int i = 0; i < 4; i++)
 	{
 		DPoint2 point = pOld->m_Corners[i];

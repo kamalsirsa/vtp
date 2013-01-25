@@ -679,26 +679,27 @@ void Builder::AddToMRU(vtStringArray &arr, const vtString &fname)
 
 DRECT Builder::GetExtents()
 {
-	DRECT rect(1E9,-1E9,-1E9,1E9);
-	DRECT rect2;
+	// Acculumate the extents of all the layers
+	DRECT rect;
+	rect.SetInsideOut();
 
 	bool has_bounds = false;
+	DRECT layer_rect;
 
-	// Acculumate the extents of all the layers
 	for (uint i = 0; i < m_Layers.size(); i++)
 	{
-		if (m_Layers[i]->GetExtent(rect2))
+		if (m_Layers[i]->GetExtent(layer_rect))
 		{
-			rect.GrowToContainRect(rect2);
+			rect.GrowToContainRect(layer_rect);
 			has_bounds = true;
 		}
 	}
 	if (has_bounds)
 		return rect;
 	else if (m_proj.IsDymaxion())
-		return DRECT(0, 1.5*sqrt(3.0), 5.5, 0);
+		return DRECT(0, 1.5*sqrt(3.0), 5.5, 0);	 // extents of Dymaxion map
 	else
-		return DRECT(-180,90,180,-90);	// degree extents of whole planet
+		return DRECT(-180, 90, 180, -90);	// degree extents of whole planet
 }
 
 //
@@ -1009,7 +1010,6 @@ void Builder::CarveWithCulture(vtElevLayer *pElev, float margin)
 		LinkEdit *pLink;
 		for (pLink = pR->GetFirstLink(); pLink; pLink = pLink->GetNext())
 		{
-			pLink->ComputeExtent();	// Shouldn't need this; it should already have extents
 			const float half = pLink->m_fLeftWidth + shoulder + fade;
 			pLink->m_extent.Grow(half, half);
 		}

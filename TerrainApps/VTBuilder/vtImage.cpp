@@ -572,7 +572,7 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	OldCorners.Append(DPoint2(OldExtents.left, OldExtents. top));
 
 	DLine2 Corners = OldCorners;
-	m_Extents.SetRect(1E9, -1E9, -1E9, 1E9);
+	m_Extents.SetInsideOut();
 	int success;
 	for (int i = 0; i < 4; i++)
 	{

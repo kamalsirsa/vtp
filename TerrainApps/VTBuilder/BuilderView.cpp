@@ -474,7 +474,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	for (i = 0; i < m_iEntities; i++)
 	{
 		// gather an extent bound for each original feature
-		WMPolyExtents[i].SetRect(1E9, -1E9, -1E9, 1E9);
+		WMPolyExtents[i].SetInsideOut();
 		WMPolyExtents[i].GrowToContainLine(WMPoly[i]);
 
 		// and project into current CRS
@@ -517,7 +517,8 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 	// Don't draw polys that are outside the window bounds; convert the bounds
 	//  from the current CRS to Geo, so that we can test
 	bool bHaveBounds = false;
-	DRECT bounds(1E9, -1E9, -1E9, 1E9);
+	DRECT bounds;
+	bounds.SetInsideOut();
 	vtProjection &proj = g_bld->GetAtProjection();
 	if (!proj.IsGeographic() && m_pCurrentToMap != NULL)
 	{

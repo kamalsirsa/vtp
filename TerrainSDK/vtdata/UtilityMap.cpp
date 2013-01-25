@@ -69,7 +69,7 @@ void vtUtilityMap::GetPoleExtents(DRECT &rect)
 	if (m_Poles.empty())
 		return;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	rect.SetInsideOut();
 
 	const int size = m_Poles.size();
 	for (int i = 0; i < size; i++)

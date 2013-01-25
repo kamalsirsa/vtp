@@ -605,7 +605,7 @@ void vtRoadMap::ComputeExtents()
 	}
 
 	// iterate through all elements accumulating extents
-	m_extents.SetRect(1E9, -1E9, -1E9, 1E9);
+	m_extents.SetInsideOut();
 	for (TLink *pL = m_pFirstLink; pL; pL = pL->GetNext())
 	{
 		// links are a subclass of line, so we can treat them as lines

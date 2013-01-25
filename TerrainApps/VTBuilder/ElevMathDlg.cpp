@@ -72,7 +72,7 @@ void ElevMathDlg::Update()
 		m_spacing.Set(1, 1);
 
 	// Compute an extent which encompasses both input layers.
-	m_extent.SetRect(1E9,-1E9,-1E9,1E9);
+	m_extent.SetInsideOut();
 	DRECT r1, r2;
 	m_pLayer1->GetExtent(r1);
 	m_pLayer2->GetExtent(r2);

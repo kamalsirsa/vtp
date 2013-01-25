@@ -319,7 +319,7 @@ void vtStructureArray::GetExtents(DRECT &rect) const
 	if (size() == 0)
 		return;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	rect.SetInsideOut();
 
 	DRECT rect2;
 	for (uint i = 0; i < size(); i++)

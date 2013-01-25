@@ -75,8 +75,8 @@ public:
 	// compare one road to another
 	bool operator==(LinkEdit &ref);
 
-	// determine bounding box
-	void ComputeExtent();
+	DRECT GetExtentWithWidth();
+
 	//is target in the bounding box?
 	bool OverlapsExtent(const DRECT &target);
 	bool WithinExtent(const DPoint2 &target);
@@ -111,6 +111,10 @@ public:
 	DLine2	m_LeftOffset;		// offset (meters) from each point to its left edge
 	DLine2	m_RightOffset;		// offset (meters) from each point to its right edge
 	bool	m_bSidesComputed;	// true when m_WidthOffset is up-to-date
+
+protected:
+	// determine bounding box of the centerline (excluding road width)
+	void ComputeExtent();
 };
 
 class RoadMapEdit : public vtRoadMap

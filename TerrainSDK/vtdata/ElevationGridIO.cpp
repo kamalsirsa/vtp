@@ -2542,7 +2542,7 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
 {
 	char buf[80];
 	DRECT extents;
-	extents.SetRect(1E9, -1E9, -1E9, 1E9);
+	extents.SetInsideOut();
 	int iNum = 0;
 
 	// Convert pattern ("n x y z") to fscanf format ("%lf %lf %lf %lf")

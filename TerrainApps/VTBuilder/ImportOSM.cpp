@@ -567,7 +567,7 @@ void VisitorOSM::MakeRoad()
 		int idx = m_refs[r];
 		link->Append(m_nodes[idx].p);
 	}
-	link->ComputeExtent();
+	link->Dirtied();
 
 	// If either end of this link shares a node in the middle of another link,
 	// we need to split that link to maintain topology.

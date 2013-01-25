@@ -1174,7 +1174,7 @@ bool vtTin::ComputeExtents()
 	if (size == 0)
 		return false;
 
-	m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
+	m_EarthExtents.SetInsideOut();
 	m_fMinHeight = 1E9;
 	m_fMaxHeight = -1E9;
 

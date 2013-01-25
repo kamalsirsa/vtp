@@ -85,12 +85,12 @@ void vtWaterLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 
 bool vtWaterLayer::GetExtent(DRECT &rect)
 {
-	int size = (int)m_Lines.size();
+	uint size = m_Lines.size();
 	if (size == 0)
 		return false;
 
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
-	for (int i = 0; i < size; i++)
+	rect.SetInsideOut();
+	for (uint i = 0; i < size; i++)
 		rect.GrowToContainLine(m_Lines[i]);
 	return true;
 }

@@ -241,6 +241,13 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 	}
 }
 
+DRECT LinkEdit::GetExtentWithWidth()
+{
+	DRECT ext = m_extent;
+	// TODO
+	return ext;
+}
+
 bool LinkEdit::OverlapsExtent(const DRECT &target)
 {
 	return (target.left < m_extent.right && target.right > m_extent.left &&
@@ -299,7 +306,6 @@ bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 
 	return false;
 }
-
 
 bool LinkEdit::Draw(wxDC *pDC, vtScaledView *pView, bool bShowDirection,
 	bool bShowWidth)
@@ -914,7 +920,7 @@ LinkEdit *RoadMapEdit::AddRoadSegment(OGRLineString *pLineString)
 	link->ConnectNodes(n1, n2);
 
 	//set bounding box for the link
-	link->ComputeExtent();
+	link->Dirtied();
 
 	return link;
 }
@@ -939,14 +945,14 @@ void RoadMapEdit::SplitLinkAtIndex(LinkEdit *link, int index, NodeEdit *node,
 	for (int j = 0; j <= index; j++)
 		link1->Append(link->GetAt(j));
 	link1->ConnectNodes(old_node0, node);
-	link1->ComputeExtent();
+	link1->Dirtied();
 
 	LinkEdit *link2 = AddNewLink();
 	link2->CopyAttributesFrom(link);
 	for (int j = index; j < (int) link->GetSize(); j++)
 		link2->Append(link->GetAt(j));
 	link2->ConnectNodes(node, old_node1);
-	link2->ComputeExtent();
+	link2->Dirtied();
 
 	// Inform caller
 	if (plink1 != NULL)

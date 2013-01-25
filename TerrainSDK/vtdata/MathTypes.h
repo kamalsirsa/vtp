@@ -813,6 +813,13 @@ public:
 	DRECT(double l, double t, double r, double b) { left = l; top = t; right = r; bottom = b; }
 
 	void SetRect(double l, double t, double r, double b) { left = l; top = t; right = r; bottom = b; }
+
+	/// Set the rectangle to the maximum inverted values, e.g. to prepare to gather extents.
+	void SetInsideOut()
+	{
+		left = DBL_MAX; top = -DBL_MAX; right = -DBL_MAX; bottom = DBL_MAX; 
+	}
+
 	// retrieves the width
 	double Width() const { return right - left; }
 	// returns the height, assumes upward increasing coordinate system

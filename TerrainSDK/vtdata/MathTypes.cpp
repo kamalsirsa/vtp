@@ -694,7 +694,7 @@ bool DPolygon2::ComputeExtents(DRECT &rect) const
 	if (size() == 0)
 		return false;
 
-	rect.SetRect(1E9,-1E9,-1E9,1E9);
+	rect.SetInsideOut();
 	for (uint ringnum = 0; ringnum < size(); ringnum++)
 	{
 		const DLine2 &ring = at(ringnum);
