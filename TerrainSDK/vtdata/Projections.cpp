@@ -1446,12 +1446,10 @@ bool GDALWrapper::TestPROJ4()
 	vtProjection proj1, proj2;
 	proj1.SetUTM(1);
 	proj2.SetUTM(2);
-	OCTransform *trans = CreateCoordTransform(&proj1, &proj2);
-	if (trans)
-	{
-		delete trans;
+	ScopedOCTransform trans(CreateCoordTransform(&proj1, &proj2));
+	if (trans.get())
 		return true;
-	}
+
 	return false;
 }
 

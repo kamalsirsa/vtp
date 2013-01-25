@@ -88,8 +88,8 @@ bool vtUtilityMap::WriteOSM(const char *pathname)
 	// OSM only understands Geographic WGS84, so convert to that.
 	vtProjection wgs84_geo;
 	wgs84_geo.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
-	OCTransform *transform = CreateCoordTransform(&m_proj, &wgs84_geo);
-	if (!transform)
+	ScopedOCTransform trans(CreateCoordTransform(&m_proj, &wgs84_geo));
+	if (!trans)
 	{
 		VTLOG1(" Couldn't transform coordinates\n");
 		return false;
@@ -102,7 +102,7 @@ bool vtUtilityMap::WriteOSM(const char *pathname)
 	{
 		const vtPole *pole = m_Poles[i];
 		DPoint2 p = pole->m_p;
-		transform->Transform(1, &p.x, &p.y);
+		trans->Transform(1, &p.x, &p.y);
 
 		fprintf(fp, " <node id=\"%d\" lat=\"%.8lf\" lon=\"%.8lf\" version=\"1\">\n",
 			pole->m_id, p.y, p.x);
@@ -142,7 +142,7 @@ bool vtUtilityMap::WriteOSM(const char *pathname)
 	fprintf(fp, "</osm>\n");
 	fclose(fp);
 
-	delete transform;
+	delete trans;
 	return true;
 }
 
@@ -395,8 +395,8 @@ void vtUtilityMap::SetProjection(const vtProjection &proj)
 bool vtUtilityMap::TransformTo(vtProjection &proj)
 {
 	// Convert from (usually, Wgs84 Geographic) to what we need.
-	OCTransform *transform = CreateCoordTransform(&m_proj, &proj);
-	if (!transform)
+	ScopedOCTransform trans(CreateCoordTransform(&m_proj, &proj));
+	if (!trans)
 	{
 		VTLOG1(" Couldn't transform coordinates\n");
 		return false;
@@ -404,9 +404,8 @@ bool vtUtilityMap::TransformTo(vtProjection &proj)
 	for (uint i = 0; i < m_Poles.size(); i++)
 	{
 		vtPole *pole = m_Poles[i];
-		transform->Transform(1, &pole->m_p.x, &pole->m_p.y);
+		trans->Transform(1, &pole->m_p.x, &pole->m_p.y);
 	}
-	delete transform;
 
 	// Adopt new projection
 	m_proj = proj;

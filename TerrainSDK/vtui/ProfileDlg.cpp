@@ -114,10 +114,9 @@ void ProfileDlg::SetPoints(const DPoint2 &p1, const DPoint2 &p2)
 		// convert points to geographic CS
 		vtProjection geo;
 		CreateSimilarGeographicProjection(m_proj, geo);
-		OCTransform *trans = CreateCoordTransform(&m_proj, &geo);
+		ScopedOCTransform trans(CreateCoordTransform(&m_proj, &geo));
 		trans->Transform(1, &geo1.x, &geo1.y);
 		trans->Transform(1, &geo2.x, &geo2.y);
-		delete trans;
 	}
 	m_fGeodesicDistance = vtProjection::GeodesicDistance(geo1, geo2);
 	m_fGeoDistAtPoint.resize(2);
@@ -148,11 +147,9 @@ void ProfileDlg::SetPath(const DLine2 &path)
 			// convert points to geographic CS
 			vtProjection geo;
 			CreateSimilarGeographicProjection(m_proj, geo);
-			OCTransform *trans = CreateCoordTransform(&m_proj, &geo);
+			ScopedOCTransform trans(CreateCoordTransform(&m_proj, &geo));
 			for (i = 0; i < len; i++)
 				trans->Transform(1, &(m_path_geo[i].x), &(m_path_geo[i].y));
-
-			delete trans;
 		}
 		m_fGeoDistAtPoint.resize(len);
 		m_fGeoDistAtPoint[0] = 0.0;

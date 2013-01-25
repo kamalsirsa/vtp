@@ -602,7 +602,7 @@ void vtRoadMap::ComputeExtents()
 	for (TLink *pL = m_pFirstLink; pL; pL = pL->GetNext())
 	{
 		// links are a subclass of line, so we can treat them as lines
-		DLine2 *dl = pL;
+		const DLine2 *dl = pL;
 		m_extents.GrowToContainLine(*dl);
 	}
 	m_bValidExtents = true;

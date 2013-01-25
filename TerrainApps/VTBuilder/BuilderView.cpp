@@ -296,24 +296,22 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 		vtProjection geo;
 		CreateSimilarGeographicProjection(proj, geo);
 
-		OCTransform *trans = CreateCoordTransform(&proj, &geo);
+		ScopedOCTransform trans1(CreateCoordTransform(&proj, &geo));
 
 		// try to speed up a bit by avoiding zones off the screen
 		object(wxPoint(0, height/2), proj_point);
-		trans->Transform(1, &proj_point.x, &proj_point.y);
+		trans1->Transform(1, &proj_point.x, &proj_point.y);
 		zone = GuessZoneFromGeo(proj_point);
 		if (zone-1 > zone_start) zone_start = zone-1;
 
 		object(wxPoint(width, height/2), proj_point);
-		trans->Transform(1, &proj_point.x, &proj_point.y);
+		trans1->Transform(1, &proj_point.x, &proj_point.y);
 		zone = GuessZoneFromGeo(proj_point);
 		if (zone+1 < zone_end) zone_end = zone+1;
 
-		delete trans;
-
 		// Now convert the longitude lines (boundaries between the UTM zones)
 		// to the current projection
-		trans = CreateCoordTransform(&geo, &proj);
+		ScopedOCTransform trans2(CreateCoordTransform(&geo, &proj));
 
 		for (int zone = zone_start; zone < zone_end; zone++)
 		{
@@ -322,7 +320,7 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 			for (ll.y = -70.0; ll.y <= 70.0; ll.y += 0.1)
 			{
 				proj_point = ll;
-				trans->Transform(1, &proj_point.x, &proj_point.y);
+				trans2->Transform(1, &proj_point.x, &proj_point.y);
 				screen(proj_point, sp);
 				if (sp.y < -8000 || sp.y > 8000)
 					continue;
@@ -330,7 +328,6 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 			}
 			pDC->DrawLines(j, array);
 		}
-		delete trans;
 	}
 }
 

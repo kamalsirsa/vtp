@@ -555,7 +555,7 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	pSource = &pOld->GetAtProjection();
 	pDest = &NewProj;
 
-	OCTransform *trans = CreateCoordTransform(pSource, pDest);
+	ScopedOCTransform trans(CreateCoordTransform(pSource, pDest));
 	if (!trans)
 	{
 		// inconvertible projections
@@ -585,7 +585,6 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 		}
 		m_Extents.GrowToContainPoint(Corners[i]);
 	}
-	delete trans;
 
 	// now, how large an array will we need for the new terrain?
 	// try to preserve the sampling rate approximately
@@ -640,8 +639,8 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 
 	// Convert each bit of data from the old array to the new
 	// Transformation points backwards, from the target to the source
-	trans = CreateCoordTransform(pDest, pSource);
-	if (!trans)
+	ScopedOCTransform trans_back(CreateCoordTransform(pDest, pSource));
+	if (!trans_back)
 	{
 		// inconvertible projections
 		// "Couldn't convert between coordinate systems.";
@@ -674,7 +673,7 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 
 				// Since transforming the extents succeeded, it's safe to assume
 				// that the points will also transform without errors.
-				trans->Transform(1, &mp.x, &mp.y);
+				trans_back->Transform(1, &mp.x, &mp.y);
 
 				if (pOld->GetColorSolid(mp, value))
 				{
@@ -688,8 +687,6 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 				SetRGBA(i, size.y-1-j, RGBAi(0,0,0,0));	// nodata
 		}
 	}
-	delete trans;
-
 	return true;
 }
 
@@ -731,14 +728,13 @@ DPoint2 vtImage::GetSpacing(int bitmap) const
 bool vtImage::ReprojectExtents(const vtProjection &proj_new)
 {
 	// Create conversion object
-	OCTransform *trans = CreateCoordTransform(&m_proj, &proj_new);
+	ScopedOCTransform trans(CreateCoordTransform(&m_proj, &proj_new));
 	if (!trans)
 		return false;	// inconvertible projections
 
 	int success = 0;
 	success += trans->Transform(1, &m_Extents.left, &m_Extents.bottom);
 	success += trans->Transform(1, &m_Extents.right, &m_Extents.top);
-	delete trans;
 
 	if (success != 2)
 		return false;	// inconvertible projections

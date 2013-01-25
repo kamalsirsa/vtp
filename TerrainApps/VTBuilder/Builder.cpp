@@ -714,10 +714,9 @@ DPoint2 Builder::EstimateGeoDataCenter()
 	{
 		vtProjection geo;
 		CreateSimilarGeographicProjection(m_proj, geo);
-		OCTransform *trans = CreateConversionIgnoringDatum(&m_proj, &geo);
+		ScopedOCTransform trans(CreateConversionIgnoringDatum(&m_proj, &geo));
 		if (trans)
 			trans->Transform(1, &pos.x, &pos.y);
-		delete trans;
 	}
 	return pos;
 }

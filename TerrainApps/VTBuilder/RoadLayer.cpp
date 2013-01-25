@@ -175,7 +175,7 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 	vtProjection Source;
 	GetProjection(Source);
 
-	OCTransform *trans = CreateCoordTransform(&Source, &proj_new);
+	ScopedOCTransform trans(CreateCoordTransform(&Source, &proj_new));
 	if (!trans)
 		return false;		// inconvertible projections
 
@@ -188,7 +188,6 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 	}
 	for (n = GetFirstNode(); n; n=n->GetNext())
 		trans->Transform(1, &(n->Pos().x), &(n->Pos().y));
-	delete trans;
 
 	// recompute link extents
 	for (l = GetFirstLink(); l; l=l->GetNext())

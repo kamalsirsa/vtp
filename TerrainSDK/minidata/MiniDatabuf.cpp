@@ -105,7 +105,7 @@ bool MiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 	// Create transform from local to Geo-WGS84
 	vtProjection geo;
 	geo.SetWellKnownGeogCS("WGS84");
-	OCTransform *trans = CreateCoordTransform(&proj, &geo);
+	ScopedOCTransform trans(CreateCoordTransform(&proj, &geo));
 
 	if (!trans)
 		return false;
@@ -129,8 +129,6 @@ bool MiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
                        (float)se_corner.x, (float)se_corner.y,
                        (float)nw_corner.x, (float)nw_corner.y,
                        (float)ne_corner.x, (float)ne_corner.y);
-
-	delete trans;
 	return true;
 }
 

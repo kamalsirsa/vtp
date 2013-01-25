@@ -250,7 +250,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	pSource = &pOld->GetProjection();
 	pDest = &NewProj;
 
-	OCTransform *trans = CreateCoordTransform(pSource, pDest);
+	ScopedOCTransform trans(CreateCoordTransform(pSource, pDest));
 	if (!trans)
 	{
 		// inconvertible projections
@@ -285,7 +285,6 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 			m_EarthExtents.GrowToContainPoint(p);
 		}
 	}
-	delete trans;
 
 	// now, how large an array will we need for the new terrain?
 	// try to preserve the sampling rate approximately
@@ -350,8 +349,8 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 
 	// Convert each bit of data from the old array to the new
 	// Transformation points backwards, from the target to the source
-	trans = CreateCoordTransform(pDest, pSource);
-	if (!trans)
+	ScopedOCTransform trans_back(CreateCoordTransform(pDest, pSource));
+	if (!trans_back)
 	{
 		// inconvertible projections
 		SetError(err, vtElevError::CONVERT_CRS, "Couldn't convert between coordinate systems.");
@@ -370,12 +369,11 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 
 			// Since transforming the extents succeeded, it's safe to assume
 			// that the points will also transform without errors.
-			trans->Transform(1, &p.x, &p.y);
+			trans_back->Transform(1, &p.x, &p.y);
 
 			SetFValue(i, j, pOld->GetFilteredValue(p));
 		}
 	}
-	delete trans;
 	ComputeHeightExtents();
 	return true;
 }
@@ -401,7 +399,7 @@ bool vtElevationGrid::ReprojectExtents(const vtProjection &proj_new)
 	pSource = &m_proj;
 	pDest = &proj_new;
 
-	OCTransform *trans = CreateCoordTransform(pSource, pDest);
+	ScopedOCTransform trans(CreateCoordTransform(pSource, pDest));
 	if (!trans)
 	{
 		// inconvertible projections
@@ -420,7 +418,6 @@ bool vtElevationGrid::ReprojectExtents(const vtProjection &proj_new)
 		m_Corners[i] = point;
 	}
 	ComputeExtentsFromCorners();
-	delete trans;
 
 	m_proj = proj_new;
 
@@ -1430,10 +1427,10 @@ bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo) const
 		Dest.SetWellKnownGeogCS("WGS84");
 
 		// safe (won't fail on tricky Datum conversions)
-		OCTransform *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
+		ScopedOCTransform trans(CreateConversionIgnoringDatum(&m_proj, &Dest));
 
 		// unsafe, but potentially more accurate
-//		OCTransform *trans = CreateCoordTransform(&m_proj, &Dest, true);
+//		ScopedOCTransform trans(CreateCoordTransform(&m_proj, &Dest, true));
 
 		if (!trans)
 		{
@@ -1446,7 +1443,6 @@ bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo) const
 			trans->Transform(1, &p.x, &p.y);
 			line.SetAt(i, p);
 		}
-		delete trans;
 	}
 	return true;
 }

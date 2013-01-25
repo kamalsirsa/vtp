@@ -45,7 +45,7 @@ bool vtWaterLayer::OnLoad()
 bool vtWaterLayer::TransformCoords(vtProjection &proj_new)
 {
 	// Create conversion object
-	OCTransform *trans = CreateCoordTransform(&m_proj, &proj_new);
+	ScopedOCTransform trans(CreateCoordTransform(&m_proj, &proj_new));
 	if (!trans)
 		return false;		// inconvertible projections
 
@@ -62,7 +62,6 @@ bool vtWaterLayer::TransformCoords(vtProjection &proj_new)
 			m_Lines[i].SetAt(c, p);
 		}
 	}
-	delete trans;
 	SetModified(true);
 	return true;
 }

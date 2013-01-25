@@ -1398,7 +1398,7 @@ FPoint3 vtTin::GetTriangleNormal(int iTriangle) const
 bool vtTin::ConvertProjection(const vtProjection &proj_new)
 {
 	// Create conversion object
-	OCTransform *trans = CreateCoordTransform(&m_proj, &proj_new);
+	ScopedOCTransform trans(CreateCoordTransform(&m_proj, &proj_new));
 	if (!trans)
 		return false;		// inconvertible projections
 
@@ -1408,7 +1408,6 @@ bool vtTin::ConvertProjection(const vtProjection &proj_new)
 		DPoint2 &p = m_vert[i];
 		trans->Transform(1, &p.x, &p.y);
 	}
-	delete trans;
 
 	// adopt new projection
 	m_proj = proj_new;

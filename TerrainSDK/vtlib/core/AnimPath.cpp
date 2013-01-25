@@ -448,16 +448,15 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 	// Clear our control points because we're going to fill it
 	m_TimeControlPointMap.clear();
 
-	OCTransform *trans = NULL;
+	ScopedOCTransform trans;
 	vtProjection &line_proj = pSet->GetAtProjection();
 	if (!proj.IsSame(&line_proj))
 	{
 		// need transformation from feature CRS to terrain CRS
-		trans = CreateCoordTransform(&line_proj, &proj, true);
+		trans.set(CreateCoordTransform(&line_proj, &proj, true));
 	}
 
 	FPoint3 pos;
-//	for (uint i = 0; i < NumEntities(); i++)
 	uint i = 0, j;	// only first entity
 
 	FLine3 fline;

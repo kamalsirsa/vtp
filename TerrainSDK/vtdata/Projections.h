@@ -43,6 +43,11 @@ enum LinearUnits
 
 #include "ogr_spatialref.h"
 #include "MathTypes.h"
+#include "ScopedPtr.h"
+
+// A common use is to allocate a transform, then you want it to free itself.
+typedef scoped_ptr<OGRCoordinateTransformation> ScopedOCTransform;
+
 
 ///////////////////////////
 

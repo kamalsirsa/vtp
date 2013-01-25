@@ -290,12 +290,11 @@ void vtRawLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 bool vtRawLayer::TransformCoords(vtProjection &proj)
 {
 	// Create conversion object
-	OCTransform *trans = CreateCoordTransform(&(m_pSet->GetAtProjection()), &proj);
-	if (!trans)
+	ScopedOCTransform trans(CreateCoordTransform(&(m_pSet->GetAtProjection()), &proj));
+	if (!trans.get())
 		return false;		// inconvertible projections
 
 	bool success = m_pSet->TransformCoords(trans, progress_callback);
-	delete trans;
 
 	if (!success)
 		DisplayAndLog("Warning: Some coordinates did not transform correctly.\n");

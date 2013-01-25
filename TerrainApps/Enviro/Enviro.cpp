@@ -3337,14 +3337,13 @@ bool Enviro::ImportModelFromKML(const char *kmlfile)
 		// Must transform from KML's CRS (WGS84 geo) to the terrain's CRS
 		vtProjection wgs84_geo;
 		wgs84_geo.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
-		OCTransform *trans = CreateCoordTransform(&wgs84_geo, &tproj);
+		ScopedOCTransform trans(CreateCoordTransform(&wgs84_geo, &tproj));
 		if (!trans)
 		{
 			VTLOG1(" Couldn't transform coordinates\n");
 			return false;
 		}
 		trans->Transform(1, &p.x, &p.y);
-		delete trans;
 	}
 	inst->SetPoint(p);
 
