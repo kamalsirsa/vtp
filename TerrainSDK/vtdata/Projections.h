@@ -20,7 +20,7 @@
 #define METERS_PER_LATITUDE	111317.1f
 
 // Some class names are just too long!
-#define OCT OGRCoordinateTransformation
+#define OCTransform OGRCoordinateTransformation
 
 // Do not change the order of this enumeration
 enum LinearUnits
@@ -29,7 +29,7 @@ enum LinearUnits
 	LU_METERS,
 	LU_FEET_INT,	// International Foot
 	LU_FEET_US,		// U.S. Survey Foot
-	LU_UNITEDGE,	// Unit Edges: Dymaxion Projection
+	LU_UNITEDGE,	// Unit Edge Icosahedron: Dymaxion Projection
 	LU_UNKNOWN
 };
 
@@ -138,11 +138,11 @@ void SetupEPSGDatums();
 StatePlaneInfo *GetStatePlaneTable();
 int NumStatePlanes();
 void CreateSimilarGeographicProjection(const vtProjection &source, vtProjection &geo);
-OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget);
-OCT *CreateCoordTransform(const vtProjection *pSource,
+OCTransform *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget);
+OCTransform *CreateCoordTransform(const vtProjection *pSource,
 						  const vtProjection *pTarget, bool bLog = false);
-void TransformInPlace(OCT *transform, DPolygon2 &poly);
-void TransformInPlace(OCT *transform, DLine2 &line);
+void TransformInPlace(OCTransform *transform, DPolygon2 &poly);
+void TransformInPlace(OCTransform *transform, DLine2 &line);
 
 /**
  * Determine an approximate conversion from degrees of longitude to meters,

@@ -290,7 +290,7 @@ void vtRawLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 bool vtRawLayer::TransformCoords(vtProjection &proj)
 {
 	// Create conversion object
-	OCT *trans = CreateCoordTransform(&(m_pSet->GetAtProjection()), &proj);
+	OCTransform *trans = CreateCoordTransform(&(m_pSet->GetAtProjection()), &proj);
 	if (!trans)
 		return false;		// inconvertible projections
 

@@ -1694,7 +1694,7 @@ void vtTerrain::_ComputeCenterLocation()
 
 	// We won't fail on tricky Datum conversions, but we still might
 	//  conceivably fail if the GDAL/PROJ files aren't found.
-	OCT *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
+	OCTransform *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
 	if (trans)
 	{
 		trans->Transform(1, &m_CenterGeoLocation.x, &m_CenterGeoLocation.y);
@@ -3094,7 +3094,7 @@ bool vtTerrain::CreateAbstractLayerVisuals(vtAbstractLayer *ab_layer)
 		// If we have two valid CRSs, and they are not the same, then we need a transform
 		if (source.GetRoot() && m_proj.GetRoot() && !source.IsSame(&m_proj))
 		{
-			OCT *trans = CreateConversionIgnoringDatum(&source, &m_proj);
+			OCTransform *trans = CreateConversionIgnoringDatum(&source, &m_proj);
 			if (trans)
 			{
 				if (trans->Transform(1, &center.x, &center.y) == 1)

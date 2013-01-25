@@ -555,7 +555,7 @@ bool vtImage::ConvertProjection(vtImage *pOld, vtProjection &NewProj,
 	pSource = &pOld->GetAtProjection();
 	pDest = &NewProj;
 
-	OCT *trans = CreateCoordTransform(pSource, pDest);
+	OCTransform *trans = CreateCoordTransform(pSource, pDest);
 	if (!trans)
 	{
 		// inconvertible projections
@@ -731,7 +731,7 @@ DPoint2 vtImage::GetSpacing(int bitmap) const
 bool vtImage::ReprojectExtents(const vtProjection &proj_new)
 {
 	// Create conversion object
-	OCT *trans = CreateCoordTransform(&m_proj, &proj_new);
+	OCTransform *trans = CreateCoordTransform(&m_proj, &proj_new);
 	if (!trans)
 		return false;	// inconvertible projections
 

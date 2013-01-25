@@ -448,7 +448,7 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 	// Clear our control points because we're going to fill it
 	m_TimeControlPointMap.clear();
 
-	OCT *trans = NULL;
+	OCTransform *trans = NULL;
 	vtProjection &line_proj = pSet->GetAtProjection();
 	if (!proj.IsSame(&line_proj))
 	{

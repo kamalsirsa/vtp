@@ -250,7 +250,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	pSource = &pOld->GetProjection();
 	pDest = &NewProj;
 
-	OCT *trans = CreateCoordTransform(pSource, pDest);
+	OCTransform *trans = CreateCoordTransform(pSource, pDest);
 	if (!trans)
 	{
 		// inconvertible projections
@@ -401,7 +401,7 @@ bool vtElevationGrid::ReprojectExtents(const vtProjection &proj_new)
 	pSource = &m_proj;
 	pDest = &proj_new;
 
-	OCT *trans = CreateCoordTransform(pSource, pDest);
+	OCTransform *trans = CreateCoordTransform(pSource, pDest);
 	if (!trans)
 	{
 		// inconvertible projections
@@ -1430,10 +1430,10 @@ bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo) const
 		Dest.SetWellKnownGeogCS("WGS84");
 
 		// safe (won't fail on tricky Datum conversions)
-		OCT *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
+		OCTransform *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
 
 		// unsafe, but potentially more accurate
-//		OCT *trans = CreateCoordTransform(&m_proj, &Dest, true);
+//		OCTransform *trans = CreateCoordTransform(&m_proj, &Dest, true);
 
 		if (!trans)
 		{

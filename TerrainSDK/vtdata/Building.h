@@ -220,7 +220,7 @@ public:
 
 	void FlipFootprintDirection();
 	float CalculateBaseElevation(vtHeightField *pHeightField);
-	void TransformCoords(OCT *trans);
+	void TransformCoords(OCTransform *trans);
 
 	// roof methods
 	void SetRoofType(RoofType rt, int iSlope = -1, int iLev = -1);

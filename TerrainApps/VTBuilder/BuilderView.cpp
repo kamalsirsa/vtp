@@ -296,7 +296,7 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 		vtProjection geo;
 		CreateSimilarGeographicProjection(proj, geo);
 
-		OCT *trans = CreateCoordTransform(&proj, &geo);
+		OCTransform *trans = CreateCoordTransform(&proj, &geo);
 
 		// try to speed up a bit by avoiding zones off the screen
 		object(wxPoint(0, height/2), proj_point);

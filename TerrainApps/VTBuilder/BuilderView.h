@@ -233,15 +233,15 @@ protected:
 	bool		m_bMouseCaptured;
 
 	// World Map
-	bool	m_bShowMap;
-	bool	m_bScaleBar;
+	bool			m_bShowMap;
+	bool			m_bScaleBar;
 	DLine2Array		WMPoly;		// Original data from SHP file
 	DLine2Array		WMPolyDraw; // This is the WM that is drawn
 	std::vector<DRECT>	WMPolyExtents;
-	uint	m_iEntities;
-	bool	m_bAttemptedLoad;
+	uint			m_iEntities;
+	bool			m_bAttemptedLoad;
 	DymaxIcosa		m_icosa;
-	OCT		*m_pMapToCurrent, *m_pCurrentToMap;
+	OCTransform		*m_pMapToCurrent, *m_pCurrentToMap;
 
 	bool ImportWorldMap();
 	void DrawWorldMap(wxDC *pDC);

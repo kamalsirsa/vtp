@@ -954,7 +954,7 @@ double EstimateDegreesToMeters(double latitude)
  * Create a conversion between projections, making the assumption that
  * the Datum of the target is the same as the Datum of the source.
  */
-OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget)
+OCTransform *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget)
 {
 	vtProjection DummyTarget = *pTarget;
 
@@ -989,14 +989,14 @@ OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pT
  * The subclassing is used to implement the Transform() method
  * which does the additional Dymaxion conversion.
  */
-class DymaxOCT : public OCT
+class DymaxOCT : public OCTransform
 {
 public:
 	DymaxOCT()
 	{
 		m_pStandardConversion = NULL;
 	}
-	DymaxOCT(OCT *pStandard, bool bDirection)
+	DymaxOCT(OCTransform *pStandard, bool bDirection)
 	{
 		m_pStandardConversion = pStandard;
 		m_bDirection = bDirection;
@@ -1012,7 +1012,7 @@ public:
 	int Transform(int nCount, double *x, double *y, double *z = NULL);
 	int TransformEx(int nCount, double *x, double *y, double *z = NULL, int *pabSuccess = NULL );
 
-	OCT *m_pStandardConversion;
+	OCTransform *m_pStandardConversion;
 	bool m_bDirection;		// true: to dymax, false: from dymax
 	DymaxIcosa m_ico;
 };
@@ -1084,7 +1084,7 @@ void LogConvertingProjections(const vtProjection *pSource,
  * has a handy logging option, and can deal with any additional projections
  * that vtProjection adds to OGRSpatialReference.
  */
-OCT *CreateCoordTransform(const vtProjection *pSource,
+OCTransform *CreateCoordTransform(const vtProjection *pSource,
 						  const vtProjection *pTarget, bool bLog)
 {
 	// It appears that even lightweight tasks like setting up a CRS Transform
@@ -1094,7 +1094,7 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 	if (bLog)
 		LogConvertingProjections(pSource, pTarget);
 
-	OCT *result = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource,
+	OCTransform *result = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource,
 		(OGRSpatialReference *)pTarget);
 	if (bLog)
 		VTLOG(" Conversion: %s\n", result ? "succeeded" : "failed");
@@ -1118,13 +1118,13 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 		return result;
 }
 
-void TransformInPlace(OCT *transform, DPolygon2 &poly)
+void TransformInPlace(OCTransform *transform, DPolygon2 &poly)
 {
 	for (uint ring = 0; ring < poly.size(); ring++)
 		TransformInPlace(transform, poly[ring]);
 }
 
-void TransformInPlace(OCT *transform, DLine2 &line)
+void TransformInPlace(OCTransform *transform, DLine2 &line)
 {
 	for (uint v = 0; v < line.GetSize(); v++)
 		transform->Transform(1, &line[v].x, &line[v].y);
@@ -1446,7 +1446,7 @@ bool GDALWrapper::TestPROJ4()
 	vtProjection proj1, proj2;
 	proj1.SetUTM(1);
 	proj2.SetUTM(2);
-	OCT *trans = CreateCoordTransform(&proj1, &proj2);
+	OCTransform *trans = CreateCoordTransform(&proj1, &proj2);
 	if (trans)
 	{
 		delete trans;

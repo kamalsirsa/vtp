@@ -68,7 +68,7 @@ private:
 	DLine2 m_path;
 	float   m_fGround, m_fVertical;
 	bool m_bPathMode;
-	OCT *m_pTransformToGeo;
+	OCTransform *m_pTransformToGeo;
 
 private:
 	// WDR: handler declarations for DistanceDlg

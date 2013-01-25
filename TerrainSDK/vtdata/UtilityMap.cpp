@@ -88,7 +88,7 @@ bool vtUtilityMap::WriteOSM(const char *pathname)
 	// OSM only understands Geographic WGS84, so convert to that.
 	vtProjection wgs84_geo;
 	wgs84_geo.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
-	OCT *transform = CreateCoordTransform(&m_proj, &wgs84_geo);
+	OCTransform *transform = CreateCoordTransform(&m_proj, &wgs84_geo);
 	if (!transform)
 	{
 		VTLOG1(" Couldn't transform coordinates\n");
@@ -395,7 +395,7 @@ void vtUtilityMap::SetProjection(const vtProjection &proj)
 bool vtUtilityMap::TransformTo(vtProjection &proj)
 {
 	// Convert from (usually, Wgs84 Geographic) to what we need.
-	OCT *transform = CreateCoordTransform(&m_proj, &proj);
+	OCTransform *transform = CreateCoordTransform(&m_proj, &proj);
 	if (!transform)
 	{
 		VTLOG1(" Couldn't transform coordinates\n");

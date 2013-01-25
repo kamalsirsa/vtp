@@ -761,7 +761,7 @@ float vtBuilding::CalculateBaseElevation(vtHeightField *pHeightField)
  * Transform the coodinates of this building (the footprints of
  * each level) by the given coordinate transformation.
  */
-void vtBuilding::TransformCoords(OCT *trans)
+void vtBuilding::TransformCoords(OCTransform *trans)
 {
 	uint i, j;
 	DPoint2 p;

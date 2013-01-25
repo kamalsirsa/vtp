@@ -60,7 +60,7 @@ void vtFeatureSetPoint2D::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetPoint2D::TransformCoords(OCT *pTransform, bool progress_callback(int))
+bool vtFeatureSetPoint2D::TransformCoords(OCTransform *pTransform, bool progress_callback(int))
 {
 	uint i, bad = 0, size = m_Point2.GetSize();
 	for (i = 0; i < size; i++)
@@ -262,7 +262,7 @@ void vtFeatureSetPoint3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetPoint3D::TransformCoords(OCT *pTransform, bool progress_callback(int))
+bool vtFeatureSetPoint3D::TransformCoords(OCTransform *pTransform, bool progress_callback(int))
 {
 	uint i, bad = 0, size = m_Point3.GetSize();
 	for (i = 0; i < size; i++)
@@ -438,7 +438,7 @@ void vtFeatureSetLineString::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetLineString::TransformCoords(OCT *pTransform, bool progress_callback(int))
+bool vtFeatureSetLineString::TransformCoords(OCTransform *pTransform, bool progress_callback(int))
 {
 	uint i, j, pts, bad = 0, size = m_Line.size();
 	for (i = 0; i < size; i++)
@@ -692,7 +692,7 @@ void vtFeatureSetLineString3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetLineString3D::TransformCoords(OCT *pTransform, bool progress_callback(int))
+bool vtFeatureSetLineString3D::TransformCoords(OCTransform *pTransform, bool progress_callback(int))
 {
 	uint i, j, pts, bad = 0, size = m_Line.size();
 	for (i = 0; i < size; i++)
@@ -943,7 +943,7 @@ void vtFeatureSetPolygon::Offset(const DPoint2 &p, bool bSelectedOnly)
 	}
 }
 
-bool vtFeatureSetPolygon::TransformCoords(OCT *pTransform, bool progress_callback(int))
+bool vtFeatureSetPolygon::TransformCoords(OCTransform *pTransform, bool progress_callback(int))
 {
 	uint i, j, k, pts, bad = 0, size = m_Poly.size();
 	for (i = 0; i < size; i++)

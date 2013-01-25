@@ -175,7 +175,7 @@ bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 	vtProjection Source;
 	GetProjection(Source);
 
-	OCT *trans = CreateCoordTransform(&Source, &proj_new);
+	OCTransform *trans = CreateCoordTransform(&Source, &proj_new);
 	if (!trans)
 		return false;		// inconvertible projections
 

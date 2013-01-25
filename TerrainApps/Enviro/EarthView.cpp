@@ -974,7 +974,7 @@ void Enviro::FlyInStage1()
 		const vtProjection &tproj = m_pTargetTerrain->GetProjection();
 		vtProjection gproj;
 		CreateSimilarGeographicProjection(tproj, gproj);
-		OCT *trans = CreateCoordTransform(&gproj, &tproj);
+		OCTransform *trans = CreateCoordTransform(&gproj, &tproj);
 		DPoint3 earth_local = earth_geo;
 		trans->Transform(1, &earth_local.x, &earth_local.y);
 

@@ -125,8 +125,8 @@ protected:
 	vtTransform			*m_pTransform;
 
 	vtString	m_strFilename;
-	OCT			*m_pConvertToWGS;
-	OCT			*m_pConvertFromWGS;
+	OCTransform	*m_pConvertToWGS;
+	OCTransform	*m_pConvertFromWGS;
 
 	vtArray<vtLocation*> m_loc;
 };

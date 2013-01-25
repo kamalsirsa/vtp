@@ -26,7 +26,7 @@ bool vtMiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 	// Create transform from local to Geo-WGS84
 	vtProjection geo;
 	geo.SetWellKnownGeogCS("WGS84");
-	OCT *trans = CreateCoordTransform(&proj, &geo);
+	OCTransform *trans = CreateCoordTransform(&proj, &geo);
 
 	if (!trans)
 		return false;

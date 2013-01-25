@@ -251,7 +251,7 @@ bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
 
 		// This is safe (won't fail on tricky Datum conversions) but might
 		//  be slightly inaccurate
-		OCT *trans = CreateConversionIgnoringDatum(&proj, &Dest);
+		OCTransform *trans = CreateConversionIgnoringDatum(&proj, &Dest);
 
 		if (!trans)
 		{

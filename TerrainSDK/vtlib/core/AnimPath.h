@@ -146,8 +146,8 @@ protected:
 
 	// For dealing with global projection
 	vtProjection	m_proj;
-	OCT			*m_pConvertToWGS;
-	OCT			*m_pConvertFromWGS;
+	OCTransform		*m_pConvertToWGS;
+	OCTransform		*m_pConvertFromWGS;
 	vtLocalConversion m_conv;
 	friend class AnimPathVisitor;
 };

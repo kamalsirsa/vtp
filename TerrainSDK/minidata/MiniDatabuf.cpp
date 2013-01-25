@@ -105,7 +105,7 @@ bool MiniDatabuf::SetBounds(const vtProjection &proj, const DRECT &extents)
 	// Create transform from local to Geo-WGS84
 	vtProjection geo;
 	geo.SetWellKnownGeogCS("WGS84");
-	OCT *trans = CreateCoordTransform(&proj, &geo);
+	OCTransform *trans = CreateCoordTransform(&proj, &geo);
 
 	if (!trans)
 		return false;
@@ -439,7 +439,7 @@ bool WriteTilesetHeader(const char *filename, int cols, int rows, int lod0size,
 	// create a transformation that will map from the current projection to Lat/Lon WGS84
 	vtProjection proj_llwgs84;
 	proj_llwgs84.SetWellKnownGeogCS("WGS84");
-	OCT *LLWGS84transform=CreateCoordTransform(&proj,&proj_llwgs84);
+	OCTransform *LLWGS84transform=CreateCoordTransform(&proj,&proj_llwgs84);
 
 	// write center point of the tileset in Lat/Lon WGS84
 	// this is helpful for libMini to compute an approximate translation

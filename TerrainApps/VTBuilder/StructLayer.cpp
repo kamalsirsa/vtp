@@ -328,7 +328,7 @@ bool vtStructureLayer::TransformCoords(vtProjection &proj)
 	// Create conversion object
 	vtProjection Source;
 	GetProjection(Source);
-	OCT *trans = CreateCoordTransform(&Source, &proj);
+	OCTransform *trans = CreateCoordTransform(&Source, &proj);
 	if (!trans)
 		return false;		// inconvertible projections
 
