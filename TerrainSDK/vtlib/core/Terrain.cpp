@@ -746,26 +746,6 @@ bool vtTerrain::GetGeoExtentsFromMetadata()
 ///////////////////////////////////////////////
 // Built Structures
 
-/**
- * Attempt to load structures from a VTST file.  If successful, the structures
- * will be added to the Terrain's set of structure arrays.
- */
-vtStructureLayer *vtTerrain::LoadStructuresFromXML(const vtString &strFilename)
-{
-	VTLOG("LoadStructuresFromXML '%s'\n", (const char *) strFilename);
-	vtStructureLayer *st_layer = NewStructureLayer();
-
-	if (!st_layer->ReadXML(strFilename, m_progress_callback))
-	{
-		VTLOG("\tCouldn't load file.\n");
-		// Removing the layer deletes it, by dereference.
-		m_Layers.Remove(st_layer);
-		return NULL;
-	}
-	SetActiveLayer(st_layer);
-	return st_layer;
-}
-
 void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 {
 	int num_structs = structures->size();
@@ -1217,35 +1197,15 @@ void vtTerrain::_CreateStructures()
 		if (m_Params.GetLayerType(i) != LT_STRUCTURE)
 			continue;
 
-		const vtTagArray &lay = m_Params.m_Layers[i];
-
 		VTLOG(" Layer %d: Structure\n", i);
-		vtString building_fname = lay.GetValueString("Filename");
 
-		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
-		vtString building_path = FindFileOnPaths(vtGetDataPath(), building_fname);
-		if (building_path == "")
+		vtStructureLayer *st_layer = NewStructureLayer();
+		st_layer->SetProps(m_Params.m_Layers[i]);
+		if (!st_layer->Load(m_progress_callback))
 		{
-			VTLOG("\tNot found.\n");
-			vtString building_fname = "BuildingData/";
-			building_fname += lay.GetValueString("Filename");
-
-			VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
-			building_path = FindFileOnPaths(vtGetDataPath(), building_fname);
-		}
-		if (building_path == "")
-			VTLOG("\tNot found.\n");
-		else
-		{
-			VTLOG("\tFound: %s\n", (const char *) building_path);
-			vtStructureLayer *sa = LoadStructuresFromXML(building_path);
-			if (sa)
-			{
-				// If the user wants it to start hidden, hide it
-				bool bVisible;
-				if (lay.GetValueBool("visible", bVisible))
-					sa->SetEnabled(bVisible);
-			}
+			VTLOG("\tCouldn't load structures.\n");
+			// Removing the layer deletes it, by dereference.
+			m_Layers.Remove(st_layer);
 		}
 	}
 	for (uint i = 0; i < m_Layers.size(); i++)

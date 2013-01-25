@@ -79,6 +79,7 @@ public:
 	void CameraChanged();
 	void OnDrop(const wxString &str);
 	void LoadLayer(vtString &fname);
+	bool LoadTerrainLayer(vtString &fname);
 
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
 	virtual void EarthPosUpdated(const DPoint3 &pos);

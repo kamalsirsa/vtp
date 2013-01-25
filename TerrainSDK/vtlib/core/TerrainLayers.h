@@ -49,7 +49,9 @@ class vtStructureLayer : public vtStructureArray3d, public vtLayer
 public:
 	vtStructureLayer();
 
-	void SetLayerName(const vtString &fname) { SetFilename(fname); }
+	bool Load(bool progress_callback(int) = NULL);
+
+	void SetLayerName(const vtString &fname);
 	vtString GetLayerName() { return GetFilename(); }
 	void SetVisible(bool vis)
 	{

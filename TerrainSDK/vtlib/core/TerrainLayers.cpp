@@ -26,6 +26,49 @@ vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 	m_Props.SetValueString("Type", TERR_LTYPE_STRUCTURE);
 }
 
+/**
+ * Attempt to load structures from its VTST file.
+ */
+bool vtStructureLayer::Load(bool progress_callback(int))
+{
+	vtString fname = m_Props.GetValueString("Filename");
+
+	VTLOG("\tLooking for structures file: %s\n", (const char *) fname);
+	vtString building_path = FindFileOnPaths(vtGetDataPath(), fname);
+	if (building_path == "")
+	{
+		VTLOG("\tNot found.\n");
+		vtString fname2 = "BuildingData/";
+		fname2 += fname;
+
+		VTLOG("\tLooking for structures file: %s\n", (const char *) fname2);
+		building_path = FindFileOnPaths(vtGetDataPath(), fname2);
+	}
+	if (building_path == "")
+	{
+		VTLOG("\tNot found.\n");
+		return false;
+	}
+	else
+		VTLOG("\tFound: %s\n", (const char *) building_path);
+
+	if (!ReadXML(building_path, progress_callback))
+		return false;
+
+	// If the user wants it to start hidden, hide it
+	bool bVisible;
+	if (m_Props.GetValueBool("visible", bVisible))
+		SetEnabled(bVisible);
+
+	return true;
+}
+
+void vtStructureLayer::SetLayerName(const vtString &fname)
+{
+	SetFilename(fname);
+	m_Props.SetValueString("Filename", fname);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 // Vegetation
