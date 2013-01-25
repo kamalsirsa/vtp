@@ -260,18 +260,19 @@ void vtScaledView::DrawPolyLine(wxDC *pDC, const DLine2 &dline, bool bClose)
 	pDC->DrawLines(num, g_screenbuf);
 }
 
-void vtScaledView::DrawDoubleLine(wxDC *pDC, const DLine2 &line, const DLine2 &width)
+void vtScaledView::DrawDoubleLine(wxDC *pDC, const DLine2 &line,
+	const DLine2 &left_offset, const DLine2 &right_offset)
 {
 	uint i, size = line.GetSize();
 	if (size < 2)
 		return;
 
 	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
-		screen(line[i] + width[i], g_screenbuf[i]);
+		screen(line[i] + left_offset[i], g_screenbuf[i]);
 	pDC->DrawLines(i, g_screenbuf);
 
 	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
-		screen(line[i] - width[i], g_screenbuf[i]);
+		screen(line[i] + right_offset[i], g_screenbuf[i]);
 	pDC->DrawLines(i, g_screenbuf);
 }
 

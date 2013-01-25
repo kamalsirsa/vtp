@@ -108,7 +108,8 @@ public:
 	bool	m_bDrawPoints;	// draw each point in the road individually
 	int		m_iHighlightPoint;
 
-	DLine2	m_WidthOffset;		// offset from each point to its left edge
+	DLine2	m_LeftOffset;		// offset (meters) from each point to its left edge
+	DLine2	m_RightOffset;		// offset (meters) from each point to its right edge
 	bool	m_bSidesComputed;	// true when m_WidthOffset is up-to-date
 };
 

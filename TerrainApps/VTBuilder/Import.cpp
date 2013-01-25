@@ -2011,7 +2011,7 @@ void Builder::ImportDataFromNTF(const wxString &strFileName, LayerArray &layers)
 					LinkEdit *pLE = pRL->AddRoadSegment(pLineString);
 					// some defaults..
 					pLE->m_iLanes = 2;
-					pLE->m_fWidth = 6.0f;
+					pLE->m_fLaneWidth = 3.0f;
 					pLE->SetFlag(RF_MARGIN, true);
 				}
 			}

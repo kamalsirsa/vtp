@@ -21,7 +21,7 @@
 
 #define NODE_RADIUS 5
 
-wxPen LinkPen[11];
+wxPen LinkPen[12];
 wxPen NodePen[VIT_TOTAL];
 static bool g_bInitializedPens = false;
 
@@ -30,6 +30,7 @@ static bool g_bInitializedPens = false;
 #define RP_SELECTION 8
 #define RP_DIRECTION 9
 #define RP_CROSSES	10
+#define RP_CENTERLINE 11
 
 NodeEdit::NodeEdit() : TNode()
 {
@@ -178,11 +179,13 @@ void LinkEdit::ComputeExtent()
 void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 {
 	// also refresh the parallel left and right link edges
-	m_fWidth = EstimateWidth();
-	double half_width = (m_fWidth / 2);
+	EstimateWidth();
+	double half_left_width = m_fLeftWidth;
+	double half_right_width = m_fRightWidth;
 
 	uint size = GetSize();
-	m_WidthOffset.SetSize(size);
+	m_LeftOffset.SetSize(size);
+	m_RightOffset.SetSize(size);
 
 	DPoint2 norm, prev, offset;
 
@@ -205,18 +208,18 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 			}
 		}
 		if (i == 0)		// first point
-			offset = norm * half_width;
+			offset = norm;
 		else if (i > 0 && i < size-1)
 		{
 			// vector which bisects this point is the combination of both normals
-			DPoint2 bisect = (norm + prev).Normalize();
+			const DPoint2 bisect = (norm + prev).Normalize();
 
 			// compute angle between the vectors
 			double dot = prev.Dot(-norm);
 			if (dot <= -0.97 || dot >= 0.97)
 			{
 				// simple case: close enough to colinear
-				offset = bisect * half_width;
+				offset = bisect;
 			}
 			else
 			{
@@ -224,15 +227,17 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 
 				// factor to widen this corner is proportional to the angle
 				double wider = 1.0 / sin(angle / 2);
-				offset = bisect * half_width * wider;
+				offset = bisect * wider;
 			}
 		}
 		else if (i == size-1)	// last point
-			offset = prev * half_width;
-
+			offset = prev;
+		
 		offset.x /= ToMeters.x;			// convert (potentially) to degrees
 		offset.y /= ToMeters.y;
-		m_WidthOffset[i] = offset;
+
+		m_LeftOffset[i] = offset * - half_left_width;
+		m_RightOffset[i] = offset * half_right_width;
 	}
 }
 
@@ -308,9 +313,15 @@ bool LinkEdit::Draw(wxDC *pDC, vtScaledView *pView, bool bShowDirection,
 
 	const int size = GetSize();
 	if (bShowWidth)
-		pView->DrawDoubleLine(pDC, *this, m_WidthOffset);
+		pView->DrawDoubleLine(pDC, *this, m_LeftOffset, m_RightOffset);
 	else
 		pView->DrawPolyLine(pDC, *this, false);
+
+	if (bShowWidth && m_iLanes > 1)
+	{
+		pDC->SetPen(LinkPen[RP_CENTERLINE]);
+		pView->DrawPolyLine(pDC, *this, false);
+	}
 
 	if (m_bSelect)
 	{
@@ -430,22 +441,22 @@ RoadMapEdit::RoadMapEdit() : vtRoadMap()
 	{
 		g_bInitializedPens = true;
 
-		LinkPen[RP_HIGHWAY].SetColour(128,0,0);	// dark red highways
+		LinkPen[RP_HIGHWAY].SetColour(128,0,0);	// 0: dark red highways
 		LinkPen[RP_HIGHWAY].SetWidth(2);
 
-		LinkPen[SURFT_GRAVEL].SetColour(128,128,128);
+		LinkPen[SURFT_GRAVEL].SetColour(128,128,128);	// 1
 
-		LinkPen[SURFT_TRAIL].SetColour(130,100,70);
+		LinkPen[SURFT_TRAIL].SetColour(130,100,70);		// 2
 		LinkPen[SURFT_TRAIL].SetStyle(wxDOT);
 
-		LinkPen[SURFT_2TRACK].SetColour(130,100,70);
+		LinkPen[SURFT_2TRACK].SetColour(130,100,70);	// 3
 
-		LinkPen[SURFT_DIRT].SetColour(130,100,70);
+		LinkPen[SURFT_DIRT].SetColour(130,100,70);		// 4
 
-		LinkPen[SURFT_PAVED].SetColour(0,0,0);
+		LinkPen[SURFT_PAVED].SetColour(0,0,0);			// 5
 
-		LinkPen[SURFT_RAILROAD].SetColour(0,0,0);
-		LinkPen[SURFT_RAILROAD].SetStyle(wxSHORT_DASH);
+		LinkPen[SURFT_RAILROAD].SetColour(0,0,0);		// 6
+		LinkPen[SURFT_RAILROAD].SetStyle(wxSHORT_DASH);	// 7
 
 		LinkPen[RP_SELECTION].SetColour(255,255,255);	// for selection
 		LinkPen[RP_SELECTION].SetWidth(3);
@@ -454,6 +465,9 @@ RoadMapEdit::RoadMapEdit() : vtRoadMap()
 		LinkPen[RP_DIRECTION].SetWidth(2);
 
 		LinkPen[RP_CROSSES].SetColour(128,0,128);	// for edit crosses
+
+		LinkPen[RP_CENTERLINE].SetColour(255,255,255);	// for centers of multi-lanes
+		LinkPen[RP_CENTERLINE].SetStyle(wxSHORT_DASH);
 
 		NodePen[VIT_UNKNOWN].SetColour(255,0,255);
 

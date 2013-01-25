@@ -47,7 +47,7 @@ float angle_diff(float a, float b)
 // along to that link, parallel to the ground plane,
 // with length corresponding to the supplied width
 //
-FPoint3 CreateRoadVector(FPoint3 p1, FPoint3 p2, float w)
+FPoint3 CreateRoadVector(const FPoint3 &p1, const FPoint3 &p2, const float w)
 {
 	FPoint3 v = p2 - p1;
 	v.y = 0;
@@ -77,12 +77,6 @@ NodeGeom::~NodeGeom()
 {
 }
 
-FPoint3 NodeGeom::GetLinkVector(int i)
-{
-	FPoint3 linkpoint = GetAdjacentRoadpoint(i);
-	return CreateRoadVector(m_p3, linkpoint, m_connect[i]->m_fWidth);
-}
-
 FPoint3 NodeGeom::GetUnitLinkVector(int i)
 {
 	FPoint3 linkpoint = GetAdjacentRoadpoint(i);
@@ -107,7 +101,7 @@ void NodeGeom::BuildIntersection()
 {
 	FPoint3 v, v_next, v_prev;
 	FPoint3 pn0, pn1;
-	float w;				// link width
+	float w;			// link width
 	const FPoint3 up(0, ROAD_HEIGHT, 0);
 
 	SortLinksByAngle();
@@ -125,7 +119,7 @@ void NodeGeom::BuildIntersection()
 
 		// get info about the link
 		LinkGeom *r = GetLink(0);
-		w = r->m_fWidth;
+		w = (r->m_fLeftWidth + r->m_fRightWidth) / 2;
 
 		pn1 = GetAdjacentRoadpoint(0);
 		v = CreateRoadVector(m_p3, pn1, w);
@@ -142,7 +136,7 @@ void NodeGeom::BuildIntersection()
 		m_v.SetSize(2);
 
 		// get info about the links
-		w = (GetLink(0)->m_fWidth + GetLink(1)->m_fWidth) / 2.0f;
+		w = (GetLink(0)->m_fLeftWidth + GetLink(1)->m_fRightWidth) / 2.0f;
 
 		pn0 = GetAdjacentRoadpoint(0);
 		pn1 = GetAdjacentRoadpoint(1);
@@ -179,8 +173,8 @@ void NodeGeom::BuildIntersection()
 			TLink *pL = GetLink(i);
 			TLink *pL_next = GetLink(i_next);
 
-			float width1 = pL->m_fWidth;
-			float width2 = pL_next->m_fWidth;
+			float width1 = pL->m_fLeftWidth;
+			float width2 = pL_next->m_fRightWidth;
 
 			FPoint3 linkv1 = GetUnitLinkVector(i);
 			FPoint3 linkv2 = GetUnitLinkVector(i_next);
@@ -199,8 +193,8 @@ void NodeGeom::BuildIntersection()
 			//  terms of the ua and ub factors, which are the distance along
 			//  each input vector to the intersection point.
 			FPoint2 center(m_p3.x, m_p3.z);
-			FPoint2 p1 = center + norm1 * (width1/2);
-			FPoint2 p2 = center - norm2 * (width2/2);
+			FPoint2 p1 = center + norm1 * width1;
+			FPoint2 p2 = center - norm2 * width2;
 
 			float denom = v2.y*v1.x - v2.x*v1.y;
 			if (fabs(denom) < 0.01)
@@ -233,7 +227,7 @@ void NodeGeom::BuildIntersection()
 
 			FPoint3 norm(v.z, 0, -v.x);
 			norm.Normalize();
-			norm *= (pL->m_fWidth / 2);
+			norm *= pL->m_fLeftWidth;
 
 			float dist = distance_to_intersection[i].z;
 			m_v[i * 2 + 0] = m_p3 + norm + (v * dist) + up;
@@ -380,7 +374,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 		{
 			// add 2 vertices at this point, copied from the start node
 			GetNode(0)->FindVerticesForLink(this, true, right, left);	// true means start
-			wider = (right-left).Length() / m_fWidth;
+			wider = (right-left).Length() / (m_fLeftWidth + m_fRightWidth);
 		}
 		if (j > 0 && j < size-1)
 		{
@@ -396,7 +390,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 		{
 			// add 2 vertices at this point, copied from the end node
 			GetNode(1)->FindVerticesForLink(this, false, left, right);	// false means end
-			wider = (right-left).Length() / m_fWidth;
+			wider = (right-left).Length() / (m_fLeftWidth + m_fRightWidth);
 		}
 		bi.crossvector[j] = right - left;
 		bi.center[j] = left + (bi.crossvector[j] * 0.5f);
@@ -493,7 +487,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	RoadBuildInfo bi(GetSize());
 	SetupBuildInfo(bi);
 
-	float offset = -m_fWidth/2;
+	float offset = -m_fLeftWidth;
 	if (m_iFlags & RF_MARGIN)
 		offset -= m_fMarginWidth;
 	if (m_iFlags & RF_PARKING_LEFT)
@@ -563,13 +557,14 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	}
 
 	// create main road surface
+	const float center_width = m_iLanes * m_fLaneWidth;
 	AddRoadStrip(pMesh, bi,
-				-m_fWidth/2, m_fWidth/2,
+				-center_width/2, center_width/2,
 				0.0f, 0.0f,
 				rmgeom->m_vt[m_vti],
 				0.0f, 1.0f, UV_SCALE_ROAD,
 				ND_UP);
-	offset = m_fWidth/2;
+	offset = center_width/2;
 
 	// create right margin
 	if (m_iFlags & RF_MARGIN)
@@ -996,11 +991,11 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 
 			if (pN->GetIntersectType(r) == IT_STOPSIGN)
 			{
-				offset = pN->m_p3 + (unit * 6.0f) + (perp * (link->m_fWidth/2.0f));
+				offset = pN->m_p3 + (unit * 6.0f) + (perp * (link->m_fRightWidth));
 			}
 			if (pN->GetIntersectType(r) == IT_LIGHT)
 			{
-				offset = pN->m_p3 - (unit * 6.0f) + (perp * (link->m_fWidth/2.0f));
+				offset = pN->m_p3 - (unit * 6.0f) + (perp * (link->m_fRightWidth));
 			}
 			trans->Translate(FPoint3(offset.x, offset.y + s_fHeight, offset.z));
 			pLodGrid->AddToGrid(trans);
@@ -1165,9 +1160,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 			pL->m_centerline[j] = p;
 		}
 		// ignore width from file - imply from properties
-		pL->m_fWidth = pL->m_iLanes * pL->m_fLaneWidth;
-		if (pL->m_fWidth == 0)
-			pL->m_fWidth = 10.0f;
+		pL->EstimateWidth();
 	}
 }
 

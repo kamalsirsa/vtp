@@ -165,7 +165,7 @@ int RoadMapEdit::RemoveDegenerateLinks()
 				bad = true;
 
 			// Is it exceedingly short?
-			if (pL->Length() < pL->EstimateWidth())
+			if (pL->Length() < pL->GetTotalWidth())
 				bad = true;
 		}
 		if (bad)

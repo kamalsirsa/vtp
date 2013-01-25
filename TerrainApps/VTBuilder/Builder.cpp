@@ -1010,7 +1010,7 @@ void Builder::CarveWithCulture(vtElevLayer *pElev, float margin)
 		for (pLink = pR->GetFirstLink(); pLink; pLink = pLink->GetNext())
 		{
 			pLink->ComputeExtent();	// Shouldn't need this; it should already have extents
-			const float half = pLink->m_fWidth / 2 + shoulder + fade;
+			const float half = pLink->m_fLeftWidth + shoulder + fade;
 			pLink->m_extent.Grow(half, half);
 		}
 	}
@@ -1078,10 +1078,13 @@ void Builder::CarveWithCulture(vtElevLayer *pElev, float margin)
 					DPoint2 closest;
 					total = pLink->GetLinearCoordinates(p2, a, b, closest,
 						linkpoint, fractional, false);
-					const float half = pLink->m_fWidth / 2 + shoulder + fade;
+					const float left_half = pLink->m_fLeftWidth + shoulder;
+					const float right_half = pLink->m_fRightWidth + shoulder;
 
 					// Check if the point is actually on the link
-					if (a < 0 || a > total || b < -half || b > half)
+					if (a < 0 || a > total ||
+						b < -(left_half + fade) ||
+						b > (right_half + fade))
 						continue;
 
 					// Don't use the height of the ground at the middle of the link.
@@ -1097,16 +1100,22 @@ void Builder::CarveWithCulture(vtElevLayer *pElev, float margin)
 
 					const float road_height = alt1 + (alt2 - alt1) * fractional;
 
-					// If the point falls in the 'fade' region, interpolate
-					//  the offset from 1 to 0 across the region.
-					if (fabs(b) < half - fade)
+					// If in the road proper, use road height.
+					if (b > -left_half && b < right_half)
 					{
 						sum_elev += road_height;
 						sum_weight += 1.0f;
 					}
 					else
 					{
-						const float amount = (half - fabs(b)) / fade;
+						// If the point falls in the 'fade' region, interpolate
+						//  the offset from 1 to 0 across the region.
+						float amount;
+
+						if (b < -left_half)
+							amount = (b + (fade + left_half)) / fade;
+						if (b > right_half)
+							amount = ((right_half + fade) - b) / fade;
 						if (amount > 0.01)	// Avoid precision issues
 						{
 							const float diff = road_height - existing;

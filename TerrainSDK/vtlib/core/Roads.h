@@ -40,7 +40,6 @@ public:
 	void BuildIntersection();
 	void FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 &p1);
 	vtMesh *GenerateGeometry();
-	FPoint3 GetLinkVector(int i);
 	FPoint3 GetUnitLinkVector(int i);
 	const FPoint3 &GetAdjacentRoadpoint(int iLinkNumber);
 	NodeGeom *GetNext() { return (NodeGeom*) m_pNext; }

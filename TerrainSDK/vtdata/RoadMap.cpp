@@ -281,7 +281,8 @@ void TNode::AdjustForLights()
 TLink::TLink()
 {
 	// Provide default values
-	m_fWidth = 1.0f;
+	m_fLeftWidth = 1.0f;
+	m_fRightWidth = 1.0f;
 	m_iLanes = 0;
 	m_Surface = SURFT_PAVED;
 	m_iHwy = -1;
@@ -314,7 +315,8 @@ TLink::~TLink()
 
 bool TLink::operator==(TLink &ref)
 {
-	return (m_fWidth == ref.m_fWidth &&
+	return (m_fLeftWidth == ref.m_fLeftWidth &&
+		m_fRightWidth == ref.m_fRightWidth &&
 		m_iLanes == ref.m_iLanes &&
 		m_Surface == ref.m_Surface &&
 		m_iHwy == ref.m_iHwy &&
@@ -323,7 +325,8 @@ bool TLink::operator==(TLink &ref)
 
 void TLink::CopyAttributesFrom(TLink *rhs)
 {
-	m_fWidth =			rhs->m_fWidth;
+	m_fLeftWidth =		rhs->m_fLeftWidth;
+	m_fRightWidth =		rhs->m_fRightWidth;
 	m_iLanes =			rhs->m_iLanes;
 	m_Surface =			rhs->m_Surface;
 	m_iHwy =			rhs->m_iHwy;
@@ -466,26 +469,30 @@ float TLink::Length()
 	return (float) dist;
 }
 
-float TLink::EstimateWidth(bool bIncludeSidewalk)
+void TLink::EstimateWidth(bool bIncludeSidewalk)
 {
-	float width = m_iLanes * m_fLaneWidth;
+	const float center_width = m_iLanes * m_fLaneWidth;
+
+	m_fLeftWidth = m_fRightWidth = center_width / 2;
 
 	if (GetFlag(RF_PARKING_LEFT))
-		width += m_fParkingWidth;
+		m_fLeftWidth += m_fParkingWidth;
 	if (GetFlag(RF_PARKING_RIGHT))
-		width += m_fParkingWidth;
+		m_fRightWidth += m_fParkingWidth;
 
 	if (GetFlag(RF_MARGIN))
-		width += (m_fMarginWidth * 2);
+	{
+		m_fLeftWidth += (m_fMarginWidth * 2);
+		m_fRightWidth += (m_fMarginWidth * 2);
+	}
 
 	if (bIncludeSidewalk)
 	{
 		if (GetFlag(RF_SIDEWALK_LEFT))
-			width += m_fSidewalkWidth;
+			m_fLeftWidth += m_fSidewalkWidth;
 		if (GetFlag(RF_SIDEWALK_RIGHT))
-			width += m_fSidewalkWidth;
+			m_fRightWidth += m_fSidewalkWidth;
 	}
-	return width;
 }
 
 
@@ -849,7 +856,7 @@ bool vtRoadMap::ReadRMF(const char *filename)
 		{
 			quiet = fread(&itmp, intSize, 1, fp);			//highway number
 			tmpLink->m_iHwy = (short) itmp;
-			quiet = fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
+			quiet = fread(&ftmp, floatSize, 1, fp);	//width
 			quiet = fread(&itmp, intSize, 1, fp);			//number of lanes
 			tmpLink->m_iLanes = (unsigned short) itmp;
 			quiet = fread(&itmp, intSize, 1, fp);			//surface type
@@ -861,7 +868,7 @@ bool vtRoadMap::ReadRMF(const char *filename)
 		{
 			quiet = fread(&(dummy), 4, 1, fp);			//highway number
 			tmpLink->m_iHwy = (short) dummy;
-			quiet = fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
+			quiet = fread(&ftmp, floatSize, 1, fp);	//width
 			quiet = fread(&(dummy), 4, 1, fp);			//number of lanes
 			tmpLink->m_iLanes = (short) dummy;
 			quiet = fread(&dummy, 4, 1, fp);			//surface type
@@ -1038,9 +1045,10 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	//write links
 	while (curLink)
 	{
+		float fWidth = curLink->GetTotalWidth();
 		FWrite(&(curLink->m_id), intSize);			//id
 		FWrite(&(curLink->m_iHwy), 4);				//highway number
-		FWrite(&(curLink->m_fWidth), floatSize);	//width
+		FWrite(&(fWidth), floatSize);				//width
 		FWrite(&(curLink->m_iLanes), 4);			//number of lanes
 		FWrite(&(curLink->m_Surface), 4);			//surface type
 		FWrite(&(curLink->m_iFlags), 4);			//FLAG

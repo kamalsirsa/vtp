@@ -661,9 +661,9 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pLineString = (OGRLineString *) pGeom;
 
 				pL = AddNewLink();
-				pL->m_fWidth = 1.0f;	// defaults
 				pL->m_Surface = stype;
 				pL->m_iLanes = lanes;		// defaults
+				pL->m_fLaneWidth = 3.0f;
 				pL->m_iPriority = priority;
 
 				if (pFeature->IsFieldSet(index_lanes))
@@ -689,6 +689,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				{
 					//const char *str_rtype = pFeature->GetFieldAsString(index_rtype);
 				}
+				pL->EstimateWidth();
 
 				int num_points = pLineString->getNumPoints();
 				pL->SetSize(num_points);

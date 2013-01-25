@@ -76,7 +76,8 @@ public:
 	int ProjectPolyline(wxDC *pDC, const DLine2 &dline, bool bClose);
 	void DrawLine(wxDC *pDC, const DPoint2 &p0, const DPoint2 &p1);
 	void DrawPolyLine(wxDC *pDC, const DLine2 &line, bool bClose);
-	void DrawDoubleLine(wxDC *pDC, const DLine2 &line, const DLine2 &width);
+	void DrawDoubleLine(wxDC *pDC, const DLine2 &line,
+		const DLine2 &left_offset, const DLine2 &right_offset);
 	void DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill);
 
 	void DrawOGRLinearRing(wxDC *pDC, const OGRLinearRing *line, bool bCircles);

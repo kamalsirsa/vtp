@@ -168,9 +168,11 @@ public:
 
 	// Return length of link centerline.
 	float Length();
-	float EstimateWidth(bool bIncludeSidewalk = true);
+	void EstimateWidth(bool bIncludeSidewalk = true);
+	float GetTotalWidth() const { return m_fLeftWidth + m_fRightWidth; }
 
-	float	m_fWidth;		// link width in meters
+	float	m_fLeftWidth;	// link width in meters
+	float	m_fRightWidth;	// link width in meters
 	unsigned short m_iLanes; // number of lanes
 	SurfaceType m_Surface;
 	short	m_iHwy;			// highway number: -1 for normal links
