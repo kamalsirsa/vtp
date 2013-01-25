@@ -933,6 +933,11 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, const vtLevel 
 						fMaxHeight = (float) pEdge->m_higher.m_vertex->m_point.m_z;
 					RoofSection3D.Append(FPoint3(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_y + EaveY, pEdge->m_higher.m_vertex->m_point.m_z));
 					pNextEdge = pEdge->m_higher.m_right;
+
+					// Safety check: This can happen with poorly-formed input data.
+					if (pNextEdge == NULL)
+						return -1.0;
+
 //					if (pEdge->m_higher.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
 					if (pEdge->m_higher.VertexID() != pNextEdge->m_higher.VertexID())
 						bEdgeReversed = true;
@@ -950,6 +955,11 @@ float vtBuilding3d::MakeFelkelRoof(const FPolygon3 &EavePolygons, const vtLevel 
 						fMaxHeight = (float) pEdge->m_lower.m_vertex->m_point.m_z;
 					RoofSection3D.Append(FPoint3(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_y + EaveY, pEdge->m_lower.m_vertex->m_point.m_z));
 					pNextEdge = pEdge->m_lower.m_right;
+
+					// Safety check: This can happen with poorly-formed input data.
+					if (pNextEdge == NULL)
+						return -1.0;
+
 //					if (pEdge->m_lower.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
 					if (pEdge->m_lower.VertexID() != pNextEdge->m_higher.VertexID())
 						bEdgeReversed = true;
