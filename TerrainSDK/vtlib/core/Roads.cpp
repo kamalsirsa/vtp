@@ -24,13 +24,7 @@
 
 #define ROAD_AMBIENT 0.6	// brighter than terrain ambient
 #define ROAD_DIFFUSE 0.4
-#define TEXTURE_ARGS(alpha)		true, true, alpha, false, ROAD_AMBIENT, \
-	ROAD_DIFFUSE, 1.0f, TERRAIN_EMISSIVE
 
-#define ROADTEXTURE_4WD		"GeoTypical/road_4wd2.png"
-#define ROADTEXTURE_TRAIL	"GeoTypical/trail2.png"
-#define ROADTEXTURE_GRAVEL	"GeoTypical/gravel1.png"
-#define ROAD_FILENAME		"GeoTypical/roadset_2k.jpg"
 #define ROAD_REZ 2048
 
 
@@ -864,6 +858,31 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	return m_pGroup;
 }
 
+int vtRoadMap3d::_CreateMaterial(const char *texture_filename, bool bTransparency)
+{
+	vtString fname = "GeoTypical/";
+	fname += texture_filename;
+	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+	if (path == "")
+		return -1;
+
+	osg::Image *image = LoadOsgImage(path);
+	if (!image)
+		return -1;
+
+	int material_index = m_pMats->AddTextureMaterial(image, true, true, bTransparency,
+		false, ROAD_AMBIENT, ROAD_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+
+	if (material_index == -1)
+		return -1;
+
+	// All the road textures repeat, so don't clamp.
+	vtMaterial *pMaterial = m_pMats->at(material_index);
+	pMaterial->SetClamp(false);
+
+	return material_index;
+}
+
 void vtRoadMap3d::_CreateMaterials(bool do_texture)
 {
 	m_pMats = new vtMaterialArray;
@@ -871,26 +890,13 @@ void vtRoadMap3d::_CreateMaterials(bool do_texture)
 	// road textures
 	if (do_texture)
 	{
-		const vtStringArray &paths = vtGetDataPath();
-		vtString path;
-
-		path = FindFileOnPaths(paths, "GeoTypical/roadside_32.png");
-		m_mi_roadside = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
-
-		path = FindFileOnPaths(paths, "GeoTypical/pavement_256.jpg");
-		m_mi_pavement = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
-
-		path = FindFileOnPaths(paths, ROAD_FILENAME);
-		m_mi_roads = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(false));
-
-		path = FindFileOnPaths(paths, ROADTEXTURE_4WD);
-		m_mi_4wd = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
-
-		path = FindFileOnPaths(paths, ROADTEXTURE_TRAIL);
-		m_mi_trail = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
-
-		path = FindFileOnPaths(paths, ROADTEXTURE_GRAVEL);
-		m_mi_gravel = m_pMats->AddTextureMaterial(LoadOsgImage(path), TEXTURE_ARGS(true));
+		// TODO: put these literals in a config file somewhere, if needed.
+		m_mi_roadside =	_CreateMaterial("roadside_32.png", true);
+		m_mi_pavement =	_CreateMaterial("pavement_256.jpg", false);
+		m_mi_roads =	_CreateMaterial("roadset_2k.jpg", false);
+		m_mi_4wd =		_CreateMaterial("road_4wd2.png", true);
+		m_mi_trail =	_CreateMaterial("trail2.png", true);
+		m_mi_gravel =	_CreateMaterial("gravel1.png", true);
 
 		m_vt[VTI_MARGIN].m_idx = m_mi_roads;
 		m_vt[VTI_MARGIN].m_rect.SetRect(960.0f/ROAD_REZ, 1, 992.0f/ROAD_REZ, 0);

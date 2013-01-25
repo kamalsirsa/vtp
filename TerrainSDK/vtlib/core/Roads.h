@@ -211,6 +211,7 @@ public:
 	int		m_mi_red;
 
 protected:
+	int _CreateMaterial(const char *texture_filename, bool bTransparency);
 	void _CreateMaterials(bool do_texture);
 	void _GatherExtents();
 
