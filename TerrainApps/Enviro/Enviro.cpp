@@ -466,7 +466,7 @@ void Enviro::RequestTerrain(vtTerrain *pTerr)
 void Enviro::SetupTerrain(vtTerrain *pTerr)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	VTLOG("SetupTerrain step %d\n", m_iInitStep);
 	if (m_iInitStep == 1)
@@ -2793,7 +2793,7 @@ void Enviro::GetStatusString(int which, vtString &str1, vtString &str2)
 				float exag;
 				{
 					// Avoid trouble with '.' and ',' in Europe
-					LocaleWrap normal_numbers(LC_NUMERIC, "C");
+					ScopedLocale normal_numbers(LC_NUMERIC, "C");
 					// Report true elevation, without vertical exaggeration
 					exag = GetCurrentTerrain()->GetVerticalExag();
 				}
@@ -3304,7 +3304,7 @@ protected:
 
 bool Enviro::ImportModelFromKML(const char *kmlfile)
 {
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	VTLOG("Trying to import a model from KML file '%s'\n", kmlfile);
 

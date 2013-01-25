@@ -1797,7 +1797,7 @@ bool vtImage::WriteTileset(TilingOptions &opts, BuilderView *pView)
 	wxFrame *frame = NULL;
 
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Check that options are valid
 	CheckCompressionMethod(opts);

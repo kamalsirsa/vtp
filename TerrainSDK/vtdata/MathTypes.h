@@ -1447,16 +1447,16 @@ inline RGBAi &RGBAi::operator=(const RGBAf &v)
  *
  * \par Example:
 \code
-		LocaleWrap normal_numbers(LC_NUMERIC, "C");
+		ScopedLocale normal_numbers(LC_NUMERIC, "C");
 \endcode
- * The locale will be restored when the LocaleWrap object goes out of scope.
+ * The locale will be restored when the ScopedLocale object goes out of scope.
  */
-class LocaleWrap
+class ScopedLocale
 {
 public:
 	/// See the C function setlocale() for an explanation of the arguments.
-	LocaleWrap(int category, const char *locale_string);
-	~LocaleWrap();
+	ScopedLocale(int category, const char *locale_string);
+	~ScopedLocale();
 
 protected:
 	std::string m_old_locale;

@@ -796,7 +796,7 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 {
 	// Some of OSG's file readers, such as the Wavefront OBJ reader, have
 	//  sensitivity to stdio issues with '.' and ',' in European locales.
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Workaround for OSG's OBJ-MTL reader which doesn't like backslashes
 	vtString fname = filename;

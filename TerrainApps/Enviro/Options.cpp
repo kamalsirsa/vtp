@@ -201,7 +201,7 @@ void EnviroOptionsVisitor::endElement(const char *name)
 
 bool EnviroOptions::ReadXML(const char *fname)
 {
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	VTLOG("\tReading options from '%s'\n", fname);
 

@@ -437,7 +437,7 @@ vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
 	stnew->m_sStructName = name;
 
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// get wire info
 	for (i = 0; i < item->NumTags(); i++)

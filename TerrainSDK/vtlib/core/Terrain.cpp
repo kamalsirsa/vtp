@@ -238,7 +238,7 @@ void vtTerrain::SetTin(vtTin3d *pTin)
 void vtTerrain::_CreateRoads()
 {
 	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	vtString road_fname = "RoadData/";
 	road_fname += m_Params.GetValueString(STR_ROADFILE);
@@ -1749,7 +1749,7 @@ bool vtTerrain::CreateStep2()
 	VTLOG1("Step2\n");
 
 	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	m_fVerticalExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
 
@@ -3027,7 +3027,7 @@ void vtTerrain::OnCreateBehavior(vtStructure *str)
 			if (pivot)
 			{
 				// Avoid trouble with '.' and ',' in Europe
-				LocaleWrap normal_numbers(LC_NUMERIC, "C");
+				ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 				FPoint3 p;
 				if (sscanf(pivot, "%f, %f, %f", &p.x, &p.y, &p.z) == 3)

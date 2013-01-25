@@ -143,7 +143,7 @@ void SurfaceTexture::ShadeTexture(const TParams &options, const vtHeightFieldGri
 	vtImageWrapper wrapper(m_pTextureImage);
 
 	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	VTLOG("  Prelighting texture: ");
 

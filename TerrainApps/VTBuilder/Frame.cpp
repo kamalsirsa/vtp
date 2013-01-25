@@ -962,7 +962,7 @@ bool MainFrame::LoadProject(const wxString &strPathName)
 bool MainFrame::SaveProject(const wxString &strPathName) const
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// write project file
 	vtString fname = (const char *) strPathName.mb_str(wxConvUTF8);

@@ -143,7 +143,7 @@ void trim_eol(char *buf)
 bool Builder::LoadProject(const vtString &fname, vtScaledView *pView)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	VTLOG1("LoadProject()\n");
 
@@ -1560,7 +1560,7 @@ void Builder::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	VegGenOptions &opt)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	uint i, j, k;
 	DPoint2 p, p2;

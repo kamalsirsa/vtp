@@ -292,7 +292,7 @@ bool vtVegLayer::AddElementsFromSHP_Polys(const wxString &filename,
 										  int iField, VegImportFieldType datatype)
 {
 	// When working with float field data, must use C locale
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// SHPOpen doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = UTF8ToLocal(filename.mb_str(wxConvUTF8));

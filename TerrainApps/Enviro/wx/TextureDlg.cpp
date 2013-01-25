@@ -66,7 +66,7 @@ TextureDlg::TextureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void TextureDlg::SetParams(const TParams &Params)
 {
 	VTLOG("TParamsDlg::SetParams\n");
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// texture
 	m_iTexture =		Params.GetTextureEnum();
@@ -92,7 +92,7 @@ void TextureDlg::SetParams(const TParams &Params)
 void TextureDlg::GetParams(TParams &Params)
 {
 	VTLOG("TextureDlg::GetParams\n");
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// texture
 	Params.SetTextureEnum((enum TextureEnum)m_iTexture);

@@ -119,7 +119,7 @@ vtSpeciesList::~vtSpeciesList()
 bool vtSpeciesList::WriteXML(const char *fname) const
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
@@ -410,7 +410,7 @@ void SpeciesListVisitor::endElement(const char *name)
 bool vtSpeciesList::ReadXML(const char *pathname, vtString *msg)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	SpeciesListVisitor visitor(this);
 	try
@@ -443,7 +443,7 @@ vtBioRegion::~vtBioRegion()
 bool vtBioRegion::Read(const char *fname, const vtSpeciesList &species)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(fname, "r");
 	if (!fp) return false;
@@ -484,7 +484,7 @@ bool vtBioRegion::Read(const char *fname, const vtSpeciesList &species)
 bool vtBioRegion::WriteXML(const char *fname) const
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
@@ -607,7 +607,7 @@ bool vtBioRegion::ReadXML(const char *fname, const vtSpeciesList &species,
 						  vtString *msg)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	BioRegionVisitor visitor(this, species);
 	try
@@ -855,7 +855,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	}
 
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)

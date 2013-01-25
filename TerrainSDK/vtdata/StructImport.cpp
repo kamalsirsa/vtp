@@ -43,7 +43,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 		return false;
 
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	char buf[4];
 	if (fread(buf, 3, 1, fp) != 1)

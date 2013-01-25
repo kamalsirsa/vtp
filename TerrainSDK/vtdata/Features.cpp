@@ -40,7 +40,7 @@ bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) 
 	VTLOG1("vtFeatureSet::SaveToSHP:\n");
 
 	// Must use "C" locale in case we write any floating-point fields
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	int nSHPType = OGRToShapelib(m_eGeomType);
 
@@ -420,7 +420,7 @@ double GetMinutes(const char *buf)
 vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 {
 	// Must use "C" locale because we use atof()
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	VTLOG(" FeatureLoader LoadFromIGC\n");
 
@@ -915,7 +915,7 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 bool vtFeatureSet::LoadDataFromDBF(const char *filename, bool progress_callback(int))
 {
 	// Must use "C" locale in case we read any floating-point fields
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	VTLOG(" LoadDataFromDBF\n");
 
@@ -1160,7 +1160,7 @@ bool vtFeatureSet::LoadDataFromCSV(const char *filename, bool progress_callback(
 bool vtFeatureSet::SaveToKML(const char *filename, bool progress_callback(int)) const
 {
 	// Must use "C" locale in case we write any floating-point fields
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	const vtFeatureSetPoint2D *P2D = dynamic_cast<const vtFeatureSetPoint2D*>(this);
 	const vtFeatureSetPoint3D *P3D = dynamic_cast<const vtFeatureSetPoint3D*>(this);
@@ -1304,7 +1304,7 @@ void vtFeatureSet::SetGeomType(OGRwkbGeometryType eGeomType)
 bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 {
 	// When copying field data, must use C locale
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Must be the same geometry type
 	if (pFromSet->GetGeomType() != GetGeomType())

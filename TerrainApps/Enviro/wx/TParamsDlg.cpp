@@ -299,7 +299,7 @@ TParamsDlg::~TParamsDlg()
 void TParamsDlg::SetParams(const TParams &Params)
 {
 	VTLOG("TParamsDlg::SetParams\n");
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Store main copy of the parameters
 	m_Params = Params;
@@ -426,7 +426,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 void TParamsDlg::GetParams(TParams &Params)
 {
 	VTLOG("TParamsDlg::GetParams\n");
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// overall name
 	m_Params.SetValueString(STR_NAME, (const char *) m_strTerrainName.mb_str(wxConvUTF8));

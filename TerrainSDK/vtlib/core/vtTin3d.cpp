@@ -97,7 +97,7 @@ void vtTin3d::MakeSurfaceMaterials()
  */
 void vtTin3d::MakeMaterialsFromOptions(const vtTagArray &options, bool bTextureCompression)
 {
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");	// for GetValueFloat
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");	// for GetValueFloat
 
 	const vtString color_map_name = options.GetValueString(STR_COLOR_MAP);
 	const vtString geotypical_name = options.GetValueString(STR_TEXTURE_GEOTYPICAL);

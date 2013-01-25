@@ -705,7 +705,7 @@ bool Builder::SampleElevationToTileset(BuilderView *pView, TilingOptions &opts,
 	VTLOG1("SampleElevationToTileset\n");
 
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Check that options are valid
 	CheckCompressionMethod(opts);
@@ -1140,7 +1140,7 @@ bool Builder::SampleImageryToTileset(BuilderView *pView, TilingOptions &opts,
 	}
 
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Size of each rectangular tile area
 	DPoint2 tile_dim(m_area.Width()/opts.cols, m_area.Height()/opts.rows);

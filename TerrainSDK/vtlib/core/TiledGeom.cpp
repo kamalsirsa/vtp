@@ -336,7 +336,7 @@ int request_callback(int col,int row,const uchar *mapfile,int hlod,
 	}
 
 	// libMini's databuf::read depends on American punctuation
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// we need to load (or get from cache) one or both: hfield and texture
 	if (mapfile!=NULL)

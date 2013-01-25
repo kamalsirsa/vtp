@@ -24,7 +24,7 @@ ColorMap::~ColorMap()
 bool ColorMap::Save(const char *fname) const
 {
 	// watch out for %f
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
@@ -46,7 +46,7 @@ bool ColorMap::Save(const char *fname) const
 bool ColorMap::Load(const char *fname)
 {
 	// watch out for %f
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(fname, "rb");
 	if (!fp)

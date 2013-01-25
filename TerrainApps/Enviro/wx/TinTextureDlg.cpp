@@ -58,7 +58,7 @@ TinTextureDlg::TinTextureDlg( wxWindow *parent, wxWindowID id, const wxString &t
 void TinTextureDlg::SetOptions(const vtTagArray &layer_tags)
 {
 	VTLOG("TinTextureDlg::SetOptions\n");
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// derived
 	m_strColorMap = wxString(layer_tags.GetValueString(STR_COLOR_MAP), wxConvUTF8);
@@ -75,7 +75,7 @@ void TinTextureDlg::SetOptions(const vtTagArray &layer_tags)
 void TinTextureDlg::GetOptions(vtTagArray &layer_tags)
 {
 	VTLOG("TinTextureDlg::GetOptions\n");
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// derived
 	if (m_bDeriveColor)

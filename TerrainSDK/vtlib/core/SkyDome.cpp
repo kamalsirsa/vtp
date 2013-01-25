@@ -839,7 +839,7 @@ void vtStarDome::SetStarFile(char *starpath)
  */
 bool vtStarDome::ReadStarData(const char *starfile)
 {
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	int n, numstars = 0, num_file_stars = 0;
 	float himag, lomag;

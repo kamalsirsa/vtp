@@ -301,7 +301,7 @@ float vtAnimPath::GetTotalTime()
 bool vtAnimPath::Write(const char *fname)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp) return false;
@@ -414,7 +414,7 @@ void AnimPathVisitor::startElement(const char *name, const XMLAttributes &atts)
 bool vtAnimPath::Read(const char *fname)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Clear before loading
 	Clear();

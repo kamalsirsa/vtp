@@ -1378,7 +1378,7 @@ bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 	VTLOG("WriteXML(%s)\n", filename);
 
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	GZOutput out(bGZip);
 	if (!gfopen(out, filename))
@@ -1438,7 +1438,7 @@ bool vtStructureArray::ReadXML(const char *pathname, bool progress_callback(int)
 	// The locale might be set to something European that interprets '.' as ','
 	//  and vice versa, which would break our usage of sscanf/atof terribly.
 	//  So, push the 'standard' locale, it is restored when it goes out of scope.
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// check to see if it's old or new format
 	bool bOldFormat = false;
@@ -1572,7 +1572,7 @@ bool vtStructureArray::WriteFootprintsToSHP(const char* filename)
 bool vtStructureArray::WriteFootprintsToCanoma3DV(const char* filename, const DRECT *area,
 												  const vtHeightField *pHF)
 {
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp3DV;
 	double x1, y1, x2, y2;

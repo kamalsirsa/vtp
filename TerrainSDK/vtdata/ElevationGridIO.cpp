@@ -2474,7 +2474,7 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	VTLOG("XYZ file: %s\n", szFileName);
 
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// first, test if we are comma or space delimited
 	char firstline[256];
@@ -2980,7 +2980,7 @@ bool vtElevationGrid::SaveToASC(const char *szFileName,
 bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(int)) const
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(szFileName, "wb");
 	if (!fp)
@@ -3084,7 +3084,7 @@ bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(
 bool vtElevationGrid::SaveToXYZ(const char *szFileName, bool progress_callback(int)) const
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(szFileName, "wb");
 	if (!fp)

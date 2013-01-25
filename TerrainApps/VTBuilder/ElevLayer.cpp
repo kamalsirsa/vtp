@@ -829,7 +829,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 {
 	// Avoid trouble with '.' and ',' in Europe - all the file readers assume
 	//  the default "C" locale.
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	wxString strExt = strFileName.AfterLast('.');
 	vtString fname = (const char *) strFileName.mb_str(wxConvUTF8);
@@ -1478,7 +1478,7 @@ FPoint3 LightDirection(float angle, float direction)
 bool vtElevLayer::WriteElevationTileset(TilingOptions &opts, BuilderView *pView)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Check that options are valid
 	CheckCompressionMethod(opts);

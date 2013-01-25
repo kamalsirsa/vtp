@@ -300,7 +300,7 @@ void TParamsVisitor::endElement(const char *name)
 
 bool TParams::LoadFromXML(const char *fname)
 {
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	VTLOG("\tReading TParams from '%s'\n", fname);
 

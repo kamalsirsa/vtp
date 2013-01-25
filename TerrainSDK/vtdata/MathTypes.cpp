@@ -1454,16 +1454,16 @@ const FPlane::IntersectionType FPlane::ThreePlanesIntersection(const FPlane& Pla
 
 
 /////////////////////////////////////////////////////////////////////////////
-// LocaleWrap
+// ScopedLocale
 
-LocaleWrap::LocaleWrap(int category, const char *locale_string)
+ScopedLocale::ScopedLocale(int category, const char *locale_string)
 {
 	// Store and override
 	m_old_locale = setlocale(category, NULL);
 	setlocale(category, locale_string);
 }
 
-LocaleWrap::~LocaleWrap()
+ScopedLocale::~ScopedLocale()
 {
 	// Restore
 	if (m_old_locale.size() > 0)

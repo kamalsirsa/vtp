@@ -83,7 +83,7 @@ and distributed under a completely free <a href="../license.txt">open source lic
 		<li>vtTime</li>
 		<li>Triangulate_f / Triangulate_d</li>
 		<li>dir_iter</li>
-		<li>LocaleWrap</li>
+		<li>ScopedLocale</li>
 		<li>ColorMap</li>
 		<li>HeightfieldChunker</li>
 	  </ul>

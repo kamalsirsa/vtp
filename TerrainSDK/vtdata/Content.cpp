@@ -372,7 +372,7 @@ void vtTagArray::CopyTagsFrom(const vtTagArray &v)
 // File IO
 bool vtTagArray::WriteToXML(const char *fname, const char *title) const
 {
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	FILE *fp = vtFileOpen(fname, "wb");
 	if (!fp)
@@ -425,7 +425,7 @@ void TagVisitor::data(const char *s, int length)
 
 bool vtTagArray::LoadFromXML(const char *fname)
 {
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	TagVisitor visitor(this);
 	try
@@ -736,7 +736,7 @@ vtItem *vtContentManager::FindItemByType(const char *type, const char *subtype)
 void vtContentManager::ReadXML(const char *filename)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	ContentVisitor visitor(this);
 	readXML(filename, visitor);
@@ -757,7 +757,7 @@ void vtContentManager::ReadXML(const char *filename)
 void vtContentManager::WriteXML(const char *filename) const
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	uint i, j;
 	FILE *fp = vtFileOpen(filename, "wb");

@@ -335,7 +335,7 @@ void MapServerDlg::UpdateURL()
 
 	// Avoid problem with european decimal punctuation; the BBOX string in
 	//  particular must have coords formatted as X.Y not X,Y
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	OGCServer &server = m_pServers->at(m_iServer);
 	vtString url = server.m_url;

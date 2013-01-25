@@ -314,7 +314,7 @@ void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 		CreateGeomGroup();
 
 	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 2D and 3D points, and 2D and 3D polylines
 	if (!m_pSetP2 && !m_pSetP3 && !m_pSetLS2 && !m_pSetLS3)
@@ -427,7 +427,7 @@ void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 {
 	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 2D and 3D polylines, and 2D polygons
 	if (!m_pSetLS2 && !m_pSetLS3 && !m_pSetPoly)
@@ -571,7 +571,7 @@ void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 void vtAbstractLayer::CreateLineGeometryForPoints()
 {
 	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// We support geometry for 3D point sets (line through the points),
 	if (!m_pSetP3)
@@ -637,7 +637,7 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
 		return;
 
 	// for GetValueFloat below
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Get the earth location of the label
 	DPoint2 p2;

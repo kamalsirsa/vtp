@@ -113,7 +113,7 @@ void vtProjection::SetUTMZone(int iZone)
 {
 	// It appears that even lightweight tasks like getting UTM zone
 	//  runs into trouble with the Locale ./, issue.
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// reset the name of the projection so that SetUTM() will set it
 	SetProjCS("unnamed");
@@ -137,7 +137,7 @@ int	vtProjection::GetUTMZone() const
 {
 	// It appears that even lightweight tasks like getting UTM zone
 	//  runs into trouble with the Locale ./, issue.
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	int north;
 	int zone = OGRSpatialReference::GetUTMZone(&north);
@@ -334,7 +334,7 @@ OGRErr vtProjection::SetGeogCSFromDatum(int iDatum)
 {
 	// It appears that even lightweight tasks like setting up a geographic
 	//  CRS somehow runs into trouble with the Locale ./, issue.
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	OGRErr err;
 	Clear();
@@ -416,7 +416,7 @@ OGRErr vtProjection::SetGeogCSFromDatum(int iDatum)
 bool vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum)
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	OGRErr err = SetGeogCSFromDatum(iDatum);
 	if (err != OGRERR_NONE)
@@ -563,7 +563,7 @@ bool vtProjection::ReadProjFile(const char *filename)
 	fclose(fp);
 
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// GDAL doesn't yet support utf-8 or wide filenames, so convert
 	vtString fname_local = prj_name.UTF8ToLocal();
@@ -1089,7 +1089,7 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 {
 	// It appears that even lightweight tasks like setting up a CRS Transform
 	//  somehow runs into trouble with the Locale ./, issue.
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	if (bLog)
 		LogConvertingProjections(pSource, pTarget);
@@ -1439,7 +1439,7 @@ bool GDALWrapper::FindPROJ4SO()
 bool GDALWrapper::TestPROJ4()
 {
 	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// Now test that PROJ4 is working.
 	VTLOG1("Testing ability to create coordinate transforms.\n");

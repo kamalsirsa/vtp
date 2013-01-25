@@ -372,7 +372,7 @@ bool vtUtilityMap::ReadOSM(const char *pathname, bool progress_callback(int))
 {
 	// Avoid trouble with '.' and ',' in Europe
 	//  OSM always has English punctuation
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	UtilOSMVisitor visitor(this);
 	try
