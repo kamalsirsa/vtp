@@ -197,6 +197,18 @@ void Builder::ExportRAWINF()
 		DisplayAndLog("Error writing file.");
 }
 
+void Builder::ExportRAW_Unity()
+{
+	const vtString fname = GetActiveLayer()->GetExportFilename(FSTRING_RAW);
+	if (fname == "")
+		return;
+	bool success = GetActiveElevLayer()->GetGrid()->SaveToRAW_Unity(fname);
+	if (success)
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+	else
+		DisplayAndLog("Error writing file.");
+}
+
 void Builder::ExportChunkLOD()
 {
 	// Check dimensions; must be 2^n+1 for .chu

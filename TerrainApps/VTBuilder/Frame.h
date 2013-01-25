@@ -306,8 +306,8 @@ protected:
 	void OnUpdateAreaZoomAll(wxUpdateUIEvent& event);
 	void OnUpdateAreaZoomLayer(wxUpdateUIEvent& event);
 	void OnUpdateAreaMatch(wxUpdateUIEvent& event);
-	void OnUpdateAreaExportElev(wxUpdateUIEvent& event);
-	void OnUpdateAreaExportImage(wxUpdateUIEvent& event);
+	void OnUpdateAreaSampleElev(wxUpdateUIEvent& event);
+	void OnUpdateAreaSampleImage(wxUpdateUIEvent& event);
 	void OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event);
 	void OnUpdateAreaVegDensity(wxUpdateUIEvent& event);
 	void OnUpdateAreaRequestWMS(wxUpdateUIEvent& event);

@@ -227,6 +227,7 @@ public:
 	void ExportVRML();
 	void ExportXYZ();
 	void ExportRAWINF();
+	void ExportRAW_Unity();
 	void ExportChunkLOD();
 	void ExportPNG16();
 	void Export3TX();

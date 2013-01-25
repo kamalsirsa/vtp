@@ -326,24 +326,24 @@ EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
 EVT_MENU(ID_AREA_MATCH,				MainFrame::OnAreaMatch)
 EVT_MENU(ID_AREA_SAMPLE_ELEV,		MainFrame::OnAreaSampleElev)
 EVT_MENU(ID_AREA_SAMPLE_IMAGE,		MainFrame::OnAreaSampleImage)
-EVT_MENU(ID_AREA_SAMPLE_ELEV_OPT,	MainFrame::OnAreaSampleElevTileset)
-EVT_MENU(ID_AREA_SAMPLE_IMAGE_OPT,	MainFrame::OnAreaSampleImageTileset)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 EVT_MENU(ID_AREA_VEG_DENSITY,		MainFrame::OnAreaVegDensity)
 EVT_MENU(ID_AREA_REQUEST_WFS,		MainFrame::OnAreaRequestWFS)
 EVT_MENU(ID_AREA_REQUEST_WMS,		MainFrame::OnAreaRequestWMS)
+EVT_MENU(ID_AREA_SAMPLE_ELEV_OPT,	MainFrame::OnAreaSampleElevTileset)
+EVT_MENU(ID_AREA_SAMPLE_IMAGE_OPT,	MainFrame::OnAreaSampleImageTileset)
 
 EVT_UPDATE_UI(ID_AREA_ZOOM_ALL,		MainFrame::OnUpdateAreaZoomAll)
 EVT_UPDATE_UI(ID_AREA_ZOOM_LAYER,	MainFrame::OnUpdateAreaZoomLayer)
 EVT_UPDATE_UI(ID_AREA_MATCH,		MainFrame::OnUpdateAreaMatch)
-EVT_UPDATE_UI(ID_AREA_SAMPLE_ELEV,	MainFrame::OnUpdateAreaExportElev)
-EVT_UPDATE_UI(ID_AREA_SAMPLE_ELEV_OPT,MainFrame::OnUpdateAreaExportElev)
-EVT_UPDATE_UI(ID_AREA_SAMPLE_IMAGE_OPT,MainFrame::OnUpdateAreaExportImage)
-EVT_UPDATE_UI(ID_AREA_SAMPLE_IMAGE,	MainFrame::OnUpdateAreaExportImage)
+EVT_UPDATE_UI(ID_AREA_SAMPLE_ELEV,	MainFrame::OnUpdateAreaSampleElev)
+EVT_UPDATE_UI(ID_AREA_SAMPLE_IMAGE,	MainFrame::OnUpdateAreaSampleImage)
 EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 EVT_UPDATE_UI(ID_AREA_VEG_DENSITY,	MainFrame::OnUpdateAreaVegDensity)
 EVT_UPDATE_UI(ID_AREA_REQUEST_WFS,	MainFrame::OnUpdateAreaRequestWMS)
 EVT_UPDATE_UI(ID_AREA_REQUEST_WMS,	MainFrame::OnUpdateAreaRequestWMS)
+EVT_UPDATE_UI(ID_AREA_SAMPLE_ELEV_OPT,	MainFrame::OnUpdateAreaSampleElev)
+EVT_UPDATE_UI(ID_AREA_SAMPLE_IMAGE_OPT,	MainFrame::OnUpdateAreaSampleImage)
 
 EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
 EVT_MENU(ID_HELP_DOC_LOCAL,		MainFrame::OnHelpDocLocal)
@@ -536,7 +536,7 @@ void MainFrame::CreateMenus()
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _("&Merge shared TIN vertices"));
 	elevMenu->AppendCheckItem(ID_ELEV_TRIMTIN, _("Trim TIN triangles by line segment"));
-	m_pMenuBar->Append(elevMenu, _("Elev&ation"));
+	m_pMenuBar->Append(elevMenu, _("Eleva&tion"));
 	m_iLayerMenu[LT_ELEVATION] = menu_num;
 	menu_num++;
 
@@ -1436,7 +1436,7 @@ void MainFrame::OnAreaSampleImageTileset(wxCommandEvent &event)
 	AreaSampleImageTileset(m_pView);
 }
 
-void MainFrame::OnUpdateAreaExportElev(wxUpdateUIEvent& event)
+void MainFrame::OnUpdateAreaSampleElev(wxUpdateUIEvent& event)
 {
 	event.Enable(LayersOfType(LT_ELEVATION) > 0 && !m_area.IsEmpty());
 }
@@ -1446,7 +1446,7 @@ void MainFrame::OnAreaSampleImage(wxCommandEvent &event)
 	AreaSampleImages(m_pView);
 }
 
-void MainFrame::OnUpdateAreaExportImage(wxUpdateUIEvent& event)
+void MainFrame::OnUpdateAreaSampleImage(wxUpdateUIEvent& event)
 {
 	event.Enable(LayersOfType(LT_IMAGE) > 0 && !m_area.IsEmpty());
 }
@@ -2151,6 +2151,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 		choices.Add(_T("MSI Planet"));
 		choices.Add(_T("PNG (16-bit greyscale)"));
 		choices.Add(_T("RAW/INF for MS Flight Simulator"));
+		choices.Add(_T("RAW (Scaled to 8-bit) for Unity"));
 		choices.Add(_T("STM"));
 		choices.Add(_T("TIN (.itf)"));
 		choices.Add(_T("TerraGen"));
@@ -2169,6 +2170,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
 		_("Export to file format:"), choices);
+	dlg.SetSize(-1, 340);		// List is long, make the dialog taller.
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -2184,11 +2186,12 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 		case 5: ExportPlanet(); break;
 		case 6: ExportPNG16(); break;
 		case 7: ExportRAWINF(); break;
-		case 8: ExportSTM(); break;
-		case 9: ExportTIN(); break;
-		case 10: ExportTerragen(); break;
-		case 11: ExportVRML(); break;
-		case 12: ExportXYZ(); break;
+		case 8: ExportRAW_Unity(); break;
+		case 9: ExportSTM(); break;
+		case 10: ExportTIN(); break;
+		case 11: ExportTerragen(); break;
+		case 12: ExportVRML(); break;
+		case 13: ExportXYZ(); break;
 		}
 	}
 	else	// is a TIN

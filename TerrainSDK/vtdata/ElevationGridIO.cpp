@@ -3175,6 +3175,36 @@ bool vtElevationGrid::SaveToRAWINF(const char *szFileName, bool progress_callbac
 }
 
 /**
+ * Write elevation to a .raw file, the way Unity import expects it:
+ * Scaled to 8 bits (0-255).
+ */
+bool vtElevationGrid::SaveToRAW_Unity(const char *szFileName, bool progress_callback(int)) const
+{
+	float fMin, fMax;
+	GetHeightExtents(fMin, fMax);
+	const float fRange = fMax - fMin;
+
+	// First, write the raw data
+	FILE *fp = vtFileOpen(szFileName, "wb");
+	if (!fp)
+		return false;
+	int i, j;
+	for (j = 0; j < m_iSize.y; j++)
+	{
+		if (progress_callback != NULL)
+			progress_callback(j * 100 / m_iSize.y);
+		for (i = 0; i < m_iSize.x; i++)
+		{
+			float val = GetFValue(i, j);
+			uchar s = (uchar) ((val - fMin) / fRange * 255);
+			fwrite(&s, 1, sizeof(uchar), fp);
+		}
+	}
+	fclose(fp);
+	return true;
+}
+
+/**
  * Write elevation a 16-bit greyscale PNG file.
  */
 bool vtElevationGrid::SaveToPNG16(const char *fname)

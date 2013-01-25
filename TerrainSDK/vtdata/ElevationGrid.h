@@ -114,6 +114,7 @@ public:
 	bool SaveToVRML(const char *szFileName, bool progress_callback(int) = NULL) const;
 	bool SaveToXYZ(const char *szFileName, bool progress_callback(int) = NULL) const;
 	bool SaveToRAWINF(const char *szFileName, bool progress_callback(int) = NULL) const;
+	bool SaveToRAW_Unity(const char *szFileName, bool progress_callback(int) = NULL) const;
 	bool SaveToPNG16(const char *fname);
 
 	// Set/Get height values
