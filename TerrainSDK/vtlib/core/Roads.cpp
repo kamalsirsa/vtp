@@ -15,7 +15,6 @@
 #include "Roads.h"
 #include "Content3d.h"	// content manager for sign models
 
-#define ROAD_HEIGHT			(vtRoadMap3d::s_fHeight)	// height about the ground
 #define ROADSIDE_WIDTH		2.0f
 #define ROADSIDE_DEPTH		-ROADSIDE_WIDTH
 
@@ -102,7 +101,6 @@ void NodeGeom::BuildIntersection()
 	FPoint3 v, v_next, v_prev;
 	FPoint3 pn0, pn1;
 	float w;			// link width
-	const FPoint3 up(0, ROAD_HEIGHT, 0);
 
 	SortLinksByAngle();
 
@@ -124,8 +122,8 @@ void NodeGeom::BuildIntersection()
 		pn1 = GetAdjacentRoadpoint(0);
 		v = CreateRoadVector(m_p3, pn1, w);
 
-		m_v[0].Set(m_p3.x + v.z, m_p3.y + ROAD_HEIGHT, m_p3.z - v.x);
-		m_v[1].Set(m_p3.x - v.z, m_p3.y + ROAD_HEIGHT, m_p3.z + v.x);
+		m_v[0].Set(m_p3.x + v.z, m_p3.y, m_p3.z - v.x);
+		m_v[1].Set(m_p3.x - v.z, m_p3.y, m_p3.z + v.x);
 
 		one++;
 	}
@@ -143,8 +141,8 @@ void NodeGeom::BuildIntersection()
 
 		v = CreateRoadVector(pn0, pn1, w);
 
-		m_v[0].Set(m_p3.x + v.z, m_p3.y + ROAD_HEIGHT, m_p3.z - v.x);
-		m_v[1].Set(m_p3.x - v.z, m_p3.y + ROAD_HEIGHT, m_p3.z + v.x);
+		m_v[0].Set(m_p3.x + v.z, m_p3.y, m_p3.z - v.x);
+		m_v[1].Set(m_p3.x - v.z, m_p3.y, m_p3.z + v.x);
 
 		two++;
 	}
@@ -230,8 +228,8 @@ void NodeGeom::BuildIntersection()
 			norm *= pL->m_fLeftWidth;
 
 			float dist = distance_to_intersection[i].z;
-			m_v[i * 2 + 0] = m_p3 + norm + (v * dist) + up;
-			m_v[i * 2 + 1] = m_p3 - norm + (v * dist) + up;
+			m_v[i * 2 + 0] = m_p3 + norm + (v * dist);
+			m_v[i * 2 + 1] = m_p3 - norm + (v * dist);
 		}
 		many++;
 	}
@@ -284,21 +282,16 @@ vtMesh *NodeGeom::GenerateGeometry()
 	if (NumLinks() < 3)
 		return NULL;
 
-	int j;
-	FPoint3 p, upvector(0.0f, 1.0f, 0.0f);
+	const FPoint3 upvector(0.0f, 1.0f, 0.0f);
 
 	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords | VT_Normals, NumLinks()*2 + 1);
 	int verts = 0;
 
-	// find the approximate center of the junction
-	p = m_p3;
-	p.y += ROAD_HEIGHT;
-
-	pMesh->SetVtxPUV(verts, p, 0.5, 0.5f);
+	pMesh->SetVtxPUV(verts, m_p3, 0.5, 0.5f);
 	pMesh->SetVtxNormal(verts, upvector);
 	verts++;
 
-	for (j = 0; j < NumLinks(); j++)
+	for (int j = 0; j < NumLinks(); j++)
 	{
 		pMesh->SetVtxPUV(verts, m_v[j*2+1], 0.0, 1.0f);
 		pMesh->SetVtxPUV(verts+1, m_v[j*2], 1.0, 1.0f);
@@ -311,7 +304,7 @@ vtMesh *NodeGeom::GenerateGeometry()
 	verts = 0;
 	int idx[100];
 	idx[verts++] = 0;
-	for (j = 0; j < NumLinks(); j++)
+	for (int j = 0; j < NumLinks(); j++)
 	{
 		idx[verts++] = (j*2+1);
 		idx[verts++] = (j*2+2);
@@ -346,7 +339,6 @@ LinkGeom::~LinkGeom()
 void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 {
 	float length = 0.0f;
-	const FPoint3 up(0, ROAD_HEIGHT, 0);
 
 	//  for each point in the link, determine coordinates
 	uint j, size = GetSize();
@@ -374,7 +366,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 		{
 			// add 2 vertices at this point, copied from the start node
 			GetNode(0)->FindVerticesForLink(this, true, right, left);	// true means start
-			wider = (right-left).Length() / (m_fLeftWidth + m_fRightWidth);
+			//wider = (right-left).Length() / (m_fLeftWidth + m_fRightWidth);
 		}
 		if (j > 0 && j < size-1)
 		{
@@ -383,17 +375,18 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 			wider = AngleSideVector(m_centerline[j-1], m_centerline[j], m_centerline[j+1], bisector);
 
 			// and elevate the link above the terrain
-			left = m_centerline[j] - bisector + up;
-			right = m_centerline[j] + bisector + up;
+			left = m_centerline[j] - bisector;
+			right = m_centerline[j] + bisector;
 		}
 		if (j == size-1)
 		{
 			// add 2 vertices at this point, copied from the end node
 			GetNode(1)->FindVerticesForLink(this, false, left, right);	// false means end
-			wider = (right-left).Length() / (m_fLeftWidth + m_fRightWidth);
+			//wider = (right-left).Length() / (m_fLeftWidth + m_fRightWidth);
 		}
 		bi.crossvector[j] = right - left;
-		bi.center[j] = left + (bi.crossvector[j] * 0.5f);
+//		bi.center[j] = left + (bi.crossvector[j] * 0.5f);
+		bi.center[j] = m_centerline[j];
 		bi.crossvector[j].Normalize();
 		bi.crossvector[j] *= wider;
 	}
@@ -487,7 +480,8 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	RoadBuildInfo bi(GetSize());
 	SetupBuildInfo(bi);
 
-	float offset = -m_fLeftWidth;
+	const float center_width = m_iLanes * m_fLaneWidth;
+	float offset = -(center_width / 2);
 	if (m_iFlags & RF_MARGIN)
 		offset -= m_fMarginWidth;
 	if (m_iFlags & RF_PARKING_LEFT)
@@ -557,7 +551,6 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	}
 
 	// create main road surface
-	const float center_width = m_iLanes * m_fLaneWidth;
 	AddRoadStrip(pMesh, bi,
 				-center_width/2, center_width/2,
 				0.0f, 0.0f,
@@ -709,12 +702,12 @@ float LinkGeom::Length()
 
 ///////////////////////////////////////////////////////////////////
 
-float vtRoadMap3d::s_fHeight = 1.0f;
-
 vtRoadMap3d::vtRoadMap3d()
 {
+	m_pTransform = NULL;
 	m_pGroup = NULL;
 	m_pMats = NULL;
+	m_fGroundOffset = 1.0f;
 }
 
 vtRoadMap3d::~vtRoadMap3d()
@@ -787,7 +780,7 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 }
 
 
-vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
+vtTransform *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	bool bHwy, bool bPaved, bool bDirt, bool progress_callback(int))
 {
 	VTLOG("   vtRoadMap3d::GenerateGeometry\n");
@@ -798,7 +791,11 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	m_pGroup = new vtGroup;
 	m_pGroup->setName("Roads");
 
-	// wrap with an array of simple LOD nodes
+	m_pTransform = new vtTransform;
+	m_pTransform->addChild(m_pGroup);
+	m_pTransform->SetTrans(FPoint3(0, m_fGroundOffset, 0));
+
+	// We wrap the roads' geometry with an array of simple LOD nodes
 	int a, b;
 	for (a = 0; a < ROAD_CLUSTER; a++)
 		for (b = 0; b < ROAD_CLUSTER; b++)
@@ -849,8 +846,8 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 			progress_callback(count * 100 / total);
 	}
 
-	// return top roadmap group, ready to be added to scene graph
-	return m_pGroup;
+	// return the top group, ready to be added to scene graph
+	return m_pTransform;
 }
 
 int vtRoadMap3d::_CreateMaterial(const char *texture_filename, bool bTransparency)
@@ -997,12 +994,18 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 			{
 				offset = pN->m_p3 - (unit * 6.0f) + (perp * (link->m_fRightWidth));
 			}
-			trans->Translate(FPoint3(offset.x, offset.y + s_fHeight, offset.z));
+			trans->Translate(offset);
 			pLodGrid->AddToGrid(trans);
 		}
 	}
 }
 
+void vtRoadMap3d::SetHeightOffGround(float fHeight)
+{
+	m_fGroundOffset = fHeight;
+	if (m_pTransform)
+		m_pTransform->SetTrans(FPoint3(0, m_fGroundOffset, 0));
+}
 
 void vtRoadMap3d::_GatherExtents()
 {

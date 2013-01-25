@@ -184,19 +184,18 @@ public:
 	void DrapeOnTerrain(vtHeightField3d *pHeightField);
 	void BuildIntersections();
 	void AddMeshToGrid(vtMesh *pMesh, int iMatIdx);
-	vtGroup *GenerateGeometry(bool do_texture, bool bHwy, bool bPaved,
+	vtTransform *GenerateGeometry(bool do_texture, bool bHwy, bool bPaved,
 		bool bDirt, bool progress_callback(int) = NULL);
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
-	void SetHeightOffGround(float fHeight) { s_fHeight = fHeight; }
+	void SetHeightOffGround(float fHeight);
+	float GetHeightOffGround() { return m_fGroundOffset; }
 	void DetermineSurfaceAppearance();
 
 	void SetLodDistance(float fDistance);
 	float GetLodDistance();
 
 public:
-	static float s_fHeight;
-
 	// virtual textures
 	VirtualTexture	m_vt[VTI_TOTAL];
 
@@ -214,13 +213,15 @@ protected:
 	void _CreateMaterials(bool do_texture);
 	void _GatherExtents();
 
-	vtGroup	*m_pGroup;
+	vtTransform	*m_pTransform;	// For elevating the roads above the terrain.
+	vtGroup		*m_pGroup;
 	vtMaterialArrayPtr m_pMats;
 
 	vtLOD		*m_pRoads[ROAD_CLUSTER][ROAD_CLUSTER];
 	FBox3		m_extents;
 	FPoint3		m_extent_range;
 	float		m_fLodDistance;		// in meters
+	float		m_fGroundOffset;	// in meters
 };
 typedef osg::ref_ptr<vtRoadMap3d> vtRoadMap3dPtr;
 

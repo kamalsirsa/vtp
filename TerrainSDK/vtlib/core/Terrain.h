@@ -464,7 +464,7 @@ protected:
 	vtFeatureLoader *m_pFeatureLoader;
 
 	// roads
-	vtGroup			*m_pRoadGroup;
+	vtTransform		*m_pRoadGroup;
 	vtRoadMap3dPtr	m_pRoadMap;
 
 	// plants
