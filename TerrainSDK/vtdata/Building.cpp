@@ -482,7 +482,7 @@ bool vtLevel::IsUniform() const
 	return true;
 }
 
-void vtLevel::DetermineLocalFootprint(float fHeight, const vtLocalConversion &local_cs)
+void vtLevel::DetermineLocalFootprint(float fHeight, const LocalCS &local_cs)
 {
 	const uint rings = m_Foot.size();
 	FPoint3 lp;
@@ -498,7 +498,7 @@ void vtLevel::DetermineLocalFootprint(float fHeight, const vtLocalConversion &lo
 		for (unsigned i = 0; i < edges; i++)
 		{
 			const DPoint2 &p = dline2[i];
-			local_cs.ConvertFromEarth(p, lp.x, lp.z);
+			local_cs.EarthToLocal(p, lp.x, lp.z);
 			lp.y = fHeight;
 			fline3.SetAt(i, lp);
 		}
@@ -1414,7 +1414,7 @@ void vtBuilding::DetermineLocalFootprints()
 	GetBaseLevelCenter(center);
 
 	// The local conversion will be use to make the local footprints.
-	vtLocalConversion local_cs;
+	LocalCS local_cs;
 	local_cs.Setup(m_pCRS->GetUnits(), center);
 
 	int i;

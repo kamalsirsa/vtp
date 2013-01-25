@@ -186,7 +186,7 @@ void NevadaTerrain::CreatePast()
 	m_pPast->SetEnabled(false);
 
 	FPoint3 center;
-	GetLocalConversion().convert_earth_to_local_xz(MAN_LON, MAN_LAT, center.x, center.z);
+	GetLocalConversion().EarthToLocal(MAN_LON, MAN_LAT, center.x, center.z);
 
 #if ENABLE_PLANTS	// enable/disable plants
 	//tree generation

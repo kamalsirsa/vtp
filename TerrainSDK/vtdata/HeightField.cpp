@@ -68,7 +68,7 @@ bool vtHeightField3d::ConvertEarthToSurfacePoint(const DPoint2 &epos,
 	FPoint3 &p3, int iCultureFlags, bool bTrue) const
 {
 	// convert earth -> XZ
-	m_Conversion.ConvertFromEarth(epos, p3.x, p3.z);
+	m_Conversion.EarthToLocal(epos, p3.x, p3.z);
 
 	// look up altitude
 	return FindAltitudeAtPoint(p3, p3.y, bTrue, iCultureFlags);
@@ -145,7 +145,7 @@ float vtHeightField3d::LineOnSurface(const DLine2 &line, float fSpacing, float f
 		// Estimate how many steps to subdivide this line into
 		const double dLinearLength = line.Length();
 		float fLinearLength, dummy;
-		m_Conversion.ConvertVectorFromEarth(DPoint2(dLinearLength, 0.0), fLinearLength, dummy);
+		m_Conversion.VectorEarthToLocal(DPoint2(dLinearLength, 0.0), fLinearLength, dummy);
 		double full = (double) (spline_points-1);
 		int iSteps = (uint) (fLinearLength / fSpacing);
 		if (iSteps < 3)
@@ -157,7 +157,7 @@ float vtHeightField3d::LineOnSurface(const DLine2 &line, float fSpacing, float f
 		{
 			spline.Interpolate(f, &p3);
 
-			m_Conversion.convert_earth_to_local_xz(p3.x, p3.y, v.x, v.z);
+			m_Conversion.EarthToLocal(p3.x, p3.y, v.x, v.z);
 			FindAltitudeAtPoint(v, v.y, bTrue);
 			v.y += fOffset;
 			output.Append(v);
@@ -178,7 +178,7 @@ float vtHeightField3d::LineOnSurface(const DLine2 &line, float fSpacing, float f
 			if (bInterp)
 			{
 				v1 = v2;
-				m_Conversion.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
+				m_Conversion.EarthToLocal(line[i].x, line[i].y, v2.x, v2.z);
 				if (i == 0)
 					continue;
 
@@ -205,7 +205,7 @@ float vtHeightField3d::LineOnSurface(const DLine2 &line, float fSpacing, float f
 			}
 			else
 			{
-				m_Conversion.ConvertFromEarth(line[i], v.x, v.z);
+				m_Conversion.EarthToLocal(line[i], v.x, v.z);
 				FindAltitudeAtPoint(v, v.y, bTrue);
 				v.y += fOffset;
 				output.Append(v);
@@ -241,11 +241,11 @@ void vtHeightField3d::SetEarthExtents(const DRECT &ext)
 
 void vtHeightField3d::UpdateWorldExtents()
 {
-	m_Conversion.convert_earth_to_local_xz(
+	m_Conversion.EarthToLocal(
 		m_EarthExtents.left, m_EarthExtents.bottom,
 		m_WorldExtents.left, m_WorldExtents.bottom);
 
-	m_Conversion.convert_earth_to_local_xz(
+	m_Conversion.EarthToLocal(
 		m_EarthExtents.right, m_EarthExtents.top,
 		m_WorldExtents.right, m_WorldExtents.top);
 
@@ -1112,7 +1112,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				if (lightmap.Get(x,z) < 1)
 				{
 					// 3D elevation query to get slope
-					m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
+					m_Conversion.EarthToLocal(pos, p3.x, p3.z);
 					FindAltitudeAtPoint(p3, p3.y, true, 0, &normal);
 
 					//*****************************************
@@ -1167,7 +1167,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				continue;
 
 			// 3D elevation query to get slope
-			m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
+			m_Conversion.EarthToLocal(pos, p3.x, p3.z);
 			FindAltitudeAtPoint(p3, p3.y, true, 0, &normal);
 
 			//*****************************************

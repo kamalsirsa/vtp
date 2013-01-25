@@ -102,8 +102,8 @@ public:
 	vtTransform *GetTransform() { return m_pTransform; }
 
 	/// Define the conversion between this saver and terrain coordinates
-	void SetConversion(const vtLocalConversion &conv) { m_conv = conv; }
-	const vtLocalConversion &GetConversion() { return m_conv; }
+	void SetConversion(const LocalCS &conv) { m_conv = conv; }
+	const LocalCS &GetConversion() { return m_conv; }
 
 	/// Define the projection of the object attached to this LocationSaver
 	void SetProjection(const vtProjection &proj);
@@ -120,7 +120,7 @@ protected:
 	// Implementation
 	// Store information necessary to convert from global earth CS
 	// to the local CS
-	vtLocalConversion	m_conv;
+	LocalCS	m_conv;
 	vtProjection		m_proj;
 	vtTransform			*m_pTransform;
 

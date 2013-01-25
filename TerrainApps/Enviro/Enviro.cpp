@@ -1681,12 +1681,12 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 		pTerr->DeselectAllPlants();
 	}
 
-	const vtLocalConversion &conv = pTerr->GetLocalConversion();
+	const LocalCS &conv = pTerr->GetLocalConversion();
 
 	// SelectionCutoff is in meters, but the picking functions work in
 	//  Earth coordinates.  Try to convert it to earth horiz units.
 	DPoint2 eoffset;
-	conv.ConvertVectorToEarth(g_Options.m_fSelectionCutoff, 0, eoffset);
+	conv.VectorLocalToEarth(g_Options.m_fSelectionCutoff, 0, eoffset);
 	double epsilon = eoffset.x;
 	VTLOG("epsilon %lf, ", epsilon);
 
@@ -1694,7 +1694,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 
 	// We also want to use a small (2m) buffer around linear features, so they
 	//  can be picked even if they are inside/on top of a building.
-	conv.ConvertVectorToEarth(2.0f, 0, eoffset);
+	conv.VectorLocalToEarth(2.0f, 0, eoffset);
 	double linear_buffer = eoffset.x;
 
 	// Look at the distance to each type of object
@@ -1729,7 +1729,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	// Check Vehicles
 	m_bSelectedVehicle = false;
 	FPoint3 wpos;
-	conv.ConvertFromEarth(m_EarthPos, wpos);
+	conv.EarthToLocal(m_EarthPos, wpos);
 	m_Vehicles.VisualDeselectAll();
 	int vehicle = m_Vehicles.FindClosestVehicle(wpos, dist4);
 	if (dist4 > g_Options.m_fSelectionCutoff)
@@ -2068,7 +2068,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 				CarEngine *eng = m_Vehicles.GetSelectedCarEngine();
 				if (eng)
 				{
-					const vtLocalConversion &conv = pTerr->GetLocalConversion();
+					const LocalCS &conv = pTerr->GetLocalConversion();
 					eng->SetEarthPos(conv, eng->GetEarthPos(conv) + ground_delta);
 				}
 			}
@@ -2603,8 +2603,8 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 		// Spacing is in meters, but the picking functions work in
 		//  Earth coordinates.  Try to convert it to earth horiz units.
 		DPoint2 eoffset;
-		const vtLocalConversion &conv = pTerr->GetLocalConversion();
-		conv.ConvertVectorToEarth(m_PlantOpt.m_fSpacing, 0, eoffset);
+		const LocalCS &conv = pTerr->GetLocalConversion();
+		conv.VectorLocalToEarth(m_PlantOpt.m_fSpacing, 0, eoffset);
 		double mininum_spacing = eoffset.x;
 
 		for (int i = 0; i < size; i++)
@@ -2699,7 +2699,7 @@ void Enviro::DescribeCoordinatesTerrain(vtString &str1, vtString &str2)
 		vtTerrain *pTerr = GetCurrentTerrain();
 		if (pTerr)
 		{
-			const vtLocalConversion &conv = pTerr->GetLocalConversion();
+			const LocalCS &conv = pTerr->GetLocalConversion();
 			FormatCoordString(str2, epos, conv.GetUnits(), true);
 		}
 		else

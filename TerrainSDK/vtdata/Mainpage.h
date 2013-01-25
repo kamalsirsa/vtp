@@ -13,7 +13,7 @@ and distributed under a completely free <a href="../license.txt">open source lic
 	  <p>Coordinate Systems</p>
 	  <ul>
 		<li>vtProjection</li>
-		<li>vtLocalConversion</li>
+		<li>LocalCS</li>
 		<li>DymaxIcosa</li>
 	  </ul>
 	  <p>Built Structures</p>

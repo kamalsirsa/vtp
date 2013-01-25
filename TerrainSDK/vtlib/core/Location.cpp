@@ -238,8 +238,8 @@ bool vtLocationSaver::StoreTo(uint num, const LocNameString &name)
 
 	// convert to earth coords
 	DPoint3 epos1, epos2;
-	m_conv.ConvertToEarth(pos1, epos1);
-	m_conv.ConvertToEarth(pos2, epos2);
+	m_conv.LocalToEarth(pos1, epos1);
+	m_conv.LocalToEarth(pos2, epos2);
 
 	if (!m_pConvertToWGS)
 	{
@@ -297,8 +297,8 @@ bool vtLocationSaver::RecallFrom(int num)
 
 	// convert to terrain coords
 	FPoint3 pos1, pos2;
-	m_conv.ConvertFromEarth(epos1, pos1);
-	m_conv.ConvertFromEarth(epos2, pos2);
+	m_conv.EarthToLocal(epos1, pos1);
+	m_conv.EarthToLocal(epos2, pos2);
 
 	m_pTransform->SetTrans(pos1);
 	m_pTransform->PointTowards(pos2);

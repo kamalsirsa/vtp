@@ -22,17 +22,6 @@
 // Some class names are just too long!
 #define OCTransform OGRCoordinateTransformation
 
-// Do not change the order of this enumeration
-enum LinearUnits
-{
-	LU_DEGREES,
-	LU_METERS,
-	LU_FEET_INT,	// International Foot
-	LU_FEET_US,		// U.S. Survey Foot
-	LU_UNITEDGE,	// Unit Edge Icosahedron: Dymaxion Projection
-	LU_UNKNOWN
-};
-
 // Define a few common datums for convenience
 #define EPSG_DATUM_OLD_HAWAIIAN	6135
 #define EPSG_DATUM_PUERTO_RICO	6139
@@ -43,6 +32,7 @@ enum LinearUnits
 
 #include "ogr_spatialref.h"
 #include "MathTypes.h"
+#include "Units.h"
 #include "ScopedPtr.h"
 
 // A common use is to allocate a transform, then you want it to free itself.

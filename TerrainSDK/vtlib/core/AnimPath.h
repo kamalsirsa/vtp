@@ -62,7 +62,7 @@ public:
 	virtual ~vtAnimPath();
 
 	/// Must tell the AnimPath what projection its points are in, for serialization.
-	bool SetProjection(const vtProjection &proj, const vtLocalConversion &conv);
+	bool SetProjection(const vtProjection &proj, const LocalCS &conv);
 
 	/// Get the transformation matrix for a point in time.
 	bool GetMatrix(double time, FMatrix4 &matrix, bool bPosOnly) const
@@ -148,7 +148,7 @@ protected:
 	vtProjection	m_proj;
 	OCTransform		*m_pConvertToWGS;
 	OCTransform		*m_pConvertFromWGS;
-	vtLocalConversion m_conv;
+	LocalCS m_conv;
 	friend class AnimPathVisitor;
 };
 typedef osg::ref_ptr<vtAnimPath> vtAnimPathPtr;

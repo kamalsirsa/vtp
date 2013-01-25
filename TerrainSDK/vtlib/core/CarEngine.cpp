@@ -115,19 +115,19 @@ void CarEngine::SetSpeed(float fMetersPerSec)
 	m_fSpeed = fMetersPerSec;
 }
 
-DPoint2 CarEngine::GetEarthPos(const vtLocalConversion &conv)
+DPoint2 CarEngine::GetEarthPos(const LocalCS &conv)
 {
 	// convert terrain to earth coords
 	DPoint3 d3;
-	conv.ConvertToEarth(m_vCurPos, d3);
+	conv.LocalToEarth(m_vCurPos, d3);
 	return DPoint2(d3.x, d3.y);
 }
 
-void CarEngine::SetEarthPos(const vtLocalConversion &conv, const DPoint2 &pos)
+void CarEngine::SetEarthPos(const LocalCS &conv, const DPoint2 &pos)
 {
 	// convert earth to terrain coords
 	DPoint3 d3(pos.x, pos.y, 0);
-	conv.ConvertFromEarth(d3, m_vCurPos);
+	conv.EarthToLocal(d3, m_vCurPos);
 
 	ApplyCurrentLocation(true);
 }

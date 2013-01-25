@@ -1362,7 +1362,7 @@ bool vtTin::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 {
 	// Convert to 2D earth point, and test vs. TIN triangles
 	DPoint3 earth;
-	m_Conversion.ConvertToEarth(p3, earth);
+	m_Conversion.LocalToEarth(p3, earth);
 
 	// If we need to provide a normal, do a separate test that gets the triangle
 	if (vNormal != NULL)
@@ -1387,9 +1387,9 @@ FPoint3 vtTin::GetTriangleNormal(int iTriangle) const
 	const DPoint2 &p2 = m_vert[v1];
 	const DPoint2 &p3 = m_vert[v2];
 	FPoint3 wp0, wp1, wp2;
-	m_Conversion.ConvertFromEarth(DPoint3(p1.x, p1.y, m_z[v0]), wp0);
-	m_Conversion.ConvertFromEarth(DPoint3(p2.x, p2.y, m_z[v1]), wp1);
-	m_Conversion.ConvertFromEarth(DPoint3(p3.x, p3.y, m_z[v2]), wp2);
+	m_Conversion.EarthToLocal(DPoint3(p1.x, p1.y, m_z[v0]), wp0);
+	m_Conversion.EarthToLocal(DPoint3(p2.x, p2.y, m_z[v1]), wp1);
+	m_Conversion.EarthToLocal(DPoint3(p3.x, p3.y, m_z[v2]), wp2);
 	FPoint3 norm = (wp1 - wp0).Cross(wp2 - wp0);
 	norm.Normalize();
 	return norm;

@@ -126,7 +126,7 @@ public:
 		bool bInterp, bool bCurve, bool bTrue, FLine3 &output);
 
 	FRECT	m_WorldExtents;		// cooked (OpenGL) extents (in the XZ plane)
-	vtLocalConversion	m_Conversion;
+	LocalCS	m_Conversion;
 
 protected:
 	void UpdateWorldExtents();

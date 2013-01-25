@@ -356,7 +356,7 @@ void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 	{
 		const DPoint3 &epos = m_pSetP3->GetPoint(iIndex);
 		float original_z = (float) epos.z;
-		m_pHeightField->m_Conversion.ConvertFromEarth(epos, p3);
+		m_pHeightField->m_Conversion.EarthToLocal(epos, p3);
 
 		// If a large number of entities, make as simple geometry as possible
 		bool bTetrahedra = (m_pSet->NumEntities() > 10000);
@@ -405,7 +405,7 @@ void vtAbstractLayer::CreateObjectGeometry(uint iIndex)
 		for (uint j = 0; j < dline.GetSize(); j++)
 		{
 			// preserve 3D point's elevation: don't drape
-			m_pHeightField->m_Conversion.ConvertFromEarth(dline[j], p3);
+			m_pHeightField->m_Conversion.EarthToLocal(dline[j], p3);
 
 			vtMesh *mesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_STRIP, VT_Normals, res*res*2);
 			mesh->CreateEllipsoid(p3, FPoint3(fRadius, fRadius, fRadius), res);
@@ -520,7 +520,7 @@ void vtAbstractLayer::CreateLineGeometry(uint iIndex)
 			DPoint3 p = dline[j];
 			if (m_pOCTransform.get())
 				m_pOCTransform->Transform(1, &p.x, &p.y);
-			m_pHeightField->m_Conversion.ConvertFromEarth(p, f3);
+			m_pHeightField->m_Conversion.EarthToLocal(p, f3);
 			mf.AddVertex(f3);
 		}
 		mf.PrimEnd();
@@ -596,7 +596,7 @@ void vtAbstractLayer::CreateLineGeometryForPoints()
 	for (uint j = 0; j < size; j++)
 	{
 		// preserve 3D point's elevation: don't drape
-		m_pHeightField->m_Conversion.ConvertFromEarth(dline[j], f3);
+		m_pHeightField->m_Conversion.EarthToLocal(dline[j], f3);
 		mf.AddVertex(f3);
 	}
 	mf.PrimEnd();

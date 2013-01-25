@@ -11,8 +11,9 @@
 #define BUILDINGH
 
 #include <stdio.h>
-#include "MathTypes.h"
 #include "LocalConversion.h"
+#include "MathTypes.h"
+#include "Projections.h"
 #include "Structure.h"
 #include "ogrsf_frmts.h"
 
@@ -169,7 +170,7 @@ public:
 	DLine2 &GetOuterFootprint() { return m_Foot[0]; }
 	const DLine2 &GetOuterFootprint() const { return m_Foot[0]; }
 
-	void DetermineLocalFootprint(float fHeight, const vtLocalConversion &local_cs);
+	void DetermineLocalFootprint(float fHeight, const LocalCS &local_cs);
 	const FPolygon3 &GetLocalFootprint() const { return m_LocalFootprint; }
 
 private:

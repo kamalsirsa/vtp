@@ -193,7 +193,7 @@ const vtProjection &vtExternalHeightField3d::GetProjection() const
 bool vtExternalHeightField3d::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const
 {
 	FPoint3 VTPWorld;
-	m_Conversion.ConvertFromEarth(DPoint3(p.x, p.y, 0.0), VTPWorld);
+	m_Conversion.EarthToLocal(DPoint3(p.x, p.y, 0.0), VTPWorld);
 	return FindAltitudeAtPoint(VTPWorld, fAltitude, bTrue);
 }
 

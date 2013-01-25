@@ -9,6 +9,7 @@
 #define MINIDATABUF_H
 
 #include "vtdata/HeightField.h"	// for INVALID_ELEVATION
+#include "vtdata/Projections.h"
 
 #if !USE_LIBMINI_DATABUF
 

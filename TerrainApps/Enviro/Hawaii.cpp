@@ -671,7 +671,7 @@ float utm_points_koa[5][2] = {
 	{ 180281, 2180278 }		// 4, 800m elev
 };
 
-PlaneEngine::PlaneEngine(const vtLocalConversion &conv, float fSpeedExag,
+PlaneEngine::PlaneEngine(const LocalCS &conv, float fSpeedExag,
 	AirportCodes code) : vtEngine()
 {
 	m_fSpeedExag = fSpeedExag;
@@ -710,7 +710,7 @@ PlaneEngine::PlaneEngine(const vtLocalConversion &conv, float fSpeedExag,
 
 	// begin approach
 	utm_points[0].z = 600.0f;
-	conv.ConvertFromEarth(utm_points[0], m_hoop_pos[1]);
+	conv.EarthToLocal(utm_points[0], m_hoop_pos[1]);
 	m_hoop_speed[1] = 100.0f;
 
 	// touchdown
@@ -720,22 +720,22 @@ PlaneEngine::PlaneEngine(const vtLocalConversion &conv, float fSpeedExag,
 	double ground_offset = 12.5f + 7.0f;
 
 	utm_points[1].z = ground_offset1;
-	conv.ConvertFromEarth(utm_points[1], m_hoop_pos[2]);
+	conv.EarthToLocal(utm_points[1], m_hoop_pos[2]);
 	m_hoop_speed[2] = 25.0f;
 
 	// speeding up to takeoff point
 	utm_points[2].z = ground_offset;
-	conv.ConvertFromEarth(utm_points[2], m_hoop_pos[3]);
+	conv.EarthToLocal(utm_points[2], m_hoop_pos[3]);
 	m_hoop_speed[3] = 5.0f;
 
 	// takeoff to this point
 	utm_points[3].z = ground_offset;
-	conv.ConvertFromEarth(utm_points[3], m_hoop_pos[4]);
+	conv.EarthToLocal(utm_points[3], m_hoop_pos[4]);
 	m_hoop_speed[4] = 25.0f;
 
 	// point to loop to
 	utm_points[4].z = 800.0f;
-	conv.ConvertFromEarth(utm_points[4], m_hoop_pos[5]);
+	conv.EarthToLocal(utm_points[4], m_hoop_pos[5]);
 	m_hoop_speed[5] = 100.0f;
 
 	// saving last hoop info
