@@ -251,7 +251,7 @@ bool TiledDatasetDescription::GetCorners(DLine2 &line, bool bGeo) const
 
 		// This is safe (won't fail on tricky Datum conversions) but might
 		//  be slightly inaccurate
-		ScopedOCTransform trans(CreateConversionIgnoringDatum(&proj, &Dest));
+		ScopedOCTransform trans(CreateTransformIgnoringDatum(&proj, &Dest));
 
 		if (!trans)
 		{
@@ -1051,7 +1051,7 @@ bool vtTiledGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 {
 	// TODO: support other arguments?
 	float x, z;
-	m_Conversion.EarthToLocal(p, x, z);
+	m_LocalCS.EarthToLocal(p, x, z);
 	float alt = m_pMiniLoad->getheight(x, z);
 
 	// This is what libMini returns if the point isn't on the terrain
@@ -1185,7 +1185,7 @@ bool vtTiledGeom::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 FPoint2 vtTiledGeom::GetWorldSpacingAtPoint(const DPoint2 &p) const
 {
 	float x, z;
-	m_Conversion.EarthToLocal(p, x, z);
+	m_LocalCS.EarthToLocal(p, x, z);
 
 	float dimx, dimz;
 	m_pMiniLoad->getdim(x, z, &dimx, &dimz);

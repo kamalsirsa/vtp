@@ -11,7 +11,7 @@
 #define BUILDINGH
 
 #include <stdio.h>
-#include "LocalConversion.h"
+#include "LocalCS.h"
 #include "MathTypes.h"
 #include "Projections.h"
 #include "Structure.h"

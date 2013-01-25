@@ -13,7 +13,7 @@
 #include "Engine.h"
 #include "vtdata/CubicSpline.h"
 #include "vtdata/Features.h"
-#include "vtdata/LocalConversion.h"
+#include "vtdata/LocalCS.h"
 
 /** \addtogroup nav */
 /*@{*/

@@ -308,7 +308,7 @@ public:
 	vtGroup *GetTerrainGroup() { return m_pTerrainGroup; }
 	vtHeightField3d *GetHeightField() const;
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
-	const LocalCS &GetLocalConversion() const { return GetHeightField()->m_Conversion; }
+	const LocalCS &GetLocalCS() const { return GetHeightField()->m_LocalCS; }
 	const vtProjection &GetProjection() const { return m_proj; }
 	bool IsGeographicCRS() const { return (m_proj.IsGeographic() == 1); }
 	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude, bool bTrue, int iCultureFlags) const;

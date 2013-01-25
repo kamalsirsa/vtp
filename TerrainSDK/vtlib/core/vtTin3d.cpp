@@ -314,7 +314,7 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 			{
 				vidx = m_tri[tribase + k];
 				ep.Set(m_vert[vidx].x, m_vert[vidx].y, m_z[vidx]);
-				m_Conversion.EarthToLocal(ep, p[k]);
+				m_LocalCS.EarthToLocal(ep, p[k]);
 			}
 			norm = ComputeNormal(p[0], p[1], p[2]);
 
@@ -382,19 +382,19 @@ vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		vtMesh *pBaseMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, 0, 4);
 
 		ep.Set(m_EarthExtents.left - 10, m_EarthExtents.bottom - 10, m_fMinHeight - 5);
-		m_Conversion.EarthToLocal(ep, wp);
+		m_LocalCS.EarthToLocal(ep, wp);
 		pBaseMesh->AddVertex(wp);
 
 		ep.Set(m_EarthExtents.right + 10, m_EarthExtents.bottom - 10, m_fMinHeight - 5);
-		m_Conversion.EarthToLocal(ep, wp);
+		m_LocalCS.EarthToLocal(ep, wp);
 		pBaseMesh->AddVertex(wp);
 
 		ep.Set(m_EarthExtents.right + 10, m_EarthExtents.top + 10, m_fMinHeight - 5);
-		m_Conversion.EarthToLocal(ep, wp);
+		m_LocalCS.EarthToLocal(ep, wp);
 		pBaseMesh->AddVertex(wp);
 
 		ep.Set(m_EarthExtents.left - 10, m_EarthExtents.top + 10, m_fMinHeight - 5);
-		m_Conversion.EarthToLocal(ep, wp);
+		m_LocalCS.EarthToLocal(ep, wp);
 		pBaseMesh->AddVertex(wp);
 
 		pBaseMesh->AddFan(0, 1, 2, 3);

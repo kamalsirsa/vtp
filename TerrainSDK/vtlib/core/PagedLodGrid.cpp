@@ -8,7 +8,7 @@
 #include "vtlib/vtlib.h"
 #include "Structure3d.h"
 
-#include "vtdata/LocalConversion.h"
+#include "vtdata/LocalCS.h"
 #include "vtdata/HeightField.h"
 #include "vtdata/vtLog.h"
 
@@ -232,8 +232,8 @@ vtPagedStructureLOD *vtPagedStructureLodGrid::FindGroup(vtStructure *str)
 	if (str->GetExtents(rect))
 	{
 		float xmin, xmax, zmin, zmax;
-		m_pHeightField->m_Conversion.EarthToLocal(rect.left, rect.bottom, xmin, zmin);
-		m_pHeightField->m_Conversion.EarthToLocal(rect.right, rect.top, xmax, zmax);
+		m_pHeightField->m_LocalCS.EarthToLocal(rect.left, rect.bottom, xmin, zmin);
+		m_pHeightField->m_LocalCS.EarthToLocal(rect.right, rect.top, xmax, zmax);
 
 		const FPoint3 mid((xmin+xmax) / 2, 0.0f, (zmin+zmax)/2);
 
@@ -379,8 +379,8 @@ void vtPagedStructureLodGrid::SortQueue()
 	// Prioritization is by distance.
 	// We can measure horizontal distance, which is faster.
 	DPoint3 cam_epos, cam_epos2;
-	m_pHeightField->m_Conversion.LocalToEarth(CamPos, cam_epos);
-	m_pHeightField->m_Conversion.LocalToEarth(CamPos+CamDir, cam_epos2);
+	m_pHeightField->m_LocalCS.LocalToEarth(CamPos, cam_epos);
+	m_pHeightField->m_LocalCS.LocalToEarth(CamPos+CamDir, cam_epos2);
 	DPoint2 cam_pos(cam_epos.x, cam_epos.y);
 	DPoint2 cam_dir(cam_epos2.x - cam_epos.x, cam_epos2.y - cam_epos.y);
 	cam_dir.Normalize();

@@ -126,8 +126,8 @@ float vtTerrain::EstimateGroundSpacingAtPoint(const DPoint2 &p) const
 		//  different (more correct) algorithm for draping, just estimate.
 		DRECT ext = m_pTin->GetEarthExtents();
 		FPoint2 p1, p2;
-		m_pHeightField->m_Conversion.EarthToLocal(ext.left, ext.bottom, p1.x, p1.y);
-		m_pHeightField->m_Conversion.EarthToLocal(ext.right, ext.top, p2.x, p2.y);
+		m_pHeightField->m_LocalCS.EarthToLocal(ext.left, ext.bottom, p1.x, p1.y);
+		m_pHeightField->m_LocalCS.EarthToLocal(ext.right, ext.top, p2.x, p2.y);
 		return (p2 - p1).Length() / 1000.0f;
 	}
 	else if (m_pTiledGeom)

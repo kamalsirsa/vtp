@@ -954,7 +954,7 @@ double EstimateDegreesToMeters(double latitude)
  * Create a conversion between projections, making the assumption that
  * the Datum of the target is the same as the Datum of the source.
  */
-OCTransform *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget)
+OCTransform *CreateTransformIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget)
 {
 	vtProjection DummyTarget = *pTarget;
 
@@ -994,25 +994,25 @@ class DymaxOCT : public OCTransform
 public:
 	DymaxOCT()
 	{
-		m_pStandardConversion = NULL;
+		m_pStandardTransform = NULL;
 	}
 	DymaxOCT(OCTransform *pStandard, bool bDirection)
 	{
-		m_pStandardConversion = pStandard;
+		m_pStandardTransform = pStandard;
 		m_bDirection = bDirection;
 	}
 	~DymaxOCT()
 	{
-		delete m_pStandardConversion;
+		delete m_pStandardTransform;
 	}
 
-	OGRSpatialReference *GetSourceCS() { return m_pStandardConversion->GetSourceCS(); }
-	OGRSpatialReference *GetTargetCS() { return m_pStandardConversion->GetTargetCS(); }
+	OGRSpatialReference *GetSourceCS() { return m_pStandardTransform->GetSourceCS(); }
+	OGRSpatialReference *GetTargetCS() { return m_pStandardTransform->GetTargetCS(); }
 
 	int Transform(int nCount, double *x, double *y, double *z = NULL);
 	int TransformEx(int nCount, double *x, double *y, double *z = NULL, int *pabSuccess = NULL );
 
-	OCTransform *m_pStandardConversion;
+	OCTransform *m_pStandardTransform;
 	bool m_bDirection;		// true: to dymax, false: from dymax
 	DymaxIcosa m_ico;
 };
@@ -1097,7 +1097,7 @@ OCTransform *CreateCoordTransform(const vtProjection *pSource,
 	OCTransform *result = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource,
 		(OGRSpatialReference *)pTarget);
 	if (bLog)
-		VTLOG(" Conversion: %s\n", result ? "succeeded" : "failed");
+		VTLOG(" Transform: %s\n", result ? "succeeded" : "failed");
 
 	if (!result && !bLog)
 	{

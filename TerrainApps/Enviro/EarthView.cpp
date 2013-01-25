@@ -978,7 +978,7 @@ void Enviro::FlyInStage1()
 		DPoint3 earth_local = earth_geo;
 		trans->Transform(1, &earth_local.x, &earth_local.y);
 
-		const LocalCS &conv = m_pTargetTerrain->GetLocalConversion();
+		const LocalCS &conv = m_pTargetTerrain->GetLocalCS();
 		FPoint3 world;
 		conv.EarthToLocal(earth_local, world);
 

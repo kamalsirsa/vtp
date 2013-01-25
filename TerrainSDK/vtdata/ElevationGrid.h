@@ -10,7 +10,7 @@
 
 #include "MathTypes.h"
 #include "Projections.h"
-#include "LocalConversion.h"
+#include "LocalCS.h"
 #include "HeightField.h"
 #include "vtString.h"
 
@@ -173,7 +173,7 @@ public:
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const;
 
 	// methods that deal with world coordinates
-	void SetupConversion(float fVerticalExag = 1.0f);
+	void SetupLocalCS(float fVerticalExag = 1.0f);
 	float GetWorldValue(int i, int j, bool bTrue = false) const;
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		bool bTrue = false, int iCultureFlags = 0,

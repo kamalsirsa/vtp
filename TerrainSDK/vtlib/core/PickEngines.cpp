@@ -54,7 +54,7 @@ void TerrainPicker::FindGroundPoint()
 	m_GroundPoint = result;
 
 	// Find corresponding earth coordinates
-	m_pHeightField->m_Conversion.LocalToEarth(m_GroundPoint, m_EarthPos);
+	m_pHeightField->m_LocalCS.LocalToEarth(m_GroundPoint, m_EarthPos);
 }
 
 void TerrainPicker::Eval()

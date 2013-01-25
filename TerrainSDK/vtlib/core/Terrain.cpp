@@ -684,7 +684,7 @@ void vtTerrain::CreateWaterHeightfield(const vtString &fname)
 	DRECT ext2 = m_pWaterTin3d->GetEarthExtents();
 	DPoint2 offset = ext2.LowerLeft() - ext1.LowerLeft();
 	float x, z;
-	GetLocalConversion().VectorEarthToLocal(offset, x, z);
+	GetLocalCS().VectorEarthToLocal(offset, x, z);
 	vtTransform *xform = new vtTransform;
 	xform->Translate(FPoint3(x, 0, z));
 
@@ -1015,7 +1015,7 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 {
 	FPoint3 wpos;
 
-	m_pHeightField->m_Conversion.EarthToLocal(pos.x, pos.y, wpos.x, wpos.z);
+	m_pHeightField->m_LocalCS.EarthToLocal(pos.x, pos.y, wpos.x, wpos.z);
 	m_pHeightField->FindAltitudeAtPoint(wpos, wpos.y);
 	model->SetTrans(wpos);
 }
@@ -1363,7 +1363,7 @@ void vtTerrain::AddMultiTextureOverlay(vtImageLayer *im_layer)
 	else	// might be a TiledGeom, or a TIN
 	{
 		FRECT worldExtents;
-		GetLocalConversion().EarthToLocal(extents, worldExtents);
+		GetLocalCS().EarthToLocal(extents, worldExtents);
 
 		// Map input values (0-terrain size in world coords) to 0-1
 		scale.Set(1.0/worldExtents.Width(), 1.0/worldExtents.Height());
@@ -1431,7 +1431,7 @@ bool vtTerrain::CreateElevLayerFromTags(const vtTagArray &layer_tags)
 	DRECT ext2 = elayer->GetTin()->GetEarthExtents();
 	DPoint2 offset = ext2.LowerLeft() - ext1.LowerLeft();
 	float x, z;
-	GetLocalConversion().VectorEarthToLocal(offset, x, z);
+	GetLocalCS().VectorEarthToLocal(offset, x, z);
 		
 	top_node->Translate(FPoint3(x, 0, z));
 	m_pUnshadowedGroup->addChild(top_node);
@@ -1705,7 +1705,7 @@ void vtTerrain::_ComputeCenterLocation()
 
 	// We won't fail on tricky Datum conversions, but we still might
 	//  conceivably fail if the GDAL/PROJ files aren't found.
-	ScopedOCTransform trans(CreateConversionIgnoringDatum(&m_proj, &Dest));
+	ScopedOCTransform trans(CreateTransformIgnoringDatum(&m_proj, &Dest));
 	if (trans)
 		trans->Transform(1, &m_CenterGeoLocation.x, &m_CenterGeoLocation.y);
 
@@ -1765,7 +1765,7 @@ bool vtTerrain::CreateStep2()
 	if (m_pElevGrid.get())
 	{
 		VTLOG1("Using supplied elevation grid.\n");
-		m_pElevGrid->SetupConversion(m_Params.GetValueFloat(STR_VERTICALEXAG));
+		m_pElevGrid->SetupLocalCS(m_Params.GetValueFloat(STR_VERTICALEXAG));
 		m_pHeightField = m_pElevGrid.get();
 		m_proj = m_pElevGrid->GetProjection();
 		m_bIsCreated = true;
@@ -1844,7 +1844,7 @@ bool vtTerrain::CreateStep2()
 
 		float exag = m_Params.GetValueFloat(STR_VERTICALEXAG);
 		VTLOG("\t\tVertical exaggeration: %g\n", exag);
-		m_pElevGrid->SetupConversion(exag);
+		m_pElevGrid->SetupLocalCS(exag);
 
 		FRECT frect = m_pElevGrid->m_WorldExtents;
 		VTLOG("\t\tWorld Extents LRTB: %g %g %g %g\n",
@@ -2192,7 +2192,7 @@ void vtTerrain::CreateStep12()
 		}
 	}
 	VTLOG1("Setup location saver coordinate conversion.\n");
-	m_LocSaver.SetConversion(m_pHeightField->m_Conversion);
+	m_LocSaver.SetLocalCS(m_pHeightField->m_LocalCS);
 	m_LocSaver.SetProjection(m_proj);
 
 	// Read stored animpaths
@@ -2207,7 +2207,7 @@ void vtTerrain::CreateStep12()
 		VTLOG("Reading animpath: %s.\n", (const char *) path);
 		vtAnimPath *anim = new vtAnimPath;
 		// Ensure that anim knows the projection
-		if (!anim->SetProjection(GetProjection(), GetLocalConversion()))
+		if (!anim->SetProjection(GetProjection(), GetLocalCS()))
 		{
 			// no projection, no functionality
 			delete anim;
@@ -2290,7 +2290,7 @@ void vtTerrain::GetTerrainBounds()
 bool vtTerrain::PointIsInTerrain(const DPoint2 &p)
 {
 	float x, z;
-	m_pHeightField->m_Conversion.EarthToLocal(p, x,  z);	// convert earth -> XZ
+	m_pHeightField->m_LocalCS.EarthToLocal(p, x,  z);	// convert earth -> XZ
 	return m_pHeightField->ContainsWorldPoint(x, z);
 }
 
@@ -3102,7 +3102,7 @@ bool vtTerrain::CreateAbstractLayerVisuals(vtAbstractLayer *ab_layer)
 		// If we have two valid CRSs, and they are not the same, then we need a transform
 		if (source.GetRoot() && m_proj.GetRoot() && !source.IsSame(&m_proj))
 		{
-			ScopedOCTransform trans(CreateConversionIgnoringDatum(&source, &m_proj));
+			ScopedOCTransform trans(CreateTransformIgnoringDatum(&source, &m_proj));
 			if (trans)
 			{
 				if (trans->Transform(1, &center.x, &center.y) == 1)

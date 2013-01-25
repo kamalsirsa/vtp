@@ -14,7 +14,7 @@
 
 #include "MathTypes.h"
 #include "Projections.h"
-#include "LocalConversion.h"
+#include "LocalCS.h"
 
 ////////////////////////////////////////////////////////////////////////////
 

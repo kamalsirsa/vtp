@@ -9,7 +9,7 @@
 #define HEIGHTFIELDH
 
 #include <limits.h>			// for SHRT_MIN
-#include "LocalConversion.h"
+#include "LocalCS.h"
 #include "ColorMap.h"
 #include "ElevError.h"
 
@@ -126,7 +126,7 @@ public:
 		bool bInterp, bool bCurve, bool bTrue, FLine3 &output);
 
 	FRECT	m_WorldExtents;		// cooked (OpenGL) extents (in the XZ plane)
-	LocalCS	m_Conversion;
+	LocalCS	m_LocalCS;
 
 protected:
 	void UpdateWorldExtents();

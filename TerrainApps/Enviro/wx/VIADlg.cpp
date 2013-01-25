@@ -18,7 +18,7 @@
 #include "vtlib/vtlib.h"
 #include "VIADlg.h"
 #include "../Enviro.h"
-#include "vtdata/LocalConversion.h"
+#include "vtdata/LocalCS.h"
 
 //----------------------------------------------------------------------------
 // VIADlg

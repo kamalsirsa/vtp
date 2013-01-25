@@ -95,7 +95,7 @@ bool vtElevationGrid::CopyHeaderFrom(const vtElevationGrid &rhs)
 
 	// Copy each vtHeightField3d member
 	m_WorldExtents	  = rhs.m_WorldExtents;
-	m_Conversion	  = rhs.m_Conversion;
+	m_LocalCS	  = rhs.m_LocalCS;
 	m_fDiagonalLength = rhs.m_fDiagonalLength;
 
 	// Copy each vtHeightFieldGrid3d member
@@ -1427,7 +1427,7 @@ bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo) const
 		Dest.SetWellKnownGeogCS("WGS84");
 
 		// safe (won't fail on tricky Datum conversions)
-		ScopedOCTransform trans(CreateConversionIgnoringDatum(&m_proj, &Dest));
+		ScopedOCTransform trans(CreateTransformIgnoringDatum(&m_proj, &Dest));
 
 		// unsafe, but potentially more accurate
 //		ScopedOCTransform trans(CreateCoordTransform(&m_proj, &Dest, true));
@@ -1466,7 +1466,7 @@ void vtElevationGrid::SetCorners(const DLine2 &line)
  *	many times higher it should appear than it really is.  Pass 1.0 for no
  *	exaggeration.
  */
-void vtElevationGrid::SetupConversion(float fVerticalExag)
+void vtElevationGrid::SetupLocalCS(float fVerticalExag)
 {
 	if (m_fMinHeight == INVALID_ELEVATION ||
 		m_fMaxHeight == INVALID_ELEVATION)

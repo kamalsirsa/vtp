@@ -9,7 +9,7 @@
 
 #include "vtlib/vtlib.h"
 #include "core/PagedLodGrid.h"
-#include "vtdata/LocalConversion.h"
+#include "vtdata/LocalCS.h"
 #include "vtdata/HeightField.h"
 #include "vtdata/vtLog.h"
 #include "SimpleInterimShadowTechnique.h"

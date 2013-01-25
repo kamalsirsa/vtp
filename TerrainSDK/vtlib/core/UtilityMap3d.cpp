@@ -62,7 +62,7 @@ bool vtPole3d::CreateGeometry(const vtHeightField3d *pHF)
 	m_pTrans->RotateLocal(FPoint3(0,1,0), dRadAzimuth);
 
 	FPoint3 wpos;
-	pHF->m_Conversion.EarthToLocal(m_p.x, m_p.y, wpos.x, wpos.z);
+	pHF->m_LocalCS.EarthToLocal(m_p.x, m_p.y, wpos.x, wpos.z);
 	pHF->FindAltitudeAtPoint(wpos, wpos.y);
 	m_pTrans->SetTrans(wpos);
 

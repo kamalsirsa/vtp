@@ -1465,7 +1465,7 @@ public:
 		if (terr)
 		{
 			FPoint3 w;
-			terr->GetHeightField()->m_Conversion.EarthToLocal(p, w.x, w.z);
+			terr->GetHeightField()->m_LocalCS.EarthToLocal(p, w.x, w.z);
 			terr->GetHeightField()->FindAltitudeAtPoint(w, w.y, true);
 			return w.y;
 		}
@@ -1477,7 +1477,7 @@ public:
 		if (terr)
 		{
 			FPoint3 w;
-			terr->GetHeightField()->m_Conversion.EarthToLocal(p, w.x, w.z);
+			terr->GetHeightField()->m_LocalCS.EarthToLocal(p, w.x, w.z);
 			bool success = terr->FindAltitudeOnCulture(w, w.y, true, CE_STRUCTURES);
 			if (success)
 				return w.y;

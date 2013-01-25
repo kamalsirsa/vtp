@@ -73,7 +73,7 @@ typedef struct
  * Load from a file whose type is not known a priori.  This will end up
  * calling one of the Load* member functions.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if successful.
@@ -197,7 +197,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
  * Elevation values are assumed to be integer meters.  Projection is
  * assumed to be geographic.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -325,7 +325,7 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
  * Loads from a 3TX ascii grid file.
  * Projection is Geo WGS84, extents are always 1 degree in size.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -374,7 +374,7 @@ bool vtElevationGrid::LoadFrom3TX(const char *szFileName,
 /** Loads from a Arc/Info compatible ASCII grid file.
  * Projection is read from a corresponding .prj file.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -508,7 +508,7 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 
 /** Loads from a Terragen Terrain file.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -689,7 +689,7 @@ bool get_ssss(FILE *fp, double &value)
  * tested on DTED0.  Projection is assumed to be geographic and elevation
  * is integer meters.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -864,7 +864,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
  *
  * Projection is always geographic and elevation is integer meters.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -1015,7 +1015,7 @@ void ParseExtent(DRECT &extents, const char *name, const char *value)
  *
  * Projection is always geographic and elevation is integer meters.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -1198,7 +1198,7 @@ bool vtElevationGrid::LoadFromDSAA(const char* szFileName, bool progress_callbac
  * GRD does not contain any information about CRS, so the following assumption
  * is made: UTM zone 1.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -1357,7 +1357,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
  * the following assumptions are made: UTM coordinates, 1-meter spacing,
  * origin at (0,0).
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -1788,7 +1788,7 @@ bool vtElevationGrid::SaveToBMP(const char *szFileName) const
  * \param progress_callback If supplied, this function will be called back
  *		with a value of 0 to 100 as the operation progresses.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns True if the file was successfully opened and read.
@@ -2121,7 +2121,7 @@ bool vtElevationGrid::ParseNTF5(OGRDataSource *pDatasource, vtString &msg,
  * \param progress_callback If supplied, this function will be called back
  *		with a value of 0 to 100 as the operation progresses.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns True if the file was successfully opened and read.
@@ -2253,7 +2253,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 /**
  * Loads from a MicroDEM format file.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.
@@ -2681,7 +2681,7 @@ bool vtElevationGrid::LoadFromXYZ(FILE *fp, const char *pattern, bool progress_c
  *	 2,884,802 bytes (for 3 arcsec, 1201*1201) or
  *	25,934,402 bytes (for 1 arcsec, 3601*3601)
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.

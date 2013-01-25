@@ -631,7 +631,7 @@ void IslandTerrain::create_airplane(int i, float fSpeed)
 	AirportCodes code;
 	code = KOA;
 
-	PlaneEngine *pEng = new PlaneEngine(GetLocalConversion(), fSpeedExag, code);
+	PlaneEngine *pEng = new PlaneEngine(GetLocalCS(), fSpeedExag, code);
 	pEng->setName("Airplane Engine");
 	pEng->AddTarget(trans);
 	pEng->SetHoop(i);

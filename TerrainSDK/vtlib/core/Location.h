@@ -10,7 +10,7 @@
 
 #include "vtdata/vtString.h"
 #include "vtdata/Projections.h"
-#include "vtdata/LocalConversion.h"
+#include "vtdata/LocalCS.h"
 
 #if SUPPORT_WSTRING
 	#define LocNameString wstring2
@@ -102,8 +102,8 @@ public:
 	vtTransform *GetTransform() { return m_pTransform; }
 
 	/// Define the conversion between this saver and terrain coordinates
-	void SetConversion(const LocalCS &conv) { m_conv = conv; }
-	const LocalCS &GetConversion() { return m_conv; }
+	void SetLocalCS(const LocalCS &conv) { m_LocalCS = conv; }
+	const LocalCS &GetLocalCS() { return m_LocalCS; }
 
 	/// Define the projection of the object attached to this LocationSaver
 	void SetProjection(const vtProjection &proj);
@@ -120,7 +120,7 @@ protected:
 	// Implementation
 	// Store information necessary to convert from global earth CS
 	// to the local CS
-	LocalCS	m_conv;
+	LocalCS	m_LocalCS;
 	vtProjection		m_proj;
 	vtTransform			*m_pTransform;
 

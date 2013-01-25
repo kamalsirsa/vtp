@@ -6,7 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtdata/LocalConversion.h"
+#include "vtdata/LocalCS.h"
 #include "vtdata/HeightField.h"
 #include "vtdata/vtString.h"
 

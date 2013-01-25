@@ -20,7 +20,7 @@
 #include "vtlib/core/Terrain.h"
 #include "CameraDlg.h"
 #include "EnviroGUI.h"
-#include "vtdata/LocalConversion.h"
+#include "vtdata/LocalCS.h"
 
 // WDR: class implementations
 
@@ -279,7 +279,7 @@ void CameraDlg::CheckAndUpdatePos()
 {
 	vtCamera *cam = vtGetScene()->GetCamera();
 	const FPoint3 WorldPos = cam->GetTrans();
-	m_pTerrain->GetLocalConversion().LocalToEarth(WorldPos, m_EarthPos);
+	m_pTerrain->GetLocalCS().LocalToEarth(WorldPos, m_EarthPos);
 
 	bool bTransfer = false;
 	wxString newx, newy, newz;
@@ -473,7 +473,7 @@ void CameraDlg::OnTextEnter( wxCommandEvent &event )
 	m_EarthPos.z = atof(m_camZ.mb_str(wxConvUTF8));
 
 	FPoint3 WorldPos;
-	m_pTerrain->GetLocalConversion().EarthToLocal(m_EarthPos, WorldPos);
+	m_pTerrain->GetLocalCS().EarthToLocal(m_EarthPos, WorldPos);
 	vtGetScene()->GetCamera()->SetTrans(WorldPos);
 }
 

@@ -44,7 +44,7 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 
 	// convert earth -> XZ
 	FPoint3 point;
-	pHeightField->m_Conversion.EarthToLocal(m_p, point.x, point.z);
+	pHeightField->m_LocalCS.EarthToLocal(m_p, point.x, point.z);
 
 	if (m_bAbsolute)
 	{
@@ -185,7 +185,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	FSphere sphere;
 	s2v(m_pModel->getBound(), sphere);
 	DPoint2 evector;
-	pTerr->GetLocalConversion().VectorLocalToEarth(sphere.radius, 0, evector);
+	pTerr->GetLocalCS().VectorLocalToEarth(sphere.radius, 0, evector);
 	m_RadiusInEarthCoords = evector.x;
 
 	return true;

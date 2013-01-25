@@ -62,7 +62,7 @@ bool IConvert(FILE *fp, int length, int &value)
  *
  * Some non-standard variations of the DEM format are supported.
  *
- * You should call SetupConversion() after loading if you will be doing
+ * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.
  *
  * \returns \c true if the file was successfully opened and read.

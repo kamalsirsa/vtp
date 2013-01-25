@@ -81,7 +81,7 @@ vtElevLayer::vtElevLayer(vtElevationGrid *grid) : vtLayer(LT_ELEVATION)
 
 	m_pTin = NULL;
 	m_pGrid = grid;
-	m_pGrid->SetupConversion(1.0f);
+	m_pGrid->SetupLocalCS(1.0f);
 }
 
 vtElevLayer::~vtElevLayer()
@@ -128,7 +128,7 @@ bool vtElevLayer::OnLoad()
 		success = ElevCacheOpen(this, fname_utf8, &err);
 		if (success)
 		{
-			m_pGrid->SetupConversion(1.0f);
+			m_pGrid->SetupLocalCS(1.0f);
 		}
 		else
 		{
@@ -1084,7 +1084,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 				return false;
 			}
 		}
-		m_pGrid->SetupConversion(1.0f);
+		m_pGrid->SetupLocalCS(1.0f);
 	}
 	return true;
 }
@@ -1164,7 +1164,7 @@ bool vtElevLayer::CreateFromPoints(vtFeatureSet *set, const IPoint2 &size,
 		}
 
 	m_pGrid->ComputeHeightExtents();
-	m_pGrid->SetupConversion();
+	m_pGrid->SetupLocalCS();
 
 	return true;
 #else
@@ -1179,7 +1179,7 @@ void vtElevLayer::SetGrid(vtElevationGrid *grid)
 	delete m_pGrid;
 	m_pTin = NULL;
 	m_pGrid = grid;
-	m_pGrid->SetupConversion(1.0f);
+	m_pGrid->SetupLocalCS(1.0f);
 }
 
 int vtElevLayer::RemoveElevRange(float zmin, float zmax, const DRECT *area)

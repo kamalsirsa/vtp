@@ -1681,7 +1681,7 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 		pTerr->DeselectAllPlants();
 	}
 
-	const LocalCS &conv = pTerr->GetLocalConversion();
+	const LocalCS &conv = pTerr->GetLocalCS();
 
 	// SelectionCutoff is in meters, but the picking functions work in
 	//  Earth coordinates.  Try to convert it to earth horiz units.
@@ -2068,7 +2068,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 				CarEngine *eng = m_Vehicles.GetSelectedCarEngine();
 				if (eng)
 				{
-					const LocalCS &conv = pTerr->GetLocalConversion();
+					const LocalCS &conv = pTerr->GetLocalCS();
 					eng->SetEarthPos(conv, eng->GetEarthPos(conv) + ground_delta);
 				}
 			}
@@ -2603,7 +2603,7 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 		// Spacing is in meters, but the picking functions work in
 		//  Earth coordinates.  Try to convert it to earth horiz units.
 		DPoint2 eoffset;
-		const LocalCS &conv = pTerr->GetLocalConversion();
+		const LocalCS &conv = pTerr->GetLocalCS();
 		conv.VectorLocalToEarth(m_PlantOpt.m_fSpacing, 0, eoffset);
 		double mininum_spacing = eoffset.x;
 
@@ -2699,7 +2699,7 @@ void Enviro::DescribeCoordinatesTerrain(vtString &str1, vtString &str2)
 		vtTerrain *pTerr = GetCurrentTerrain();
 		if (pTerr)
 		{
-			const LocalCS &conv = pTerr->GetLocalConversion();
+			const LocalCS &conv = pTerr->GetLocalCS();
 			FormatCoordString(str2, epos, conv.GetUnits(), true);
 		}
 		else

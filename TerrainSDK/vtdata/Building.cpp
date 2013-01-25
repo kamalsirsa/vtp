@@ -12,7 +12,7 @@
 #include "Building.h"
 #include "vtLog.h"
 #include "HeightField.h"
-#include "LocalConversion.h"
+#include "LocalCS.h"
 #include "MaterialDescriptor.h"
 
 // Defaults
