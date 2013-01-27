@@ -458,6 +458,9 @@ vtLayer *Builder::ImportLayerFromFile(LayerType ltype, const wxString &strFileNa
 				{
 					int type;
 					sscanf(buf, "type=%d", &type);
+
+					// 0 = unsigned byte, 1 = signed short, 2 = float, 3 = RGB,
+					// 4 = RGBA, 5 = compressed RGB, 6 = compressed RGBA
 					if (type == 1 || type == 2)
 						ltype = LT_ELEVATION;
 					else if (type == 3 || type == 4)
@@ -649,7 +652,7 @@ vtLayer *Builder::ImportLayerFromFile(LayerType ltype, const wxString &strFileNa
 	default:	// Keep picky compilers quiet.
 		break;
 	}
-	if (bIsDB)
+	if (bIsDB && pLayer)
 	{
 		// Adopt existing CRS
 		pLayer->SetProjection(m_proj);
