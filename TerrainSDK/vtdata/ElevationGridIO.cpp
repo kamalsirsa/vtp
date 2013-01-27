@@ -106,7 +106,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	if (!FileExt.CompareNoCase(".asc"))
 	{
 		// GDAL's ASC reader has trouble on some machines
-//		Success = LoadWithGDAL(szFileName, progress_callback);
+//		Success = LoadWithGDAL(szFileName, progress_callback, err);
 
 		Success = LoadFromASC(szFileName, progress_callback);
 	}

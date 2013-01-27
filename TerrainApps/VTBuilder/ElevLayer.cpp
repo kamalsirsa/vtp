@@ -910,15 +910,15 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 	{
 		success = m_pGrid->LoadFromASC(fname, progress_callback);
 		// vtElevationGrid does have its own ASC reader, but use GDAL instead
-//		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(wxConvUTF8), progress_callback);
+//		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(wxConvUTF8), progress_callback, err);
 	}
 	else if (!strExt.CmpNoCase(_T("bil")))
 	{
-		success = m_pGrid->LoadWithGDAL(fname, progress_callback);
+		success = m_pGrid->LoadWithGDAL(fname, progress_callback, err);
 	}
 	else if (!strExt.CmpNoCase(_T("mem")))
 	{
-		success = m_pGrid->LoadWithGDAL(fname, progress_callback);
+		success = m_pGrid->LoadWithGDAL(fname, progress_callback, err);
 	}
 	else if (!strExt.CmpNoCase(_T("ter")))
 	{
@@ -962,7 +962,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		{
 			VTLOG("Didn't load successfully, attempting load with GDAL.\n");
 			// Might be 'Arc Binary Grid', try GDAL
-			success = m_pGrid->LoadWithGDAL(fname, progress_callback);
+			success = m_pGrid->LoadWithGDAL(fname, progress_callback, err);
 		}
 	}
 	else if (!strFileName.Right(8).CmpNoCase(_T("catd.ddf")) ||
@@ -972,7 +972,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 			!strExt.CmpNoCase(_T("adf")))
 	{
 		if (m_pGrid)
-			success = m_pGrid->LoadWithGDAL(fname, progress_callback);
+			success = m_pGrid->LoadWithGDAL(fname, progress_callback, err);
 	}
 	else if (!strExt.CmpNoCase(_T("raw")))
 	{
