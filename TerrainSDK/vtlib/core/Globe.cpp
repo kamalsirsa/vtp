@@ -224,7 +224,7 @@ vtMaterialArray *vtIcoGlobe::CreateMaterialsFromFiles(const vtString &strImagePr
 							bCulling, bLighting,
 							GetDepth(img) == 32, false,	// transp, additive
 							0.1f, 1.0f, 1.0f, 0.0f);	// ambient, diffuse, alpha, emmisive
-				mats->at(index)->SetClamp(true);
+				mats->at(index)->SetClamp(false);
 			}
 			else
 				index = -1;
