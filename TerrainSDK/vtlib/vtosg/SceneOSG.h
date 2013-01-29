@@ -111,7 +111,7 @@ public:
 	void SetRootEngine(vtEngine *ptr) { m_pRootEngine = ptr; }
 
 	/// Get the top engine in the Engine graph
-	vtEngine *GetRootEngine() { return m_pRootEngine; }
+	vtEngine *GetRootEngine() { return m_pRootEngine.get(); }
 
 	/// Set the top engine in the Engine graph
 	void SetPostDrawEngine(vtEngine *ptr) { m_pRootEnginePostDraw = ptr; }

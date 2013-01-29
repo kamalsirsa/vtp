@@ -89,7 +89,7 @@ public:
 	void SetFeatureSet(vtFeatureSet *pSet);
 	vtFeatureSet *GetFeatureSet() const { return m_pSet; }
 	vtGroup *GetLabelGroup() const { return pLabelGroup; }
-	vtGroup *GetContainer() const { return pContainer; }
+	vtGroup *GetContainer() const { return pContainer.get(); }
 	vtVisual *GetViz(vtFeature *feat);
 	vtMultiTexture *GetMultiTexture() const { return pMultiTexture; }
 	void CreateContainer(osg::Group *pParent);

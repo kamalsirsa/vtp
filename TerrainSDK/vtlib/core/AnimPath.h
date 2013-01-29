@@ -189,7 +189,7 @@ public:
 	/// Set the animation path for this engine to use.
 	void SetAnimationPath(vtAnimPath* path) { m_pAnimationPath = path; }
 	/// Get the animation path associated with this engine.
-	vtAnimPath* GetAnimationPath() { return m_pAnimationPath; }
+	vtAnimPath* GetAnimationPath() { return m_pAnimationPath.get(); }
 	/// Get the animation path associated with this engine.
 	const vtAnimPath* GetAnimationPath() const { return m_pAnimationPath; }
 

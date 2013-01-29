@@ -142,7 +142,7 @@ public:
 	// you can alternately give it a grid to use instead of loading a BT
 	void SetLocalGrid(vtElevationGrid *pGrid, bool bPreserve);
 	void SetTin(vtTin3d *pTin);
-	vtTin3d *GetTin() { return m_pTin; }
+	vtTin3d *GetTin() { return m_pTin.get(); }
 	bool GetGeoExtentsFromMetadata();
 	float EstimateGroundSpacingAtPoint(const DPoint2 &p) const;
 
@@ -284,7 +284,7 @@ public:
 	// manage engines specific to this terrain
 	void AddEngine(vtEngine *pE);
 	void ActivateEngines(bool bActive);
-	vtEngine *GetEngineGroup() { return m_pEngineGroup; }
+	vtEngine *GetEngineGroup() { return m_pEngineGroup.get(); }
 
 	// reports world coordinates
 	FPoint3 GetCenter();
@@ -301,8 +301,8 @@ public:
 	float GetVerticalExag() const { return m_fVerticalExag; }
 
 	// query
-	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
-	const vtDynTerrainGeom *GetDynTerrain() const { return m_pDynGeom; }
+	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom.get(); }
+	const vtDynTerrainGeom *GetDynTerrain() const { return m_pDynGeom.get(); }
 	vtTiledGeom *GetTiledGeom() const { return m_pTiledGeom.get(); }
 	vtGroup *GetTopGroup() { return m_pContainerGroup; }
 	vtGroup *GetTerrainGroup() { return m_pTerrainGroup; }

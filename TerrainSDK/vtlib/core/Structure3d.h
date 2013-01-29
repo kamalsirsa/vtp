@@ -32,7 +32,7 @@ class vtStructure3d
 public:
 	vtStructure3d() { m_pContainer = NULL; m_bIsVIAContributor = false; m_bIsVIATarget = false; }
 
-	vtTransform *GetContainer() { return m_pContainer; }
+	vtTransform *GetContainer() { return m_pContainer.get(); }
 	virtual osg::Node *GetContained() = 0;
 
 	/// Create the node(s) and position them on the indicated heightfield
