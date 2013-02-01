@@ -2217,6 +2217,8 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 			m_pDynGeom->SetEnabled(bOn);
 		else if (m_pTiledGeom)
 			m_pTiledGeom->SetEnabled(bOn);
+		else if (m_pTin)
+			m_pTin->GetGeometry()->SetEnabled(bOn);
 		break;
 	case TFT_OCEAN:
 		CreateWaterPlane();
@@ -2248,6 +2250,8 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 			return m_pDynGeom->GetEnabled();
 		else if (m_pTiledGeom)
 			return m_pTiledGeom->GetEnabled();
+		else if (m_pTin)
+			return m_pTin->GetGeometry()->GetEnabled();
 		break;
 	case TFT_OCEAN:
 		if (m_pOceanGeom)
