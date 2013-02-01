@@ -1209,12 +1209,14 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 	if (!image)
 		return false;
 
-	mm.m_iMatIdx = GetSharedMaterialArray()->AddTextureMaterial(image,
+	vtMaterialArray *mats = GetSharedMaterialArray();
+	mm.m_iMatIdx = mats->AddTextureMaterial(image,
 			true, true, false, false,
 			TERRAIN_AMBIENT,
 			TERRAIN_DIFFUSE,
 			1.0f,		// alpha
 			TERRAIN_EMISSIVE);
+	mats->at(mm.m_iMatIdx)->SetClamp(false);	// Facades can repeat upwards.
 
 	// Create a mesh for the new material and add this to the mesh array
 	mm.m_pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 6);
