@@ -1435,6 +1435,8 @@ bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 
 bool vtStructureArray::ReadXML(const char *pathname, bool progress_callback(int))
 {
+	VTLOG("vtStructureArray::ReadXML: ");
+
 	// The locale might be set to something European that interprets '.' as ','
 	//  and vice versa, which would break our usage of sscanf/atof terribly.
 	//  So, push the 'standard' locale, it is restored when it goes out of scope.
@@ -1443,7 +1445,8 @@ bool vtStructureArray::ReadXML(const char *pathname, bool progress_callback(int)
 	// check to see if it's old or new format
 	bool bOldFormat = false;
 	gzFile fp = vtGZOpen(pathname, "r");
-	if (!fp) return false;
+	if (!fp)
+		return false;
 
 	m_strFilename = pathname;
 
@@ -1475,8 +1478,8 @@ bool vtStructureArray::ReadXML(const char *pathname, bool progress_callback(int)
 		catch (xh_exception &ex)
 		{
 			// TODO: would be good to pass back the error message.
-			VTLOG("XML Error: ");
-			VTLOG(ex.getFormattedMessage().c_str());
+			VTLOG1("XML Error: ");
+			VTLOG1(ex.getFormattedMessage().c_str());
 			return false;
 		}
 	}
@@ -1491,8 +1494,8 @@ bool vtStructureArray::ReadXML(const char *pathname, bool progress_callback(int)
 		catch (xh_exception &ex)
 		{
 			// TODO: would be good to pass back the error message.
-			VTLOG("XML Error: ");
-			VTLOG(ex.getFormattedMessage().c_str());
+			VTLOG1("XML Error: ");
+			VTLOG1(ex.getFormattedMessage().c_str());
 			return false;
 		}
 	}
@@ -1884,13 +1887,21 @@ vtStructInstance *GetClosestDefault(vtStructInstance *pInstance)
 
 bool SetupDefaultStructures(const vtString &fname)
 {
+	VTLOG("SetupDefaultStructures('%s')\n", (const char *) fname);
+
 	if (fname != "")
 	{
+		VTLOG1(" reading from XML: ");
 		if (g_DefaultStructures.ReadXML(fname))
+		{
+			VTLOG1("succeeded.\n");
 			return true;
+		}
+		VTLOG1("failed.\n");
 	}
 
 	// else supply some internal defaults and let the user know the load failed
+	VTLOG1(" making a default building\n");
 	vtBuilding *pBld = g_DefaultStructures.NewBuilding();
 	vtLevel *pLevel;
 	DPolygon2 DefaultFootprint; // Single edge

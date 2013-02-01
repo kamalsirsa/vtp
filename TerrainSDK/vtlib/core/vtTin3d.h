@@ -57,6 +57,7 @@ public:
 	void MakeMaterialsFromOptions(const vtTagArray &options, bool bTextureCompression);
 	void MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale,
 		float fOpacity, bool bTextureCompression);
+	vtMaterial *GetSurfaceMaterial();
 
 protected:
 	virtual void MakeSurfaceMaterials();

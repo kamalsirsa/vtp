@@ -10,6 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/FilePath.h"	// for FindFileOnPaths
 #include "vtdata/DataPath.h"
+#include "vtdata/vtLog.h"
 
 #include "vtTin3d.h"
 #include "SurfaceTexture.h"		// For LoadColorMap
@@ -97,6 +98,8 @@ void vtTin3d::MakeSurfaceMaterials()
  */
 void vtTin3d::MakeMaterialsFromOptions(const vtTagArray &options, bool bTextureCompression)
 {
+	VTLOG1("vtTin3d::MakeMaterialsFromOptions\n");
+
 	ScopedLocale normal_numbers(LC_NUMERIC, "C");	// for GetValueFloat
 
 	const vtString color_map_name = options.GetValueString(STR_COLOR_MAP);
@@ -130,6 +133,8 @@ void vtTin3d::MakeMaterialsFromOptions(const vtTagArray &options, bool bTextureC
 void vtTin3d::MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale,
 	float fOpacity, bool bTextureCompression)
 {
+	VTLOG1("vtTin3d::MakeMaterials\n");
+
 	// set up geotypical materials
 	m_pMats = new vtMaterialArray;
 
@@ -149,6 +154,7 @@ void vtTin3d::MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale,
 
 		// Setup TexGen for a 1D texture.
 		int unit = pMat->NextAvailableTextureUnit();
+		VTLOG("  ColorMap using texture unit %d\n", unit);
 
 		// Rather than look through the color map for each pixel, pre-build
 		//  a color lookup table once - should be faster in nearly all cases.
@@ -179,6 +185,8 @@ void vtTin3d::MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale,
 	if (image)
 	{
 		int unit = pMat->NextAvailableTextureUnit();
+		VTLOG("  GeoTypical using texture unit %d\n", unit);
+
 		pMat->SetTexture2D(image, unit, bTextureCompression);
 		pMat->SetClamp(false, unit);
 		// A geotypical texture.  Setup TexGen.
@@ -187,8 +195,17 @@ void vtTin3d::MakeMaterials(ColorMap *cmap, osg::Image *image, float fScale,
 	}
 }
 
+vtMaterial *vtTin3d::GetSurfaceMaterial()
+{
+	if (m_pMats != NULL && m_MatIndex != -1)
+		return m_pMats->at(m_MatIndex);
+	return NULL;
+}
+
 vtGeode *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 {
+	VTLOG1("vtTin3d::CreateGeometry\n");
+
 	uint iSurfTypes = m_surftypes.size();
 	bool bUseSurfaceTypes = (m_surfidx.size() > 0 && iSurfTypes > 0);
 	bool bExplicitNormals = HasVertexNormals();

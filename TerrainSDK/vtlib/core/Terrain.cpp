@@ -1270,125 +1270,6 @@ bool vtTerrain::_CreateAbstractLayerFromParams(int index)
 	return true;
 }
 
-/////////////////////////
-
-void vtTerrain::_CreateImageLayers()
-{
-	// Must have something to drape on
-	if (!GetHeightField())
-		return;
-
-	// Go through the layers in the terrain parameters, and try to load them
-	for (uint i = 0; i < m_Params.NumLayers(); i++)
-	{
-		if (m_Params.GetLayerType(i) != LT_IMAGE)
-			continue;
-
-		const vtTagArray &lay = m_Params.m_Layers[i];
-
-		// Look for image layers
-		vtString ltype = lay.GetValueString("Type");
-		if (ltype != TERR_LTYPE_IMAGE)
-			continue;
-
-		VTLOG(" Layer %d: Image\n", i);
-		for (uint j = 0; j < lay.NumTags(); j++)
-		{
-			const vtTag *tag = lay.GetTag(j);
-			VTLOG("   Tag '%s': '%s'\n", (const char *)tag->name, (const char *)tag->value);
-		}
-
-		vtString fname = lay.GetValueString("Filename");
-		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
-		if (path == "")
-		{
-			vtString prefix = "GeoSpecific/";
-			path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
-		}
-		if (path == "")
-		{
-			VTLOG("Couldn't find image layer file '%s'\n", (const char *) fname);
-			continue;
-		}
-
-		vtImageLayer *ilayer = new vtImageLayer;
-		if (!ilayer->m_pImage->ReadTIF(path, m_progress_callback))
-		{
-			VTLOG("Couldn't read image from file '%s'\n", (const char *) path);
-			continue;
-		}
-		VTLOG("Read image from file '%s'\n", (const char *) path);
-
-		DRECT extents = ilayer->m_pImage->GetExtents();
-		if (extents.IsEmpty())
-		{
-			VTLOG("Couldn't get extents from image, so we can't use it as an image overlay.\n");
-			continue;
-		}
-		m_Layers.push_back(ilayer);
-		AddMultiTextureOverlay(ilayer);
-	}
-}
-
-//
-// \param TextureMode One of GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD
-//
-void vtTerrain::AddMultiTextureOverlay(vtImageLayer *im_layer)
-{
-	DRECT extents = im_layer->m_pImage->GetExtents();
-	DRECT EarthExtents = GetHeightField()->GetEarthExtents();
-
-	int iTextureUnit = m_TextureUnits.ReserveTextureUnit();
-	if (iTextureUnit == -1)
-		return;
-
-	// Calculate the mapping of texture coordinates
-	DPoint2 scale;
-	FPoint2 offset;
-	vtHeightFieldGrid3d *grid = GetDynTerrain();
-
-	if (grid)
-	{
-		int iCols, iRows;
-		grid->GetDimensions(iCols, iRows);
-
-		// input values go from (0,0) to (Cols-1,Rows-1)
-		// output values go from 0 to 1
-		scale.Set(1.0/(iCols - 1), 1.0/(iRows - 1));
-
-		// stretch the (0-1) over the data extents
-		scale.x *= (EarthExtents.Width() / extents.Width());
-		scale.y *= (EarthExtents.Height() / extents.Height());
-	}
-	else	// might be a TiledGeom, or a TIN
-	{
-		FRECT worldExtents;
-		GetLocalCS().EarthToLocal(extents, worldExtents);
-
-		// Map input values (0-terrain size in world coords) to 0-1
-		scale.Set(1.0/worldExtents.Width(), 1.0/worldExtents.Height());
-	}
-
-	// and offset it to place it at the right place
-	offset.x = (float) ((extents.left - EarthExtents.left) / extents.Width());
-	offset.y = (float) ((extents.bottom - EarthExtents.bottom) / extents.Height());
-
-	im_layer->m_pMultiTexture = new vtMultiTexture;
-	im_layer->m_pMultiTexture->Create(GetTerrainSurfaceNode(), im_layer->m_pImage,
-		scale, offset, iTextureUnit, GL_DECAL);
-}
-
-osg::Node *vtTerrain::GetTerrainSurfaceNode()
-{
-	if (GetDynTerrain())
-		return GetDynTerrain();
-	else if (GetTiledGeom())
-		return GetTiledGeom();
-	else if (GetTin())
-		return GetTin()->GetGeometry();
-	return NULL;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 void vtTerrain::_CreateElevLayers()
@@ -1881,6 +1762,7 @@ bool vtTerrain::CreateStep2()
 	}
 	else if (surface_type == 2)
 	{
+		// Elevation input is a tileset.
 		vtString tex_file = m_Params.GetValueString(STR_TEXTUREFILE);
 		fname = "GeoSpecific/";
 		fname += tex_file;
@@ -1930,7 +1812,7 @@ bool vtTerrain::CreateStep2()
 	}
 	else if (surface_type == 3)
 	{
-
+		// Elevation input is some external thing like osgTerrain or osgEarth
 		m_pExternalHeightField = new vtExternalHeightField3d;
 		if (!m_pExternalHeightField->Initialize(elev_path))
 		{
@@ -1985,6 +1867,13 @@ bool vtTerrain::CreateStep3(vtTransform *pSunLight, vtLightSource *pLightSource)
 	if (type == 1)	// TIN
 	{
 		m_pTin->MakeMaterialsFromOptions(m_Params, m_bTextureCompression);
+
+		vtMaterial *surface_material = m_pTin->GetSurfaceMaterial();
+		if (surface_material)
+		{
+			for (uint i = 0; i < surface_material->NextAvailableTextureUnit(); i++)
+				m_TextureUnits.ReserveTextureUnit();
+		}
 	}
 	return true;
 }
@@ -2166,7 +2055,7 @@ void vtTerrain::CreateStep11()
 {
 	VTLOG1("Step11\n");
 
-	_CreateImageLayers();
+	CreateImageLayers();
 }
 
 void vtTerrain::CreateStep12()
@@ -3172,6 +3061,112 @@ int vtTerrain::DeleteSelectedFeatures(vtAbstractLayer *alay)
 	}
 	return count;
 }
+
+
+////////////////////////////////////////////////////////////////////////////
+// Image layers
+
+/**
+ * Create a new image array for this terrain, and returns it.
+ */
+vtImageLayer *vtTerrain::NewImageLayer()
+{
+	vtImageLayer *ilay = new vtImageLayer;
+	m_Layers.push_back(ilay);
+	return ilay;
+}
+
+void vtTerrain::CreateImageLayers()
+{
+	// Must have something to drape on
+	if (!GetHeightField())
+		return;
+
+	// Go through the layers in the terrain parameters, and try to load them
+	for (uint i = 0; i < m_Params.NumLayers(); i++)
+	{
+		if (m_Params.GetLayerType(i) != LT_IMAGE)
+			continue;
+
+		VTLOG(" Layer %d: Image\n", i);
+		const vtTagArray &lay = m_Params.m_Layers[i];
+		for (uint j = 0; j < lay.NumTags(); j++)
+		{
+			const vtTag *tag = lay.GetTag(j);
+			VTLOG("   Tag '%s': '%s'\n", (const char *) tag->name, (const char *) tag->value);
+		}
+
+		vtImageLayer *im_layer = NewImageLayer();
+		im_layer->SetProps(lay);
+		if (im_layer->Load(m_progress_callback))
+			AddMultiTextureOverlay(im_layer);
+		else
+			m_Layers.Remove(im_layer);
+	}
+}
+
+//
+// \param TextureMode One of GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD
+//
+void vtTerrain::AddMultiTextureOverlay(vtImageLayer *im_layer)
+{
+	DRECT extents = im_layer->m_pImage->GetExtents();
+	DRECT EarthExtents = GetHeightField()->GetEarthExtents();
+
+	int iTextureUnit = m_TextureUnits.ReserveTextureUnit();
+
+	VTLOG("vtTerrain::AddMultiTextureOverlay: using texture unit %d\n", iTextureUnit);
+
+	if (iTextureUnit == -1)
+		return;
+
+	// Calculate the mapping of texture coordinates
+	DPoint2 scale;
+	FPoint2 offset;
+	vtHeightFieldGrid3d *grid = GetDynTerrain();
+
+	if (grid)
+	{
+		int iCols, iRows;
+		grid->GetDimensions(iCols, iRows);
+
+		// input values go from (0,0) to (Cols-1,Rows-1)
+		// output values go from 0 to 1
+		scale.Set(1.0/(iCols - 1), 1.0/(iRows - 1));
+
+		// stretch the (0-1) over the data extents
+		scale.x *= (EarthExtents.Width() / extents.Width());
+		scale.y *= (EarthExtents.Height() / extents.Height());
+	}
+	else	// might be a TiledGeom, or a TIN
+	{
+		FRECT worldExtents;
+		GetLocalCS().EarthToLocal(extents, worldExtents);
+
+		// Map input values (0-terrain size in world coords) to 0-1
+		scale.Set(1.0/worldExtents.Width(), 1.0/worldExtents.Height());
+	}
+
+	// and offset it to place it at the right place
+	offset.x = (float) ((extents.left - EarthExtents.left) / extents.Width());
+	offset.y = (float) ((extents.bottom - EarthExtents.bottom) / extents.Height());
+
+	im_layer->m_pMultiTexture = new vtMultiTexture;
+	im_layer->m_pMultiTexture->Create(GetTerrainSurfaceNode(), im_layer->m_pImage,
+		scale, offset, iTextureUnit, GL_DECAL);
+}
+
+osg::Node *vtTerrain::GetTerrainSurfaceNode()
+{
+	if (GetDynTerrain())
+		return GetDynTerrain();
+	else if (GetTiledGeom())
+		return GetTiledGeom();
+	else if (GetTin())
+		return GetTin()->GetGeometry();
+	return NULL;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 // Scenarios

@@ -92,6 +92,7 @@ public:
 	vtString GetLayerName() { return m_pImage->GetFilename().c_str(); }
 	void SetVisible(bool vis);
 	bool GetVisible();
+	bool Load(bool progress_callback(int) = NULL);
 
 	vtImageGeoPtr m_pImage;
 	osg::ref_ptr<vtMultiTexture> m_pMultiTexture;

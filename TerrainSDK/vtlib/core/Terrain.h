@@ -213,10 +213,10 @@ public:
 	vtLayer *GetOrCreateLayerOfType(LayerType type);
 	uint NumLayersOfType(LayerType type);
 
-	// elev layers
+	// Elevation layers
 	bool CreateElevLayerFromTags(const vtTagArray &layer_tags);
 
-	// plants
+	// Vegetation layers
 	vtVegLayer *GetVegLayer();
 	vtVegLayer *NewVegLayer();
 	vtVegLayer *LoadVegetation(const vtString &fname);
@@ -232,7 +232,7 @@ public:
 						  int &plant_index, vtVegLayer **v_layer);
 	void DeselectAllPlants();
 
-	// structures
+	// Structure layers
 	vtStructureLayer *GetStructureLayer() const;
 	vtStructureLayer *NewStructureLayer();
 	vtStructureLayer *LoadStructuresFromXML(const vtString &strFilename);
@@ -259,7 +259,7 @@ public:
 	virtual void OnCreateBehavior(vtStructure *s);
 	virtual void OnDeleteBehavior(vtStructure *s);
 
-	// abstract layers
+	// Abstract layers
 	vtAbstractLayer *NewAbstractLayer();
 	vtAbstractLayer *GetAbstractLayer();
 	bool CreateAbstractLayerVisuals(vtAbstractLayer *ab_layer);
@@ -271,6 +271,12 @@ public:
 	/// they are 'flat' like GIS features or contour lines, which should
 	/// be scaled up/down with the vertical exaggeration of the terrain.
 	vtTransform *GetScaledFeatures() { return m_pScaledFeatures; }
+
+	// Image layers
+	vtImageLayer *NewImageLayer();
+	void CreateImageLayers();
+	void AddMultiTextureOverlay(vtImageLayer *im_layer);
+	osg::Node *GetTerrainSurfaceNode();
 
 	// roads
 	vtRoadMap3d *GetRoadMap() { return m_pRoadMap.get(); }
@@ -358,8 +364,6 @@ public:
 	// Texture
 	void ReshadeTexture(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 	osg::Image *GetTextureImage();
-	void AddMultiTextureOverlay(vtImageLayer *im_layer);
-	osg::Node *GetTerrainSurfaceNode();
 	void RecreateTexture(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 	void SetTextureCompression(bool compress) { m_bTextureCompression = compress; }
 
@@ -386,7 +390,6 @@ protected:
 	void _SetupStructGrid(float fLODDistance);
 	void _CreateAbstractLayersFromParams();
 	bool _CreateAbstractLayerFromParams(int index);
-	void _CreateImageLayers();
 	void _CreateElevLayers();
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);

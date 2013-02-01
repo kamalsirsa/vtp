@@ -23,7 +23,7 @@
 
 vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 {
-	m_Props.SetValueString("Type", TERR_LTYPE_STRUCTURE);
+	m_Props.SetValueString("Type", TERR_LTYPE_STRUCTURE, true);
 }
 
 /**
@@ -75,7 +75,7 @@ void vtStructureLayer::SetLayerName(const vtString &fname)
 
 vtVegLayer::vtVegLayer() : vtLayer(LT_VEG)
 {
-	m_Props.SetValueString("Type", TERR_LTYPE_VEGETATION);
+	m_Props.SetValueString("Type", TERR_LTYPE_VEGETATION, true);
 }
 
 
@@ -84,7 +84,7 @@ vtVegLayer::vtVegLayer() : vtLayer(LT_VEG)
 
 vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 {
-	m_Props.SetValueString("Type", TERR_LTYPE_IMAGE);
+	m_Props.SetValueString("Type", TERR_LTYPE_IMAGE, true);
 
 	m_pImage = new vtImageGeo;
 	m_pMultiTexture = NULL;
@@ -102,6 +102,37 @@ void vtImageLayer::SetVisible(bool vis)
 	vtLayerBase::SetVisible(vis);
 }
 
+bool vtImageLayer::Load(bool progress_callback(int))
+{
+	vtString fname = m_Props.GetValueString("Filename");
+	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+	if (path == "")
+	{
+		vtString prefix = "GeoSpecific/";
+		path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
+	}
+	if (path == "")
+	{
+		VTLOG("Couldn't find image layer file '%s'\n", (const char *) fname);
+		return false;
+	}
+
+	if (!m_pImage->ReadTIF(path, progress_callback))
+	{
+		VTLOG("Couldn't read image from file '%s'\n", (const char *) path);
+		return false;
+	}
+	VTLOG("Read image from file '%s'\n", (const char *) path);
+
+	DRECT extents = m_pImage->GetExtents();
+	if (extents.IsEmpty())
+	{
+		VTLOG("Couldn't get extents from image, so we can't use it as an image overlay.\n");
+		return false;
+	}
+	return true;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////
 // Elevation Surfaces
@@ -109,7 +140,7 @@ void vtImageLayer::SetVisible(bool vis)
 vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 {
 	VTLOG1("vtElevLayer constructor\n");
-	m_Props.SetValueString("Type", TERR_LTYPE_ELEVATION);
+	m_Props.SetValueString("Type", TERR_LTYPE_ELEVATION, true);
 }
 
 vtElevLayer::~vtElevLayer()
