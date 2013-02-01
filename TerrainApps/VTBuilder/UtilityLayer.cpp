@@ -55,7 +55,10 @@ void vtUtilityLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 	pDC->SetPen(greenPen);
 	pDC->SetBrush(*wxTRANSPARENT_BRUSH);
 
-	m_size = pView->sdx(20);
+	if (m_proj.IsGeographic())
+		m_size = pView->sdx(2E-4);	// ~20 meters, in degrees.
+	else
+		m_size = pView->sdx(20);	// 20 meters
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
@@ -152,6 +155,16 @@ bool vtUtilityLayer::AppendDataFrom(vtLayer *pL)
 void vtUtilityLayer::Offset(const DPoint2 &delta)
 {
 	vtUtilityMap::Offset(delta);
+}
+
+void vtUtilityLayer::GetPropertyText(wxString &strIn)
+{
+	wxString str;
+	str.Printf(_("Nodes (poles/towers): %d\n"), m_Poles.size());
+	strIn += str;
+
+	str.Printf(_("Lines: %d\n"), m_Lines.size());
+	strIn += str;
 }
 
 void vtUtilityLayer::DeselectAll()

@@ -139,6 +139,15 @@ void vtImageLayer::GetPropertyText(wxString &strIn)
 {
 	DRECT extents;
 	m_pImage->GetExtent(extents);
+	if (extents.IsEmpty())
+		strIn += _("No extents\n");
+
+	if (m_pImage->NumBitmaps() == 0)
+	{
+		strIn += _("No bitmaps\n");
+		return;
+	}
+
 	IPoint2 size = m_pImage->GetDimensions();
 	vtProjection proj;
 	m_pImage->GetProjection(proj);

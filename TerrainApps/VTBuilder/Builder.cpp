@@ -1266,6 +1266,11 @@ bool Builder::GetRGBUnderCursor(const DPoint2 &p, RGBi &rgb)
 		if (lay->GetType() != LT_IMAGE || !lay->GetVisible())
 			continue;
 		vtImageLayer *pIL = (vtImageLayer *) lay;
+
+		// Safety check
+		if (!pIL->GetImage())
+			continue;
+
 		if (pIL->GetImage()->GetColorSolid(p, value))
 		{
 			rgb = value;

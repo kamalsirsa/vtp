@@ -707,6 +707,10 @@ void vtImage::SetExtent(const DRECT &rect)
 
 DPoint2 vtImage::GetSpacing(int bitmap) const
 {
+	// safety check
+	if (bitmap >= (int) m_Bitmaps.size())
+		return DPoint2(1, 1);
+
 	return DPoint2(m_Extents.Width() / m_Bitmaps[bitmap].m_Size.x,
 		m_Extents.Height() / m_Bitmaps[bitmap].m_Size.y);
 }
@@ -751,6 +755,10 @@ bool vtImage::ReprojectExtents(const vtProjection &proj_new)
  */
 bool vtImage::GetColorSolid(const DPoint2 &p, RGBAi &rgba, double dRes)
 {
+	// Safety check
+	if (m_Bitmaps.size() == 0)
+		return false;
+
 	// could speed this up by keeping these values around
 	const DPoint2 &spacing = m_Bitmaps[0].m_Spacing;
 	const IPoint2 &size = m_Bitmaps[0].m_Size;

@@ -366,7 +366,7 @@ void MyTreeCtrl::OnItemRightClick(wxTreeEvent& event)
 			popmenu->Append(ID_POPUP_TO_BOTTOM, _("Move to Bottom (draw last)"));
 
 			vtImageLayer *pIL = dynamic_cast<vtImageLayer*>(data->m_pLayer);
-			if (pIL && pIL->GetImage()->GetBitmap() != NULL)
+			if (pIL && pIL->GetImage() && pIL->GetImage()->GetBitmap() != NULL)
 			{
 				popmenu->AppendSeparator();
 				popmenu->Append(ID_POPUP_OVR_DISK, _("Create Overviews on Disk"));

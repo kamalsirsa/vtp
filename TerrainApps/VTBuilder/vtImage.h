@@ -99,7 +99,11 @@ public:
 						   int iSampleN, bool progress_callback(int) = NULL);
 
 	DPoint2 GetSpacing(int bitmap = 0) const;
-	vtBitmap *GetBitmap() { return m_Bitmaps[0].m_pBitmap; }
+	vtBitmap *GetBitmap() {
+		if (m_Bitmaps.size() != 0)
+			return m_Bitmaps[0].m_pBitmap;
+		return NULL;
+	}
 
 	void GetProjection(vtProjection &proj) const;
 	vtProjection &GetAtProjection() { return m_proj; }
