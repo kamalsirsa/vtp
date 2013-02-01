@@ -3002,12 +3002,12 @@ bool vtTerrain::CreateAbstractLayerVisuals(vtAbstractLayer *ab_layer)
 	if (!have_center)
 	{
 		// Just use the terrain center.
-		center = GetHeightFieldGrid3d()->GetEarthExtents().GetCenter();
+		center = GetHeightField()->GetEarthExtents().GetCenter();
 	}
 	float fSpacing = EstimateGroundSpacingAtPoint(center);
 
 	VTLOG1("  Constructing layer visuals.\n");
-	ab_layer->CreateFeatureVisuals(GetScaledFeatures(), GetHeightFieldGrid3d(),
+	ab_layer->CreateFeatureVisuals(GetScaledFeatures(), GetHeightField(),
 		fSpacing, m_progress_callback);
 
 	// Show only layers which should be visible

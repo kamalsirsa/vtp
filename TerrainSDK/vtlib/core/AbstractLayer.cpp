@@ -84,12 +84,33 @@ bool vtAbstractLayer::Load(const vtProjection &proj, vtFeatureLoader *loader, bo
 	//  terrain (before converting from terrain to world coordinates)
 	vtProjection &proj_feat = m_pSet->GetAtProjection();
 
-	// If we have two valid CRSs, and they are not the same, then we need a transform
-	if (proj_feat.GetRoot() && proj.GetRoot() && !proj_feat.IsSame(&proj))
+	VTLOG("  features: projection has root: %p\n", proj_feat.GetRoot());
+	char type[7], value[4000];
+	if (proj_feat.GetRoot())
 	{
-		VTLOG1("  CRS is different, making a transform.\n");
-		m_pOCTransform.reset(CreateCoordTransform(&proj_feat, &proj, true));
+		proj_feat.GetTextDescription(type, value);
+		VTLOG("   (%s: %s)\n", type, value);
 	}
+	VTLOG("   terrain: projection has root: %p\n", proj.GetRoot());
+	if (proj.GetRoot())
+	{
+		proj.GetTextDescription(type, value);
+		VTLOG("   (%s: %s)\n", type, value);
+	}
+
+	// If we have two valid CRSs, and they are not the same, then we need a transform
+	if (proj_feat.GetRoot() && proj.GetRoot())
+	{
+		VTLOG1("  Testing if they are the same: ");
+		if (!proj_feat.IsSame(&proj))
+		{
+			VTLOG1("CRS is different, making a transform.\n");
+			m_pOCTransform.reset(CreateCoordTransform(&proj_feat, &proj, true));
+		}
+		else
+			VTLOG1("Yes. No transform needed.\n");
+	}
+	VTLOG1("vtAbstractLayer::Load finished\n");
 	return true;
 }
 
