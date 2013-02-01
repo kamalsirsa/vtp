@@ -673,9 +673,15 @@ void TParamsDlg::DeleteItem(wxListBox *pBox)
 
 int TParamsDlg::FindLayerByFilename(const vtString &fname)
 {
+	vtString layer_fname;
 	for (uint i = 0; i < m_Layers.size(); i++)
-		if (fname == m_Layers[i].GetValueString("Filename"))
-			return (int) i;
+	{
+		if (m_Layers[i].GetValueString("Filename", layer_fname))
+		{
+			if (fname == layer_fname)
+				return (int) i;
+		}
+	}
 	return -1;
 }
 
