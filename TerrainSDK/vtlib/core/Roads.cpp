@@ -78,7 +78,7 @@ NodeGeom::~NodeGeom()
 
 FPoint3 NodeGeom::GetUnitLinkVector(int i)
 {
-	FPoint3 linkpoint = GetAdjacentRoadpoint(i);
+	const FPoint3 &linkpoint = GetAdjacentRoadpoint(i);
 	return CreateUnitLinkVector(m_p3, linkpoint);
 }
 
@@ -96,7 +96,7 @@ const FPoint3 &NodeGeom::GetAdjacentRoadpoint(int iLinkNumber)
 // statistics
 int one = 0, two = 0, many = 0;
 
-void NodeGeom::BuildIntersection()
+void NodeGeom::ComputeIntersectionVertices()
 {
 	FPoint3 v, v_next, v_prev;
 	FPoint3 pn0, pn1;
@@ -161,40 +161,30 @@ void NodeGeom::BuildIntersection()
 		//  z = greater of x or y.
 		FLine3 distance_to_intersection(NumLinks());
 
-		// Go through the links once, colling the minimum distances
-		int i;
-		for (i = 0; i < NumLinks(); i++)
+		// Go through the links once, collecting the minimum distances
+		for (int i = 0; i < NumLinks(); i++)
 		{
 			// indices of the next and previous links
-			int i_next = (i == NumLinks()-1) ? 0 : i+1;
+			const int i_next = (i == NumLinks()-1) ? 0 : i+1;
 
-			TLink *pL = GetLink(i);
-			TLink *pL_next = GetLink(i_next);
+			const TLink *pL = GetLink(i);
+			const TLink *pL_next = GetLink(i_next);
 
-			float width1 = pL->m_fLeftWidth;
-			float width2 = pL_next->m_fRightWidth;
+			const float width1 = pL->m_fLeftWidth;
+			const float width2 = pL_next->m_fRightWidth;
 
-			FPoint3 linkv1 = GetUnitLinkVector(i);
-			FPoint3 linkv2 = GetUnitLinkVector(i_next);
+			const FPoint3 linkv1 = GetUnitLinkVector(i);
+			const FPoint3 linkv2 = GetUnitLinkVector(i_next);
 
 			// Use 2D vectors for the following math
-			FPoint2 v1(linkv1.x, linkv1.z);
-			FPoint2 v2(linkv2.x, linkv2.z);
-
-			FPoint2 norm1(linkv1.z, -linkv1.x);
-			FPoint2 norm2(linkv2.z, -linkv2.x);
-			norm1.Normalize();
-			norm2.Normalize();
-
 			// Compute two vectors: left road edge of this link, right road
 			//  edge of the following link, compute where they intersect, in
 			//  terms of the ua and ub factors, which are the distance along
 			//  each input vector to the intersection point.
-			FPoint2 center(m_p3.x, m_p3.z);
-			FPoint2 p1 = center + norm1 * width1;
-			FPoint2 p2 = center - norm2 * width2;
+			const FPoint2 v1(linkv1.x, linkv1.z);
+			const FPoint2 v2(linkv2.x, linkv2.z);
 
-			float denom = v2.y*v1.x - v2.x*v1.y;
+			const float denom = v2.y*v1.x - v2.x*v1.y;
 			if (fabs(denom) < 0.01)
 			{
 				// too parallel, pick a safety value
@@ -203,31 +193,40 @@ void NodeGeom::BuildIntersection()
 			}
 			else
 			{
-				float ua = (v2.x*(p1.y - p2.y) - v2.y*(p1.x - p2.x)) / denom;
-				float ub = (v1.x*(p1.y - p2.y) - v1.y*(p1.x - p2.x)) / denom;
+				FPoint2 norm1(linkv1.z, -linkv1.x);
+				FPoint2 norm2(linkv2.z, -linkv2.x);
+				norm1.Normalize();
+				norm2.Normalize();
+
+				const FPoint2 center(m_p3.x, m_p3.z);
+				const FPoint2 p1 = center + norm1 * width1;
+				const FPoint2 p2 = center - norm2 * width2;
+
+				const float ua = (v2.x*(p1.y - p2.y) - v2.y*(p1.x - p2.x)) / denom;
+				const float ub = (v1.x*(p1.y - p2.y) - v1.y*(p1.x - p2.x)) / denom;
 
 				distance_to_intersection[i].x = ua;
 				distance_to_intersection[i_next].y = ub;
 			}
 		}
 		// Go through the links again, picking the largest minimum
-		for (i = 0; i < NumLinks(); i++)
+		for (int i = 0; i < NumLinks(); i++)
 		{
 			distance_to_intersection[i].z = std::max(distance_to_intersection[i].x,
 				distance_to_intersection[i].y);
 		}
 		// Now we can finally set the two points where this link meets the
 		//  intersection without overlapping with the other links
-		for (i = 0; i < NumLinks(); i++)
+		for (int i = 0; i < NumLinks(); i++)
 		{
-			TLink *pL = GetLink(i);
+			const TLink *pL = GetLink(i);
 			v = GetUnitLinkVector(i);
 
 			FPoint3 norm(v.z, 0, -v.x);
 			norm.Normalize();
 			norm *= pL->m_fLeftWidth;
 
-			float dist = distance_to_intersection[i].z;
+			const float dist = distance_to_intersection[i].z;
 			m_v[i * 2 + 0] = m_p3 + norm + (v * dist);
 			m_v[i * 2 + 1] = m_p3 - norm + (v * dist);
 		}
@@ -374,7 +373,6 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 			FPoint3 bisector;
 			wider = AngleSideVector(m_centerline[j-1], m_centerline[j], m_centerline[j+1], bisector);
 
-			// and elevate the link above the terrain
 			left = m_centerline[j] - bisector;
 			right = m_centerline[j] + bisector;
 		}
@@ -386,7 +384,8 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 		}
 		bi.crossvector[j] = right - left;
 //		bi.center[j] = left + (bi.crossvector[j] * 0.5f);
-		bi.center[j] = m_centerline[j];
+//		bi.center[j] = m_centerline[j];
+		bi.center[j] = (left + right) / 2;
 		bi.crossvector[j].Normalize();
 		bi.crossvector[j] *= wider;
 	}
@@ -714,14 +713,10 @@ vtRoadMap3d::~vtRoadMap3d()
 {
 }
 
-void vtRoadMap3d::BuildIntersections()
+void vtRoadMap3d::ComputeIntersectionVertices()
 {
-	int count = 0;
 	for (NodeGeom *pN = GetFirstNode(); pN; pN = pN->GetNext())
-	{
-		pN->BuildIntersection();
-		count++;
-	}
+		pN->ComputeIntersectionVertices();
 }
 
 

@@ -276,7 +276,7 @@ void vtTerrain::_CreateRoads()
 
 	m_pRoadMap->SetHeightOffGround(m_Params.GetValueFloat(STR_ROADHEIGHT));
 	m_pRoadMap->DrapeOnTerrain(m_pHeightField);
-	m_pRoadMap->BuildIntersections();
+	m_pRoadMap->ComputeIntersectionVertices();
 
 	m_pRoadMap->SetLodDistance(m_Params.GetValueFloat(STR_ROADDISTANCE) * 1000);	// convert km to m
 

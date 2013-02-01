@@ -37,7 +37,7 @@ public:
 	{
 		return (class LinkGeom *)m_connect[n];
 	}
-	void BuildIntersection();
+	void ComputeIntersectionVertices();
 	void FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 &p1);
 	vtMesh *GenerateGeometry();
 	FPoint3 GetUnitLinkVector(int i);
@@ -182,7 +182,7 @@ public:
 	}
 
 	void DrapeOnTerrain(vtHeightField3d *pHeightField);
-	void BuildIntersections();
+	void ComputeIntersectionVertices();
 	void AddMeshToGrid(vtMesh *pMesh, int iMatIdx);
 	vtTransform *GenerateGeometry(bool do_texture, bool bHwy, bool bPaved,
 		bool bDirt, bool progress_callback(int) = NULL);
