@@ -8,7 +8,12 @@
 #ifndef __VehicleDlg_H__
 #define __VehicleDlg_H__
 
-#include "wx/colourdata.h"
+#if wxCHECK_VERSION(2, 9, 0)
+  #include <wx/colourdata.h>
+#else
+  // The older include
+  #include <wx/cmndata.h>
+#endif
 
 #include "EnviroUI.h"
 #include "../PlantingOptions.h"

@@ -608,7 +608,9 @@ void YieldForIdle()
 	// In some cases (including wxMSW 2.9.x) the progress dialog seems to
 	// starve the other windows of idle and redraw events.  We can
 	// explicitly ask wx to make those happen.
+#if wxCHECK_VERSION(2, 9, 0)
 	wxApp::GetInstance()->ProcessIdle();
+#endif
 	wxYield();
 }
 

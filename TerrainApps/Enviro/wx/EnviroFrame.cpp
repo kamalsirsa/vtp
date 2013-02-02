@@ -201,6 +201,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	gl_attribs.push_back(WX_GL_DEPTH_SIZE);
 	gl_attribs.push_back(24);
 	VTLOG("Anti-aliasing multisamples: %d\n", g_Options.m_iMultiSamples);
+#if wxCHECK_VERSION(2, 9, 0)
 	if (g_Options.m_iMultiSamples > 0)
 	{
 		gl_attribs.push_back(WX_GL_SAMPLE_BUFFERS);
@@ -208,6 +209,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 		gl_attribs.push_back(WX_GL_SAMPLES);
 		gl_attribs.push_back(g_Options.m_iMultiSamples);
 	}
+#endif
 	if (g_Options.m_bStereo && g_Options.m_iStereoMode == 1)	// 1 = Quad-buffer stereo
 	{
 		gl_attribs.push_back(WX_GL_STEREO);
@@ -1266,7 +1268,7 @@ bool EnviroFrame::LoadTerrainLayer(vtString &fname)
 		// TODO here: progress dialog on load?
 		if (ab_layer->Load(pTerr->GetProjection(), NULL))
 		{
-			VTLOG("Successfully read features from file '%s'\n", fname);
+			VTLOG("Successfully read features from file '%s'\n", (const char *) fname);
 
 			// Abstract layers aren't constructed yet, giving us a chance to ask
 			// for styling.
@@ -1288,7 +1290,7 @@ bool EnviroFrame::LoadTerrainLayer(vtString &fname)
 		}
 		if (!success)
 		{
-			VTLOG("Couldn't read features from file '%s'\n", fname);
+			VTLOG("Couldn't read features from file '%s'\n", (const char *) fname);
 			pTerr->RemoveLayer(ab_layer);
 		}
 	}

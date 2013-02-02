@@ -375,6 +375,7 @@ END_EVENT_TABLE()
 void MainFrame::CreateMenus()
 {
 	int menu_num = 0;
+	wxString ampersand = _T("&");
 
 	m_pMenuBar = new wxMenuBar;
 
@@ -396,7 +397,7 @@ void MainFrame::CreateMenus()
 	specialMenu->Append(ID_SPECIAL_RUN_TEST, _("Run test"));
 	specialMenu->Append(ID_ELEV_COPY, _("Copy Elevation Layer to Clipboard"));
 	specialMenu->Append(ID_ELEV_PASTE_NEW, _("New Elevation Layer from Clipboard"));
-	fileMenu->Append(0, _T("&") + _("Special"), specialMenu);
+	fileMenu->Append(0, ampersand + _("Special"), specialMenu);
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_FILE_PREFS, _("Preferences"));
 	fileMenu->AppendSeparator();
@@ -2783,12 +2784,12 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 		// To make it easier for the user, look for a species.xml on the path and
 		// suggest that as the folder to look in.
 		wxString default_dir;
-		wxString default_file("species.xml");
+		wxString default_file(_T("species.xml"));
 		vtString species_path = FindFileOnPaths(vtGetDataPath(), "PlantData/species.xml");
 		if (species_path != "")
 		{
 			vtString just_path(ExtractPath(species_path, false));
-			default_dir = (const char *) just_path;
+			default_dir = wxString::FromUTF8((const char *) just_path);
 #if WIN32
 			// An ugly workaround for Windows 7 File Dialog's behavior.
 			// We really want it to respect default_dir, but it wants to give us

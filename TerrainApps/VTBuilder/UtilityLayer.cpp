@@ -109,7 +109,7 @@ bool vtUtilityLayer::OnSave(bool progress_callback(int))
 {
 	wxString strExt = GetLayerFilename().AfterLast('.');
 
-	if (!strExt.CmpNoCase("osm"))
+	if (!strExt.CmpNoCase(_T("osm")))
 		return WriteOSM(GetLayerFilename().mb_str(wxConvUTF8));
 	return false;
 }

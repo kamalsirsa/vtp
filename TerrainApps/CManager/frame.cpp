@@ -796,16 +796,16 @@ void vtFrame::OnItemSave(wxCommandEvent& event)
 #else
 	// Just hard-code the formats we expect to be writable with OSG 3.x
 	wxString filter = _("All Files|*.*");
-	AddType(filter, "OpenSceneGraph Ascii file format (*.osg)|*.osg");
-	AddType(filter, "OpenSceneGraph native binary format (*.ive)|*.ive");
-	AddType(filter, "OpenSceneGraph extendable binary format (*.osgb)|*.osgb");
-	AddType(filter, "OpenSceneGraph extendable Ascii format (*.osgt)|*.osgt");
-	AddType(filter, "OpenSceneGraph extendable XML format (*.osgx)|*.osgx");
-	AddType(filter, "3D Studio model format (*.3ds)|*.3ds");
-	AddType(filter, "Alias Wavefront OBJ format (*.obj)|*.obj");
-	AddType(filter, "OpenFlight format (*.flt)|*.flt");
-	AddType(filter, "STL ASCII format (*.sta)|*.sta");
-	AddType(filter, "STL binary format (*.stl)|*.stl");
+	AddType(filter, _("OpenSceneGraph Ascii file format (*.osg)|*.osg"));
+	AddType(filter, _("OpenSceneGraph native binary format (*.ive)|*.ive"));
+	AddType(filter, _("OpenSceneGraph extendable binary format (*.osgb)|*.osgb"));
+	AddType(filter, _("OpenSceneGraph extendable Ascii format (*.osgt)|*.osgt"));
+	AddType(filter, _("OpenSceneGraph extendable XML format (*.osgx)|*.osgx"));
+	AddType(filter, _("3D Studio model format (*.3ds)|*.3ds"));
+	AddType(filter, _("Alias Wavefront OBJ format (*.obj)|*.obj"));
+	AddType(filter, _("OpenFlight format (*.flt)|*.flt"));
+	AddType(filter, _("STL ASCII format (*.sta)|*.sta"));
+	AddType(filter, _("STL binary format (*.stl)|*.stl"));
 #endif
 
 	// ask the user for a filename

@@ -349,7 +349,7 @@ Builder::LoadResult Builder::LoadLayer(const wxString &fname_in)
 			msg += _T("\n");
 			msg += _("Do you want to load the default species file from:");
 			msg += _T("\n");
-			msg += wxString(species_path);
+			msg += wxString::FromUTF8((const char *) species_path);
 			int ret = wxMessageBox(msg, _("Plants"), wxYES_NO);
 			if (ret == wxYES)
 			{

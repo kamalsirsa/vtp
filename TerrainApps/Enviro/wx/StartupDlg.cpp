@@ -56,25 +56,23 @@ static void ShowOGLInfo2(bool bLog)
 	{
 		// show the information in a popup dialog
 		msg = _("OpenGL Version: ");
-		msg += glGetString(GL_VERSION);
-		msg += "\n";
+		msg += wxString::FromAscii((const char *) glGetString(GL_VERSION));
+		msg += _T("\n");
 		msg += _("Vendor: ");
-		msg += glGetString(GL_VENDOR);
-		msg += "\n";
+		msg += wxString::FromAscii((const char *) glGetString(GL_VENDOR));
+		msg += _T("\n");
 		msg += _("Renderer: "),
-		msg += glGetString(GL_RENDERER);
-		msg += "\n";
+		msg += wxString::FromAscii((const char *) glGetString(GL_RENDERER));
+		msg += _T("\n");
 		str.Printf(_("Maximum Texture Dimension: %d\n"), value);
 		msg += str;
 #ifdef GL_SHADING_LANGUAGE_VERSION
 		msg += _("GLSL Version: ");
-		const char *glsl = (const char *) glGetString(GL_SHADING_LANGUAGE_VERSION);
-		msg += wxString(glsl, wxConvUTF8);
+		msg += wxString::FromAscii((const char *) glGetString(GL_SHADING_LANGUAGE_VERSION));
 		msg += _T("\n");
 #endif
 		msg += _("Extensions: ");
-		const char *ext = (const char *) glGetString(GL_EXTENSIONS);
-		msg += wxString(ext, wxConvUTF8);
+		msg += wxString::FromAscii((const char *) glGetString(GL_EXTENSIONS));
 	}
 
 	if (!bLog)

@@ -10,6 +10,7 @@
 #define VTMATHTYPESH
 
 #include <math.h>
+#include <float.h>
 #include <locale.h>
 #include <vector>
 #include <string>

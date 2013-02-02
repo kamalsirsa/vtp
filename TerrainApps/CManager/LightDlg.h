@@ -9,7 +9,13 @@
 #define __LightDlg_H__
 
 #include "CManager_UI.h"
-#include "wx/colourdata.h"
+
+#if wxCHECK_VERSION(2, 9, 0)
+  #include <wx/colourdata.h>
+#else
+  // The older include
+  #include <wx/cmndata.h>
+#endif
 
 // WDR: class declarations
 

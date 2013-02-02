@@ -451,7 +451,16 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 #endif
 	if (bDrawNormal)
 	{
+		bool bUseDrawBitmap;
+#if wxCHECK_VERSION(2, 9, 0)
+		bUseDrawBitmap = false;
+#else
+		bUseDrawBitmap = true;		// Older wx doesn't have StretchBlit
+#endif
 		if (ratio_x > 1.0 && ratio_y > 1.0)
+			bUseDrawBitmap = true;
+
+		if (bUseDrawBitmap)
 		{
 			// Scale and draw the bitmap
 			// Must use SetUserScale since wxWidgets doesn't provide StretchBlt?
@@ -466,6 +475,7 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 			// restore
 			pDC->SetUserScale(1.0, 1.0);
 		}
+#if wxCHECK_VERSION(2, 9, 0)
 		else
 		{
 			// Create a memory DC; seems like a lot of overhead, but it also seems fast enough.
@@ -479,6 +489,7 @@ void vtElevLayer::DrawLayerBitmap(wxDC *pDC, vtScaledView *pView)
 				&temp_dc, srcRect.x, srcRect.y,
 				srcRect.width, srcRect.height, wxCOPY, m_bHasMask);
 		}
+#endif
 	}
 }
 

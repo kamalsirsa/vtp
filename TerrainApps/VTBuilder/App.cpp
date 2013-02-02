@@ -84,7 +84,7 @@ bool BuilderApp::OnInit()
 	wxLog::SetActiveTarget(logger);
 	wxLog::SetLogLevel(wxLOG_User);
 	wxLog::SetVerbose();
-	wxLogVerbose("wxWidgets logging enabled");
+	wxLogVerbose(_T("wxWidgets logging enabled"));
 
 	VTLOG1("Calling Args()\n");
 	Args(argc, argv);

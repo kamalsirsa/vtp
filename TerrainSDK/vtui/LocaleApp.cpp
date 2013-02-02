@@ -82,7 +82,8 @@ void LocaleApp::SetupLocale(const char *appname)
 		VTLOG(" failed.\n");
 
 	VTLOG("Attempting to load the '%s.mo' catalog for the current locale.\n", appname);
-	bSuccess = m_locale.AddCatalog(appname);
+	wxString ws_appname = wxString::FromUTF8(appname);
+	bSuccess = m_locale.AddCatalog(ws_appname);
 	if (bSuccess)
 		VTLOG(" succeeded.\n");
 	else
