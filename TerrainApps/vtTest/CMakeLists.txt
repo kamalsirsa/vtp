@@ -46,6 +46,14 @@ if(MINI_FOUND)
 	target_link_libraries(vtTest ${MINI_LIBRARIES})
 endif(MINI_FOUND)
 
+if(OPENGL_gl_LIBRARY)
+	target_link_libraries(vtTest ${OPENGL_gl_LIBRARY})
+endif(OPENGL_gl_LIBRARY)
+
+if(OPENGL_glu_LIBRARY)
+	target_link_libraries(vtTest ${OPENGL_glu_LIBRARY})
+endif(OPENGL_glu_LIBRARY)
+
 if(ZLIB_FOUND)
 	target_link_libraries(vtTest ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
