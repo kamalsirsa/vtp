@@ -13,13 +13,13 @@
 #endif
 
 #include <wx/progdlg.h>
-#include <wx/scopedptr.h>
 
 #include "vtdata/ChunkLOD.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/DataPath.h"
 #include "vtdata/FileFilters.h"
+#include "vtdata/ScopedPtr.h"
 
 #include "vtui/Helper.h"
 
@@ -1151,9 +1151,9 @@ bool Builder::SampleImageryToTileset(BuilderView *pView, TilingOptions &opts,
 	if (!vtCreateDir(dirname))
 		return false;
 
-	wxScopedPtr<wxFrame> frame(new wxFrame);
 	ImageGLCanvas *pCanvas = NULL;
 #if USE_OPENGL
+	scoped_ptr<wxFrame> frame(new wxFrame);
 	if (opts.bUseTextureCompression && opts.eCompressionType == TC_OPENGL)
 	{
 		frame->Create(m_pParentWindow, -1, _("Texture Compression OpenGL Context"),
