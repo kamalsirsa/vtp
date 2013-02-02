@@ -18,7 +18,7 @@ ElevDrawOptions::ElevDrawOptions()
 	m_iCastDirection = 90;
 	m_fAmbient = 0.1f;
 	m_fGamma = 0.8f;
-	m_strColorMapFile = "";
+	m_strColorMapFile = "VTBuilder.cmt";
 }
 
 bool ElevDrawOptions::operator != (const ElevDrawOptions &val)

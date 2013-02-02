@@ -37,8 +37,6 @@ private:
 	int	 m_iTexture;
 	wxString m_strTextureSingle;
 	wxString m_strColorMap;
-	wxString m_strTextureGeotypical;
-	float	m_fGeotypicalScale;
 	bool	m_bMipmap;
 	bool	m_b16bit;
 	bool	m_bPreLight;

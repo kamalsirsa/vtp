@@ -1,7 +1,7 @@
 //
 // Options.h
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -28,8 +28,8 @@ public:
 	bool		m_bEarthView;
 	vtString	m_strEarthImage;
 	vtString	m_strInitTerrain;
-	vtString	m_strInitLocation;
-	vtString	m_strUseElevation;
+	vtString	m_strInitLocation;	// From command line
+	vtString	m_strUseElevation;	// From command line
 
 	bool	m_bStartInNeutral;
 

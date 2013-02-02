@@ -257,6 +257,7 @@ public:
 
 protected:
 	void CheckOptionBounds();
+	void SetOptionDefaults();
 
 	// Application Data
 	DRECT		m_area;

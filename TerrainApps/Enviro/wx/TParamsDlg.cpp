@@ -1351,7 +1351,7 @@ void TParamsDlg::OnPrimaryTexture( wxCommandEvent &event )
 
 void TParamsDlg::OnSetTinTexture( wxCommandEvent &event )
 {
-	// Show texture dialog
+	// Show texture dialog for a primary TIN surface
 	TinTextureDlg dlg(this, -1, _("TIN Texture"));
 	dlg.SetOptions(m_Params);
 	if (dlg.ShowModal() == wxID_OK)
@@ -1362,6 +1362,7 @@ void TParamsDlg::OnSetTinTexture( wxCommandEvent &event )
 
 void TParamsDlg::OnSetTexture( wxCommandEvent &event )
 {
+	// Show texture dialog for an elevation layer (TIN surface)
 	vtString str = (const char *) m_elev_files->GetStringSelection().mb_str(wxConvUTF8);
 	int idx = FindLayerByFilename(str);
 	if (idx == -1)

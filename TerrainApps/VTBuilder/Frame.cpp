@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -255,7 +255,11 @@ void MainFrame::SetupUI()
 	if (!ReadXML("VTBuilder.xml"))
 	{
 		// fall back on older ini file
-		ReadINI("VTBuilder.ini");
+		if (!ReadINI("VTBuilder.ini"))
+		{
+			// No options files available. Use defaults.
+			SetOptionDefaults();
+		}
 	}
 
 	// Safety checks
@@ -641,6 +645,9 @@ void MainFrame::ApplyOptions()
 	m_pTree->SetShowPaths(g_Options.GetValueBool(TAG_SHOW_PATHS));
 	vtRoadLayer::SetDrawWidth(g_Options.GetValueBool(TAG_ROAD_DRAW_WIDTH));
 
+	m_statbar->m_bShowMinutes = g_Options.GetValueBool(TAG_SHOW_MINUTES);
+	m_statbar->m_ShowVertUnits = (LinearUnits) g_Options.GetValueInt(TAG_SHOW_VERT_UNITS);
+
 	vtImage::bTreatBlackAsTransparent = g_Options.GetValueBool(TAG_BLACK_TRANSP);
 	vtElevLayer::m_bDefaultGZip = g_Options.GetValueBool(TAG_DEFAULT_GZIP_BT);
 	vtElevLayer::m_draw.SetFromTags(g_Options);
@@ -664,6 +671,9 @@ bool MainFrame::WriteXML(const char *fname)
 	g_Options.SetValueBool(TAG_SHOW_UTM, m_pView->m_bShowUTMBounds);
 	g_Options.SetValueBool(TAG_SHOW_PATHS, m_pTree->GetShowPaths());
 	g_Options.SetValueBool(TAG_ROAD_DRAW_WIDTH, vtRoadLayer::GetDrawWidth());
+
+	g_Options.SetValueBool(TAG_SHOW_MINUTES, m_statbar->m_bShowMinutes);
+	g_Options.SetValueInt(TAG_SHOW_VERT_UNITS, m_statbar->m_ShowVertUnits);
 
 	vtElevLayer::m_draw.SetToTags(g_Options);
 

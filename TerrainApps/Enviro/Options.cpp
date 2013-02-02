@@ -1,7 +1,7 @@
 //
 // Options.cpp
 //
-// Copyright (c) 2001-2012 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -53,7 +53,8 @@ EnviroOptions::EnviroOptions()
 {
 	// Provide defaults
 	m_bEarthView = false;
-	m_strEarthImage = "ev11656_512";
+	m_strEarthImage = "ev11656_1024";
+	m_strInitTerrain = "Crater Lake";
 
 	m_bStartInNeutral = false;
 

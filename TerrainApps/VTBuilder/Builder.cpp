@@ -657,6 +657,45 @@ void Builder::CheckOptionBounds()
 	g_Options.SetValueInt(TAG_MAX_MEM_GRID, mmg);
 }
 
+void Builder::SetOptionDefaults()
+{
+	// These are app options from Options.h
+	g_Options.SetValueBool(TAG_SHOW_MAP, true, true);
+	g_Options.SetValueBool(TAG_SHOW_UTM, false, true);
+	g_Options.SetValueBool(TAG_SHOW_PATHS, false, true);
+	g_Options.SetValueBool(TAG_ROAD_DRAW_WIDTH, false, true);
+
+	g_Options.SetValueBool(TAG_USE_CURRENT_CRS, false, true);
+	g_Options.SetValueBool(TAG_LOAD_IMAGES_ALWAYS, false, true);
+	g_Options.SetValueBool(TAG_LOAD_IMAGES_NEVER, false, true);
+	g_Options.SetValueBool(TAG_REPRO_TO_FLOAT_ALWAYS, false, true);
+	g_Options.SetValueBool(TAG_REPRO_TO_FLOAT_NEVER, false, true);
+
+	g_Options.SetValueInt(TAG_SAMPLING_N, 1, true);
+	g_Options.SetValueInt(TAG_ELEV_MAX_SIZE, 4096, true);
+	g_Options.SetValueInt(TAG_MAX_MEGAPIXELS, 16, true);
+	g_Options.SetValueBool(TAG_BLACK_TRANSP, false, true);
+	g_Options.SetValueBool(TAG_TIFF_COMPRESS, false, true);
+	g_Options.SetValueBool(TAG_DEFAULT_GZIP_BT, false, true);
+	g_Options.SetValueBool(TAG_DELAY_LOAD_GRID, false, true);
+	g_Options.SetValueInt(TAG_MAX_MEM_GRID, 128, true);
+	g_Options.SetValueBool(TAG_DRAW_RAW_SIMPLE, false, true);
+	g_Options.SetValueBool(TAG_DRAW_TIN_SIMPLE, false, true);
+	g_Options.SetValueInt(TAG_GAP_FILL_METHOD, 1, true);	// Fast.
+
+	// These are elevation draw options from ElevDrawOptions.h
+	g_Options.SetValueBool(TAG_SHOW_ELEVATION, true);
+	g_Options.SetValueBool(TAG_SHADING_QUICK, true);
+	g_Options.SetValueBool(TAG_SHADING_DOT, false);
+	g_Options.SetValueBool(TAG_CAST_SHADOWS, false);
+	g_Options.SetValueBool(TAG_DO_MASK, true);
+	g_Options.SetValueInt(TAG_CAST_ANGLE, 30);
+	g_Options.SetValueInt(TAG_CAST_DIRECTION, 90);
+	g_Options.SetValueFloat(TAG_AMBIENT, 0.1f);
+	g_Options.SetValueFloat(TAG_GAMMA, 0.8f);
+	g_Options.SetValueString(TAG_COLOR_MAP_FILE, "VTBuilder.cmt");
+}
+
 void Builder::AddToMRU(vtStringArray &arr, const vtString &fname)
 {
 	// if it's already in the list, remove it

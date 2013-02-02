@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2007-2008 Virtual Terrain Project.
+// Copyright (c) 2007-2013 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -29,6 +29,10 @@
 
 #define TAG_SLOW_FILL_GAPS "SlowFillGaps"	// deprecated
 #define TAG_GAP_FILL_METHOD "GapFillMethod"		// 1 fast, 2 slow, 3 region-growing
+
+// status bar options
+#define TAG_SHOW_MINUTES "ShowMinutes"
+#define TAG_SHOW_VERT_UNITS "ShowVerticalUnits"	// enum LinearUnits
 
 // User Preferences
 extern vtTagArray g_Options;

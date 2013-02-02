@@ -50,8 +50,6 @@ TextureDlg::TextureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	// texture
 	AddValidator(this, ID_TFILE_SINGLE, &m_strTextureSingle);
-	AddValidator(this, ID_TFILE_GEOTYPICAL, &m_strTextureGeotypical);
-	AddNumValidator(this, ID_GEOTYPICAL_SCALE, &m_fGeotypicalScale);
 	AddValidator(this, ID_CHOICE_COLORS, &m_strColorMap);
 
 	AddValidator(this, ID_MIPMAP, &m_bMipmap);
@@ -65,7 +63,7 @@ TextureDlg::TextureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 void TextureDlg::SetParams(const TParams &Params)
 {
-	VTLOG("TParamsDlg::SetParams\n");
+	VTLOG("TextureDlg::SetParams\n");
 	ScopedLocale normal_numbers(LC_NUMERIC, "C");
 
 	// texture
@@ -76,8 +74,6 @@ void TextureDlg::SetParams(const TParams &Params)
 
 	// derived
 	m_strColorMap = wxString(Params.GetValueString(STR_COLOR_MAP), wxConvUTF8);
-	m_strTextureGeotypical = wxString(Params.GetValueString(STR_TEXTURE_GEOTYPICAL), wxConvUTF8);
-	m_fGeotypicalScale = Params.GetValueFloat(STR_GEOTYPICAL_SCALE);
 
 	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
 	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
@@ -99,9 +95,6 @@ void TextureDlg::GetParams(TParams &Params)
 
 	// single
 	Params.SetValueString(STR_TEXTUREFILE, (const char *) m_strTextureSingle.mb_str(wxConvUTF8));
-
-	// geotypical
-	Params.SetValueString(STR_TEXTURE_GEOTYPICAL, (const char *) m_strTextureGeotypical.mb_str(wxConvUTF8));
 
 	// derived
 	Params.SetValueString(STR_COLOR_MAP, (const char *) m_strColorMap.mb_str(wxConvUTF8));
