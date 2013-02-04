@@ -284,21 +284,31 @@ void readXML (const string &path_utf8, XMLVisitor &visitor,
 			iFileLength = ftell(fp);
 		}
 	}
-	
+
+	// From the zlib documentation:
+	// "The duplicated descriptor should be saved to avoid a leak, since gzdopen
+	// does not close fd if it fails. If you are using fileno() to get the file
+	// descriptor from a FILE *, then you will have to use dup() to avoid double-
+	// close()ing the file descriptor."
 #ifdef _MSC_VER
 	int fd = _fileno(fp);
+	int fd_copy = _dup(fd);
 #else
 	int fd = fileno(fp);
+	int fd_copy = dup(fd);
 #endif
 
 	// Ensure that underlying file descriptor (fd) is rewound
-	lseek(fd, 0, SEEK_SET);
+	lseek(fd_copy, 0, SEEK_SET);
 
-	gzFile gfp = gzdopen(fd, "rb");
+	gzFile gfp = gzdopen(fd_copy, "rb");
 
 	if (!gfp)
+	{
+		fclose(fp);
 		throw xh_io_exception("Failed to open file", xh_location(path_utf8),
 					"XML Parser");
+	}
 	try
 	{
 		readCompressedXML(gfp, visitor, path_utf8, iFileLength, progress_callback);
@@ -306,15 +316,18 @@ void readXML (const string &path_utf8, XMLVisitor &visitor,
 	catch (xh_io_exception &e)
 	{
 			gzclose(gfp);
+			fclose(fp);
 			throw e;
 	}
 	catch (xh_throwable &t)
 	{
 			gzclose(gfp);
+			fclose(fp);
 			throw t;
 	}
 	// If it gets here, it succeeded
 	gzclose(gfp);
+	fclose(fp);
 }
 
 void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path,
