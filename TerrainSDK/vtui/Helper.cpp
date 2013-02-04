@@ -611,7 +611,11 @@ void YieldForIdle()
 #if wxCHECK_VERSION(2, 9, 0)
 	wxApp::GetInstance()->ProcessIdle();
 #endif
+#ifdef __WXGTK__
+	// Do we need to do something with GTK? wxYield on wxgtk2.8 seems to hang.
+#else
 	wxYield();
+#endif
 }
 
 bool progress_callback(int amount)

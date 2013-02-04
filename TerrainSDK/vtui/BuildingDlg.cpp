@@ -582,9 +582,12 @@ void BuildingDlg::SetEdge(int iEdge)
 
 void BuildingDlg::OnLevel( wxCommandEvent &event )
 {
-	int sel = m_pLevelListBox->GetSelection();
+	if (m_bSetting)
+		return;
 
-	SetLevel(sel);
+	int sel = m_pLevelListBox->GetSelection();
+	if (sel != -1)
+		SetLevel(sel);
 }
 
 void BuildingDlg::SetLevel(int iLev)

@@ -2132,6 +2132,7 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 	vtStructureArray3d *sa = pTerr->GetStructureLayer();
 	if (sa)
 	{
+		VTLOG("Active: structure layer\n");
 		int sel = sa->GetFirstSelected();
 		if (sel != -1)
 		{
@@ -2162,6 +2163,7 @@ void EnviroFrame::OnPopupProperties(wxCommandEvent& event)
 	vtVegLayer *vlay = pTerr->GetVegLayer();
 	if (vlay && vlay->NumSelected() != 0)
 	{
+		VTLOG("Active: veg layer\n");
 		int found = -1;
 		uint count = vlay->NumEntities();
 		for (uint i = 0; i < count; i++)
