@@ -683,17 +683,21 @@ void Builder::SetOptionDefaults()
 	g_Options.SetValueBool(TAG_DRAW_TIN_SIMPLE, false, true);
 	g_Options.SetValueInt(TAG_GAP_FILL_METHOD, 1, true);	// Fast.
 
+	// status bar options
+	g_Options.SetValueBool(TAG_SHOW_MINUTES, false, true);
+	g_Options.SetValueInt(TAG_SHOW_VERT_UNITS, (int) LU_METERS, true);
+
 	// These are elevation draw options from ElevDrawOptions.h
-	g_Options.SetValueBool(TAG_SHOW_ELEVATION, true);
-	g_Options.SetValueBool(TAG_SHADING_QUICK, true);
-	g_Options.SetValueBool(TAG_SHADING_DOT, false);
-	g_Options.SetValueBool(TAG_CAST_SHADOWS, false);
-	g_Options.SetValueBool(TAG_DO_MASK, true);
-	g_Options.SetValueInt(TAG_CAST_ANGLE, 30);
-	g_Options.SetValueInt(TAG_CAST_DIRECTION, 90);
-	g_Options.SetValueFloat(TAG_AMBIENT, 0.1f);
-	g_Options.SetValueFloat(TAG_GAMMA, 0.8f);
-	g_Options.SetValueString(TAG_COLOR_MAP_FILE, "VTBuilder.cmt");
+	g_Options.SetValueBool(TAG_SHOW_ELEVATION, true, true);
+	g_Options.SetValueBool(TAG_SHADING_QUICK, true, true);
+	g_Options.SetValueBool(TAG_SHADING_DOT, false, true);
+	g_Options.SetValueBool(TAG_CAST_SHADOWS, false, true);
+	g_Options.SetValueBool(TAG_DO_MASK, true, true);
+	g_Options.SetValueInt(TAG_CAST_ANGLE, 20, true);
+	g_Options.SetValueInt(TAG_CAST_DIRECTION, 45, true);
+	g_Options.SetValueFloat(TAG_AMBIENT, 0.25f, true);
+	g_Options.SetValueFloat(TAG_GAMMA, 0.8f, true);
+	g_Options.SetValueString(TAG_COLOR_MAP_FILE, "VTBuilder.cmt", true);
 }
 
 void Builder::AddToMRU(vtStringArray &arr, const vtString &fname)

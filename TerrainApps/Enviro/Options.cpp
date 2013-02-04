@@ -78,7 +78,8 @@ EnviroOptions::EnviroOptions()
 	m_fPlantScale = 1.0f;
 	m_bShadows = false;
 	m_bOnlyAvailableSpecies = true;
-	m_fCatenaryFactor = 140.0f;
+	m_fCatenaryFactor = 1400.0f;
+	m_strContentFile = "common_content.vtco";
 
 	m_bShowProgress = true;
 	m_bFlyIn = false;
