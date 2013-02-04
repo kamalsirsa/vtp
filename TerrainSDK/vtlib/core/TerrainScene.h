@@ -103,7 +103,9 @@ public:
 	// Global content manager for content shared between all terrains
 	vtContentManager3d m_Content;
 
-	virtual bool OnMouse(vtMouseEvent &event) { return false; }
+	// Overrides should return true if event processing should continue, false if
+	// the event was taken.
+	virtual bool OnMouse(vtMouseEvent &event) { return true; }
 
 protected:
 	// main scene graph outline

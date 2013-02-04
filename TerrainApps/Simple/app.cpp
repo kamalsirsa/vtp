@@ -27,10 +27,6 @@ bool CreateScene()
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
 
-	// Log messages to make troubleshooting easier
-	VTSTARTLOG("debug.txt");
-	VTLOG("osgViewerSimple\n");
-
 	// Look up the camera
 	vtCamera *pCamera = pScene->GetCamera();
 	pCamera->SetHither(10);
@@ -40,10 +36,13 @@ bool CreateScene()
 	g_terrscene = new vtTerrainScene;
 
 	// Set the global data path to look in the many places the sample data might be
-	vtGetDataPath().push_back(vtString("../../../Data/"));
-	vtGetDataPath().push_back(vtString("../../Data/"));
-	vtGetDataPath().push_back(vtString("../Data/"));
-	vtGetDataPath().push_back(vtString("Data/"));
+	vtStringArray paths;
+	paths.push_back(vtString("G:/Data-Distro/"));
+	paths.push_back(vtString("../../../Data/"));
+	paths.push_back(vtString("../../Data/"));
+	paths.push_back(vtString("../Data/"));
+	paths.push_back(vtString("Data/"));
+	vtSetDataPath(paths);
 
 	// Begin creating the scene, including the sun and sky
 	vtGroup *pTopGroup = g_terrscene->BeginTerrainScene();
@@ -67,8 +66,7 @@ bool CreateScene()
 	g_terrscene->AppendTerrain(pTerr);
 	if (!g_terrscene->BuildTerrain(pTerr))
 	{
-		printf("Terrain creation failed: %s\n",
-			(const char *)pTerr->GetLastError());
+		printf("Terrain creation failed: %s\n", (const char *)pTerr->GetLastError());
 		return false;
 	}
 	g_terrscene->SetCurrentTerrain(pTerr);
@@ -88,6 +86,7 @@ bool CreateScene()
 	pConstrain->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pConstrain);
 
+	VTLOG("Done creating scene.\n");
 	return true;
 }
 
@@ -100,6 +99,10 @@ int main(int argc, char ** argv)
 	// sometimes, MSVC seems to need to be told to show unfreed memory on exit
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	// Log messages to make troubleshooting easier
+	VTSTARTLOG("debug.txt");
+	VTLOG("osgViewerSimple\n");
 
 	// Make a scene and a viewer:
 	vtGetScene()->Init(argc, argv);

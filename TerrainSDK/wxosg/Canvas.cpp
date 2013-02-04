@@ -397,7 +397,6 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 
 	// and the vtlib scene, which informs the engines
 	vtGetScene()->OnMouse(mevent);
-
 }
 
 void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)

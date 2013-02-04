@@ -125,7 +125,7 @@ bool vtApp::CreateScene()
 	vtString pfile = FindFileOnPaths(vtGetDataPath(), "Terrains/Simple.xml");
 	if (pfile == "")
 	{
-		printf("Couldn't find terrain parameters Simple.xml\n");
+		VTLOG("Couldn't find terrain parameters Simple.xml\n");
 		return false;
 	}
 
@@ -158,7 +158,7 @@ bool vtApp::CreateScene()
 	pConstrain->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pConstrain);
 
-	printf("Done creating scene.\n");
+	VTLOG("Done creating scene.\n");
 	return true;
 }
 
