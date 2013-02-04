@@ -475,17 +475,13 @@ ContourDlgBase::ContourDlgBase( wxWindow* parent, wxWindowID id, const wxString&
 	
 	bSizer307->Add( bSizer310, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	wxBoxSizer* bSizer311;
-	bSizer311 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_ok = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_ok->SetDefault(); 
-	bSizer311->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer311->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer307->Add( bSizer311, 0, wxALIGN_CENTER, 5 );
+	m_sdbSizer4 = new wxStdDialogButtonSizer();
+	m_sdbSizer4OK = new wxButton( this, wxID_OK );
+	m_sdbSizer4->AddButton( m_sdbSizer4OK );
+	m_sdbSizer4Cancel = new wxButton( this, wxID_CANCEL );
+	m_sdbSizer4->AddButton( m_sdbSizer4Cancel );
+	m_sdbSizer4->Realize();
+	bSizer307->Add( m_sdbSizer4, 1, wxEXPAND, 5 );
 	
 	this->SetSizer( bSizer307 );
 	this->Layout();
@@ -1302,17 +1298,13 @@ ProjectionDlgBase::ProjectionDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	m_line2 = new wxStaticLine( this, ID_LINE2, wxDefaultPosition, wxSize( 20,-1 ), wxLI_HORIZONTAL );
 	bSizer364->Add( m_line2, 0, wxEXPAND|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
-	wxBoxSizer* bSizer369;
-	bSizer369 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_ok = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_ok->SetDefault(); 
-	bSizer369->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer369->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	bSizer364->Add( bSizer369, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_sdbSizer3 = new wxStdDialogButtonSizer();
+	m_sdbSizer3OK = new wxButton( this, wxID_OK );
+	m_sdbSizer3->AddButton( m_sdbSizer3OK );
+	m_sdbSizer3Cancel = new wxButton( this, wxID_CANCEL );
+	m_sdbSizer3->AddButton( m_sdbSizer3Cancel );
+	m_sdbSizer3->Realize();
+	bSizer364->Add( m_sdbSizer3, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 	
 	this->SetSizer( bSizer364 );
 	this->Layout();
@@ -1350,12 +1342,13 @@ SizeDlgBase::SizeDlgBase( wxWindow* parent, wxWindowID id, const wxString& title
 	
 	bSizer382->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 	
-	m_ok = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_ok->SetDefault(); 
-	bSizer382->Add( m_ok, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	m_cancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer382->Add( m_cancel, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_sdbSizer2 = new wxStdDialogButtonSizer();
+	m_sdbSizer2OK = new wxButton( this, wxID_OK );
+	m_sdbSizer2->AddButton( m_sdbSizer2OK );
+	m_sdbSizer2Cancel = new wxButton( this, wxID_CANCEL );
+	m_sdbSizer2->AddButton( m_sdbSizer2Cancel );
+	m_sdbSizer2->Realize();
+	bSizer382->Add( m_sdbSizer2, 1, wxEXPAND, 5 );
 	
 	bSizer381->Add( bSizer382, 0, wxALIGN_CENTER, 5 );
 	
@@ -1418,12 +1411,13 @@ StatePlaneDlgBase::StatePlaneDlgBase( wxWindow* parent, wxWindowID id, const wxS
 	wxBoxSizer* bSizer374;
 	bSizer374 = new wxBoxSizer( wxHORIZONTAL );
 	
-	wxID_OK = new wxButton( this, wxID_ANY, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-	wxID_OK->SetDefault(); 
-	bSizer374->Add( wxID_OK, 0, wxALIGN_CENTER|wxALL, 5 );
-	
-	wxID_CANCEL = new wxButton( this, wxID_ANY, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer374->Add( wxID_CANCEL, 0, wxALIGN_CENTER|wxALL, 5 );
+	m_sdbSizer1 = new wxStdDialogButtonSizer();
+	m_sdbSizer1OK = new wxButton( this, wxID_OK );
+	m_sdbSizer1->AddButton( m_sdbSizer1OK );
+	m_sdbSizer1Cancel = new wxButton( this, wxID_CANCEL );
+	m_sdbSizer1->AddButton( m_sdbSizer1Cancel );
+	m_sdbSizer1->Realize();
+	bSizer374->Add( m_sdbSizer1, 1, wxEXPAND|wxALL, 5 );
 	
 	bSizer370->Add( bSizer374, 0, wxALIGN_CENTER|wxALL, 5 );
 	

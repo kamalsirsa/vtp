@@ -289,8 +289,9 @@ class ContourDlgBase : public wxDialog
 		wxRadioButton* m_radio_create;
 		wxRadioButton* m_radio_add;
 		wxChoice* m_choice_layer;
-		wxButton* m_ok;
-		wxButton* m_cancel;
+		wxStdDialogButtonSizer* m_sdbSizer4;
+		wxButton* m_sdbSizer4OK;
+		wxButton* m_sdbSizer4Cancel;
 	
 	public:
 		
@@ -531,8 +532,9 @@ class ProjectionDlgBase : public wxDialog
 		wxButton* m_proj_load;
 		wxButton* m_proj_save;
 		wxStaticLine* m_line2;
-		wxButton* m_ok;
-		wxButton* m_cancel;
+		wxStdDialogButtonSizer* m_sdbSizer3;
+		wxButton* m_sdbSizer3OK;
+		wxButton* m_sdbSizer3Cancel;
 	
 	public:
 		
@@ -554,8 +556,9 @@ class SizeDlgBase : public wxDialog
 		wxTextCtrl* m_text_x;
 		wxTextCtrl* m_text_y;
 		
-		wxButton* m_ok;
-		wxButton* m_cancel;
+		wxStdDialogButtonSizer* m_sdbSizer2;
+		wxButton* m_sdbSizer2OK;
+		wxButton* m_sdbSizer2Cancel;
 	
 	public:
 		
@@ -578,8 +581,9 @@ class StatePlaneDlgBase : public wxDialog
 		wxRadioButton* m_radio_meters;
 		wxRadioButton* m_radio_feet;
 		wxRadioButton* m_radio_feet_us;
-		wxButton* wxID_OK;
-		wxButton* wxID_CANCEL;
+		wxStdDialogButtonSizer* m_sdbSizer1;
+		wxButton* m_sdbSizer1OK;
+		wxButton* m_sdbSizer1Cancel;
 	
 	public:
 		
