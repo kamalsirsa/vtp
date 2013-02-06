@@ -15,6 +15,7 @@
 
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
+#include <wx/apptrait.h>
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
@@ -119,6 +120,14 @@ bool EnviroApp::OnInit()
 #endif
 
 	StartLog();
+
+#if NDEBUG && wxCHECK_VERSION(2, 9, 1)
+	// This will enable assertion checking even in Release mode, which is useful
+	// for troubleshooting remote problems, because our override of the assert
+	// handling logs the exact location to debug.txt.
+	wxSetDefaultAssertHandler();
+#endif
+
 	LoadOptions();
 
 	// Redirect the wxWidgets log messages to our own logging stream
@@ -156,7 +165,6 @@ bool EnviroApp::OnInit()
 		STARTUP_DIALOG StartDlg(NULL, -1, appname, wxDefaultPosition);
 
 		StartDlg.GetOptionsFrom(g_Options);
-		StartDlg.CenterOnParent();
 		int result = StartDlg.ShowModal();
 		VTLOG1("Startup dialog returned from ShowModal.\n");
 		if (result == wxID_CANCEL)
@@ -490,6 +498,37 @@ vtString EnviroApp::GetIniFileForTerrain(const vtString &name)
 			return terrain_paths[i];
 	}
 	return vtString("");
+}
+
+void EnviroApp::OnAssertFailure(const wxChar *file, int line, const wxChar *func,
+								const wxChar *cond, const wxChar *msg)
+{
+	// Log it to our own log
+	VTLOG1("wxWidgets assertion failure.\n");
+	VTLOG1("  File: ");
+	VTLOG1(file);
+	VTLOG("\n  Line: %d", line);
+	VTLOG1("\n  Function: ");
+	VTLOG1(func);
+	VTLOG1("\n  Condition: ");
+	VTLOG1(cond);
+	VTLOG1("\n  Message: ");
+	VTLOG1(msg);
+	VTLOG("\n");
+
+#if 0 // This would also be useful, but requires more work.
+#if wxUSE_STACKWALKER
+    const wxString stackTrace = GetTraits()->GetAssertStackTrace();
+    if ( !stackTrace.empty() )
+    {
+        VTLOG1("\n\nCall stack:\n");
+		VTLOG1(stackTrace);
+    }
+#endif // wxUSE_STACKWALKER
+#endif
+
+	// Call wx's base functionality
+	wxApp::OnAssertFailure(file, line, func, cond, msg);
 }
 
 int EditTerrainParameters(wxWindow *parent, const char *filename)

@@ -73,10 +73,7 @@ static void ShowOGLInfo2(bool bLog)
 #endif
 		msg += _("Extensions: ");
 		msg += wxString::FromAscii((const char *) glGetString(GL_EXTENSIONS));
-	}
 
-	if (!bLog)
-	{
 		TextDlgBase dlg(NULL, -1, _("OpenGL Info"), wxDefaultPosition);
 		//TextDialogFunc(&dlg, true);
 		wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
@@ -96,7 +93,6 @@ static void ShowOGLInfo2(bool bLog)
 
 BEGIN_EVENT_TABLE(StartupDlg,StartupDlgBase)
 	EVT_INIT_DIALOG (StartupDlg::OnInitDialog)
-	EVT_BUTTON( wxID_OK, StartupDlg::OnOK )
 	EVT_BUTTON( ID_OPENGL, StartupDlg::OnOpenGLInfo )
 	EVT_BUTTON( ID_OPTIONS, StartupDlg::OnOptions )
 	EVT_RADIOBUTTON( ID_EARTHVIEW, StartupDlg::OnEarthView )
@@ -110,9 +106,6 @@ StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 		StartupDlgBase( parent, id, title, position, size, style )
 {
-	m_psImage = GetImagetext();
-	m_pImage = GetImage();
-
 	AddValidator(this, ID_EARTHVIEW, &m_bStartEarth);
 	AddValidator(this, ID_IMAGE, &m_strEarthImage);
 	AddValidator(this, ID_TERRAIN, &m_bStartTerrain);
@@ -142,15 +135,15 @@ void StartupDlg::PutOptionsTo(EnviroOptions &opt)
 
 void StartupDlg::UpdateState()
 {
-	m_psImage->Enable(m_bStartEarth);
-	m_pImage->Enable(m_bStartEarth);
-	GetTname()->Enable(m_bStartTerrain);
-	GetEditprop()->Enable(m_bStartTerrain);
+	m_imagetext->Enable(m_bStartEarth);
+	m_image->Enable(m_bStartEarth);
+	m_tname->Enable(m_bStartTerrain);
+	m_editprop->Enable(m_bStartTerrain);
 }
 
 void StartupDlg::RefreshTerrainChoices()
 {
-	GetTname()->Clear();
+	m_tname->Clear();
 
 	EnviroApp &app = wxGetApp();
 
@@ -158,7 +151,7 @@ void StartupDlg::RefreshTerrainChoices()
 	{
 		vtString &name = app.terrain_names[i];
 		wxString ws(name, wxConvUTF8);
-		GetTname()->Append(ws);
+		m_tname->Append(ws);
 	}
 }
 
@@ -178,27 +171,27 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	{
 		vtString path = paths[i];
 		path += "WholeEarth/";
-		AddFilenamesToComboBox(m_pImage, path, "*_0106.png", 9);
-		AddFilenamesToComboBox(m_pImage, path, "*_0106.jpg", 9);
+		AddFilenamesToComboBox(m_image, path, "*_0106.png", 9);
+		AddFilenamesToComboBox(m_image, path, "*_0106.jpg", 9);
 	}
-	int sel = m_pImage->FindString(m_strEarthImage);
+	int sel = m_image->FindString(m_strEarthImage);
 	if (sel != -1)
-		m_pImage->SetSelection(sel);
+		m_image->SetSelection(sel);
 
 	UpdateState();
 
 	// Terrain choices
 	RefreshTerrainChoices();
-	sel = GetTname()->FindString(m_strTName);
+	sel = m_tname->FindString(m_strTName);
 	if (sel != -1)
-		GetTname()->Select(sel);
+		m_tname->Select(sel);
 
-	wxWindow::OnInitDialog(event);
+	StartupDlgBase::OnInitDialog(event);
 }
 
 void StartupDlg::OnTnameChoice( wxCommandEvent &event )
 {
-	m_strTName = GetTname()->GetStringSelection();
+	m_strTName = m_tname->GetStringSelection();
 }
 
 void StartupDlg::OnTerrMan( wxCommandEvent &event )
@@ -210,9 +203,9 @@ void StartupDlg::OnTerrMan( wxCommandEvent &event )
 		g_Options.WriteXML();
 		wxGetApp().RefreshTerrainList();
 		RefreshTerrainChoices();
-		int sel = GetTname()->FindString(m_strTName);
+		int sel = m_tname->FindString(m_strTName);
 		if (sel != -1)
-			GetTname()->Select(sel);
+			m_tname->Select(sel);
 	}
 }
 
@@ -237,9 +230,9 @@ void StartupDlg::OnEditProp( wxCommandEvent &event )
 
 		wxGetApp().RefreshTerrainList();
 		RefreshTerrainChoices();
-		int sel = GetTname()->FindString(m_strTName);
+		int sel = m_tname->FindString(m_strTName);
 		if (sel != -1)
-			GetTname()->Select(sel);
+			m_tname->Select(sel);
 	}
 }
 
@@ -269,11 +262,5 @@ void StartupDlg::OnOptions( wxCommandEvent &event )
 	int result = dlg.ShowModal();
 	if (result == wxID_OK)
 		dlg.PutOptionsTo(m_opt);
-}
-
-void StartupDlg::OnOK( wxCommandEvent &event )
-{
-	VTLOG("StartupDlg pressed OK.\n");
-	event.Skip();
 }
 

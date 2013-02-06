@@ -34,23 +34,14 @@ public:
 	void UpdateState();
 	void RefreshTerrainChoices();
 
-	// WDR: method declarations for StartupDlg
-	wxButton* GetTerrMan()  { return (wxButton*) FindWindow( ID_TERRMAN ); }
-	wxButton* GetEditprop()  { return (wxButton*) FindWindow( ID_EDITPROP ); }
-	wxChoice* GetTname()  { return (wxChoice*) FindWindow( ID_TNAME ); }
-	wxStaticText* GetImagetext()  { return (wxStaticText*) FindWindow( ID_IMAGETEXT ); }
-	wxComboBox* GetImage()  { return (wxComboBox*) FindWindow( ID_IMAGE ); }
-
 private:
 	// WDR: member variable declarations for StartupDlg
 	EnviroOptions	m_opt;
 
-	bool	m_bStartEarth;
-	bool	m_bStartTerrain;
-	wxString   m_strTName;
-	wxString   m_strEarthImage;
-	wxStaticText  *m_psImage;
-	wxComboBox  *m_pImage;
+	bool		m_bStartEarth;
+	bool		m_bStartTerrain;
+	wxString	m_strTName;
+	wxString	m_strEarthImage;
 
 private:
 	// WDR: handler declarations for StartupDlg
@@ -61,7 +52,6 @@ private:
 	void OnEarthView( wxCommandEvent &event );
 	void OnOpenGLInfo( wxCommandEvent &event );
 	void OnOptions( wxCommandEvent &event );
-	void OnOK( wxCommandEvent &event );
 	void OnEditProp( wxCommandEvent &event );
 
 private:

@@ -26,6 +26,10 @@ public:
 	wxString GetLanguageCode() { return m_locale.GetCanonicalName(); }
 	wxString MakeFrameTitle(vtTerrain *terrain = NULL);
 
+	// Override to help debugging
+    void OnAssertFailure(const wxChar *file, int line, const wxChar *func,
+						 const wxChar *cond, const wxChar *msg);
+
 	bool m_bShowStartupDialog;
 
 	vtStringArray terrain_files;
