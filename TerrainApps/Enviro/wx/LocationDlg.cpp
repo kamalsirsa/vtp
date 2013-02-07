@@ -609,8 +609,10 @@ void LocationDlg::OnPlayToDisk( wxCommandEvent &event )
 	}
 
 	// Ask for unit of (animation) time for each frame
+	wxString value;
+	value.Printf("%.1f", 0.1f);
 	wxString step = wxGetTextFromUser(_("Animation time step for each frame, in seconds:"),
-		_("Animation"), _T("0.1"), this);
+		_("Animation"), value, this);
 	if (step == _T(""))
 		return;
 	float fStep = atof(step.mb_str(wxConvUTF8));
