@@ -1899,43 +1899,6 @@ bool SetupDefaultStructures(const vtString &fname)
 		}
 		VTLOG1("failed.\n");
 	}
-
-	// else supply some internal defaults and let the user know the load failed
-	VTLOG1(" making a default building\n");
-	vtBuilding *pBld = g_DefaultStructures.NewBuilding();
-	vtLevel *pLevel;
-	DPolygon2 DefaultFootprint; // Single edge
-	DefaultFootprint.resize(1);
-	DefaultFootprint[0].Append(DPoint2(0.0, 0.0));
-	DefaultFootprint[0].Append(DPoint2(0.0, 1.0));
-
-	// The default building is NOT a complete building
-	// Alter the code here to set different hard coded
-	// defaults for use in other operations
-	// First set any structure tags needed
-	//
-	// NONE
-	//
-	// Now create the required number of levels
-	// and set the values
-	//
-	// Level 0
-	pLevel = pBld->CreateLevel(DefaultFootprint);
-	pLevel->m_iStories = 1;
-	pLevel->m_fStoryHeight = 3.20f;
-	pLevel->SetEdgeMaterial(BMAT_NAME_PLAIN);
-	pLevel->SetEdgeColor(RGBi(255,0,0)); // Red
-	pLevel->GetEdge(0)->m_iSlope = 90;
-	// Level 1
-	pLevel = pBld->CreateLevel(DefaultFootprint);
-	pLevel->m_iStories = 1;
-	pLevel->m_fStoryHeight = 3.20f;
-	pLevel->SetEdgeMaterial(BMAT_NAME_PLAIN);
-	pLevel->SetEdgeColor(RGBi(255,240,225)); // Tan
-	pLevel->GetEdge(0)->m_iSlope = 0;		 // Flat
-
-	g_DefaultStructures.push_back(pBld);
-
 	return false;
 }
 
