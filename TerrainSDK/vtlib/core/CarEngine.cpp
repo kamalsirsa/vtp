@@ -172,7 +172,7 @@ float CarEngine::SetPitch()
 
 	FSphere fL, fR, rL, rR;
 
-	// find tire locations in current orientation
+	// find tire locations, given the current pose of the vehicle
 	FrontLeft()->GetBoundSphere(fL, true);
 	FrontRight()->GetBoundSphere(fR, true);
 	RearLeft()->GetBoundSphere(rL, true);

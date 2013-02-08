@@ -158,7 +158,6 @@ void WriteDotFile(osg::Group *node, const char *filename);
 osg::Node *vtLoadModel(const char *filename, bool bAllowCache = true,
 					   bool bDisableMipmaps = false);
 bool vtSaveModel(osg::Node *node, const char *filename);
-void SetLoadModelCallback(osg::Node *callback(osg::Transform *input));
 extern bool g_bDisableMipmaps;	// set to disable ALL mipmaps
 
 

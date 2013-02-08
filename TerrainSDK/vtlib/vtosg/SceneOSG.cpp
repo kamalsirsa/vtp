@@ -98,7 +98,7 @@ int vtGetMaxTextureSize()
 	}
 
     // Do not try to create an Extensions object if one does not already exist
-    // as we cannot gaurantee a valid rendering context at this point.
+    // as we cannot guarantee a valid rendering context at this point.
 	osg::ref_ptr<osg::Texture::Extensions> pTextureExtensions =
 		osg::Texture::getExtensions(context->getState()->getContextID(), false);
     if (pTextureExtensions.valid())

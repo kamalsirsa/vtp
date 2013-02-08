@@ -481,31 +481,26 @@ void TransformExtension::SetTrans(const FPoint3 &pos)
 
 void TransformExtension::Translate(const FPoint3 &pos)
 {
-	// OSG 0.8.43 and later
 	m_pTransform->postMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void TransformExtension::TranslateLocal(const FPoint3 &pos)
 {
-	// OSG 0.8.43 and later
 	m_pTransform->preMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void TransformExtension::Rotate(const FPoint3 &axis, double angle)
 {
-	// OSG 0.8.43 and later
 	m_pTransform->postMult(osg::Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void TransformExtension::RotateLocal(const FPoint3 &axis, double angle)
 {
-	// OSG 0.8.43 and later
 	m_pTransform->preMult(osg::Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void TransformExtension::RotateParent(const FPoint3 &axis, double angle)
 {
-	// OSG 0.8.43 and later
 	osg::Vec3 trans = m_pTransform->getMatrix().getTrans();
 	m_pTransform->postMult(osg::Matrix::translate(-trans)*
 			  osg::Matrix::rotate(angle, axis.x, axis.y, axis.z)*
@@ -766,13 +761,6 @@ public:
 
 bool g_bDisableMipmaps = false;		// global
 
-osg::Node *(*s_NodeCallback)(osg::Transform *input) = NULL;
-
-void SetLoadModelCallback(osg::Node *callback(osg::Transform *input))
-{
-	s_NodeCallback = callback;
-}
-
 /**
  * Load a 3D model from a file.
  *
@@ -871,12 +859,14 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 	// it's not going to change, so tell OSG that it can be optimized
 	transform->setDataVariance(osg::Object::STATIC);
 
-	if (s_NodeCallback == NULL)
+	// Disable flattening for now; some things like vehicles need the transforms intact.
+	bool flatten = false;
+	if (flatten)
 	{
 		// Now do some OSG voodoo, which should spread ("flatten") the
 		//  transform downward through the loaded model, and delete the transform.
 		// The voodoo is picky: there must be no other parents of this branch
-		//  of the scenegraph, and all matriced must be STATIC
+		//  of the scenegraph, and all matrices must be STATIC
 		TransformStaticVisitor tsv;
 		node->accept(tsv);
 		if (tsv.count != 0)
@@ -909,8 +899,7 @@ osg::Node *vtLoadModel(const char *filename, bool bAllowCache, bool bDisableMipm
 	}
 	else
 	{
-		osg::Node *node_new = s_NodeCallback(transform);
-		node = node_new;
+		node = transform;
 	}
 	//VTLOG1("--------------\n");
 	//vtLogGraph(node);
