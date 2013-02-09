@@ -10,7 +10,7 @@ add_library(vtdata
 		Vocab.cpp vtDIB.cpp vtLog.cpp vtString.cpp vtTime.cpp vtTin.cpp vtUnzip.cpp WFSClient.cpp
 
 		Array.h Building.h ByteOrder.h ChunkLOD.h ChunkUtil.h ColorMap.h
-		config_vtdata.h Content.h CubicSpline.h DataPath.h DLG.h DxfParser.h ElevationGrid.h
+		config_vtdata.h Content.h CubicSpline.h DataPath.h DLG.h DxfParser.h ElevationGrid.h ElevError.h
 		Features.h Fence.h FileFilters.h FilePath.h GEOnet.h HeightField.h Icosa.h LayerBase.h
 		LevellerTag.h LocalCS.h LULC.h Mainpage.h MaterialDescriptor.h MathTypes.h
 		Plants.h PolyChecker.h Projections.h QuikGrid.h RoadMap.h Selectable.h SPA.h StatePlane.h
