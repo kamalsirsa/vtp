@@ -1,7 +1,7 @@
 //
 // Basic data type definitions shared by all the VTP software.
 //
-// Copyright (c) 2001-2009 Virtual Terrain Project
+// Copyright (c) 2001-2013 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file MathTypes.h */
@@ -17,59 +17,6 @@
 
 #include "vtdata/config_vtdata.h"
 #include "Array.h"
-
-// willemsn: this was taken from OSG's Math include file.
-// 04/29/03
-#ifdef __DARWIN_OSX__
-	#include <float.h>
-
-	// PJA MAC OSX
-	// This appears to be the simplest way to get these defined under MACOSX
-	// where they arent in math.h
-	#ifndef acosf
-	#define acosf (float)acos
-	#endif
-
-	#ifndef asinf
-	#define asinf (float)asin
-	#endif
-
-	#ifndef atan2f
-	#define atan2f (float)atan2
-	#endif
-
-	#ifndef cosf
-	#define cosf (float)cos
-	#endif
-
-	#ifndef sinf
-	#define sinf (float)sin
-	#endif
-
-	#ifndef tanf
-	#define tanf (float)tan
-	#endif
-
-	#ifndef logf
-	#define logf (float)log
-	#endif
-
-	#ifndef log10f
-	#define log10f (float)log10
-	#endif
-
-	#ifndef powf
-	#define powf (float)pow
-	#endif
-
-	#ifndef sqrtf
-	#define sqrtf (float)sqrt
-	#endif
-
-	#ifndef fabsf
-	#define fabsf (float)fabs
-	#endif
-#endif
 
 #ifndef PId
  #define PId	3.14159265358979323846264338
