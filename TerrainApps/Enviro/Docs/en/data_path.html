@@ -24,16 +24,17 @@
 	<li>Alternately, you can edit your<code> vtp.xml </code>file.&nbsp; This file 
 	is created (if it does not exist) the first time you run Enviro.<br />
 	It is located in your settings folder.<br />
-	On Windows, this is typically C:\Documents and Settings\<em>User</em>\Application 
-	Data<br />
+	On Windows, this is typically <strong>C:\Documents and Settings\</strong><em><strong>User</strong></em><strong>\Application 
+	Data</strong><br />
+	On Windows &gt;= 7, it may be in <strong>C:\Users\</strong><em><strong>User</strong></em><strong>\AppData\Roaming</strong><br />
 	On Unix, it is typically your account&#39;s home folder.</li>
 	<li>If you have data in multiple places, you can simply put more than one &quot;<code>DataPath</code>&quot; 
 	element into the <code>vtp.xml</code> file, and all the data on all the paths 
 	will be available to all the VTP applications.</li>
-	<li>A path can be relative or absolute, and should leave on a trailing slash.&nbsp; 
+	<li>A path can be relative or absolute, and should leave on a <strong>trailing slash</strong>.&nbsp; 
 	For example, the default path is:<br />
 	<code>&nbsp;&nbsp;&nbsp; &lt;DataPath&gt;../Data/&lt;/DataPath&gt; </code><br />
-	You could change it to paths such as these, depending on your platform:<br />
+	You could add paths such as these, depending on your platform:<br />
 	<code>&nbsp;&nbsp;&nbsp; &lt;DataPath&gt;../../Data/&lt;/DataPath&gt;<br />
 &nbsp;&nbsp;&nbsp; &lt;DataPath&gt;C:\MyData\&lt;/DataPath&gt;<br />
 &nbsp;&nbsp;&nbsp; &lt;DataPath&gt;/home/me/mydata/&lt;/DataPath&gt;</code></li>
