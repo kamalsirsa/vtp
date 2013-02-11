@@ -107,11 +107,7 @@ void vtUtilityLayer::DrawPole(wxDC *pDC, vtScaledView *pView, vtPole *pole)
 
 bool vtUtilityLayer::OnSave(bool progress_callback(int))
 {
-	wxString strExt = GetLayerFilename().AfterLast('.');
-
-	if (!strExt.CmpNoCase(_T("osm")))
-		return WriteOSM(GetLayerFilename().mb_str(wxConvUTF8));
-	return false;
+	return WriteOSM(GetLayerFilename().mb_str(wxConvUTF8));
 }
 
 bool vtUtilityLayer::OnLoad()

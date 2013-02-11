@@ -142,7 +142,6 @@ bool vtUtilityMap::WriteOSM(const char *pathname)
 	fprintf(fp, "</osm>\n");
 	fclose(fp);
 
-	delete trans;
 	return true;
 }
 

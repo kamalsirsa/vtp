@@ -123,7 +123,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	const char *filename = GetValueString("filename", true);
 	if (filename)
 	{
-		// relative path: look on the standards data paths
+		// relative path: look on the standard data paths
 		vtString fullpath = FindFileOnPaths(vtGetDataPath(), filename);
 		if (fullpath == "")
 		{
