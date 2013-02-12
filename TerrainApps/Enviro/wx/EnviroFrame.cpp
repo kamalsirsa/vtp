@@ -1312,6 +1312,24 @@ bool EnviroFrame::LoadTerrainLayer(vtString &fname)
 			success = pTerr->CreateElevLayerFromTags(tags);
 		}
 	}
+	else if (!ext.CompareNoCase(".tif"))
+	{
+		MakeRelativeToDataPath(fname, "GeoSpecific");
+
+		vtImageLayer *im_layer = pTerr->NewImageLayer();
+		im_layer->Props().SetValueString("Filename", fname);
+		if (!im_layer->Load())
+		{
+			VTLOG("\tCouldn't load image layer.\n");
+			// Removing the layer deletes it, by dereference.
+			pTerr->GetLayers().Remove(im_layer);
+		}
+		else
+		{
+			pTerr->AddMultiTextureOverlay(im_layer);
+			success = true;
+		}
+	}
 	return success;
 }
 
@@ -1361,14 +1379,14 @@ void EnviroFrame::UpdateLODInfo()
 			m_pLODDlg->Refresh(log(sr->m_fLResolution)*17,
 				log(sr->m_fResolution)*17,
 				log(sr->m_fHResolution)*17,
-				sr->GetPolygonTarget(), sr->NumDrawnTriangles(),	-1);
+				sr->GetPolygonTarget(), sr->NumDrawnTriangles(), -1);
 		}
 		SMTerrain *sm = dynamic_cast<SMTerrain*>(dyn);
 		if (sm)
 		{
 			m_pLODDlg->Refresh(-1,
 				log((sm->GetQualityConstant()-0.002f)*10000)*40, -1,
-				sm->GetPolygonTarget(), sm->NumDrawnTriangles(),	-1);
+				sm->GetPolygonTarget(), sm->NumDrawnTriangles(), -1);
 		}
 	}
 	vtPagedStructureLodGrid *pPSLG = terr->GetStructureLodGrid();
