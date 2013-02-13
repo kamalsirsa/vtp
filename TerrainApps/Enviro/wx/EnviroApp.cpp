@@ -274,22 +274,27 @@ void EnviroApp::LoadOptions()
 		g_Options.m_strFilename = STRING_APPNAME ".xml";
 	}
 
+	bool bAddedPaths = false;
 	if (!bLoadedDataPaths)
 	{
 		if (bFound)
 		{
 			// We have paths in Enviro.xml, but not in vtp.xml; move them
 			dp = g_Options.m_oldDataPaths;
+			bAddedPaths = true;
 			g_Options.m_oldDataPaths.clear();
 		}
-		else
-		{
-			// Set default data path
-			dp.push_back(vtString("../Data/"));
-			g_Options.m_strContentFile = "common_content.vtco";
-		}
-		vtSaveDataPath(AppDataUser + "/vtp.xml");
 	}
+	// If we still don't have any paths at all
+	if (dp.size() == 0)
+	{
+		// Set default data path
+		dp.push_back(vtString("../Data/"));
+		bAddedPaths = true;
+		g_Options.m_strContentFile = "common_content.vtco";
+	}
+	if (bAddedPaths)
+		vtSaveDataPath(AppDataUser + "/vtp.xml");
 
 	// Supply the special symbols {appdata} and {appdatacommon}
 	for (uint i = 0; i < dp.size(); i++)
