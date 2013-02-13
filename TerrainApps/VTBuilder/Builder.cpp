@@ -1808,9 +1808,9 @@ void Builder::ReadDataPath()
 	// Read the vt datapaths
 	bool bLoadedDataPaths = vtLoadDataPath(AppDataUser, AppDataCommon);
 
-	if (!bLoadedDataPaths)
+	if (!bLoadedDataPaths || vtGetDataPath().size() == 0)
 	{
-		VTLOG1("  Not found, using default of '../Data/'.\n");
+		VTLOG1("  Not found or no paths, using default of '../Data/'.\n");
 		vtGetDataPath().push_back(vtString("../Data/"));
 		vtGetDataPath().push_back(vtString("../../../Data/"));
 	}
