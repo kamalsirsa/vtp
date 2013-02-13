@@ -174,15 +174,37 @@ bool MakeRelativeToDataPath(vtString &fname, const vtString &folder)
 	vtString file = StartOfFilename(fname);
 
 	vtString search = file;
-	if (folder)
+	if (folder != "")
 		search = folder + "/" + file;
 
-	vtString full = FindFileOnPaths(vtGetDataPath(), search);
+	const vtStringArray &paths = vtGetDataPath();
+
+	vtString full = FindFileOnPaths(paths, search);
 	if (full != "")
 	{
 		fname = file;
 		return true;
 	}
+
+	// Also check if the fname contains any of the data paths.
+	// Convert slashes for consistent comparison, and ignore case.
+	vtString fname_lower = fname;
+	fname_lower.MakeLower();
+	fname_lower.Replace('\\', '/');
+	for (uint i = 0; i < paths.size(); i++)
+	{
+		vtString path_lower = paths[i];
+		path_lower.MakeLower();
+		path_lower.Replace('\\', '/');
+
+		const int length = path_lower.GetLength();
+		if (fname_lower.Left(length) == path_lower)
+		{
+			fname = fname.Mid(length);
+			return true;
+		}
+	}
+
 	return false;
 }
 

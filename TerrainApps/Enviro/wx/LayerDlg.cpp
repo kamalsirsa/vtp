@@ -320,6 +320,13 @@ void MakeAbsLayerString(vtAbstractLayer *alay, wxString &str,
 {
 	vtFeatureSet *fset = alay->GetFeatureSet();
 
+	// Safety check
+	if (!fset)
+	{
+		str += _(" (no featureset)");
+		return;
+	}
+
 	vtString vs = fset->GetFilename();
 	str = wxString(vs, wxConvUTF8);
 

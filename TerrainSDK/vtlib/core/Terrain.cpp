@@ -1264,7 +1264,10 @@ bool vtTerrain::_CreateAbstractLayerFromParams(int index)
 	//  scaled up/down with the vertical exaggeration.
 	bool success = ab_layer->Load(GetProjection(), NULL, m_progress_callback);
 	if (!success)
+	{
+		m_Layers.Remove(ab_layer);
 		return false;
+	}
 
 	CreateAbstractLayerVisuals(ab_layer);
 	return true;

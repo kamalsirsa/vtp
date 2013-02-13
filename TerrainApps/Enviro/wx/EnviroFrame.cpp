@@ -1230,6 +1230,8 @@ void EnviroFrame::LoadLayer(vtString &fname)
 
 bool EnviroFrame::LoadTerrainLayer(vtString &fname)
 {
+	VTLOG("LoadTerrainLayer '%s'\n", (const char *) fname);
+
 	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	bool success = false;
 
@@ -1262,6 +1264,12 @@ bool EnviroFrame::LoadTerrainLayer(vtString &fname)
 	}
 	else if (!ext.CompareNoCase(".shp"))
 	{
+		bool bRelative = MakeRelativeToDataPath(fname, "PointData");
+		if (!bRelative)
+			bRelative = MakeRelativeToDataPath(fname, "");
+		if (bRelative)
+			VTLOG("Shortened path to '%s'\n", (const char *) fname);
+
 		vtAbstractLayer *ab_layer = pTerr->NewAbstractLayer();
 		ab_layer->SetLayerName(fname);
 

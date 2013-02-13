@@ -761,6 +761,10 @@ void vtAbstractLayer::CreateFeatureLabel(uint iIndex)
  */
 void vtAbstractLayer::ReleaseGeometry()
 {
+	// Safety check
+	if (!m_pSet)
+		return;
+
 	for (int i = m_pSet->NumEntities()-1; i >= 0; i--)
 	{
 		vtFeature *f = m_pSet->GetFeature(i);
