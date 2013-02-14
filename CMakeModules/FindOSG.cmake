@@ -11,7 +11,11 @@
 #
 # Created by Robert Osfield. Modified by Roger James 05/03/09
 
-SET(OSG_INSTALL_DIR "c:/Program Files/OpenSceneGraph" CACHE PATH "OpenSceneGraph install directory")
+IF (WIN32)
+    SET(OSG_INSTALL_DIR "c:/Program Files/OpenSceneGraph" CACHE PATH "OpenSceneGraph WIN32 install directory")
+ELSE (WIN32)
+    SET(OSG_INSTALL_DIR "/usr/local/openscenegraph" CACHE PATH "OpenSceneGraph UNIX install directory")
+ENDIF (WIN32)
 
 SET(OSG_LIBRARY_NAMES
     osg
