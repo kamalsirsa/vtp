@@ -32,7 +32,6 @@ public:
 	wxCheckBox* GetShadows()  { return (wxCheckBox*) FindWindow( ID_SHADOWS ); }
 	wxSlider* GetSliderFogDistance()  { return (wxSlider*) FindWindow( ID_SLIDER_FOG_DISTANCE ); }
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
-	wxComboBox* GetSkyTexture()  { return (wxComboBox*) FindWindow( ID_SKYTEXTURE ); }
 	wxCheckBox* GetFog()  { return (wxCheckBox*) FindWindow( ID_FOG ); }
 	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
 

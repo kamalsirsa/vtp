@@ -97,7 +97,7 @@ EphemDlg::EphemDlg(wxWindow *parent, wxWindowID id, const wxString &title,
 void EphemDlg::UpdateEnableState()
 {
 	FindWindow(ID_OCEANPLANEOFFSET)->Enable(m_bOceanPlane);
-	GetSkyTexture()->Enable(m_bSky);
+	m_skytexture->Enable(m_bSky);
 	GetFogDistance()->Enable(m_bFog);
 	GetSliderFogDistance()->Enable(m_bFog);
 	GetDarkness()->Enable(m_bShadows);
@@ -184,15 +184,16 @@ void EphemDlg::OnInitDialog(wxInitDialogEvent& event)
 	uint i;
 	int sel;
 
+	m_skytexture->Clear();
 	for (i = 0; i < paths.size(); i++)
 	{
 		// fill in Sky files
-		AddFilenamesToComboBox(GetSkyTexture(), paths[i] + "Sky", "*.bmp");
-		AddFilenamesToComboBox(GetSkyTexture(), paths[i] + "Sky", "*.png");
-		AddFilenamesToComboBox(GetSkyTexture(), paths[i] + "Sky", "*.jpg");
-		sel = GetSkyTexture()->FindString(m_strSkyTexture);
+		AddFilenamesToComboBox(m_skytexture, paths[i] + "Sky", "*.bmp");
+		AddFilenamesToComboBox(m_skytexture, paths[i] + "Sky", "*.png");
+		AddFilenamesToComboBox(m_skytexture, paths[i] + "Sky", "*.jpg");
+		sel = m_skytexture->FindString(m_strSkyTexture);
 		if (sel != -1)
-			GetSkyTexture()->SetSelection(sel);
+			m_skytexture->SetSelection(sel);
 	}
 	UpdateColorControl();
 	wxWindow::OnInitDialog(event);
