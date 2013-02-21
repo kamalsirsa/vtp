@@ -163,7 +163,7 @@ void ElasticPolyline::Realize()
 	const DPoint2 first_point = m_Line[0];
 	const float fSpacing = m_pTerr->EstimateGroundSpacingAtPoint(first_point);
 	FLine3 tessellated;
-	float fTotalLength = m_pTerr->GetHeightFieldGrid3d()->LineOnSurface(m_Line, fSpacing, 0.0f, true,
+	float fTotalLength = m_pTerr->GetHeightField()->LineOnSurface(m_Line, fSpacing, 0.0f, true,
 		false, false, tessellated);
 
 	// Make lines between them
