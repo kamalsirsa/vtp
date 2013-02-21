@@ -16,4 +16,10 @@ class LogCatcher : public wxLog
 		VTLOG1(msg.ToUTF8());
 		VTLOG1("\n");
 	}
+
+	virtual void DoLogString(const wxChar *msg, time_t timestamp)
+	{
+	    wxString message(msg);
+	    DoLogText(message);
+	}
 };

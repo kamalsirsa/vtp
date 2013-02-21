@@ -46,7 +46,7 @@ void LocaleApp::SetupLocale(const char *appname)
 	m_locale.AddCatalogLookupPathPrefix(cwd);
 
 #if VTDEBUG
-	m_locale.AddCatalogLookupPathPrefix("../../../i18n");
+	m_locale.AddCatalogLookupPathPrefix(_T("../../../i18n"));
 #endif
 
 	bool bSuccess=false;
