@@ -657,6 +657,8 @@ void vtTerrain::MakeWaterMaterial()
 			TERRAIN_EMISSIVE);	// emissive
 		// Don't mipmap: allowing texture aliasing to occur, it actually looks
 		// more water-like.
+		if (m_idx_water != -1)
+			m_pEphemMats->at(m_idx_water)->SetClamp(false);
 	}
 }
 
