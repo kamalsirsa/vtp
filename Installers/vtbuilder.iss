@@ -48,6 +48,7 @@ Source: "C:\VTP\i18n\*"; DestDir: "{app}\Apps"; Excludes: "*.po,Enviro.*"; Flags
 ; Core Data
 Source: "G:\Data-Distro\WorldMap\gnv19.*"; DestDir: "{app}/Data/WorldMap"; Flags: ignoreversion; Components: data
 Source: "G:\Data-Distro\Culture\materials.xml"; DestDir: "{app}/Data/Culture"; Flags: ignoreversion; Components: data
+Source: "G:\Data-Distro\GeoTypical\*.cmt"; DestDir: "{app}/Data/GeoTypical"; Flags: ignoreversion; Components: data
 
 ; Projection Stuff
 Source: "C:\APIs\gdal-1.9.2\bld\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; Components: proj
