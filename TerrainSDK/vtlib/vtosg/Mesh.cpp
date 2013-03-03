@@ -96,7 +96,7 @@ static FPoint2 t[4] =
  */
 vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	m_PrimType = ePrimType;
 #endif
 	m_iMatIdx = -1;
@@ -105,7 +105,7 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 	pVert->reserve(NumVertices);
 	setVertexArray(pVert);
 
-#ifndef AVOID_OSG_INDICES
+#ifndef VTP_AVOID_OSG_INDICES
 	osg::UIntArray *pIndex = new osg::UIntArray;
 	pIndex->reserve(NumVertices);
 	setVertexIndices(pIndex);
@@ -116,7 +116,7 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 		osg::Vec3Array *pNorm = new osg::Vec3Array;
 		pNorm->reserve(NumVertices);
 		setNormalArray(pNorm);
-#ifndef AVOID_OSG_INDICES
+#ifndef VTP_AVOID_OSG_INDICES
 		setNormalIndices(pIndex);
 #endif
 		setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
@@ -126,7 +126,7 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 		osg::Vec4Array *pColor = new osg::Vec4Array;
 		pColor->reserve(NumVertices);
 		setColorArray(pColor);
-#ifndef AVOID_OSG_INDICES
+#ifndef VTP_AVOID_OSG_INDICES
 		setColorIndices(pIndex);
 #endif
 		setColorBinding(osg::Geometry::BIND_PER_VERTEX);
@@ -136,7 +136,7 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 		osg::Vec2Array *pTex = new osg::Vec2Array;
 		pTex->reserve(NumVertices);
 		setTexCoordArray(0, pTex);
-#ifndef AVOID_OSG_INDICES
+#ifndef VTP_AVOID_OSG_INDICES
 		setTexCoordIndices(0, pIndex);
 #endif
 	}
@@ -155,7 +155,7 @@ vtMesh::vtMesh(PrimType ePrimType, int VertType, int NumVertices)
 #endif
 
 	osg::PrimitiveSet *pPrimSet;
-#ifndef AVOID_OSG_INDICES
+#ifndef VTP_AVOID_OSG_INDICES
 	switch (ePrimType)
 	{
 	case osg::PrimitiveSet::POINTS:
@@ -939,7 +939,7 @@ void vtMesh::GetBoundBox(FBox3 &box) const
  */
 void vtMesh::AddTri(int p0, int p1, int p2)
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	PrimType PrimType = getPrimType();
 	osg::DrawElements *pDrawElements;
 	if (PrimType == osg::PrimitiveSet::TRIANGLES)
@@ -979,7 +979,7 @@ void vtMesh::AddTri(int p0, int p1, int p2)
  */
 void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	osg::DrawElements *pDrawElements;
 	pDrawElements = new osg::DrawElementsUShort(osg::PrimitiveSet::TRIANGLE_FAN);
 	pDrawElements->addElement(p0);
@@ -1016,7 +1016,7 @@ void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
  */
 void vtMesh::AddFan(int *idx, int iNVerts)
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	osg::DrawElements *pDrawElements;
 	pDrawElements = new osg::DrawElementsUShort(osg::PrimitiveSet::TRIANGLE_FAN);
 	pDrawElements->reserveElements(iNVerts);
@@ -1041,7 +1041,7 @@ void vtMesh::AddFan(int *idx, int iNVerts)
  */
 void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	osg::DrawElements *pDrawElements;
 	switch(m_PrimType)
 	{
@@ -1075,7 +1075,7 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
  */
 void vtMesh::AddLine(int p0, int p1)
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	PrimType PrimType = getPrimType();
 	osg::DrawElements *pDrawElements;
 	if (PrimType == osg::PrimitiveSet::LINES)
@@ -1126,7 +1126,7 @@ int vtMesh::AddLine(const FPoint3 &pos1, const FPoint3 &pos2)
  */
 void vtMesh::AddQuad(int p0, int p1, int p2, int p3)
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	osg::DrawElements *pDrawElements;
 	pDrawElements = getPrimitiveSet(0)->getDrawElements();
 	pDrawElements->addElement(p0);
@@ -1163,7 +1163,7 @@ void vtMesh::SetVtxPos(uint i, const FPoint3 &p)
 		getVerts()->resize(i + 1);
 	getVerts()->at(i) = s;
 
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	if (getPrimType() == osg::PrimitiveSet::POINTS)
 		getDrawArrays()->setCount(getVerts()->size());
 #ifdef USE_OPENGL_BUFFER_OBJECTS
@@ -1386,7 +1386,7 @@ void vtMesh::SetNormalsFromPrimitives()
 
 void vtMesh::_AddStripNormals()
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	uint i, j, len;
 	uint NumPrimitiveSets = getNumPrimitiveSets();
 	unsigned short v0 = 0, v1 = 0, v2 = 0;
@@ -1459,7 +1459,7 @@ void vtMesh::_AddStripNormals()
 
 void vtMesh::_AddPolyNormals()
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	uint i, j, len;
 	uint NumPrimitiveSets = getNumPrimitiveSets();
 	unsigned short v0 = 0, v1 = 0, v2 = 0;
@@ -1540,7 +1540,7 @@ void vtMesh::_AddPolyNormals()
 
 void vtMesh::_AddTriangleNormals()
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	int tris = NumPrims();
 	unsigned short v0, v1, v2;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
@@ -1599,7 +1599,7 @@ void vtMesh::_AddTriangleNormals()
 
 void vtMesh::_AddQuadNormals()
 {
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	int quads = NumPrims();
 	unsigned short v0, v1, v2, v3;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;

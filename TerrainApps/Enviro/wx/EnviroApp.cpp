@@ -361,7 +361,7 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 	if (g_Options.m_bUseSpaceNav)
 		frame->m_canvas->EnableSpaceNav();
 
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 	// Initialise Visual Impact Calculator - this can only be done after the
 	// graphics context is initialised.
     vtGetScene()->GetVisualImpactCalculator().Initialise();
@@ -532,8 +532,10 @@ void EnviroApp::OnAssertFailure(const wxChar *file, int line, const wxChar *func
 #endif // wxUSE_STACKWALKER
 #endif
 
+#ifdef __WXDEBUG__
 	// Call wx's base functionality
 	wxApp::OnAssertFailure(file, line, func, cond, msg);
+#endif
 }
 
 int EditTerrainParameters(wxWindow *parent, const char *filename)

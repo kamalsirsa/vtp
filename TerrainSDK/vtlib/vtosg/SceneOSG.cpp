@@ -196,7 +196,7 @@ bool vtScene::Init(int argc, char** argv, bool bStereo, int iStereoMode)
 	// aliasing, because it has to be done eariler (at the time the OpenGL
 	// context is made).
 
-#ifdef USE_OSG_STATS
+#ifdef VTP_USE_OSG_STATS
 	osgViewer::StatsHandler* pStatsHandler = new osgViewer::StatsHandler;
 	pStatsHandler->setKeyEventPrintsOutStats(0);
 	pStatsHandler->setKeyEventTogglesOnScreenStats('x'); // I dont think this is used for anything else at the moment

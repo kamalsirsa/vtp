@@ -68,6 +68,9 @@
 #include "EnviroCanvas.h"
 #include "menu_id.h"
 
+#if VTP_VISUAL_IMPACT_CALCULATOR
+#include "gdal_priv.h"
+#endif
 
 DECLARE_APP(EnviroApp);
 
@@ -180,7 +183,7 @@ EVT_MENU(ID_SCENE_SPACE,		EnviroFrame::OnSceneSpace)
 EVT_UPDATE_UI(ID_SCENE_SPACE,	EnviroFrame::OnUpdateSceneSpace)
 EVT_MENU(ID_SCENE_SAVE,			EnviroFrame::OnSceneSave)
 EVT_MENU(ID_SCENE_EPHEMERIS,	EnviroFrame::OnSceneEphemeris)
-#ifdef NVIDIA_PERFORMANCE_MONITORING
+#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 EVT_MENU(ID_SCENE_PERFMON,	    EnviroFrame::OnPerformanceMonitor)
 #endif
 EVT_MENU(ID_TIME_DIALOG,		EnviroFrame::OnTimeDialog)
@@ -299,7 +302,7 @@ void EnviroFrame::CreateMenus()
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances\tCtrl+D"));
 	m_pToolsMenu->AppendSeparator();
 	m_pToolsMenu->AppendCheckItem(ID_TOOLS_CONSTRAIN, _("Constrain building angles"));
-#ifdef VISUAL_IMPACT_CALCULATOR
+#ifdef VTP_VISUAL_IMPACT_CALCULATOR
 	wxMenu *pVIAMenu = new wxMenu;
 	pVIAMenu->Append(ID_VIA_CALCULATE, _("&Calculate\tCtrl+C"), _("Calculate visual impact factor"));
 	pVIAMenu->Append(ID_VIA_PLOT, _("&Plot\tCtrl+P"), _("Produce visual impact plot"));
@@ -334,7 +337,7 @@ void EnviroFrame::CreateMenus()
 
 	m_pSceneMenu = new wxMenu;
 	m_pSceneMenu->Append(ID_SCENE_SCENEGRAPH, _("Scene Graph"));
-    #ifdef NVIDIA_PERFORMANCE_MONITORING
+    #ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
     m_pSceneMenu->Append(ID_SCENE_PERFMON, _("Performance Monitor"));
     #endif
 	m_pSceneMenu->AppendSeparator();
@@ -635,7 +638,7 @@ void EnviroFrame::OnUpdateViewTopDown(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnViewStats(wxCommandEvent& event)
 {
-#ifdef USE_OSG_STATS
+#ifdef VTP_USE_OSG_STATS
 	// Yes, this is a hack, but it doesn't seem that StatsHandler can be cycled
 	//  any other way than by key event.
 	osgViewer::GraphicsWindow *pGW = vtGetScene()->GetGraphicsWindow();
@@ -1045,7 +1048,7 @@ void EnviroFrame::OnUpdateToolsConstrain(wxUpdateUIEvent& event)
 // Visual impact submenu
 void EnviroFrame::OnVIACalculate(wxCommandEvent& event)
 {
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 	wxString Message = _("Your 3d driver does not support off screen rendering.\n");
 	Message += _("If the main 3d window is obscured by any other windows\n");
 	Message += _("(including popup dialogs). The accuracy of the visual impact\n");
@@ -1089,7 +1092,7 @@ void EnviroFrame::OnUpdateVIACalculate(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnVIAPlot(wxCommandEvent& event)
 {
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 	wxFileDialog RasterFileDialog(this,
 								_T("Output raster file"),
 								_T(""), _T("viaplot.tif"),
@@ -1205,7 +1208,7 @@ void EnviroFrame::OnVIAPlot(wxCommandEvent& event)
 	Transform[3] = EarthExtents.top;
 	Transform[5] = -fYSampleInterval;
 	pDataset->SetGeoTransform(Transform);
-	GetCurrentTerrain()->GetProjection().exportToWkt(&pWKT);
+	g_App.GetCurrentTerrain()->GetProjection().exportToWkt(&pWKT);
 	pDataset->SetProjection(pWKT);
 	CPLFree(pWKT);
 	GDALRasterBand *pRasterBand = pDataset->GetRasterBand(1);
@@ -1213,7 +1216,7 @@ void EnviroFrame::OnVIAPlot(wxCommandEvent& event)
 		return;
 
 	EnableContinuousRendering(false);
-	OpenProgressDialog(_T("Plotting Visual Impact Factor"), true);
+	OpenProgressDialog(_T("Visual Impact Analysis"), _T("Plotting Visual Impact Factor"), true);
 	bool bRet = vtGetScene()->GetVisualImpactCalculator().Plot(pRasterBand,
 													fScaleFactor,
 													fXSampleInterval,
@@ -1227,7 +1230,7 @@ void EnviroFrame::OnVIAPlot(wxCommandEvent& event)
 
 	EnableContinuousRendering(true);
 	delete pDataset; // This flushes and closes the dataset
-#endif  // VISUAL_IMPACT_CALCULATOR
+#endif  // VTP_VISUAL_IMPACT_CALCULATOR
 }
 void EnviroFrame::OnUpdateVIAPlot(wxUpdateUIEvent& event)
 {
@@ -1323,7 +1326,7 @@ void EnviroFrame::OnSceneGraph(wxCommandEvent& event)
 	m_pSceneGraphDlg->Show(true);
 }
 
-#ifdef NVIDIA_PERFORMANCE_MONITORING
+#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 void EnviroFrame::OnPerformanceMonitor(wxCommandEvent& event)
 {
 	m_pPerformanceMonitorDlg->Show(true);
@@ -2094,7 +2097,7 @@ void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 			popmenu->AppendSeparator();
 			popmenu->Append(ID_POPUP_URL, _("URL"));
 		}
-#ifdef VISUAL_IMPACT_CALCULATOR
+#ifdef VTP_VISUAL_IMPACT_CALCULATOR
 		// Visual Impact Assessment
         popmenu->AppendCheckItem(ID_POPUP_VIA,
 			_("&Visual Impact Contributor\tCtrl+V"),
@@ -2295,7 +2298,7 @@ void EnviroFrame::OnPopupURL(wxCommandEvent& event)
 
 void EnviroFrame::OnPopupVIA(wxCommandEvent& event)
 {
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
 	vtStructure3d *pStructure3d;
@@ -2321,7 +2324,7 @@ void EnviroFrame::OnPopupVIA(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdatePopupVIA(wxUpdateUIEvent& event)
 {
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 
 	if (NULL == pTerr)
@@ -2359,10 +2362,10 @@ void EnviroFrame::OnUpdatePopupVIA(wxUpdateUIEvent& event)
 
 void EnviroFrame::OnPopupVIATarget(wxCommandEvent& event)
 {
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 	vtStructureArray3d *pStructures = pTerr->GetStructureLayer();
-	int count = pStructures->GetSize();
+	int count = pStructures->size();
 	vtStructure3d *pStructure3d;
 	vtTransform *pTransform;
 	FSphere sphere;
@@ -2401,7 +2404,7 @@ void EnviroFrame::OnPopupVIATarget(wxCommandEvent& event)
 
 void EnviroFrame::OnUpdatePopupVIATarget(wxUpdateUIEvent& event)
 {
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 	vtTerrain *pTerr = g_App.GetCurrentTerrain();
 
 	if (NULL == pTerr)

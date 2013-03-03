@@ -21,7 +21,7 @@
 
 #include "Canvas.h"
 
-#ifdef NVIDIA_PERFORMANCE_MONITORING
+#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 #include "PerformanceMonitor.h"
 #endif
 
@@ -88,7 +88,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 	SetLayoutDirection(wxLayout_LeftToRight);
 
 	s_canvas = this;
-#ifdef NVIDIA_PERFORMANCE_MONITORING
+#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 	CPerformanceMonitorDialog::NVPM_init();
 #endif
 	VTLOG1("vtGLCanvas, leaving constructor\n");
@@ -97,7 +97,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint &pos,
 vtGLCanvas::~vtGLCanvas(void)
 {
 	VTLOG1("Deleting Canvas\n");
-#ifdef NVIDIA_PERFORMANCE_MONITORING
+#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 	CPerformanceMonitorDialog::NVPM_shutdown();
 #endif
 	((GraphicsWindowWX*)vtGetScene()->GetGraphicsContext())->CloseOsgContext();
@@ -207,7 +207,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	if (m_bFirstPaint)
 		m_bFirstPaint = false;
 
-#ifdef NVIDIA_PERFORMANCE_MONITORING
+#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 	CPerformanceMonitorDialog::NVPM_frame();
 #endif
 
@@ -236,7 +236,7 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 
 void vtGLCanvas::OnChar(wxKeyEvent& event)
 {
-#ifdef USE_OSG_STATS
+#ifdef VTP_USE_OSG_STATS
 	osgViewer::GraphicsWindow *pGW = vtGetScene()->GetGraphicsWindow();
 	if ((NULL != pGW) && pGW->valid())
 		pGW->getEventQueue()->keyPress(event.GetKeyCode());

@@ -891,7 +891,7 @@ void vtFrame::OnUpdateViewWireframe(wxUpdateUIEvent& event)
 
 void vtFrame::OnViewStats(wxCommandEvent& event)
 {
-#ifdef USE_OSG_STATS
+#ifdef VTP_USE_OSG_STATS
 	// Yes, this is a hack, but it doesn't seem that StatsHandler can be cycled
 	//  any other way than by key event.
 	osgViewer::GraphicsWindow *pGW = vtGetScene()->GetGraphicsWindow();

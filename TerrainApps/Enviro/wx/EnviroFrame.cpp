@@ -62,7 +62,7 @@
 #include "wxosg/SceneGraphDlg.h"
 #include "wxosg/TimeDlg.h"
 
-#ifdef NVIDIA_PERFORMANCE_MONITORING
+#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 #include "PerformanceMonitor.h"
 #endif
 
@@ -184,7 +184,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pStatusBar->UpdateText();
 	PositionStatusBar();
 
-#ifdef NVIDIA_PERFORMANCE_MONITORING
+#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 	// Stop crash in update toolbar
 	m_pCameraDlg = NULL;
 	m_pLocationDlg = NULL;
@@ -255,7 +255,7 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 	m_pVehicleDlg = new VehicleDlg(this, -1, _("Vehicles"));
 	m_pDriveDlg = new DriveDlg(this);
 	m_pProfileDlg = NULL;
-	#ifdef NVIDIA_PERFORMANCE_MONITORING
+	#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
     m_pPerformanceMonitorDlg = new CPerformanceMonitorDialog(this, wxID_ANY, _("Performance Monitor"));
     #endif
 	m_pVIADlg = new VIADlg(this);
@@ -300,7 +300,7 @@ EnviroFrame::~EnviroFrame()
 	delete m_pLocationDlg;
 	delete m_pInstanceDlg;
 	delete m_pLayerDlg;
-	#ifdef NVIDIA_PERFORMANCE_MONITORING
+	#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
     delete m_pPerformanceMonitorDlg;
     #endif
 	delete m_pVIADlg;

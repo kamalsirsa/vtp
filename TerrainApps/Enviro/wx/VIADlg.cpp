@@ -26,7 +26,7 @@
 
 void VIADlg::OnInitDialog(wxInitDialogEvent& event)
 {
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 	m_VIF = wxString::Format(_("%0.2f"), vtGetScene()->GetVisualImpactCalculator().Calculate());
 	wxDialog::OnInitDialog(event);
 #endif
@@ -34,7 +34,7 @@ void VIADlg::OnInitDialog(wxInitDialogEvent& event)
 
 void VIADlg::OnRecalculate( wxCommandEvent &event)
 {
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 	m_VIF = wxString::Format(_("%0.2f"), vtGetScene()->GetVisualImpactCalculator().Calculate());
 	TransferDataToWindow();
 #endif

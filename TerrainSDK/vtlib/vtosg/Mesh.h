@@ -14,7 +14,7 @@
 #include <osgText/Font>
 #include <osgText/Text>
 
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 //#define USE_OPENGL_BUFFER_OBJECTS
 #endif
 
@@ -64,7 +64,7 @@ public:
 	void AddQuad(int p0, int p1, int p2, int p3);
 
 	// Accessors
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	PrimType getPrimType() const { return m_PrimType; }
 #else
 	PrimType getPrimType() const { return (PrimType) getPrimSet()->getMode(); }
@@ -189,7 +189,7 @@ protected:
 	const osg::Vec2Array *getTexCoords() const { return (const osg::Vec2Array*) getTexCoordArray(0); }
 
 	int m_iMatIdx;
-#ifdef AVOID_OSG_INDICES
+#ifdef VTP_AVOID_OSG_INDICES
 	PrimType m_PrimType;
 #endif
 };

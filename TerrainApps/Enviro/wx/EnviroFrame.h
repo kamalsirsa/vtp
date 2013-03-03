@@ -39,7 +39,7 @@ class vtFeatureSet;
 class vtStructInstance;
 class vtTerrain;
 class vtTimeEngine;
-#ifdef NVIDIA_PERFORMANCE_MONITORING
+#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 class CPerformanceMonitorDialog;
 #endif
 class VIADlg;
@@ -217,7 +217,7 @@ protected:
 
 
 	void OnSceneGraph(wxCommandEvent& event);
-	#ifdef NVIDIA_PERFORMANCE_MONITORING
+	#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
 	void OnPerformanceMonitor(wxCommandEvent& event);
 	#endif
 	void OnSceneTerrain(wxCommandEvent& event);
@@ -342,7 +342,7 @@ public:
 	ProfileDlg			*m_pProfileDlg;
 	VehicleDlg			*m_pVehicleDlg;
 	DriveDlg			*m_pDriveDlg;
-	#ifdef NVIDIA_PERFORMANCE_MONITORING
+	#ifdef VTP_NVIDIA_PERFORMANCE_MONITORING
     CPerformanceMonitorDialog *m_pPerformanceMonitorDlg;
     #endif
 	VIADlg				*m_pVIADlg;

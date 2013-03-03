@@ -16,7 +16,7 @@
 
 #include "vtlib/vtlib.h"
 
-#if VISUAL_IMPACT_CALCULATOR
+#if VTP_VISUAL_IMPACT_CALCULATOR
 
 #include "VisualImpactCalculatorOSG.h"
 #include <osg/GLExtensions>
@@ -449,4 +449,4 @@ void MyRenderBinDrawCallback::drawImplementation(osgUtil::RenderBin *pBin, osg::
 	m_pVisualImpactCalculator->GetFinalImage()->readPixels(0, 0, DEFAULT_VISUAL_IMPACT_RESOLUTION, DEFAULT_VISUAL_IMPACT_RESOLUTION, GL_DEPTH_COMPONENT, GL_FLOAT);
 }
 
-#endif // VISUAL_IMPACT_CALCULATOR
+#endif // VTP_VISUAL_IMPACT_CALCULATOR
