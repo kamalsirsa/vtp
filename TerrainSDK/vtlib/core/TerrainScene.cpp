@@ -345,6 +345,8 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 
 void vtTerrainScene::UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 {
+	VTLOG1("UpdateSkydomeForTerrain:\n");
+
 	// safety check
 	if (!m_pSkyDome)
 		return;
@@ -381,13 +383,17 @@ void vtTerrainScene::UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 	// Does this terrain want to show the skydome?
 	bool bDoSky = param.GetValueBool(STR_SKY);
 
+	VTLOG("  Show the skydome: %d\n", bDoSky);
 	m_pSkyDome->SetEnabled(bDoSky);
 	if (bDoSky)
 	{
+		bool success = false;
+
 		vtString fname = param.GetValueString(STR_SKYTEXTURE);
+		VTLOG("  Skydome fname: %s\n", (const char *) fname);
 		if (fname == "")
 		{
-			m_pSkyDome->SetTexture(NULL);
+			success = m_pSkyDome->SetTexture(NULL);
 		}
 		else
 		{
@@ -395,8 +401,9 @@ void vtTerrainScene::UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 			filename += fname;
 			vtString skytex = FindFileOnPaths(vtGetDataPath(), filename);
 			if (skytex != "")
-				m_pSkyDome->SetTexture(skytex);
+				success = m_pSkyDome->SetTexture(skytex);
 		}
+		VTLOG("  Success: %d\n", success);
 	}
 }
 
