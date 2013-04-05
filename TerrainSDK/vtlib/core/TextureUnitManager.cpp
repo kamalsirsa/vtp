@@ -33,7 +33,8 @@ void vtTextureUnitManager::Initialise()
 	// before making any OpenGL calls
     vtTemporaryGraphicsContext TempContext;
 
-	glGetIntegerv(GL_MAX_TEXTURE_UNITS,&m_iNumTextureUnits);
+	m_iNumTextureUnits = -1;
+	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &m_iNumTextureUnits);
 	if (m_iNumTextureUnits < 0)
 	{
 		// got a bogus value, probably because there is no OpenGL context yet.
