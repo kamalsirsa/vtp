@@ -1668,9 +1668,9 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 {
 	VTLOG("Click, cursor pick, ");
 
-	// See if camera ray intersects a structure?  NO, it's simpler and
+	// See if camera ray intersects something?  NO, it's simpler and
 	//  easier for the user to just test whether the ground cursor is
-	//  near a structure's origin.
+	//  near a something's origin.
 	DPoint2 gpos(m_EarthPos.x, m_EarthPos.y);
 
 	// De-select
@@ -1691,6 +1691,36 @@ void Enviro::OnMouseSelectCursorPick(vtMouseEvent &event)
 	VTLOG("epsilon %lf, ", epsilon);
 
 	VTLOG("|XY= %lf, %lf, %lf|\n", m_EarthPos.x, m_EarthPos.y, m_EarthPos.z); // BobMaX
+
+	vtAbstractLayer *ab_layer = pTerr->GetAbstractLayer();
+	if (ab_layer)
+	{
+		// If the current layer is abstract, only pick within it.
+		vtFeatureSet *fset = ab_layer->GetFeatureSet();
+		vtFeatureSetPoint2D *pset2 = dynamic_cast<vtFeatureSetPoint2D*>(fset);
+
+		int index = -1;
+		double dist;
+		if (pset2)
+			index = pset2->FindClosestPoint(gpos, epsilon, &dist);
+		if (index)
+			fset->Select(index, true);
+			
+		// Control key extends selection, otherwise deselect all.
+		if (!(event.flags & VT_CONTROL))
+		{
+			for (uint j = 0; j < fset->NumEntities(); j++)
+			{
+				vtFeature *feat = fset->GetFeature(j);
+				vtVisual *viz = ab_layer->GetViz(feat);
+				if (viz)
+					fset->Select(j, false);
+			}
+		}
+		// Make the selected meshes yellow
+		ab_layer->UpdateVisualSelection();
+		return;
+	}
 
 	// We also want to use a small (2m) buffer around linear features, so they
 	//  can be picked even if they are inside/on top of a building.

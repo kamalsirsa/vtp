@@ -252,6 +252,9 @@ vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 	pTerrain->CreateStep7();
 	pTerrain->CreateStep8();
 	pTerrain->CreateStep9();
+	pTerrain->CreateStep10();
+	pTerrain->CreateStep11();
+	pTerrain->CreateStep12();
 
 	return pTerrain->GetTopGroup();
 }

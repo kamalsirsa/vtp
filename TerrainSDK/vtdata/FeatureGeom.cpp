@@ -106,6 +106,9 @@ void vtFeatureSetPoint2D::GetPoint(uint num, DPoint2 &p) const
 	p = m_Point2[num];
 }
 
+/**
+ \return the index of the closest point, or -1 if there are none.
+ */
 int vtFeatureSetPoint2D::FindClosestPoint(const DPoint2 &p, double epsilon, double *distance)
 {
 	uint entities = NumEntities();
