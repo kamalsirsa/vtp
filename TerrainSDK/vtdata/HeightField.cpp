@@ -324,6 +324,7 @@ void vtHeightFieldGrid3d::WorldToGrid(const FPoint3 &pos, IPoint2 &ipos)
  *
  * \param findex_x Floating point index, from 0 to width in heixels.
  * \param findex_y Floating point index, from 0 to height in heixels.
+ * \param bTrue Use the true elevation, ignoring any scaling/exaggeration.
  */
 float vtHeightFieldGrid3d::GetInterpolatedElevation(double findex_x, double findex_y,
 	bool bTrue) const

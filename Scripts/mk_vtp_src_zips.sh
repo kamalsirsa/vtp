@@ -131,6 +131,9 @@ zip $DIST_FILE1 VTP/TerrainApps/vtocx/*.rc
 zip $DIST_FILE1 VTP/TerrainApps/vtocx/vtocx*.sln
 zip $DIST_FILE1 VTP/TerrainApps/vtocx/vtocx*.vcproj
 
+zip $DIST_FILE1 VTP/TerrainApps/vtTest/*.cpp
+zip $DIST_FILE1 VTP/TerrainApps/vtTest/CMakeLists.txt
+
 #################################################################
 
 zip $DIST_FILE1 VTP/TerrainSDK/install-sh

@@ -358,7 +358,8 @@ uint vtMaterial::NextAvailableTextureUnit()
 
 
 /**
- * Set the texture clamping property for this material.
+ * Set the texture clamping property for this material.  Clamp=true prevents
+ *  sub-texel interpolation at the edge of the texture.  Default is false.
  */
 void vtMaterial::SetClamp(bool bClamp, int unit)
 {
@@ -389,7 +390,10 @@ bool vtMaterial::GetClamp(int unit) const
 }
 
 /**
- * Set the texture mipmapping property for this material.
+ * Set the texture mipmapping property for this material.  Mip-mapping provides
+ * smoother interpolation of the textured geometry when it is under-sampled
+ * (generally when it is in the distance.)  Useful for avoiding unpleasant
+ * aliasing artifacts, but costs 1/3 more texture memory.
  */
 void vtMaterial::SetMipMap(bool bMipMap, int unit)
 {
@@ -472,13 +476,7 @@ int vtMaterialArray::Find(vtMaterial *mat)
  *		is brighter than the existing light level, such as illuminated
  *		objects at night.
  *
- * \param bClamp	true for Texture Clamping, which prevents sub-texel
- *		interpolation at the edge of the texture.  Default is false.
- *
- * \param bMipMap	true for Mip-mapping, which provided smoother interpolation
- *		of the textured geometry when it is under-sampled (generally when it
- *		is in the distance.)  Useful for avoiding unpleasant aliasing artifacts,
- *		but costs 1/3 more texture memory.
+ * \param bCompression  For textured materials, requests texture compression.
  *
  * \return The index of the added material.
  */

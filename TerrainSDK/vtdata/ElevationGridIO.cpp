@@ -1787,6 +1787,7 @@ bool vtElevationGrid::SaveToBMP(const char *szFileName) const
  * \param szFileName The file name to read from.
  * \param progress_callback If supplied, this function will be called back
  *		with a value of 0 to 100 as the operation progresses.
+ * \param err If supplied, will be set to a description of any error that occurs.
  *
  * You should call SetupLocalCS() after loading if you will be doing
  * heightfield operations on this grid.

@@ -157,6 +157,7 @@ vtElevationGrid::~vtElevationGrid()
  * \param size Number of columns and rows in the grid.
  * \param bFloat data size: \c true to use floating-point, \c false for shorts.
  * \param proj the geographical projection to use.
+ * \param err If supplied, will be set to a description of any error that occurs.
  *
  * The grid will initially have no data in it (all values are INVALID_ELEVATION).
  */
@@ -238,6 +239,7 @@ void vtElevationGrid::Invalidate()
  *		floating-point values.  Otherwise, it matches the input grid.
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
+ * \param err If supplied, will be set to a description of any error that occurs.
  *
  * \return True if successful.
  */
