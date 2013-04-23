@@ -11,12 +11,11 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include "config_vtdata.h"
 #include <stdio.h>
 
-#if SUPPORT_QUIKGRID
-
 #include "QuikGrid.h"
+
+#if SUPPORT_QUIKGRID
 
 static ContourCallback s_pLineCallbackFunction = NULL;
 static void *s_pContext = NULL;

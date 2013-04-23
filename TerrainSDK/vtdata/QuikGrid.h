@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include "config_vtdata.h"	// To ensure we have SUPPORT_QUIKGRID
+
 #if SUPPORT_QUIKGRID
 
 // QuikGrid headers
