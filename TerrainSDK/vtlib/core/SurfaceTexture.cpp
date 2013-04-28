@@ -119,7 +119,10 @@ void SurfaceTexture::MakeDerivedTexture(const TParams &options, const vtHeightFi
 	vti->Create(tsize, tsize, 24, false);
 	m_pUnshadedImage = vti;
 
-	MakeColorMap(options);
+	// If they have not set a colormap (e.g. with vtTerrain::SetTextureColorMap)
+	// then load one from the terrain options.
+	if (m_pColorMap == NULL)
+		MakeColorMap(options);
 
 	clock_t r1 = clock();
 	// The PaintDib method is virtual to allow subclasses to customize
