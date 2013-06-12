@@ -36,11 +36,6 @@ if(PNG_FOUND)
 	target_link_libraries(VTConvert ${PNG_LIBRARIES})
 endif(PNG_FOUND)
 
-find_library(NETCDF_LIBRARY netcdf DOC "Path to netcdf library")
-if(NETCDF_LIBRARY)
-	target_link_libraries(VTConvert ${NETCDF_LIBRARY})
-endif(NETCDF_LIBRARY)
-
 # Set up include directories for all targets at this level
 include_directories(${TERRAIN_SDK_ROOT})
 

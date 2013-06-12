@@ -138,11 +138,6 @@ if(OPENGL_GLU_FOUND)
 	target_link_libraries(VTBuilder ${OPENGL_glu_LIBRARY})
 endif(OPENGL_GLU_FOUND)
 
-find_library(NETCDF_LIBRARY netcdf DOC "Path to netcdf library")
-if(NETCDF_LIBRARY)
-	target_link_libraries(VTBuilder ${NETCDF_LIBRARY})
-endif(NETCDF_LIBRARY)
-
 # Set up include directories for all targets at this level
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/bitmaps)
 

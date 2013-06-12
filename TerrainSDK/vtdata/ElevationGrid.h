@@ -75,7 +75,6 @@ public:
 	bool LoadFromASC(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromDEM(const char *szFileName, bool progress_callback(int) = NULL, vtElevError *err = NULL);
 	bool LoadFromTerragen(const char *szFileName, bool progress_callback(int) = NULL);
-	bool LoadFromCDF(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromDTED(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromGTOPO30(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromGLOBE(const char *szFileName, bool progress_callback(int) = NULL);

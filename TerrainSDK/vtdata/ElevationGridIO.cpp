@@ -23,12 +23,6 @@ using namespace std;
 #include "vtString.h"
 #include "FilePath.h"
 
-#if SUPPORT_NETCDF
-extern "C" {
-#include "netcdf.h"
-}
-#endif
-
 // Headers for PNG support, which uses the library "libpng"
 #include "png.h"
 
@@ -120,7 +114,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	}
 	else if (!FileExt.CompareNoCase(".cdf"))
 	{
-		Success = LoadFromCDF(szFileName, progress_callback);
+		Success = LoadWithGDAL(szFileName, progress_callback);
 	}
 	else if (!FileExt.CompareNoCase(".dem"))
 	{
@@ -150,7 +144,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 		if (FirstChar == 'D')
 			Success = LoadFromGRD(szFileName, progress_callback);
 		else
-			Success = LoadFromCDF(szFileName, progress_callback);
+			Success = LoadWithGDAL(szFileName, progress_callback);
 
 		if (!Success)
 		{
@@ -191,135 +185,6 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	return Success;
 }
 
-
-/**
- * Loads from a netCDF file.
- * Elevation values are assumed to be integer meters.  Projection is
- * assumed to be geographic.
- *
- * You should call SetupLocalCS() after loading if you will be doing
- * heightfield operations on this grid.
- *
- * \returns \c true if the file was successfully opened and read.
- */
-bool vtElevationGrid::LoadFromCDF(const char *szFileName,
-								bool progress_callback(int))
-{
-	// Free buffers to prepare to receive new data
-	FreeData();
-
-#if SUPPORT_NETCDF
-	int id;
-
-	// netCDF doesn't yet support utf-8 or wide filenames, so convert
-	vtString fname_local = UTF8ToLocal(szFileName);
-
-	/* open existing netCDF dataset */
-	int status = nc_open(fname_local, NC_NOWRITE, &id);
-	if (status != NC_NOERR)
-		return false;
-
-	if (progress_callback != NULL) progress_callback(0);
-
-	// get dimension IDs
-	int id_side = 0, id_xysize = 0;
-	nc_inq_dimid(id, "side", &id_side);
-	status = nc_inq_dimid(id, "xysize", &id_xysize);
-	if (status != NC_NOERR)
-	{
-		vtString msg;
-		// Error messages can be turned into strings with nc_strerror
-		msg = "Could not determine size of CDF file. Error: ";
-		msg += nc_strerror(status);
-		nc_close(id);				// close netCDF dataset
-		VTLOG1(msg);
-		m_strError = msg;
-		return false;
-	}
-
-	size_t xysize_length = 0;
-	nc_inq_dimlen(id, id_xysize, &xysize_length);
-
-	// get variable IDs
-	int id_xrange = 0, id_yrange = 0, id_zrange = 0;
-	int id_spacing = 0, id_dimension = 0, id_z = 0;
-	nc_inq_varid(id, "x_range", &id_xrange);
-	nc_inq_varid(id, "y_range", &id_yrange);
-	nc_inq_varid(id, "z_range", &id_zrange);
-	nc_inq_varid(id, "spacing", &id_spacing);
-	nc_inq_varid(id, "dimension", &id_dimension);
-	nc_inq_varid(id, "z", &id_z);
-
-	// get values of variables
-	double xrange[2], yrange[2], zrange[2], spacing[2];
-	int dimension[2] = { 0, 0 };
-	nc_get_var_double(id, id_xrange, xrange);
-	nc_get_var_double(id, id_yrange, yrange);
-	nc_get_var_double(id, id_zrange, zrange);
-	nc_get_var_double(id, id_spacing, spacing);
-	nc_get_var_int(id, id_dimension, dimension);
-
-	double *z;
-	try
-	{
-		z = new double[xysize_length];
-	}
-	catch (bad_alloc&)
-	{
-		vtString msg;
-		size_t bytes = sizeof(double)*xysize_length;
-		msg.Format("Could not allocate %d bytes (%.1f MB, %.2f GB)\n",
-			bytes, (float)bytes/1024/1024, (float)bytes/1024/1024/1024);
-		nc_close(id);				// close netCDF dataset
-		VTLOG1(msg);
-		m_strError = msg;
-		return false;
-	}
-
-	if (progress_callback != NULL) progress_callback(20);
-
-	nc_get_var_double(id, id_z, z);
-	if (progress_callback != NULL) progress_callback(60);
-
-	nc_close(id);				// close netCDF dataset
-
-	// Now copy the values into the vtElevationGrid object
-	m_iSize.x = dimension[0];
-	m_iSize.y = dimension[1];
-
-	m_bFloatMode = false;
-	if (!AllocateGrid())
-		return false;
-	if (progress_callback != NULL) progress_callback(80);
-
-	int i, j;
-	for (i = 0; i < m_iSize.x; i++)
-	{
-		for (j = 0; j < m_iSize.y; j++)
-		{
-			SetValue(i, m_iSize.y-1-j, (short)z[j*m_iSize.x+i]);
-		}
-	}
-	if (progress_callback != NULL) progress_callback(90);
-
-	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
-
-	m_EarthExtents.left = xrange[0];
-	m_EarthExtents.right = xrange[1];
-	m_EarthExtents.top = yrange[1];
-	m_EarthExtents.bottom = yrange[0];
-
-	ComputeCornersFromExtents();
-
-	// delete temporary storage
-	delete z;
-
-	return true;
-#else
-	// no support for netCDF
-	return false;
-#endif
-}
 
 /**
  * Loads from a 3TX ascii grid file.

@@ -937,7 +937,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 	}
 	else if (!strExt.CmpNoCase(_T("cdf")))
 	{
-		success = m_pGrid->LoadFromCDF(fname, progress_callback);
+		success = m_pGrid->LoadWithGDAL(fname, progress_callback, err);
 	}
 	else if (!strExt.CmpNoCase(_T("hdr")))
 	{
@@ -967,7 +967,7 @@ bool vtElevLayer::ImportFromFile(const wxString &strFileName,
 		else
 		{
 			VTLOG("First character is not 'D', attempting load as a netCDF file.\n");
-			success = m_pGrid->LoadFromCDF(fname, progress_callback);
+			success = m_pGrid->LoadWithGDAL(fname, progress_callback, err);
 		}
 		if (!success)
 		{

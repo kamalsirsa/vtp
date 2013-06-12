@@ -27,16 +27,6 @@
 #define SUPPORT_CURL	0
 #endif
 
-// Use the NetCDF library, which adds support for the "CDF" file format,
-// which is commonly used for bathymetry.
-//
-// The NetCDF library is available from:
-//		http://www.unidata.ucar.edu/packages/netcdf/
-//
-#ifndef SUPPORT_NETCDF
-#define SUPPORT_NETCDF	0
-#endif
-
 // Use the QuikGrid library, which adds support for operations such as
 // generating contour lines.
 //
