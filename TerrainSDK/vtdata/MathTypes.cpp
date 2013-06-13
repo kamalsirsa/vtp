@@ -2139,3 +2139,15 @@ void ProjectionXZ(const DPolygon2 &dpoly2, float fY, FPolygon3 &fpoly3)
 		ProjectionXZ(dpoly2[i], fY, fpoly3[i]);
 }
 
+double AreaOfTriangle(const DPoint2 &A, const DPoint2 &B, const DPoint2 &C)
+{
+	const double num = A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y);
+	return fabs(num / 2.0);
+}
+
+double AreaOfTriangle(const DPoint3 &A, const DPoint3 &B, const DPoint3 &C)
+{
+	const DPoint3 cross = (B - A).Cross(C - A);
+	return cross.Length() / 2.0;
+}
+

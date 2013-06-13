@@ -109,7 +109,7 @@ public:
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		bool bTrue = false, int iCultureFlags=0, FPoint3 *vNormal = NULL) const;
 
-	// This method also gives you the triangle of intersection.
+	// This method tells you the height, and also which triangle intersected.
 	bool FindTriangleOnEarth(const DPoint2 &p, float &fAltitude,
 		int &iTriangle, bool bTrue = false) const;
 	FPoint3 GetTriangleNormal(int iTriangle) const;
@@ -127,6 +127,8 @@ public:
 	int RemoveTrianglesBySegment(const DPoint2 &ep1, const DPoint2 &ep2);
 	void SetupTriangleBins(int bins, bool progress_callback(int) = NULL);
 	int MemoryNeededToLoad() const;
+	double GetArea2D();
+	double GetArea3D();
 
 	vtProjection	m_proj;
 
@@ -139,6 +141,7 @@ protected:
 
 	void _UpdateIndicesInInBin(int bin);
 	void _CompareBins(int bin1, int bin2);
+	void _GetLocalTrianglePoints(int iTriangle, FPoint3 &p1, FPoint3 &p2, FPoint3 &p3) const;
 
 	DLine2				m_vert;
 	std::vector<float>	m_z;

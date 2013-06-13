@@ -1314,6 +1314,43 @@ int vtTin::MemoryNeededToLoad() const
 	return bytes;
 }
 
+double vtTin::GetArea2D()
+{
+	double area = 0.0;
+	uint tris = NumTris();
+	for (uint i = 0; i < tris; i++)
+	{
+		const DPoint2 &p1 = m_vert[m_tri[i*3]];
+		const DPoint2 &p2 = m_vert[m_tri[i*3+1]];
+		const DPoint2 &p3 = m_vert[m_tri[i*3+2]];
+		area += AreaOfTriangle(p1, p2, p3);
+	}
+	return area;
+}
+
+double vtTin::GetArea3D()
+{
+	double area = 0.0;
+	uint tris = NumTris();
+
+	for (uint i = 0; i < tris; i++)
+	{
+		const int v0 = m_tri[i*3];
+		const int v1 = m_tri[i*3+1];
+		const int v2 = m_tri[i*3+2];
+		const DPoint2 &p1 = m_vert[v0];
+		const DPoint2 &p2 = m_vert[v1];
+		const DPoint2 &p3 = m_vert[v2];
+		DPoint3 dp1(p1.x, p1.y, m_z[v0]);
+		DPoint3 dp2(p2.x, p2.y, m_z[v1]);
+		DPoint3 dp3(p3.x, p3.y, m_z[v2]);
+
+		area += AreaOfTriangle(dp1, dp2, dp3);
+	}
+
+	return area;
+}
+
 bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const
 {
 	int unused_triangle;
@@ -1380,19 +1417,24 @@ bool vtTin::FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 
 FPoint3 vtTin::GetTriangleNormal(int iTriangle) const
 {
+	FPoint3 wp0, wp1, wp2;
+	_GetLocalTrianglePoints(iTriangle, wp0, wp1, wp2);
+	FPoint3 norm = (wp1 - wp0).Cross(wp2 - wp0);
+	norm.Normalize();
+	return norm;
+}
+
+void vtTin::_GetLocalTrianglePoints(int iTriangle, FPoint3 &wp0, FPoint3 &wp1, FPoint3 &wp2) const
+{
 	const int v0 = m_tri[iTriangle*3];
 	const int v1 = m_tri[iTriangle*3+1];
 	const int v2 = m_tri[iTriangle*3+2];
 	const DPoint2 &p1 = m_vert[v0];
 	const DPoint2 &p2 = m_vert[v1];
 	const DPoint2 &p3 = m_vert[v2];
-	FPoint3 wp0, wp1, wp2;
 	m_LocalCS.EarthToLocal(DPoint3(p1.x, p1.y, m_z[v0]), wp0);
 	m_LocalCS.EarthToLocal(DPoint3(p2.x, p2.y, m_z[v1]), wp1);
 	m_LocalCS.EarthToLocal(DPoint3(p3.x, p3.y, m_z[v2]), wp2);
-	FPoint3 norm = (wp1 - wp0).Cross(wp2 - wp0);
-	norm.Normalize();
-	return norm;
 }
 
 bool vtTin::ConvertProjection(const vtProjection &proj_new)

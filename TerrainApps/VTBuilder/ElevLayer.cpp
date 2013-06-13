@@ -1400,6 +1400,16 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		str.Printf(_T("Size in memory: %d bytes (%0.1f Kb, %0.1f Mb)\n"),
 			mem_bytes, (float)mem_bytes/1024, (float)mem_bytes/1024/1024);
 		result += str;
+
+		LinearUnits units = m_pTin->m_proj.GetUnits();
+		vtString unit_name = GetLinearUnitName(units);
+		str.Printf(_T("Surface area (2D): %g Square %s\n"),
+			m_pTin->GetArea2D(), (const char *) unit_name);
+		result += str;
+		str.Printf(_T("Surface area (3D): %g Square %s\n"),
+			m_pTin->GetArea3D(), (const char *) unit_name);
+		result += str;
+
 	}
 	strIn = result;
 }

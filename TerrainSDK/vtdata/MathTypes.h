@@ -1463,4 +1463,7 @@ void ProjectionXZ(const FPolygon3 &fpoly3, DPolygon2 &dpoly2);
 void ProjectionXZ(const DLine2 &dline2, float fY, FLine3 &fline3);
 void ProjectionXZ(const DPolygon2 &dpoly2, float fY, FPolygon3 &fpoly3);
 
+double AreaOfTriangle(const DPoint2 &A, const DPoint2 &B, const DPoint2 &C);
+double AreaOfTriangle(const DPoint3 &A, const DPoint3 &B, const DPoint3 &C);
+
 #endif	// VTMATHTYPESH
