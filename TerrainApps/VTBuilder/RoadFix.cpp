@@ -211,7 +211,7 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 //		then remove one of them.
 // Returns the number of road points affected.
 //
-int RoadMapEdit::CleanLinkPoints()
+int RoadMapEdit::CleanLinkPoints(double epsilon)
 {
 	int count = 0;
 
@@ -222,14 +222,20 @@ int RoadMapEdit::CleanLinkPoints()
 	{
 		for (uint i = 1; i < pR->GetSize(); i++)
 		{
-			if (pR->GetAt(i-1) == pR->GetAt(i))
+			const DPoint2 &p1 = pR->GetAt(i-1);
+			const DPoint2 &p2 = pR->GetAt(i);
+
+			double dist = (p2 - p1).Length();
+			if (dist < epsilon)
 			{
-				// the point is redudant and should be removed
+				// the point is redundant and should be removed
 				pR->RemovePoint(i-1);
 				pR->Dirtied();
 				count++;
 				pR->m_fLength = pR->Length();
-				break;
+
+				// there may be multiple redundant points
+				i--;
 			}
 		}
 	}

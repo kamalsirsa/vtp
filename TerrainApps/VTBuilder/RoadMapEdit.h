@@ -166,7 +166,7 @@ public:
 	// remove nodes and merge roads if 2 adjacent roads have the same properties and the node is uncontrolled.
 	int RemoveUnnecessaryNodes();
 	// fix road points so that the end nodes do not have same coordinates as their adjacent nodes.
-	int CleanLinkPoints();
+	int CleanLinkPoints(double epsilon);
 	// deletes roads that either:
 	//		have the same start and end nodes and have less than 4 points
 	//		have less than 2 points, regardless of start or end nodes.

@@ -47,7 +47,7 @@ public:
 	int GetSelectedLinks();
 	void ToggleLinkDirection(LinkEdit *pLink);
 	bool SelectArea(const DRECT &box, bool nodemode, bool crossSelect);
-	void DoClean();
+	void DoClean(double epsilon);
 	void MoveSelectedNodes(const DPoint2 &offset);
 
 	//edit a single node

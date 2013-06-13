@@ -552,7 +552,7 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 	return ret;
 }
 
-void vtRoadLayer::DoClean()
+void vtRoadLayer::DoClean(double epsilon)
 {
 	// check projection
 	vtProjection proj;
@@ -580,7 +580,7 @@ void vtRoadLayer::DoClean()
 	}
 
 	UpdateProgressDialog(30, _("Cleaning link points"));
-	count = CleanLinkPoints();
+	count = CleanLinkPoints(epsilon);
 	if (count)
 	{
 		DisplayAndLog("Cleaned %d link points", count);

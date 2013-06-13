@@ -1903,7 +1903,22 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	vtRoadLayer *pRL = GetActiveRoadLayer();
 	if (!pRL) return;
 
-	pRL->DoClean();
+	double dEpsilon;
+	if (m_proj.GetUnits() == LU_DEGREES)
+		dEpsilon = 1E-7;
+	else
+		dEpsilon = 1E-2;
+
+	wxString str;
+	str.Printf(_T("%g"), dEpsilon);
+	str = wxGetTextFromUser(_("How close are degenerate points? (epsilon)"),
+		_("Clean RoadMap"), str, this);
+	if (str == _T(""))
+		return;
+
+	dEpsilon = atof(str.mb_str(wxConvUTF8));
+
+	pRL->DoClean(dEpsilon);
 
 	m_pView->Refresh();
 }
