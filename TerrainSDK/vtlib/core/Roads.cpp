@@ -276,24 +276,32 @@ void NodeGeom::FindVerticesForLink(TLink *pL, bool bStart, FPoint3 &p0, FPoint3 
 }
 
 
-vtMesh *NodeGeom::GenerateGeometry()
+vtMesh *NodeGeom::GenerateGeometry(const VirtualTexture &vt)
 {
 	if (NumLinks() < 3)
 		return NULL;
+
+	FPoint2 uv;
 
 	const FPoint3 upvector(0.0f, 1.0f, 0.0f);
 
 	vtMesh *pMesh = new vtMesh(osg::PrimitiveSet::TRIANGLE_FAN, VT_TexCoords | VT_Normals, NumLinks()*2 + 1);
 	int verts = 0;
 
-	pMesh->SetVtxPUV(verts, m_p3, 0.5, 0.5f);
+	vt.Adapt(FPoint2(0.5f, 0.5f), uv);
+
+	pMesh->SetVtxPUV(verts, m_p3, uv.x, uv.y);
 	pMesh->SetVtxNormal(verts, upvector);
 	verts++;
 
 	for (int j = 0; j < NumLinks(); j++)
 	{
-		pMesh->SetVtxPUV(verts, m_v[j*2+1], 0.0, 1.0f);
-		pMesh->SetVtxPUV(verts+1, m_v[j*2], 1.0, 1.0f);
+		vt.Adapt(FPoint2(0.0f, 1.0f), uv);
+		pMesh->SetVtxPUV(verts, m_v[j*2+1], uv.x, uv.y);
+
+		vt.Adapt(FPoint2(1.0f, 1.0f), uv);
+		pMesh->SetVtxPUV(verts+1, m_v[j*2], uv.x, uv.y);
+
 		pMesh->SetVtxNormal(verts, upvector);
 		pMesh->SetVtxNormal(verts+1, upvector);
 		verts += 2;
@@ -833,9 +841,28 @@ vtTransform *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	count = 0;
 	for (NodeGeom *pN = GetFirstNode(); pN; pN = pN->GetNext())
 	{
-		pMesh = pN->GenerateGeometry();
+		// What material to use?  We used to simply use "pavement", but that is
+		// bad when they are e.g. trail or stone.  Now, we will try to guess
+		// what to use by looking at the links here.
+		int node_vti = VTI_PAVEMENT;
+		for (int i = 0; i < pN->NumLinks(); i++)
+		{
+			LinkGeom *pL = pN->GetLink(i);
+			switch (pL->m_vti)
+			{
+			case VTI_RAIL:
+			case VTI_4WD:
+			case VTI_TRAIL:
+			case VTI_GRAVEL:
+			case VTI_STONE:
+				node_vti = pL->m_vti;
+			}
+		}
+		VirtualTexture &vt = m_vt[node_vti];
+
+		pMesh = pN->GenerateGeometry(vt);
 		if (pMesh)
-			AddMeshToGrid(pMesh, m_mi_pavement);	// TODO: correct matidx
+			AddMeshToGrid(pMesh, vt.m_idx);
 		count++;
 		if (progress_callback != NULL)
 			progress_callback(count * 100 / total);
@@ -926,6 +953,9 @@ void vtRoadMap3d::_CreateMaterials(bool do_texture)
 
 		m_vt[VTI_GRAVEL].m_idx = m_mi_gravel;
 		m_vt[VTI_GRAVEL].m_rect.SetRect(0, 0, 1, 1);
+
+		m_vt[VTI_PAVEMENT].m_idx = m_mi_pavement;
+		m_vt[VTI_PAVEMENT].m_rect.SetRect(0, 0, 1, 1);
 	}
 	else
 	{

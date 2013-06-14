@@ -24,6 +24,53 @@
 #define ROAD_CLUSTER	16
 
 /**
+ * A 'virtual' texture is a subset of an another texture; defined by
+ * rectangular UV extents that refer to an area of source texels.  It is
+ * used by the RoadMap classes to pack a number of textures into a single
+ * "roadway" texture, but could certainly by extended into a general-purpose
+ * class in the future.
+ *
+ * One thing to watch out for is that a virtual texture won't necessarily
+ * tile (repeat) as expected, since it make have other virtual textures
+ * adjacent to it in the source texture.
+ */
+class VirtualTexture
+{
+public:
+	int		m_idx;	// material index
+	FRECT	m_rect;	// region of the base texture to use
+
+	void Adapt(const FPoint2 &in, FPoint2 &out) const
+	{
+		out.x = m_rect.left + in.x * (m_rect.right - m_rect.left);
+		out.y = m_rect.bottom + in.y * (m_rect.top - m_rect.bottom);
+	}
+};
+
+//
+// virtual texture indices
+//
+enum RoadVTIndices
+{
+	VTI_MARGIN,
+	VTI_SIDEWALK,
+	VTI_1LANE,
+	VTI_2LANE1WAY,
+	VTI_2LANE2WAY,
+	VTI_3LANE1WAY,
+	VTI_3LANE2WAY,
+	VTI_4LANE1WAY,
+	VTI_4LANE2WAY,
+	VTI_RAIL,
+	VTI_4WD,
+	VTI_TRAIL,
+	VTI_GRAVEL,
+	VTI_STONE,
+	VTI_PAVEMENT,
+	VTI_TOTAL
+};
+
+/**
  * A Node is a place where 2 or more links meet.  NodeGeom extents Node
  * with 3D geometry.
  */
@@ -39,7 +86,7 @@ public:
 	}
 	void ComputeIntersectionVertices();
 	void FindVerticesForLink(TLink *pR, bool bStart, FPoint3 &p0, FPoint3 &p1);
-	vtMesh *GenerateGeometry();
+	vtMesh *GenerateGeometry(const VirtualTexture &vt);
 	FPoint3 GetUnitLinkVector(int i);
 	const FPoint3 &GetAdjacentRoadpoint(int iLinkNumber);
 	NodeGeom *GetNext() { return (NodeGeom*) m_pNext; }
@@ -69,52 +116,6 @@ enum normal_direction {
 	ND_UP,
 	ND_LEFT,
 	ND_RIGHT
-};
-
-/**
- * A 'virtual' texture is a subset of an another texture; defined by
- * rectangular UV extents that refer to an area of source texels.  It is
- * used by the RoadMap classes to pack a number of textures into a single
- * "roadway" texture, but could certainly by extended into a general-purpose
- * class in the future.
- *
- * One thing to watch out for is that a virtual texture won't necessarily
- * tile (repeat) as expected, since it make have other virtual textures
- * adjacent to it in the source texture.
- */
-class VirtualTexture
-{
-public:
-	int		m_idx;	// material index
-	FRECT	m_rect;	// region of the base texture to use
-
-	void Adapt(const FPoint2 &in, FPoint2 &out)
-	{
-		out.x = m_rect.left + in.x * (m_rect.right - m_rect.left);
-		out.y = m_rect.bottom + in.y * (m_rect.top - m_rect.bottom);
-	}
-};
-
-//
-// virtual texture indices
-//
-enum RoadVTIndices
-{
-	VTI_MARGIN,
-	VTI_SIDEWALK,
-	VTI_1LANE,
-	VTI_2LANE1WAY,
-	VTI_2LANE2WAY,
-	VTI_3LANE1WAY,
-	VTI_3LANE2WAY,
-	VTI_4LANE1WAY,
-	VTI_4LANE2WAY,
-	VTI_RAIL,
-	VTI_4WD,
-	VTI_TRAIL,
-	VTI_GRAVEL,
-	VTI_STONE,
-	VTI_TOTAL
 };
 
 /**
