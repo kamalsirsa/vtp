@@ -59,8 +59,9 @@ public:
 		long style = wxDEFAULT_FRAME_STYLE, bool bVerticalToolbar = false, bool bEnableEarth = true);
 	~EnviroFrame();
 
-	void CreateMenus();
-	void CreateToolbar();
+	void CreateUI();
+	virtual void CreateMenus();
+	virtual void CreateToolbar();
 	virtual void RefreshToolbar();
 
 	virtual void SetMode(MouseMode mode);

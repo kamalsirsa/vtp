@@ -337,6 +337,8 @@ EnviroFrame *EnviroApp::CreateMainFrame()
 	wxSize size(g_Options.m_WinSize.x, g_Options.m_WinSize.y);
 	EnviroFrame *frame = new FRAME_NAME(NULL, MakeFrameTitle(), pos, size);
 
+	frame->CreateUI();
+
 	// Now we can realize the toolbar
 	frame->CreateToolbar();
 

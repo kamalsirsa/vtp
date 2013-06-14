@@ -173,7 +173,10 @@ EnviroFrame::EnviroFrame(wxFrame *parent, const wxString& title, const wxPoint& 
 
 	m_pStatusBar = NULL;
 	m_pToolbar = NULL;
+}
 
+void EnviroFrame::CreateUI()
+{
 	VTLOG1("Frame window: creating menus and toolbars.\n");
 	CreateMenus();
 
