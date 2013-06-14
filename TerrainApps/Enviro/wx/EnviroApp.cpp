@@ -150,6 +150,7 @@ bool EnviroApp::OnInit()
 
 	CheckForGDALAndWarn();
 
+#ifdef STARTUP_DIALOG
 	// Create and show the Startup Dialog
 	if (m_bShowStartupDialog)
 	{
@@ -173,6 +174,7 @@ bool EnviroApp::OnInit()
 		StartDlg.PutOptionsTo(g_Options);
 		g_Options.WriteXML();
 	}
+#endif  // STARTUP_DIALOG
 
 	// Now we can create vtTerrain objects for each terrain
 	g_App.LoadAllTerrainDescriptions();

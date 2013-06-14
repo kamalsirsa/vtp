@@ -33,6 +33,9 @@ endif(MSVC)
 install(TARGETS Enviro RUNTIME DESTINATION bin
                        BUNDLE DESTINATION bin)
 
+# Special versions of Enviro can be created by using the same files with a different frame
+# include("Pathfinder/CMakeLists.txt")
+
 # Internal dependencies for this target
 target_link_libraries(Enviro envdlg wxosg vtlib vtui minidata vtdata xmlhelper)
 
