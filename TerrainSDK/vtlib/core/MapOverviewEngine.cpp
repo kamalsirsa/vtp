@@ -180,11 +180,12 @@ void MapOverviewEngine::RefreshMapView()
 	ArrowPos.z = 0.0f;
 	m_pArrow->SetTrans(ArrowPos);
 
-	float angle = acosf(camDir.Dot(FPoint2(1,0)));
+	//float angle = acosf(camDir.Dot(FPoint2(1,0)));
+	float angle = atan2(camDir.y, camDir.x);
 
 	if (fabs(anglePrec - angle) > 0.0001)
 	{
-		camDir.y > 0 ? angle = fabs(angle) : angle = -fabs(angle);
+		//camDir.y > 0 ? angle = fabs(angle) : angle = -fabs(angle);
 		//arrow orientation
 		m_pArrow->RotateLocal(FPoint3(0,0,1),-(angle - anglePrec));
 		anglePrec = angle;

@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTBuilder
-AppVerName=VTBuilder 1.5 (2013.02.12)
+AppVerName=VTBuilder 1.52 (2013.06.14)
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -12,7 +12,7 @@ DefaultDirName={pf}\VTP
 DefaultGroupName=VTP
 AllowNoIcons=yes
 LicenseFile=C:\VTP\license.txt
-OutputBaseFilename=VTBuilder_130212
+OutputBaseFilename=VTBuilder_130614
 OutputDir=C:\Distrib
 ; We need the following because some Windows machines won't turn Registry settings into Environment variables w/o a reboot
 AlwaysRestart=yes
@@ -62,7 +62,7 @@ Source: "C:\APIs\gdal-1.9.2\distro-vc10\bin\*.exe"; DestDir: "{app}\Apps"; Flags
 Source: "C:\APIs\curl-7.23.1\libcurl.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\lpng1513\libpng15.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\lpng1513\zlib1.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-;Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\netcdf-3.6.1-1-bin\bin\netcdf.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wxWidgets-2.9.4\lib\vc_dll\*u_*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\expat-2.0.1\win32\bin\Release\libexpat.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 
