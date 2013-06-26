@@ -166,28 +166,21 @@ void MapOverviewEngine::CreateArrow()
 
 void MapOverviewEngine::RefreshMapView()
 {
-	// 3dimension vector is useless ... but needed in SetTrans()
+	// Arrow position
 	FPoint3 camPos = vtGetScene()->GetCamera()->GetTrans();
-
-	FPoint2 camDir;
-	camDir.x =  vtGetScene()->GetCamera()->GetDirection().x;
-	camDir.y =  vtGetScene()->GetCamera()->GetDirection().z;
-
-	//arrow position
 	FPoint3 ArrowPos;
 	ArrowPos.x = ( camPos.x) * ratioMapTerrain + MapMargin;
 	ArrowPos.y = (-camPos.z) * ratioMapTerrain + MapMargin;
 	ArrowPos.z = 0.0f;
 	m_pArrow->SetTrans(ArrowPos);
 
-	//float angle = acosf(camDir.Dot(FPoint2(1,0)));
-	float angle = atan2(camDir.y, camDir.x);
+	// Arrow orientation
+	FPoint3 camDir = vtGetScene()->GetCamera()->GetDirection();
+	float angle = atan2(camDir.z, camDir.x);
 
 	if (fabs(anglePrec - angle) > 0.0001)
 	{
-		//camDir.y > 0 ? angle = fabs(angle) : angle = -fabs(angle);
-		//arrow orientation
-		m_pArrow->RotateLocal(FPoint3(0,0,1),-(angle - anglePrec));
+		m_pArrow->RotateLocal(FPoint3(0,0,1), -(angle - anglePrec));
 		anglePrec = angle;
 	}
 }

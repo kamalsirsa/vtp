@@ -155,6 +155,9 @@ void ColorMap::GenerateColorTable(int iTableSize, float fMin, float fMax)
 	RGBi c1, c2;
 	float base = 0, next, bracket_size = 0, fraction;
 
+	// In case this method is called more than once, be sure to empty the array.
+	m_table.clear();
+
 	if (m_bRelative == true)
 	{
 		bracket_size = m_fRange / (num - 1);
