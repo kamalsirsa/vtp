@@ -90,16 +90,27 @@ bool vtLoadDataPath(const char *user_config_dir, const char *config_dir)
 	PathsVisitor visitor;
 	try
 	{
+		VTLOG1("\tA. convert filename to std::string\n");
 		std::string fname2(FileName);
+
+		VTLOG1("\tB. calling readXML\n");
 		readXML(fname2, visitor);
 	}
 	catch (xh_io_exception &ex)
 	{
+		VTLOG1("\tC. caught xh_io_exception\n");
 		const string msg = ex.getFormattedMessage();
 		VTLOG(" XML problem: %s\n", msg.c_str());
 		return false;
 	}
-	VTLOG("\tSuccessfully read.\n");
+	catch (xh_throwable &t)
+	{
+		VTLOG1("\tD. caught xh_throwable\n");
+		const string msg = t.getFormattedMessage();
+		VTLOG(" XML problem: %s\n", msg.c_str());
+		return false;
+	}
+	VTLOG1("\tSuccessfully read.\n");
 
 	// Remember where we loaded it from
 	s_configfile = FileName;
