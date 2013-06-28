@@ -1,13 +1,13 @@
 add_subdirectory(wx)
 
 set(ENVIRO_SOURCE_FILES
-	EarthView.cpp Engines.cpp Enviro.cpp Hawaii.cpp Nevada.cpp Options.cpp)
+	EarthView.cpp Engines.cpp Enviro.cpp Hawaii.cpp Options.cpp)
 
 set(ENVIRO_SOURCE_FILES_WX
 	wx/EnviroCanvas.cpp wx/EnviroApp.cpp wx/EnviroFrame.cpp wx/EnviroGUI.cpp wx/EnviroMenus.cpp wx/StatusBar.cpp)
 
 set(ENVIRO_HEADER_FILES
-	Engines.h Enviro.h EnviroEnum.h Hawaii.h Nevada.h Options.h PlantingOptions.h)
+	Engines.h Enviro.h EnviroEnum.h Hawaii.h Options.h PlantingOptions.h)
 
 set(ENVIRO_HEADER_FILES_WX
 	wx/EnviroCanvas.h wx/EnviroApp.h wx/EnviroFrame.h wx/EnviroGUI.h wx/menu_id.h wx/StatusBar.h)

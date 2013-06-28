@@ -23,7 +23,6 @@
 #include "Enviro.h"
 #include "Options.h"
 #include "Hawaii.h"
-#include "Nevada.h"
 
 // Although there is no string translation in the core of Enviro (because it
 //  is independent of wx or any GUI library) nonetheless we want the text
@@ -225,8 +224,6 @@ void Enviro::LoadTerrainDescriptions(const vtString &path)
 			before_dot == "Hawaii" || before_dot == "Honoka'a" ||
 			before_dot == "Kealakekua" || before_dot == "Kamuela")
 			pTerr = new IslandTerrain;
-		else if (before_dot == "Nevada")
-			pTerr = new NevadaTerrain;
 		else
 			pTerr = new vtTerrain;
 
